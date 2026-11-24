@@ -1,0 +1,209 @@
+﻿@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Manage Uploaded Document By Scanner For (" + Convert.ToString(Session["CandidateName"]) + ")";
+}
+
+@{
+    #region ****** Navigation Back Button ******
+    int PersonalRowID = ViewBag.PersonalRowID;
+    string Casestatus = ViewBag.Casestatus;
+    short ClientRowId = ViewBag.ClientRowId;
+    //@ViewBag.NavigationBtnBack
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = string.Empty;
+
+    if (ViewBag.Casestatus != null)
+    {
+        hyperLink = Html.ActionLink("linkTitle", "AllocatedDEScannerJob", "ProvidedInfo", new { CaseStatus = clsCommonMethods.PEncrypt(ViewBag.Casestatus), version= clsCommonMethods.PEncrypt("New") }, new { @class = "btn bun-bg btn-default" }).ToString();
+    }
+    else
+    {
+        hyperLink = Html.ActionLink("linkTitle", "AllocatedDEScannerJob", "ProvidedInfo", null, new { @class = "btn bun-bg btn-default" }).ToString();
+    }
+
+    ViewBag.NavigationBtnBack = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+    #endregion
+
+    #region ****** Navigation Add New Button ******
+
+    //@ViewBag.NavigationBtnAddNew
+    string faIconAddNewCheckDoc = string.Format("<i class='fa fa-plus-circle' aria-hidden='true'></i> Add New Document");
+    string hyperLinkAddNewCheckDoc = string.Empty;
+
+    if (Request.QueryString["CaseStatus"] != null)
+    {
+        hyperLinkAddNewCheckDoc = Html.ActionLink("linkTitle", "UploadCandidateDocument", "ProvidedInfo", new { PID = clsCommonMethods.PEncrypt( PersonalRowID.ToString()), CaseStatus = clsCommonMethods.PEncrypt(Casestatus), CRId = clsCommonMethods.PEncrypt(ClientRowId.ToString()) }, new { @class = "btn bun-bg btn-default" }).ToString();
+    }
+    else if (Request.QueryString["tatHours"] != null)
+    {
+        hyperLinkAddNewCheckDoc = Html.ActionLink("linkTitle", "UploadCandidateDocument", "ProvidedInfo", new { PID = clsCommonMethods.PEncrypt(PersonalRowID.ToString()), CRId = clsCommonMethods.PEncrypt(ClientRowId.ToString()) }, new { @class = "btn bun-bg btn-default" }).ToString();
+    }
+    else
+    {
+        hyperLinkAddNewCheckDoc = Html.ActionLink("linkTitle", "UploadCandidateDocument", "ProvidedInfo", new { PID = clsCommonMethods.PEncrypt(PersonalRowID.ToString()), CRId = clsCommonMethods.PEncrypt(ClientRowId.ToString()) }, new { @class = "btn bun-bg btn-default" }).ToString();
+    }
+
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkAddNewCheckDoc.ToString().Replace("linkTitle", faIconAddNewCheckDoc));
+
+    #endregion
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftProvidedInfo") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("ManageUploadDocmentList", "ProvidedInfo", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="form-horizontal">
+                                <div class="form-group branch row search-frame">
+                                    <div class="form-group branch col-md-6">
+                                        <div class="row">
+                                            <label class="col-md-4 control-label">Select Check : </label>
+                                            <div class="col-md-8">
+                                                @Html.DropDownList("SubCheckRowID",
+                 new SelectList(ViewBag.CheckList, "SubCheckRowID", "SubCheckName"),
+                 "- Select Check -", new { @class = "form-control" })
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="form-group branch col-md-6">
+                                        <div class="row">
+                                            <label class="col-md-4 control-label">Document Type :</label>
+                                            <div class="col-md-8">
+                                                @Html.DropDownList("Search",
+                 new SelectList(string.Empty, "Value", "Text"),
+                 "-- Select Type -- ",
+                 new { @class = "form-control" })
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 text-center">
+                                        @Html.Hidden("pid", new { @value = PersonalRowID })
+                                        @Html.Hidden("ClientRowId", new { @value = ClientRowId })
+                                        @Html.Hidden("Casestatus", new { @value = Casestatus })
+
+                                        <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.UploadedDocInfo != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12 table">
+                            @{
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.UploadedDocInfo, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                            htmlAttributes: new { id = "grid", @class = "table" },
+                            headerStyle: "thead-inverse",
+                            rowStyle: "ordertxt",
+                            footerStyle: "custpaging",
+                            mode: WebGridPagerModes.All,
+                            columns: new[]
+                            {
+                            grid.Column(header: "No.", style:"td-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                            grid.Column(header: "Check Name", format: (item) =>string.IsNullOrEmpty(item.SubCheckName) ? "Case Document" : item.SubCheckName, canSort: false,style:"td-2"),
+                            grid.Column(columnName: "DocumentUploadFrom", header: "Upload-From", canSort: false, style:"td-1"),
+                            grid.Column(columnName: "DocumentType", header: "Document Type", canSort: false, style:"td-2"),
+
+                            grid.Column("File Name", canSort: false, format: (item)=> {
+                            string FldPathDoc = System.Configuration.ConfigurationManager.AppSettings["provideddocuments"].ToString();
+                            string DownloadLink = string.Format("<a href=\"{0}\" target=\"_blank\">"+item.FileName+"</a>",Url.Content(FldPathDoc + item.FileName));
+                            return new HtmlString(DownloadLink);
+                            }, style:"delete td-1"),
+
+                            //grid.Column(columnName: "FileName", header: "File Name", canSort: false, style:"td-1"),
+                            grid.Column(columnName: "Remarks", header: "Description", canSort: false, style:"td-3"),
+                            grid.Column("UploadDate", "Upload-Date", format: (item) => item.UploadDate != DateTime.MinValue ? item.UploadDate.ToString("MM/dd/yyyy") : "", canSort: false,style:"td-1"),
+
+                            grid.Column("Delete", canSort: false, format: (item)=> {
+                            if (!string.IsNullOrEmpty(item.SubCheckName))
+                            {
+                            string DeleteLink = string.Format("<a href=\"#\" id=\"Delete_{0}_{1}\" class=\"delete\" >{2}</a>", item.VerifiedUploadRowID, item.SubCheckRowID , "Delete");
+                            return new HtmlString(DeleteLink);
+                            }
+                             string DeleteLink1 = string.Format("<a href=\"#\" id=\"Delete_{0}_{1}\" class=\"delete\" >{2}</a>", item.VerifiedUploadRowID, item.SubCheckRowID , "Delete");
+                           return new HtmlString(DeleteLink1);
+ 
+                            }, style:"delete td-1")
+
+                            }
+                            )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <script type="text/javascript">
+        $(function () {
+            //Bind Document Type changeg on SubCheckRowID
+            $('#SubCheckRowID').change(function () {
+                $.getJSON('/ProvidedInfo/GetDocumentTypeListBySubCheckID/' + $('#SubCheckRowID').val(), function (data) {
+                    var items = '<option value="">-- Select Type --</option>';
+                    $.each(data, function (i, types) {
+                        items += "<option value='" + types.Value + "'>" + types.Text + "</option>";
+                    });
+                    $('#Search').html(items);
+                });
+            });
+        });
+
+        $(".delete").on("click", function () {
+            debugger;
+            // alert($('#hdnTeamMemberRowID').val());
+             var str = $(this).attr("id").split("_");
+             //console.log(str)
+            var id = str[1];
+            debugger;
+          SubCheckRowID = str[2];
+            var flag = confirm('Do you want to Delete the Record ?');
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("DeleteCandidateUploadedDocs", "ProvidedInfo")',
+                    data: { "id1": id, "SubCheckRowID": SubCheckRowID},
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (result) {
+                        if (result == true) {
+                            alert("Record Deleted Successfully!!");
+                             window.location.reload();
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}
+

@@ -1,0 +1,665 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    /**/
+
+    /**/
+
+    var list = Model.SpecialInfoModel.Where(T => T.SubcheckRowID == 213 || T.SubcheckRowID == 214 || T.SubcheckRowID == 209 || T.SubcheckRowID == 218 || T.SubcheckRowID == 215 || T.SubcheckRowID == 222 || T.SubcheckRowID == 216).GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+    var TestResult = Model.DrugTestResultList
+                         .ToList();
+
+
+}
+
+@if (Model != null && Model.SpecialInfoModel != null && Model.SpecialInfoModel.Count > 0)
+{
+    if (Model.SpecialInfoModel != null)
+    {
+        int i = 0;
+        int j = 0;
+        double annuxureno = Convert.ToDouble(Session["AnnexureNo"]);
+        int k = Convert.ToInt32(annuxureno);
+        foreach (var a in list)
+        {
+            var Anticident = Model.SpecialInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+
+            var ReportComment = list[i].ReportComment;
+            if (j == 0)
+            {
+                annuxureno = k + 1;
+            }
+            else
+            {
+                annuxureno = annuxureno + .1;
+            }
+            j = 2;
+            Session["AnnexureNo"] = annuxureno.ToString();
+            //var Anticident = Model.SpecialInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+
+            //var ReportComment = list[i].ReportComment;
+
+
+            <page id="PrintSrc" size="A4">
+                <div style="page-break-after:always ;"></div>
+
+                <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; width:100%; border-collapse:collapse;">
+                    @if (a.SubcheckRowID == 215)
+                    {
+                        <tr>
+                            <td valign="top" align="center" style="height:60rem;">
+                                <table style="border-collapse:collapse;width: 94%; margin: auto;" border="0" cellpadding="2" cellspacing="5" id="tblDemo">
+                                    <tr>
+                                        <td style="border: none!important;-webkit-print-color-adjust: exact;" colspan="4" align="right" height="20"><img src='@Url.Content("~/Images/Securitas-logo.png")' style="width:75px; margin-top:10px; margin-right: 20px;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td height="30">&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:bolder; font-size:12pt!important;font-family:'Calibri',sans-serif!important;">Section  @annuxureno :  Drug Test</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-top:10px;" valign="top" align="center">
+                                            <table width="100%" border="1" cellspacing="5" cellpadding="2" style="border-collapse:collapse;border-collapse:collapse;font-family:Calibri;">
+
+                                                @foreach (var item in Anticident)
+                                                {
+                                                    if (item.AntecedentRowID == "116" || item.AntecedentRowID == "247" || item.AntecedentRowID == "175" || item.AntecedentRowID == "168" || item.AntecedentRowID == "248" || item.AntecedentRowID == "114")
+                                                    {
+                                                        if (item.AntecedentRowID == "175")
+                                                        {
+                                                            <tr>
+                                                                <td style="width:30%; font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+                                                                <td colspan="2">@item.OpsValue</td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">Drug Test Panel</td>
+                                                                <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">09 Panel</td>
+                                                                <td style="width:40%; font-size:10pt!important;font-family:'Calibri',sans-serif!important;">Result</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td rowspan="10" style="text-align:center;font-size:10pt!important;font-family:'Calibri',sans-serif!important;"> Drugs <br> Covered</td>
+                                                            </tr>
+
+                                                            foreach (var p in TestResult)
+                                                            {
+                                                                if (!string.IsNullOrEmpty(p.TestValue))
+                                                                {
+
+                                                                    <tr>
+                                                                        <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@p.TestValue</td>
+                                                                        <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@p.TestResult</td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+
+                                                            if (item.AntecedentRowID == "114")
+                                                            {
+                                                                <tr>
+                                                                    <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+                                                                    <td colspan="3" style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">  @Html.Raw(ReportComment)</td>
+                                                                </tr>
+                                                            }
+                                                            else
+                                                            {
+                                                                <tr>
+                                                                    <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+                                                                    <td colspan="3" style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.OpsValue</td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+
+                                                            <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.OpsValue</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    }
+                    else if (a.SubcheckRowID == 216)
+                    {
+                        <tr>
+                            <td valign="top" align="center" style="height:60rem;">
+                                <table border="0" cellpadding="2" cellspacing="5" id="tblDemo" style="border-collapse:collapse;width: 94%; margin: auto;">
+                                    <tr>
+                                        <td style="border: none!important; -webkit-print-color-adjust: exact;" colspan="4" align="right" height="20"><img src='@Url.Content("~/Images/Securitas-logo.png")' style="width:75px; margin-top:10px; margin-right: 20px;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td height="30">&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:bolder; font-size:12pt!important;font-family:'Calibri',sans-serif!important;">Section  @annuxureno :  Drug Test</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-top:10px;" valign="top" align="center">
+                                            <table width="100%" border="1" cellspacing="5" cellpadding="2" style="border-collapse:collapse;border-collapse:collapse;font-family:Calibri;font-size:17px">
+
+                                                @foreach (var item in Anticident)
+                                                {
+                                                    if (item.AntecedentRowID == "116" || item.AntecedentRowID == "247" || item.AntecedentRowID == "175" || item.AntecedentRowID == "168" || item.AntecedentRowID == "248" || item.AntecedentRowID == "114")
+                                                    {
+                                                        if (item.AntecedentRowID == "175")
+                                                        {
+                                                            <tr>
+                                                                <td style="width:30%;font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+                                                                <td colspan="2" style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.OpsValue</td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">Drug Test Panel</td>
+                                                                <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">12 Panel</td>
+                                                                <td style="width:40%;font-size:10pt!important;font-family:'Calibri',sans-serif!important;">Result</td>
+                                                            </tr>
+
+
+
+
+                                                            <tr>
+                                                                <td rowspan="13" style="text-align:center;font-size:10pt!important;font-family:'Calibri',sans-serif!important;"> Drugs <br> Covered</td>
+
+                                                            </tr>
+
+
+
+
+                                                            foreach (var p in TestResult)
+                                                            {
+                                                                if (!string.IsNullOrEmpty(p.TestValue))
+                                                                {
+
+                                                                    <tr>
+                                                                        <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@p.TestValue</td>
+                                                                        <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@p.TestResult</td>
+                                                                    </tr>
+
+                                                                }
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+
+                                                            if (item.AntecedentRowID == "114")
+                                                            {
+                                                                <tr>
+                                                                    <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+
+                                                                    <td colspan="3" style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">  @Html.Raw(ReportComment)</td>
+
+
+
+
+                                                                </tr>
+                                                            }
+                                                            else
+                                                            {
+                                                                <tr>
+                                                                    <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+                                                                    <td colspan="3" style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.OpsValue</td>
+                                                                </tr>
+                                                            }
+
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+
+                                                            <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.OpsValue</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    }
+                    else if (a.SubcheckRowID == 213)
+                    {
+                        <tr>
+                            <td valign="top" align="center" style="height:60rem;">
+                                <table border="0" cellpadding="2" cellspacing="5" id="tblDemo" style="width:100%;">
+                                    <tr>
+                                        <td style="border: none!important;-webkit-print-color-adjust: exact;" colspan="4" align="right" height="20"><img src='@Url.Content("~/Images/Securitas-logo.png")' style="width:75px; margin-top:10px; margin-right: 20px;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td height="30">&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:bolder; font-size:12pt!important;font-family:'Calibri',sans-serif!important;"> Section  @annuxureno :Drug Test </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-top:10px;" valign="top" align="center">
+                                            <table width="100%" border="1" cellspacing="5" cellpadding="2" style="border-collapse:collapse;border-collapse:collapse;font-family:Calibri;font-size:17px">
+
+                                                @foreach (var item in Anticident)
+                                                {
+                                                    if (item.AntecedentRowID == "116" || item.AntecedentRowID == "247" || item.AntecedentRowID == "175" || item.AntecedentRowID == "168" || item.AntecedentRowID == "248" || item.AntecedentRowID == "114")
+                                                    {
+                                                        if (item.AntecedentRowID == "175")
+                                                        {
+                                                            <tr>
+                                                                <td style="width:30%;font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+                                                                <td colspan="2" style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.OpsValue</td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">Drug Test Panel</td>
+                                                                <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">05 Panel</td>
+                                                                <td style="width:40%;font-size:10pt!important;font-family:'Calibri',sans-serif!important;">Result</td>
+                                                            </tr>
+
+
+                                                            <tr>
+                                                                <td rowspan="6" style="text-align:center;font-size:10pt!important;font-family:'Calibri',sans-serif!important;"> Drugs <br> Covered</td>
+                                                            </tr>
+
+                                                            foreach (var p in TestResult)
+                                                            {
+                                                                if (!string.IsNullOrEmpty(p.TestValue))
+                                                                {
+
+                                                                    <tr>
+                                                                        <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@p.TestValue</td>
+                                                                        <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@p.TestResult</td>
+                                                                    </tr>
+
+                                                                }
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+
+                                                            if (item.AntecedentRowID == "114")
+                                                            {
+                                                                <tr>
+                                                                    <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+
+                                                                    <td colspan="3" style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@Html.Raw(ReportComment)</td>
+                                                                </tr>
+                                                            }
+                                                            else
+                                                            {
+                                                                <tr>
+                                                                    <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+                                                                    <td colspan="3" style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.OpsValue</td>
+                                                                </tr>
+                                                            }
+
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+
+                                                            <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.OpsValue</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    }
+
+                    else if (a.SubcheckRowID == 222)
+                    {
+                        <tr>
+                            <td valign="top" align="center" style="height:60rem;">
+                                <table border="0" cellpadding="2" cellspacing="5" id="tblDemo" style="border-collapse:collapse;width: 94%; margin: auto;">
+                                    <tr>
+                                        <td style="border: none!important;-webkit-print-color-adjust: exact;" colspan="4" align="right" height="20"><img src='@Url.Content("~/Images/Securitas-logo.png")' style="width:75px; margin-top:10px; margin-right: 20px;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td height="30">&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:bolder; font-size:12pt!important;font-family:'Calibri',sans-serif!important;"> Section  @annuxureno :Drug Test</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-top:10px;" valign="top" align="center">
+                                            <table width="100%" border="1" cellspacing="5" cellpadding="2" style="border-collapse:collapse;border-collapse:collapse;font-family:Calibri;font-size:17px">
+
+                                                @foreach (var item in Anticident)
+                                                {
+                                                    if (item.AntecedentRowID == "116" || item.AntecedentRowID == "247" || item.AntecedentRowID == "175" || item.AntecedentRowID == "168" || item.AntecedentRowID == "248" || item.AntecedentRowID == "114")
+                                                    {
+                                                        if (item.AntecedentRowID == "175")
+                                                        {
+                                                            <tr>
+                                                                <td style="width:30%;font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+                                                                <td colspan="2" style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.OpsValue</td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">Drug Test Panel</td>
+                                                                <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">06 Panel</td>
+                                                                <td style="width:40%;font-size:10pt!important;font-family:'Calibri',sans-serif!important;">Result</td>
+                                                            </tr>
+
+
+                                                            <tr>
+                                                                <td rowspan="7" style="text-align:center;font-size:10pt!important;font-family:'Calibri',sans-serif!important;"> Drugs <br> Covered</td>
+
+                                                            </tr>
+
+
+
+
+                                                            foreach (var p in TestResult)
+                                                            {
+                                                                if (!string.IsNullOrEmpty(p.TestValue))
+                                                                {
+
+                                                                    <tr>
+                                                                        <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@p.TestValue</td>
+                                                                        <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@p.TestResult</td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+
+                                                            if (item.AntecedentRowID == "114")
+                                                            {
+                                                                <tr>
+                                                                    <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+
+                                                                    <td colspan="3" style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@ReportComment</td>
+                                                                </tr>
+                                                            }
+                                                            else
+                                                            {
+                                                                <tr>
+                                                                    <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+                                                                    <td colspan="3" style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.OpsValue</td>
+                                                                </tr>
+                                                            }
+
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+
+                                                            <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.OpsValue</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    }
+
+                    else if (a.SubcheckRowID == 218 || a.SubcheckRowID == 214)
+                    {
+                        <tr>
+                            <td valign="top" align="center" style="height:60rem;">
+                                <table border="0" cellpadding="2" cellspacing="5" id="tblDemo" style="border-collapse:collapse;width: 94%; margin: auto;">
+                                    <tr>
+                                        <td style="border: none!important; -webkit-print-color-adjust: exact;" colspan="4" align="right" height="20"><img src='@Url.Content("~/Images/Securitas-logo.png")' style="width:75px; margin-top:10px; margin-right: 20px;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td height="30">&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:bolder; font-size:12pt!important;font-family:'Calibri',sans-serif!important;"> Section  @annuxureno :Drug Test         </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-top:10px;" valign="top" align="center">
+                                            <table width="100%" border="1" cellspacing="5" cellpadding="2" style="border-collapse:collapse;border-collapse:collapse;font-family:Calibri;font-size:17px">
+
+                                                @foreach (var item in Anticident)
+                                                {
+                                                    if (item.AntecedentRowID == "116" || item.AntecedentRowID == "247" || item.AntecedentRowID == "175" || item.AntecedentRowID == "168" || item.AntecedentRowID == "248" || item.AntecedentRowID == "114")
+                                                    {
+                                                        if (item.AntecedentRowID == "175")
+                                                        {
+                                                            <tr>
+                                                                <td style="width:30%;font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+                                                                <td colspan="2" style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.OpsValue</td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">Drug Test Panel</td>
+                                                                <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">10 Panel</td>
+                                                                <td style="width:40%;font-size:10pt!important;font-family:'Calibri',sans-serif!important;">Result</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td rowspan="11" style="text-align:center;font-size:10pt!important;font-family:'Calibri',sans-serif!important;"> Drugs <br> Covered</td>
+                                                            </tr>
+                                                            foreach (var p in TestResult)
+                                                            {
+                                                                if (!string.IsNullOrEmpty(p.TestValue))
+                                                                {
+
+                                                                    <tr>
+                                                                        <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@p.TestValue</td>
+                                                                        <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@p.TestResult</td>
+                                                                    </tr>
+
+                                                                }
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+
+                                                            if (item.AntecedentRowID == "114")
+                                                            {
+                                                                <tr>
+                                                                    <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+
+                                                                    <td colspan="3" style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@Html.Raw(ReportComment)</td>
+                                                                </tr>
+                                                            }
+                                                            else
+                                                            {
+                                                                <tr>
+                                                                    <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+                                                                    <td colspan="3" style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.OpsValue</td>
+                                                                </tr>
+                                                            }
+
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+                                                            <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.OpsValue</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td valign="top" align="center" style="height:60rem;">
+                                <table border="0" cellpadding="2" cellspacing="5" id="tblDemo" style="border-collapse:collapse;width: 94%; margin: auto;">
+                                    <tr>
+                                        <td style="border: none!important; -webkit-print-color-adjust: exact;" colspan="4" align="right" height="20"><img src='@Url.Content("~/Images/Securitas-logo.png")' style="width:75px; margin-top:10px; margin-right: 20px;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td height="30">&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:bolder; font-size:12pt!important;font-family:'Calibri',sans-serif!important;"> Drug Test </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-top:10px;" valign="top" align="center">
+                                            <table width="100%" border="1" cellspacing="5" cellpadding="2" style="border-collapse:collapse;border-collapse:collapse;font-family:Calibri;font-size:17px">
+
+                                                @foreach (var item in Anticident)
+                                                {
+
+                                                    <tr>
+                                                        <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DisplayNameRep</td>
+                                                        @if (item.AntecedentRowID == "153" || item.AntecedentRowID == "173" || item.AntecedentRowID == "151" || item.AntecedentRowID == "81" || item.AntecedentRowID == "146" || item.AntecedentRowID == "152" || item.AntecedentRowID == "145")
+                                                        {
+                                                            <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.OpsValue</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">@item.DataEntryValue</td>
+                                                        }
+
+                                                        @if (item.OpsValue != null)
+                                                        {
+                                                            <td width="25%" style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;">Verified</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="25%" style="font-size:10pt!important;font-family:'Calibri',sans-serif!important;"></td>
+                                                        }
+                                                    </tr>
+
+                                                }
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    }
+
+                    <tr>
+                        <td valign="bottom">
+                            <table border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                                <tbody>
+                                    <tr>
+                                        <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                                            &nbsp;
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                        <td width="1%">&nbsp;</td>
+                                        <td width="79%">
+                                            <p style="font-size: 16px!important; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                            <p style="font-size: 16px!important; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                            <p style="font-size: 15px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                            <p style="font-size: 15px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+            </page>
+
+            if (Model.CandidateDocList != null)
+            {
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                {
+                    if (Doc.SubCheckRowID == a.SubcheckRowID)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                            <page id="PrintSrc" size="A4">
+                                <div style="page-break-after:always ;"></div>
+
+                                <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; width:100%; border-collapse:collapse;">
+                                    <tr>
+                                        <td valign="top" align="center" style="height:60rem;">
+                                            <table style="width:100%;" border="0" cellpadding="2" cellspacing="5" id="tblDemo">
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">
+                                                        <table style="width:100%;" border="0" cellspacing="0" cellpadding="0">
+                                                            <tr>
+                                                                <td style="font-size: 20px!important; border: none!important; font-family: Calibri; -webkit-print-color-adjust: exact;" colspan="4" align="right" height="20"><span style="font-family: Calibri, sans-serif;"><strong><img src='@Url.Content("~/Images/Securitas-logo.png")' style="width:75px; margin-top:10px; margin-right: 20px;"></strong></span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td width="100%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px; text-align:center;">@a.SubCheckName (@Doc.DocumentType)</p></td>
+                                                            </tr>
+                                                            <tr><td colspan="2">&nbsp;</td></tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr style="text-align:center">
+                                                    <td valign="top">
+                                                        @{
+                                                            FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                            System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                            if (image.Height > 600)
+                                                            {
+                                                                <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" style="width:100%; height:55rem;" />
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" style="width:100%; height:55rem;" />
+                                                            }
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td valign="bottom">
+                                            <table border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                                                            &nbsp;
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                                        <td width="1%">&nbsp;</td>
+                                                        <td width="79%">
+                                                            <p style="font-size: 16px!important; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                                            <p style="font-size: 16px!important; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                                            <p style="font-size: 15px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                                            <p style="font-size: 15px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </page>
+                        }
+                    }
+                }
+            }
+            i++;
+        }
+    }
+}

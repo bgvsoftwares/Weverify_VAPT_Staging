@@ -1,0 +1,1418 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "Add Education Info";
+    Layout = "~/Areas/Candidate/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "Home", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+    bool NACheckStatus = ViewBag.NACheckStatus;
+
+    string msg = "";
+    if (Request.QueryString["ErrorMsg"] != null)
+    {
+        //hyperLink = Html.ActionLink("linkTitle", "AllocatedDataEntryJob", "ProvidedInfo", new { CaseStatus = Request.QueryString["Casestatus"].ToString() }, new { @class = "headerbacklink" }).ToString();
+        msg = Request.QueryString["ErrorMsg"].ToString();
+    }
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+    string degreeid = "";
+    string degreeName = "";
+
+    int DecryptSubcheckId = 0;
+
+    //degreeName = @ViewBag.degreeName.Trim();
+    DecryptSubcheckId = @ViewBag.DecryptSubcheckId;
+
+    string Candidatedocvisibilty = ViewBag.Candidatedocvisibilty;
+    PersonalRowid = @ViewBag.PersonalRowid;
+    SubCheckId = @ViewBag.SubCheckId;
+    clientRowId = @ViewBag.clientRowId;
+
+
+    var clid = "";
+    clid = Session["ClientRowID"].ToString();
+
+}
+
+<style>
+    #ui-id-1 {
+        height: 300px !important;
+        overflow-x: scroll !important;
+        width: 500px !important;
+    }
+
+    .Other_Organisation {
+        display: none;
+        width: 100%;
+        transition: 0.3s ease-in-out;
+    }
+
+    .Reason_for_leaving {
+        display: none;
+        width: 100%;
+        transition: 0.3s ease-in-out;
+    }
+
+    .Exit_formalities {
+        display: none;
+        width: 100%;
+        transition: 0.3s ease-in-out;
+    }
+
+    .DateOfleaving {
+        width: 100%;
+        transition: 0.3s ease-in-out;
+    }
+
+    .Tentative_DOL {
+        width: 100%;
+        transition: 0.3s ease-in-out;
+    }
+
+    .Na_btn {
+        background: none;
+        width: 140px;
+        border: none;
+        text-align: left;
+        padding-left: 20px;
+    }
+
+    .modal {
+        background: rgba(255, 255, 255, .1);
+    }
+
+    .ui-menu {
+        height: 350px !important;
+        overflow: scroll !important;
+    }
+</style>
+
+@section LeftNavigation{ @Html.Partial("_NavLeftCandidateCaseInfoProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+
+@if (ViewBag.ErrorMsg != null)
+{
+    string err = @ViewBag.ErrorMsg.ToString();
+    string[] err2 = err.Split(',');
+    <script>
+        Swal.fire({
+            icon: 'info',
+            title: 'Mandatory Fields.',
+            timer: 5000,
+            html: '<div class="errormsg" style="text-align:left;"><ol type="1">@foreach(String item in err2){<li> @item</li> }</ol></div>'
+       })
+    </script>
+}
+@if (ViewBag.AstraErrorPopup != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Documents Required',
+            html: '<div style="color:#A32D2D; font-weight:500;">@ViewBag.AstraErrorPopup.ToString()</div>',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#A32D2D'
+        })
+    </script>
+}
+@*@if (ViewBag.Success != null)
+    {
+        <script>
+            Swal.fire({
+                icon: 'success',
+                html:'<div class="errormsg">@ViewBag.Success.ToString()</div>',
+                showConfirmButton: false,
+                timer: 5000
+            })
+        </script>
+    }*@
+@if (TempData["ErrorMessage"] != null)
+{
+    <script>
+Swal.fire({
+        icon: 'error',
+        timer: 5000,
+        showConfirmButton: false,
+        html: '<div style="color:#A32D2D; font-weight:500;">@TempData["ErrorMessage"].ToString()</div>'    });
+    </script>
+}
+@if (ViewBag.Success != null)
+{
+    <script>
+        var msg = @Html.Raw(Json.Encode(ViewBag.Success.ToString()));
+        var iconType = 'info';
+        if (msg.includes('Upload file extension not allowed')) {
+            iconType = 'error';
+        }
+        else if (msg.includes('Document Uploaded Successfully')) {
+            iconType = 'success';
+        }
+        Swal.fire({
+            icon: iconType,
+            text: msg,
+            showConfirmButton: false,
+            timer: 5000
+        });
+    </script>
+}
+
+@if (clid == "559")
+{
+    if (ViewBag.Information != null)
+    {
+        <script>
+        Swal.fire({
+            icon: 'info',
+            html:'<div class="errormsg">@ViewBag.Information.ToString()</div>',
+            showConfirmButton: false,
+            timer: 20000
+        })
+        </script>
+    }
+
+}
+<div class="container-fluid form_container">
+    @*pranav*@
+    @if (clid == "957" && DecryptSubcheckId == 56)
+
+
+    {
+        <div class="row row-sm ps-2">
+            <div class="col-md-12 d-flex mt-3">
+                <p class="text-danger align-content-center">
+                    <b>Note:-</b>
+                </p>
+                <p class="text-danger align-content-center ps-2">
+                    Please upload all relevant documents (all year marksheets, provisional certificate, and degree certificate) in one go to avoid insufficiency.
+                </p>
+            </div>
+        </div>
+    }
+
+    @if (clid == "957" && DecryptSubcheckId == 493)
+
+
+    {
+        <div class="row row-sm ps-2">
+            <div class="col-md-12 d-flex mt-3">
+                <p class="text-danger align-content-center">
+                    <b>Note:-</b>
+                </p>
+                <p class="text-danger align-content-center ps-2">
+                    Kindly provide details of 12th standard if your highest qualification is a degree (graduation).
+                </p>
+            </div>
+        </div>
+    }
+
+    @if (clid == "1680")
+    {
+        if (ViewBag.packagename != null)
+        {
+            <div class="row row-sm ps-2">
+                <div class="col-md-12 d-flex mt-3">
+                    @if (ViewBag.packagename == "VSSPL_Package G1(07YrsCRC_1YrsEMP_EDUH_PAN_Drug)")
+                    {
+                        <p class="text-danger align-content-center">
+                            <b>Note:-</b>
+                        </p>
+                        <p class="text-danger align-content-center ps-2">
+                            Kindly Fill Details of 07 Yrs Address details for Criminal Check, Last 1 Year employments, Highest Education and PAN Card and Drug Test)
+                        </p>
+                    }
+                    @if (ViewBag.packagename == "VSSPL_Package G2 (10YrsCRC_7YrsEMP_EDUH_ID)")
+                    {
+                        <p class="text-danger align-content-center">
+                            <b>Note:-</b>
+                        </p>
+                        <p class="text-danger align-content-center ps-2">
+                            Kindly Fill Details of 10 Yrs Address details for Criminal Check, Last 7 Year employments, Highest Education and PAN / Passport Details)
+
+                        </p>
+                    }
+                    @if (ViewBag.packagename == "VSSPL_Package G3 (10YrsCRC_10YrsEMP_EDUH_PAN_GSE_CUR-ADD_PER-ADD)")
+                    {
+                        <p class="text-danger align-content-center">
+                            <b>Note:-</b>
+                        </p>
+                        <p class="text-danger align-content-center ps-2">
+                            Kindly Fill Details of 10 Yrs Address details for Criminal Check, Last 10 Year employments, Highest Education and PAN / Passport Details, Current and Permanent Adress Details)
+                        </p>
+                    }
+                    @if (ViewBag.packagename == "VSSPL_Package G4 (7YrsCRC_7YrsEMP_2EDU-PG-UG)")
+                    {
+                        <p class="text-danger align-content-center">
+                            <b>Note:-</b>
+                        </p>
+                        <p class="text-danger align-content-center ps-2">
+                            Kindly Fill Details of 07 Yrs Address details for Criminal Check, Last 7 Year employments, Highest Education & Second EDU UG)
+
+                        </p>
+                    }
+                    @if (ViewBag.packagename == "VSSPL_Package G5 (7YrsCRC_10YrsEMP_5EDU_PG_UG_Diploma_12_10_PAN_Drug)")
+                    {
+                        <p class="text-danger align-content-center">
+                            <b>Note:-</b>
+                        </p>
+                        <p class="text-danger align-content-center ps-2">
+                            Kindly Fill Details of 07 Yrs Address details for Criminal Check, Last 10 Year employments, Education (PG_UG_Diploma_12_10) and PAN Details, Drug)
+
+                        </p>
+                    }
+                    @if (ViewBag.packagename == "VSSPL_Package G6 (7YrsCRC_1YrsEMP)")
+                    {
+                        <p class="text-danger align-content-center">
+                            <b>Note:-</b>
+                        </p>
+                        <p class="text-danger align-content-center ps-2">
+                            Kindly Fill Details of 07 Yrs Address details for Criminal Check, Last 1 Year employments
+
+                        </p>
+                    }
+
+                </div>
+            </div>
+        }
+
+
+    }
+
+    @using (Html.BeginForm("AddEducationInfo", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+        @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+        <input id="SubCheckId" type="hidden" value=@SubCheckId>
+        @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+        <input id="clientRowId" type="hidden" value=@clientRowId>
+        @Html.Hidden("clientRowId", clientRowId.ToString())
+        <input type="hidden" id="CollegeId" name="CollegeId" />
+        <input type="hidden" id="CollegeNameTemp" name="CollegeNameTemp" />
+
+        @*<input id="Hfdegreeid" type="hidden" value=@degreeid>
+            @Html.Hidden("Hfdegreeid", degreeid.ToString())*@
+
+        @Html.ValidationSummary()
+
+        @Html.Hidden("SelectOtherInstitute")
+
+        if (clid.ToString() == "1449")
+        {
+            <div class="row row-sm p-2 mt-2 ms-5">
+                <div class="col-md-12 ps-0" style="color:#FC273F!important;">
+                    Please provide highest 3 education details and mark NA for other education details. Order for education: Post graduation > Graduation > 12th Standard/Senior Secondary > 10th Standard/Higher Secondary.
+                </div>
+            </div>
+            <div class="row row-sm p-2 mt-2 ms-5" id="NADiv" style="background:#8D5FFF;">
+                <button type="button" class="Na_btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    @Html.CheckBox("Notraised", NACheckStatus, new { onchange = "NotRaised(this)", @class = "form-check-input" })<b style="color:white">Not Applicable</b>
+                </button>
+            </div>
+        }
+        else if (clid.ToString() == "1470" || (clid.ToString() == "1174" && DecryptSubcheckId == 641))
+        {
+            <div class="row row-sm p-2 mt-2 ms-5" id="NADiv" style="background:#8D5FFF;">
+                <button type="button" class="Na_btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    @Html.CheckBox("Notraised", NACheckStatus, new { onchange = "NotRaised(this)", @class = "form-check-input" })<b style="color:white">Not Applicable</b>
+                </button>
+            </div>
+        }
+        else
+        {
+            if (clid.ToString() == "1450")
+            {
+                <div class="row row-sm p-2 mt-2 ms-5" id="NADiv" style="background:#8D5FFF;display:none;">
+                    <button type="button" class="Na_btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        @Html.CheckBox("Notraised", NACheckStatus, new { onchange = "NotRaised(this)", @class = "form-check-input" })<b style="color:white">Not Applicable</b>
+                    </button>
+                </div>
+            }
+            else if (clid.ToString() == "559")
+            {
+                <div class="row row-sm p-2 mt-2 ms-5" id="NADiv" style="background:#8D5FFF;display:none;">
+                    <button type="button" class="Na_btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        @Html.CheckBox("Notraised", NACheckStatus, new { onchange = "NotRaised(this)", @class = "form-check-input" })<b style="color:white">Not Applicable</b>
+                    </button>
+                </div>
+            }
+            else if ((clid.ToString() == "1545") || (clid.ToString() == "51"))
+            {
+                <div class="row row-sm p-2 mt-2 ms-5" id="NADiv" style="background:#8D5FFF;display:none;">
+                    <button type="button" class="Na_btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        @Html.CheckBox("Notraised", NACheckStatus, new { onchange = "NotRaised(this)", @class = "form-check-input" })<b style="color:white">Not Applicable</b>
+                    </button>
+                </div>
+            }
+            else if (clid.ToString() != "1747")
+            {
+                <div class="row row-sm p-2 mt-2 ms-5" id="NADiv" style="background:#8D5FFF;">
+                    <button type="button" class="Na_btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        @Html.CheckBox("Notraised", NACheckStatus, new { onchange = "NotRaised(this)", @class = "form-check-input" })<b style="color:white">Not Applicable</b>
+                    </button>
+                </div>
+            }
+        }
+
+        foreach (var category in Model)
+        {
+
+            <div class="row row-sm ps-3">
+                @{
+                    string[] nm = category.Key.Split('_');
+
+                    if (nm[0] != "document")
+                    {
+                        if (@nm[2] == "textbox")
+                        {
+                            if (@nm[0] == "69")//College/Institute/School Name
+                            {
+                                if (clid == "1425" || clid == "1416" || clid == "1429" || clid == "1449")
+                                {
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center" style="display:none!important;">
+                                        <label class="form-label mg-b-0 fw-bolder">
+                                            College/Institute/School Name
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <sup class="text-danger">*</sup>
+                                                }
+                                            }
+                                        </label>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                        <label class="form-label mg-b-0 fw-bolder">
+                                            College/Institute/School Name
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <sup class="text-danger">*</sup>
+                                                }
+                                            }
+                                        </label>
+                                    </div>
+                                }
+                                if (clid == "1425" || clid == "1416" || clid == "1429" || clid == "1449")
+                                {
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3" style="display:none;">
+                                        <span class="text-danger tx-13"> @nm[4] </span>
+                                        <input type="text" id="CollegeName" name="CollegeName" value='Other' class="form-control" maxlength="@nm[5]" />
+                                        <input type="hidden" id="CollegeId" name="CollegeId" value='Other' />
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                        <span class="text-danger tx-13"> @nm[4] </span>
+                                        <input type="text" id="CollegeName" name="CollegeName" value='@category.Value' class="form-control" maxlength="@nm[5]" />
+                                        <input type="hidden" id="CollegeId" name="CollegeId" value=@ViewBag.EduID />
+                                    </div>
+                                }
+                            }
+
+                            else if (@nm[0] == "70")//college Address")
+                            {
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                    <label class="form-label mg-b-0 fw-bolder">
+                                        College / University / Institute / School Address
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <sup class="text-danger">*</sup>
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                    <input type="text" id="CollegeAddress" name="CollegeAddress" value='@category.Value' class="form-control" maxlength="@nm[5]" />
+                                </div>
+                            }
+                            else if (@nm[0] == "77")
+                            {
+                                if (clid == "1425" || clid == "1416" || clid == "1429" || clid == "1449")
+                                {
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                        <label class="form-label mg-b-0 fw-bolder">
+                                            @nm[1]
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <sup class="text-danger">*</sup>
+                                                }
+                                            }
+                                        </label>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                        <span class="text-danger tx-13"> @nm[4] </span>
+                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="Other_Institute p-0">
+                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                            <label class="form-label mg-b-0 fw-bolder">
+                                                &nbsp;
+                                            </label>
+                                        </div>
+                                        <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12">
+                                            <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else if (@nm[0] == "583" && clientRowId != "1449")
+                            {
+                                <div class="Other_University p-0">
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                        <label class="form-label mg-b-0 fw-bolder">
+                                            &nbsp;
+                                        </label>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12">
+                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                    <label class="form-label mg-b-0 fw-bolder">
+                                        @nm[1]
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <sup class="text-danger">*</sup>
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                    <span class="text-danger tx-13"> @nm[4] </span>
+                                    <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                </div>
+                            }
+                        }
+                        if (@nm[2] == "dropdown")
+                        {
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                @if (@nm[0] == "72")
+                                {
+                                    if (clientRowId.ToString() == "eWhUQnFScjdyZkE9")
+                                    {
+                                        <label class="form-label mg-b-0 fw-bolder" hidden>
+                                            @nm[1]
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <sup class="text-danger">*</sup>
+                                                }
+                                            }
+                                        </label>
+                                    }
+                                    else
+                                    {
+                                        <label class="form-label mg-b-0 fw-bolder">
+                                            @nm[1]
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <sup class="text-danger">*</sup>
+                                                }
+                                            }
+                                        </label>
+                                    }
+                                }
+                                else
+                                {
+                                    <label class="form-label mg-b-0 fw-bolder">
+                                        @nm[1]
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <sup class="text-danger">*</sup>
+                                            }
+                                        }
+                                    </label>
+                                }
+
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                <span class="text-danger tx-13"> @nm[4] </span>
+                                @{
+                                    string[] nmOption = nm[7].Split(',');
+                                }
+                                @if (@nm[0] == "72")
+                                {
+                                    if (clientRowId.ToString() == "eWhUQnFScjdyZkE9")
+                                    {
+                                        <select class="form-select" name=@nm[0] id=@nm[0] hidden>
+                                            @for (int i = 0; i < nmOption.Length; i++)
+                                            {
+                                                if (@nmOption[i].Trim() == @nm[6])
+                                                {
+                                                    <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                                }
+                                                if (@nmOption[i].Trim() != @nm[6])
+                                                {
+                                                    <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                                }
+                                            }
+                                        </select>
+
+                                    }
+                                    else
+                                    {
+                                        <select class="form-select" name=@nm[0] id=@nm[0]>
+                                            @for (int i = 0; i < nmOption.Length; i++)
+                                            {
+                                                if (@nmOption[i].Trim() == @nm[6])
+                                                {
+                                                    <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                                }
+                                                if (@nmOption[i].Trim() != @nm[6])
+                                                {
+                                                    <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                                }
+                                            }
+                                        </select>
+                                    }
+
+                                }
+                                else
+                                {
+                                    <select class="form-select" name=@nm[0] id=@nm[0]>
+                                        @for (int i = 0; i < nmOption.Length; i++)
+                                        {
+                                            if (@nmOption[i].Trim() == @nm[6])
+                                            {
+                                                <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                            }
+                                            if (@nmOption[i].Trim() != @nm[6])
+                                            {
+                                                <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                            }
+                                        }
+                                    </select>
+                                }
+
+
+                                <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                @*@Html.Hidden("HfdegreeName")
+                                    <input id="HfdegreeName" type="hidden" value=@degreeName>*@
+                            </div>
+                        }
+                        if (@nm[2] == "checkbox")
+                        {
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    @nm[1]
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <sup class="text-danger">*</sup>
+                                        }
+                                    }
+                                </label>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                <span class="text-danger tx-13"> @nm[4] </span>
+                                @{
+                                    if (@nm[6] == "TRUE")
+                                    {
+                                        <input type="checkbox" id=@nm[0] name=@nm[0] value="checked" checked>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" id=@nm[0] name=@nm[0] value=@nm[0]>
+                                    }
+                                }
+
+                            </div>
+                        }
+                        if (@nm[2] == "fileUpload")
+                        {
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    @nm[1]
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <sup class="text-danger">*</sup>
+                                        }
+                                    }
+                                </label>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                <span class="text-danger tx-13"> @nm[4] </span>
+                                <input type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                            </div>
+                        }
+                    }
+                }
+
+            </div>
+        }
+        <div class="row">
+            <div class="col-sm-12 cytoscape-parent">
+                <div class="w-400 h-400 d-inline-block" id="cytoscape-container"></div>
+            </div>
+        </div>
+
+        <div class="row row-sm justify-content-center d-flex mt-3 mb-3">
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 text-center mb-2">
+                <input class="submit-btn ps-5 pe-5" type="submit" value="Save" id="btnSave" />
+            </div>
+        </div>
+
+        if (ViewBag.IsAstra957 != null && Convert.ToString(ViewBag.IsAstra957) == "True")
+        {
+            <div style="text-align: left; margin-top: 8px; padding-left: 70px;">
+                <span style="color:#Fc273F; font-weight:bold;">Note:- Final Marksheet and Degree Certificate is mandatory .</span>
+            </div>
+        }
+
+        if (ViewBag.IsDaimlerEdu != null && Convert.ToString(ViewBag.IsDaimlerEdu) == "True")
+        {
+            <div style="text-align: left; margin-top: 8px; padding-left: 70px;">
+                <span style="color:#Fc273F; font-weight:bold;">Note:- Grade Sheet and Degree Certificate is mandatory .</span>
+            </div>
+        }
+
+    }
+    @if (@ViewBag.NACheckStatus == true)
+    {
+
+    }
+    else
+    {
+        if (Candidatedocvisibilty == "true")
+        {
+            <div class="row row-sm d-flex justify-content-between ms-0">
+                @using (Html.BeginForm("UploadCandidateDocumentUpdated", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    <div class="card h-auto" id="UploadCandidateDocumentUpdated">
+                        <div class="row row-sm ms-0 ps-2 pt-2 pe-5">
+                            <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+                            @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+                            <input id="SubCheckId" type="hidden" value=@SubCheckId>
+                            @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+                            <input id="clientRowId" type="hidden" value=@clientRowId>
+                            @Html.Hidden("clientRowId", clientRowId.ToString())
+
+                            <input id="CheckFamilyId" type="hidden" value="11">
+                            @Html.Hidden("CheckFamilyId", "11")
+
+                            @if (clid == "1803")
+                            {
+                                <div class="row row-sm ps-2">
+                                    <div class="col-md-12 d-flex mt-3">
+                                        <p class="text-danger align-content-center ps-2">
+                                            Kindly upload All Year / Semester Marksheet, Provisional Certificate & Degree Certificate.
+                                        </p>
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="row row-sm ps-3">
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3">
+                                    <label class="form-label mg-b-0 fw-bolder mb-2">Select Document Type</label>
+                                    @Html.DropDownList("ddlDocumentType",
+                          new SelectList(ViewBag.DocumentList, "Value", "Text"),
+                          "-- Select -- ",
+                          new { @class = "form-control text-center", required = "required" })
+                                </div>
+                                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 mt-3">
+                                    <label class="form-label mg-b-0 fw-bolder mb-2">Upload Document</label>
+                                    <input class='form-control dropify' data-val='true' name='UploadDoc' type='file' value=" + allData.Value + " id=" + allData.Value + " onchange="return file_Doc_Validation(this)" accept='.png, .jpg, .jpeg, .pdf, .doc, .zip, .msg' required>
+                                </div>
+                            </div>
+                            @Html.Hidden("UploadHid", null)
+                            <div class="row row-sm justify-content-center d-flex mt-3 mb-3">
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 text-center me-5">
+                                    @if ((ViewBag.ErrorMsg == null || ViewBag.ErrorMsg == "") && (ViewBag.getviewbagerrormsg == null || ViewBag.getviewbagerrormsg == ""))
+                                    {
+                                        if (Model.document != null && Model.document.Count > 0)
+                                        {
+                                            <input class="submit-btn ps-5 pe-5" type="submit" id="Submitbtn" value="Upload More Document" />
+                                        }
+                                        else
+                                        {
+                                            <input class="submit-btn ps-5 pe-5" type="submit" id="Submitbtn" value="Upload Document" />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <input class="submit-btn ps-5 pe-5" type="submit" id="Submitbtn" value="Upload Document" disabled style="cursor:not-allowed;" data-bs-placement="right" data-bs-toggle="tooltip" title="First Fill the Information" />
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        @if (Model.document != null && Model.document.Count > 0)
+                        {
+                            <div class="row">
+                                <div class="col-xl-12 mb-5 mt-1 ps-4 pe-4">
+                                    <div class="card h-auto rounded-0 shadow-none" style="background: #ECF0FA !important;">
+                                        <div class="card-header p-2 rounded-0" style="background: #ECF0FA !important;">
+                                            <h5 class="tx-14">Uploded File List :</h5>
+                                        </div>
+                                        <div class="card-body p-3">
+                                            @foreach (var item in Model.document)
+                                            {
+                                                <div class="row shadow p-3 mb-2 bg-body-tertiary rounded bg-white">
+                                                    <div class="col-md-7 d-flex">
+                                                        <h4 class="fw-bold tx-12">@item.DocumentType : </h4>
+                                                        <h4 class="tx-12 ms-2">@item.FileName</h4>
+                                                    </div>
+                                                    <div class="col-md-2 d-flex">
+                                                        @*<a target="_blank" href='@Url.Content("~/Documents/CandidateDocuments/ProvidedDocuments/" + @item.FileName)'><i class="fa fa-eye tx-14" style="color:#8D5FFF;"></i></a>*@
+                                                        @Html.ActionLink("download", "DownloadDocument", "Download", new { FileName = @item.FileName }, null) <i class="fa fa-eye tx-14" style="color:#8D5FFF;"></i>
+                                                        @Html.Raw(string.Format("<a href=\"#\" id=\"Delete_{0}_{1}\" class=\"deletetempdoc\"><i class='fa fa-trash tx-14 ms-3' style='color:#Fc273F;'></i></a>", @item.VerifiedUploadRowID, @item.SubCheckRowID))
+                                                    </div>
+                                                    <div class="col-md-3 d-flex">
+                                                        <h4 class="tx-12 ms-2">@item.UploadDate</h4>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                }
+                @using (Html.BeginForm("UpdateFormFill", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+                    @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+                    <input id="SubCheckId" type="hidden" value=@SubCheckId>
+                    @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+                    <input id="clientRowId" type="hidden" value=@clientRowId>
+                    @Html.Hidden("clientRowId", clientRowId.ToString())
+
+                    <input id="CheckFamilyId" type="hidden" value="11">
+                    @Html.Hidden("CheckFamilyId", "11")
+
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 text-center">
+                            @if ((ViewBag.ErrorMsg == null || ViewBag.ErrorMsg == "") && (ViewBag.getviewbagerrormsg == null || ViewBag.getviewbagerrormsg == ""))
+                            {
+                                if (Model.document != null && Model.document.Count > 0)
+                                {
+                                    <input type="submit" class="submit-btn ps-5 pe-5" value="SUBMIT" id="finalsave">
+                                }
+                                else
+                                {
+                                    <input type="submit" class="submit-btn ps-5 pe-5" value="SUBMIT" disabled style="cursor:not-allowed;" data-bs-placement="right" data-bs-toggle="tooltip" title="First Fill All the Information and Document" />
+                                }
+                            }
+                            else
+                            {
+                                <input type="submit" class="submit-btn ps-5 pe-5" value="SUBMIT" disabled style="cursor:not-allowed;" data-bs-placement="right" data-bs-toggle="tooltip" title="First Fill All the Information and Document" />
+                            }
+                        </div>
+
+                    </div>
+                }
+            </div>
+        }
+    }
+
+    @if (clid == "559")
+    {
+        <div class="row row-sm d-flex justify-content-between ms-0">
+            @{
+                string[] NextPreviousButtonsURL = (string[])(Session["NextPreviousButtonsURL"]);
+                for (int I = 0; I < NextPreviousButtonsURL.Length; I++)
+                {
+                    if (NextPreviousButtonsURL[I] != null)
+                    {
+                        string[] Nenu1 = NextPreviousButtonsURL[I].Split('|');
+                        if (SubCheckId == Nenu1[4].ToString())
+                        {
+                            if (Nenu1[2] != "Start")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    <a href="@Nenu1[1]" class="previous_btn text-center">Previous<span></span></a>
+                                </div>
+                            }
+                            else if (Nenu1[2] == "Start")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    <a href="~/Candidate/Home/UpdateCandidateDetails/@PersonalRowid" class="previous_btn text-center">Previous<span></span></a>
+                                </div>
+                            }
+
+                            if (Nenu1[3] != "End")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    @if (ViewBag.CheckInfoStatus == "Pending" || ViewBag.CheckDocStatus == "Pending" || ViewBag.CheckInfoStatus == "" || ViewBag.CheckDocStatus == "" || ViewBag.CheckInfoStatus == null || ViewBag.CheckDocStatus == null)
+                                    {
+                                        <a href="" class="next_btn text-center notmove not_movenext" id="nextss">Next<span></span></a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Nenu1[0]" class="next_btn text-center nextbtn" id="nextss">Next<span></span></a>
+                                    }
+                                </div>
+                            }
+                            else if (Nenu1[3] == "End")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    @if (ViewBag.CheckInfoStatus == "Pending" || ViewBag.CheckDocStatus == "Pending" || ViewBag.CheckInfoStatus == "" || ViewBag.CheckDocStatus == "" || ViewBag.CheckInfoStatus == null || ViewBag.CheckDocStatus == null)
+                                    {
+                                        <a id="rtr" href="" class="next_btn text-center notmove not_movenext"><span>Next</span></a>
+                                    }
+                                    else
+                                    {
+                                        <a id="rtr" href="~/Candidate/Home/Digital_LOA/@PersonalRowid" class="next_btn text-center finalbtn"><span>Next</span></a>
+                                    }
+                                </div>
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+        </div>
+    }
+    else
+    {
+        <div class="row row-sm d-flex justify-content-between ms-0">
+            @{
+                string[] NextPreviousButtonsURL = (string[])(Session["NextPreviousButtonsURL"]);
+                for (int I = 0; I < NextPreviousButtonsURL.Length; I++)
+                {
+                    if (NextPreviousButtonsURL[I] != null)
+                    {
+                        string[] Nenu1 = NextPreviousButtonsURL[I].Split('|');
+                        string NextURL = Nenu1[0];
+                        if (Nenu1[0] == "End")
+                        {
+                            NextURL = Nenu1[1];
+                        }
+                        if (SubCheckId == Nenu1[4].ToString())
+                        {
+                            if (Nenu1[2] != "Start")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    <a href="@Nenu1[1]" class="previous_btn text-center">Previous<span></span></a>
+                                </div>
+                            }
+                            else if (Nenu1[2] == "Start")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    <a href="~/Candidate/Home/UpdateCandidateDetails/@PersonalRowid" class="previous_btn text-center">Previous<span></span></a>
+                                </div>
+                            }
+
+                            if (Nenu1[3] != "End")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+
+                                    <a href="@NextURL" class="next_btn text-center nextbtn" id="nextss">Next<span></span></a>
+                                </div>
+                            }
+                            else if (Nenu1[3] == "End")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    <a id="rtr" href="~/Candidate/Home/Digital_LOA/@PersonalRowid" class="next_btn text-center finalbtn"><span>Next</span></a>
+                                </div>
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+        </div>
+    }
+</div>
+
+<style>
+    #ui-id-1 {
+        height: 300px !important;
+        overflow-x: scroll !important;
+        width: 500px !important;
+    }
+
+    .Other_Institute {
+        display: none;
+        width: 100%;
+        transition: 0.3s ease-in-out;
+    }
+
+    .Other_University {
+        display: none;
+        width: 100%;
+        transition: 0.3s ease-in-out;
+    }
+</style>
+@section Scripts{
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/assets/Client_Page_images/Forget Password_files/jquery-ui.min.css" rel="stylesheet" />
+    <script>
+     $(document).ready(function () {
+         $(".not_movenext").on("click", function () {
+             debugger
+             var CheckInfoStatus = '@ViewBag.CheckInfoStatus';
+             var CheckDocStatus = '@ViewBag.CheckDocStatus';
+             if (CheckInfoStatus == 'Pending' || CheckInfoStatus =="") {
+                 Swal.fire({
+                     title: "Mandatory",
+                     icon: "info",
+                     text: "Please first fill all information and click on submit button!",
+                     //    showCloseButton: true,
+                 });
+             }
+             else if (CheckDocStatus == "Pending" || CheckDocStatus =="") {
+                 Swal.fire({
+                     title: "Mandatory",
+                     icon: "info",
+                     text: "Please first Upload the Document !",
+                     //    showCloseButton: true,
+                 });
+             }
+         });
+     });
+    </script>
+    <script type="text/javascript">
+    $(document).ready(function () {
+
+        var text1 = '@(ViewBag.degreeName)';
+
+        if ($('#72').val() != null) {
+
+            $.getJSON('/Master/GetDegreeList/', function (data) {
+                var items = '<option value="">-- Select Degree --</option>';
+                $.each(data, function (i, degree) {
+                    items += "<option value='" + degree.Value + "'>" + degree.Text + "</option>";
+                });
+                $('#72').html(items);
+                $("#72 option").filter(function () {
+                    return this.text == text1;
+                }).attr('selected', true);
+            });
+        }
+
+        let isSelecting = false;
+        $("#CollegeName").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Master/getAutoCollegelist",
+                    type: "POST",
+                    dataType: "json",
+                    data: { CollegeName: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item.CollegeName, value: item.CollegeId };
+                        }))
+                    }
+                })
+            },
+            minLength: 2,
+            select: function (event, ui) {
+                event.preventDefault();
+                isSelecting = true; // mark that user selected an item
+                //return false;
+            },
+            focus: function (event, ui) {
+                debugger
+                event.preventDefault();
+                $("#CollegeName").val(ui.item.label);
+                $("#CollegeNameTemp").val(ui.item.label);
+                $('#CollegeId').val(ui.item.value);
+
+            }
+        });
+        $("#CollegeName").blur(function () {
+            if (!isSelecting) {
+                if ($("#CollegeName").val().trim() != $("#CollegeNameTemp").val().trim()) {
+                    //alert('blur');
+                    $("#CollegeName").val("");
+                    $('#CollegeId').val("0");
+                    $('#CollegeAddress').val("");
+                }
+            }
+        });
+    })
+
+    $(function () {
+        $('#CollegeName').change(function () {
+            var CurOrg = $("#CollegeName").val();
+            var url = "/ProvidedInfo/CollegeAddress/" + $("#CollegeId").val();
+            $.ajax({
+                url: url,
+                type: 'GET',
+                async: false,
+                dataType: 'json',
+                success: function (Address) {
+                    $('#CollegeAddress').val(Address);
+                }
+            });
+        });
+        //$('#72').change(function () {
+        //    $('#HfdegreeName').val($('#72 option:selected').html());
+        //});
+        });
+
+        $("#80").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        });
+
+
+        $("#78").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        });
+
+
+        $("#73").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),.]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        });
+
+        $("#67").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),&]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        }) ;
+
+        $("#72").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),&]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        });
+
+        $("#78").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        });
+
+        $("#CollegeName").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),&]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        });
+
+        $("#80").on("keypress", function (e) {
+            if (e.which < 48 || e.which > 57) {
+                e.preventDefault();
+            }
+        });
+
+
+
+        function NotRaised(element) {
+            if ($('#Notraised').is(':checked')) {
+                $("#CollegeName").val('Not Applicable');
+                $("#67").val('Not Applicable');
+                $("#68").val('Not Applicable');
+                $("#77").val('Not Applicable');
+                $("#185").val('Not Applicable');
+                $("#78").val('Not Applicable');
+                $("#72").val('Not Applicable');
+                $("#553").val('Not Applicable');
+                $("#80").val('Not Applicable');
+                $("#73").val('Not Applicable');
+            }
+            else {
+                $("#CollegeName").val('');
+                $("#67").val('');
+                $("#68").val('');
+                $("#77").val('');
+                $("#185").val('');
+                $("#78").val('');
+                $("#72").val('');
+                $("#553").val('');
+                $("#80").val('');
+                $("#73").val('');
+            }
+        }
+        $(document).ready(function () {
+
+          if ('@ViewBag.NACheckStatus' == 'True')
+          {
+              $("#CollegeName").val('Not Applicable');
+              $("#67").val('Not Applicable');
+              $("#68").val('Not Applicable');
+              $("#77").val('Not Applicable');
+              $("#185").val('Not Applicable');
+              $("#78").val('Not Applicable');
+              $("#72").val('Not Applicable');
+              $("#553").val('Not Applicable');
+              $("#80").val('Not Applicable');
+              $("#73").val('Not Applicable');
+
+          }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#67").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/Verification/getUniversitylist",
+                        type: "POST",
+                        dataType: "json",
+                        data: { UniversityName: request.term },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return { label: item.UniversityName };
+                            }))
+                        }
+                    })
+                },
+                minLength: 2,
+                select: function (event, ui) {
+                    event.preventDefault();
+
+                    //return false;
+                },
+                focus: function (event, ui) {
+                    event.preventDefault();
+                    $("#67").val(ui.item.label);
+                    $("#CollegeNameTemp").val(ui.item.label);
+                    $('#CollegeId').val(ui.item.value);
+
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#185").attr("placeholder", "DD-MM-YYYY");
+            var today = new Date();
+            var eighteenYearsAgo = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+            $('#185').datepicker({
+                dateFormat: "dd-mm-yy",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: 'c-100:c+100',
+                maxDate: eighteenYearsAgo
+            });
+        });
+
+    </script>
+    <script>
+        //validation for candidatename
+        document.getElementById('68').onkeypress = function (e) {
+            if (!(/[a-z ]/i.test(String.fromCharCode(e.keyCode)))) {
+                e.preventDefault();
+                return false;
+            }
+        }
+    </script>
+    <script>
+        $("#btnSave").click(function () {
+            var obj = $('form input[type="text"]').NormalizedString();
+            if (obj == false) {
+                return false;
+            }
+        });
+
+    </script>
+    <script type="text/javascript">
+$(document).on("click", ".deletetempdoc", async function (e) {
+    e.preventDefault();
+    const $btn = $(this);
+    const idParts = ($btn.attr("id") || "").split("_");
+    const id = idParts[1] || "";
+    const SubCheckRowID = idParts[2] || "";
+    const PersonalRowid = $("#PersonalRowid").val();
+    if (!id) {
+        Swal.fire({ icon: 'error', title: 'Invalid document id.', timer: 2000, showConfirmButton: false });
+        return;
+    }
+    const result = await Swal.fire({
+        title: 'Do you want to delete the document?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Delete it!',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+        focusCancel: true,
+        allowOutsideClick: () => !Swal.isLoading(),
+        allowEscapeKey: () => !Swal.isLoading()
+    });
+    if (!result.isConfirmed) {
+        return;
+    }
+
+    Swal.fire({
+        title: 'Deleting...',
+        didOpen: () => { Swal.showLoading(); },
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false
+    });
+
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("DeleteCandidateUploadedTempDocs", "Home")',
+        data: {
+            id: id,
+            SubCheckRowID: SubCheckRowID,
+            PersonalRowid: PersonalRowid
+        },
+        dataType: "json",
+        success: function (res) {
+            Swal.close();
+            if (res === true) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Document deleted successfully!',
+                    timer: 1800,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'There was an error deleting the document.',
+                    timer: 3500
+                });
+            }
+        },
+        error: function (xhr) {
+            Swal.close();
+            Swal.fire({
+                icon: 'error',
+                title: 'Request failed',
+                text: xhr.responseText || 'Please try again.',
+                timer: 3500
+            });
+        }
+    });
+});
+    </script>
+    <script>
+        $("#72").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Master/getAutoDegreelist",
+                    type: "POST",
+                    dataType: "json",
+                    data: { DegreeName: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item.DegreeName, value: item.DegreeRowID };
+                        }))
+                    }
+                })
+            },
+            minLength: 3,
+            select: function (event, ui) {
+                event.preventDefault();
+            },
+            focus: function (event, ui) {
+                event.preventDefault();
+                $("#72").val(ui.item.label);
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#CollegeName").change(function () {
+                var InstitueName = $("#CollegeName").val();
+                if (InstitueName == "Other") {
+                    $('#77').attr("placeholder", "Enter your  college/institute");
+                    $(".Other_Institute").css("display", "flex");
+                }
+                else {
+                    $(".Other_Institute").css("display", "none");
+                    $('#77').val('');
+                }
+            });
+            var InstitueName = $("#CollegeName").val();
+            if (InstitueName == "Other") {
+                $('#77').attr("placeholder", "Enter your  college/institute");
+                $(".Other_Institute").css("display", "flex");
+            }
+            else {
+                $(".Other_Institute").css("display", "none");
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#67").change(function () {
+                var UiniversityName = $("#67").val();
+                if (UiniversityName == "Other") {
+                    $('#583').attr("placeholder", "Enter your  University");
+                    $(".Other_University").css("display", "flex");
+                }
+                else {
+                    $(".Other_University").css("display", "none");
+                }
+            });
+            var UiniversityName = $("#67").val();
+            if (UiniversityName == "Other") {
+                $('#583').attr("placeholder", "Enter your  University");
+                $(".Other_University").css("display", "flex");
+            }
+            else {
+                $(".Other_University").css("display", "none");
+            }
+        });
+
+        function file_Doc_Validation(fileInput) {
+
+            var fileName = fileInput.value.split('\\').pop();
+
+            // Block dangerous double extensions
+            var doubleExtensionPattern = /\.(php|asp|aspx|jsp|exe|bat|cmd|sh)\./i;
+
+            if (doubleExtensionPattern.test(fileName)) {
+                alert('Double extension files are not allowed.');
+                fileInput.value = '';
+                return false;
+            }
+
+            if ((fileName.match(/\./g) || []).length > 1) {
+                alert("Double extension files are not allowed.");
+                fileInput.value = '';
+                return false;
+            }
+
+
+        }
+    </script>
+
+}
+
+

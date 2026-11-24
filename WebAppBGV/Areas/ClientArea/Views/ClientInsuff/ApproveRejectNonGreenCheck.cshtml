@@ -1,0 +1,144 @@
+﻿
+@model ViewModels.ProvidedInfoViewModel.InsuffCheckClearViewModel
+@{
+    ViewBag.Title = "NonGreen Check Approve/Reject By Client";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@*@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }*@
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+
+<div class="container-fluid form_container" style="height:78vh;">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 ps-5 mt-4">
+            <div class="">
+                @using (Html.BeginForm("ApproveRejectNonGreenCheck", "ClientInsuff", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    @Html.HiddenFor(model => model.CheckRowID)
+                    @Html.HiddenFor(model => model.SubCheckName)
+                    @Html.HiddenFor(model => model.INFReason)
+                    <input type="hidden" value="@Model.ClientRowID" id="ClientRowID" name="ClientRowID" />
+                    <input type="hidden" value="@Model.ChFamilRowId" id="ChFamilRowId" name="ChFamilRowId" />
+                    <input type="hidden" value="@Model.SubCheckRowID" id="SubCheckRowID" name="SubCheckRowID" />
+                    <input type="hidden" value="@Model.PersonalRowID" id="PersonalRowID" name="PersonalRowID" />
+                    <input type="hidden" value="@Model.SecuritasID" id="SecuritasID" name="SecuritasID" />
+                    <div class="row row-xs align-items-center mg-b-20">
+                        <div class="col-md-3">
+                            @Html.LabelFor(model => model.SubCheckName, htmlAttributes: new { @class = "form-label mg-b-0 fw-bolder" })
+                        </div>
+                        <div class="col-md-7 mg-t-5 mg-md-t-0">
+                            @Model.SubCheckName
+                        </div>
+                    </div>
+                    <div class="row row-xs align-items-center mg-b-20" id="dvUplodDoc">
+
+                    </div>
+                    @Html.Hidden("UploadHid", null)
+                    <div class="row row-xs align-items-center mg-b-20">
+                        <div class="col-md-3">
+                            @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "form-label mg-b-0 fw-bolder mandatoryfield" })
+                        </div>
+                        <div class="col-md-7 mg-t-5 mg-md-t-0">
+                            @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="row row-xs align-items-center justify-content-center pb-3 mt-4">
+                        <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12 pe-3">
+                            <input class="ManageClientCompany m-1" type="submit" value="Reject" name="action" onclick="return DocReject()"/>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 ps-3">
+                            <input class="submit-btn btn-block rounded-0 m-1" type="submit" value="Approve" name="action" />
+                        </div>
+                    </div>
+
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script>
+        $(document).ready(function () {
+            var url1 = "/ClientInsuff/GetDocumentTypeListBySubCheckID/" + $("#SubCheckRowID").val();
+            $.ajax({
+                url: url1,
+                type: 'GET',
+                async: false,
+                dataType: 'json',
+                success: function (allData) {
+                    if (allData != null && allData != "") {
+                        $('#dvChksPcks').show();
+                        var items = '';
+                        jQuery.each(allData, function (index, allData) {
+                            var AllDataValue = allData.Value;
+                            $('#UploadHid').val(AllDataValue);
+                            //items += "<div class='col-md-3'><label class='form-label mg-b-0 fw-bolder'> " + allData.Text + " :</label></div><div class='col-md-1 mg-t-5 mg-md-t-0'><input type='checkbox' name='chkDoc' value=" + allData.Value + "></div><div class='col-md-7 mg-t-5 mg-md-t-0'><input class='form-control' data-val='true' name='UploadDoc' disabled='true' type='file' value=" + allData.Value + " id=" + allData.Value + " style='height: 34px!important;'></div>"
+                            items += "<div class='col-md-3'><label class='form-label mg-b-0 fw-bolder mandatoryfield'> " + allData.Text + " :</label></div><div class='col-md-7 mg-t-5 mg-md-t-0'><input class='form-control' data-val='true' name='UploadDoc'  type='file' value=" + allData.Value + " id=" + allData.Value + " style='height: 34px!important;'></div>"
+                            //"<label class='col-md-8 control-label'>" + allData.Text + " :</label><input type='checkbox' name='chkDoc'  value=" + allData.Value + " class='col-md-1'/><div class='col-md-2'><input data-val='true' name='UploadDoc' disabled='true' type='file' value=" + allData.Value + "  id=" + allData.Value + "> </div>";
+
+                        });
+                        $('#dvUplodDoc').html(items);
+                    }
+                    else {
+                        $('#dvChksPcks').hide();
+                        alert("No Doc Selected");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("some error");
+                }
+            });
+        });
+
+        $(document).on('change', 'input[name="chkDoc"]', function (e) {// on change of state
+            var chkDocs = '';
+            $('input[name="chkDoc"]').each(function (index, value) {
+                if (this.checked) {
+                    chkDocs += this.value + ',';
+                    $("#" + this.value + "").removeAttr("disabled");
+                }
+                else {
+                    $("#" + this.value + "").attr("disabled", "disabled");
+                }
+            });
+
+            if (chkDocs.length > 0) {
+                chkDocs = chkDocs.substring(0, chkDocs.length - 1);
+            } else { chkDocs = ''; }
+            $('#UploadHid').val(chkDocs.trim());
+        });
+
+        $("#EmployeeID").AlphaNumericWithMinus();
+        $("#Remarks").RemarksString();
+    </script>
+    <script>
+        function DocReject() {
+            debugger
+            var a = document.getElementById("NonGreenCheck-Doc").value;
+            if (a == "") {
+                Swal.fire("Document Can not be Blank");
+                return false
+            }
+            else {
+                return true
+            }
+        }
+    </script>
+}
+
+<style>
+    .mandatoryfield::after {
+        content: "*";
+        font-weight: bold;
+        color: red;
+    }
+</style>

@@ -1,0 +1,709 @@
+﻿@model dynamic
+@{
+    string Designation = "";
+
+
+    if (Session["Designation"] != null)
+    {
+        Designation = Session["Designation"].ToString();
+        //ViewBag.Title = "Add Employment Info (" + Convert.ToString(Session["CandidateName"]) + ")";
+    }//
+
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+    string CheckStatusid = "";
+    string ReportComment = "";
+    string version = "";
+
+
+    version = ViewBag.version;
+    PersonalRowid = ViewBag.PersonalRowid;
+    SubCheckId = ViewBag.SubCheckId;
+    clientRowId = ViewBag.clientRowId;
+    CheckStatusid = ViewBag.CheckStatusid;
+
+    int Status = 0;
+    int Status1 = 0;
+    int Status2 = 0;
+    int Status3 = 0;
+
+    if (ViewBag.Status != null && ViewBag.Status.ToString() != "")
+    {
+        int.TryParse(ViewBag.Status.ToString(), out Status);
+    }
+
+    if (ViewBag.Status1 != null && ViewBag.Status1.ToString() != "")
+    {
+        int.TryParse(ViewBag.Status1.ToString(), out Status1);
+    }
+
+    if (ViewBag.Status2 != null && ViewBag.Status2.ToString() != "")
+    {
+        int.TryParse(ViewBag.Status2.ToString(), out Status2);
+    }
+
+    if (ViewBag.Status3 != null && ViewBag.Status3.ToString() != "")
+    {
+        int.TryParse(ViewBag.Status3.ToString(), out Status3);
+    }
+
+    string DesignationName = Convert.ToString(Session["Designation"]);
+    if (DesignationName == "Team Member Quality Check")
+    {
+        string hyperLink = string.Empty;
+        string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+        if (CheckStatusid == "InterimRequstTM")
+        {
+            hyperLink = Html.ActionLink("linkTitle", "ManageInterimRequestTM", "ReportQC", new { CaseStatus = CheckStatusid, version = version }, new { @class = "headerbacklink" }).ToString();
+        }
+        else
+        {
+            hyperLink = Html.ActionLink("linkTitle", "GetRWQCTeamMemberDashBoardInfo", "ReportQC", new { CaseStatus = CheckStatusid, version = version }, new { @class = "headerbacklink" }).ToString();
+        }
+
+        ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    }
+
+
+    string SeverityRowID = "";
+    string ColorCode = "";
+    string SeverityGrid = "";
+    string SubCheckName = "";
+    string nm1 = "";
+    string[] dateFields = { "157", "170", "171", "172", "173", "174", "175", "59" };
+
+
+    SeverityRowID = ViewBag.SeverityRowID;
+    ColorCode = ViewBag.ColorCode;
+    SeverityGrid = ViewBag.SeverityGrid;
+    ReportComment = @ViewBag.ReportComment;
+}
+@section LeftNavigation{ @Html.Partial("_NavLeftDataEntryProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+
+<div class="col-md-12">
+    @using (Html.BeginForm("UpdateAllChecksDetails", "ReportQC", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+        @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+        <input id="SubCheckId" type="hidden" value=@SubCheckId>
+        @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+        <input id="clientRowId" type="hidden" value=@clientRowId>
+        @Html.Hidden("clientRowId", clientRowId.ToString())
+
+        <input id="CheckStatusid" type="hidden" value=@CheckStatusid>
+        @Html.Hidden("CheckStatusid", CheckStatusid.ToString())
+        <input id="version" type="hidden" value=@version>
+        @Html.Hidden("version", version.ToString())
+
+        @Html.ValidationSummary()
+
+        foreach (var category in Model)
+        {
+            <div class="container">
+                @{
+
+                    string[] nm = category.Key.Split('_');
+                    string[] temp = category.Value.Split('_');
+
+
+                    if (SubCheckName != @nm[0])
+                    {
+                        if (SubCheckName.Length > 0)
+                        {
+
+
+                            string[] Comment = ReportComment.Split('|');
+                            for (int i = 0; i < Comment.Length; i++)
+                            {
+                                string[] comt = Comment[i].Split('_');
+                                if (nm1 == comt[1])
+                                {
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <p>Action Remarks :</p>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <textarea id="Remarks_@comt[1]" type="text" name="Remarks_@comt[1]" value="@comt[0]" style="vertical-align:top;text-align: left;">@comt[0]</textarea>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+
+
+                            if ((clientRowId.ToString() == "268" || clientRowId.ToString() == "3") && SubCheckName.Contains("Previous Employment"))
+                            {
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <p>Check Remarks :</p>
+                                        </div>
+
+                                        <div class="col-md-8">
+
+                                            @if (SubCheckName == "Previous Employment Verification 1")
+                                            {
+                                                <input type="hidden" id="hidden_69" name="true_69" value="@(Status == 1 ? "1" : "0")" />
+                                                <input id="chk_69" type="checkbox"
+                                                       @(Status == 1 ? "checked" : "") />
+                                            }
+                                            else if (SubCheckName == "Previous Employment Verification 2")
+                                            {
+                                                <input type="hidden" id="hidden_70" name="true_70" value="@(Status1 == 1 ? "1" : "0")" />
+                                                <input id="chk_70" type="checkbox"
+                                                       @(Status1 == 1 ? "checked" : "") />
+                                            }
+                                            else if (SubCheckName == "Previous Employment Verification 3")
+                                            {
+                                                <input type="hidden" id="hidden_71" name="true_71" value="@(Status2 == 1 ? "1" : "0")" />
+                                                <input id="chk_71" type="checkbox"
+                                                       @(Status2 == 1 ? "checked" : "") />
+                                            }
+                                            else if (SubCheckName == "Previous Employment Verification 4")
+                                            {
+                                                <input type="hidden" id="hidden_72" name="true_72" value="@(Status3 == 1 ? "1" : "0")" />
+                                                <input id="chk_72" type="checkbox"
+                                                       @(Status3 == 1 ? "checked" : "") />
+                                            }
+
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        SubCheckName = nm[0];
+                        <div class="row" style="color:white; background-color:darkcyan;height:25px; margin: 10px; ">
+                            <div class="col-12" style="text-align:center; font-size: 19px;">@nm[0]</div>
+                        </div>
+
+                    }
+
+                    if (@nm[3] == "textbox")
+                    {
+                        <div class="row">
+                            <div class="col-md-4">
+                                @{
+                                    if (@nm[4] == "mandatory")
+                                    {
+                                        <h7>*</h7>
+                                    }
+                                }
+                                @nm[2]
+                            </div>
+
+                            @if (nm[2].Contains("Candidate Name"))
+                            {
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control" name="1_@nm[1]_@nm[6]" id="1_@nm[1]_@nm[6]" readonly="readonly" value='@temp[0]' maxlength="@nm[7]">
+                                </div>
+                            }
+                            else
+                            {
+                                if (dateFields.Contains(@nm[1]))
+                                {
+                                    <div class="col-md-4">
+                                        @if (clientRowId.ToString() == "75")
+                                        {
+                                            <input type="text" class="form-control" name="1_@nm[1]_@nm[6]" id="1_@nm[1]_@nm[6]" value='@temp[0]' maxlength="@nm[7]" readonly="readonly">
+                                        }
+                                        else
+                                        {
+                                            <input type="text" class="form-control" onclick="GatDate1(@nm[1],@nm[6])" name="1_@nm[1]_@nm[6]" id="1_@nm[1]_@nm[6]" value='@temp[0]' maxlength="@nm[7]">
+                                        }
+
+                                    </div>
+                                }
+                                else
+                                {
+                                    if (@nm[1] == "98" || @nm[1] == "105" || @nm[1] == "114" || @nm[1] == "81" || @nm[1] == "51" || @nm[1] == "135" || @nm[1] == "66")
+                                    {
+                                        <input type="hidden" class="form-control" name="1_@nm[1]_@nm[6]" id="1_@nm[1]_@nm[6]" value='@temp[0]'>
+
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-4">
+                                            @if (clientRowId.ToString() == "75")
+                                            {
+                                                <input type="text" class="form-control" name="1_@nm[1]_@nm[6]" id="1_@nm[1]_@nm[6]" value='@temp[0]' maxlength="@nm[7]" readonly="readonly">
+                                            }
+                                            else
+                                            {
+                                                <input type="text" class="form-control" name="1_@nm[1]_@nm[6]" id="1_@nm[1]_@nm[6]" value='@temp[0]' maxlength="@nm[7]">
+                                            }
+
+                                        </div>
+                                    }
+                                }
+                            }
+
+                            @if (dateFields.Contains(@nm[1]))
+                            {
+                                <div class="col-md-4">
+                                    @if (temp.Count() > 1)
+                                    {
+                                        <input type="text" class="form-control" onclick="GatDate(@nm[1],@nm[6])" name="@nm[1]_@nm[6]" id="@nm[1]_@nm[6]" value='@temp[1]' maxlength="@nm[7]">
+                                    }
+                                    else
+                                    {
+                                        <input type="text" class="form-control" onclick="GatDate(@nm[1],@nm[6])" name="@nm[1]_@nm[6]" id="@nm[1]_@nm[6]" value='@temp[0]' maxlength="@nm[7]">
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                if (nm[2].Contains("Candidate Name"))
+                                {
+                                    <div class="col-md-4">
+                                        @if (temp.Count() > 1)
+                                        {
+                                            <input type="text" class="form-control" readonly="readonly" name="@nm[1]_@nm[6]" id="@nm[1]_@nm[6]" value='@temp[1]' maxlength="@nm[7]">
+                                        }
+                                        else
+                                        {
+                                            <input type="text" class="form-control" readonly="readonly" name="@nm[1]_@nm[6]" id="@nm[1]_@nm[6]" value='@temp[0]' maxlength="@nm[7]">
+                                        }
+                                    </div>
+
+                                }
+                                else
+                                {
+                                    if (@nm[1] == "98" || @nm[1] == "105" || @nm[1] == "114" || @nm[1] == "81" || @nm[1] == "51" || @nm[1] == "135" || @nm[1] == "66")
+                                    {
+                                        <div class="col-md-8">
+                                            @if (temp.Count() > 1)
+                                            {
+                                                <textarea name="@nm[1]_@nm[6]" id="@nm[1]_@nm[6]" rows="5" cols="8">@temp[1]</textarea>
+                                            }
+                                            else
+                                            {
+                                                <textarea name="@nm[1]_@nm[6]" id="@nm[1]_@nm[6]" rows="5" cols="8" maxlength="@nm[7]">@temp[0]</textarea>
+                                            }
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-4">
+                                            @if (temp.Count() > 1)
+                                            {
+                                                <input type="text" class="form-control" name="@nm[1]_@nm[6]" id="@nm[1]_@nm[6]" value='@temp[1]'>
+                                            }
+                                            else
+                                            {
+                                                <input type="text" class="form-control" name="@nm[1]_@nm[6]" id="@nm[1]_@nm[6]" value='@temp[0]' maxlength="@nm[7]">
+                                            }
+                                        </div>
+
+                                    }
+
+                                }
+
+                            }
+
+
+
+                        </div>
+                    }
+                    if (clientRowId == "317" || clientRowId == "327")
+                    {
+                        if (@nm[3] == "dropdown")
+                        {
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-sm" style="padding-top:10px!important;">
+                                        @{
+                                            if (@nm[4] == "mandatory")
+                                            {
+                                                <h7 class="mandatory-star">*</h7>
+                                            }
+                                        }
+                                        @nm[2]
+                                    </div>
+                                    <div class="col-sm">
+                                        <p>@temp[0]</p>
+                                    </div>
+
+                                    <div class="col-sm">
+                                        <p>@nm[5]</p>
+                                        @if (temp.Count() > 1 && @temp[1] != "")
+                                        {
+
+                                            <input type="text" class="form-control" name=@nm[1] id=@nm[1] value='@temp[1]'>
+                                            <input type="text" class="form-control" name="@nm[1].ToString()_1" id=@nm[1] value=''>
+                                        }
+                                        else
+                                        {
+                                            <input type="text" class="form-control" name=@nm[1] id=@nm[1] value='@temp[0]'>
+                                            <input type="text" class="form-control" name="@nm[1].ToString()_1" id=@nm[1] value=''>
+                                        }
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+                        }
+                    }
+                    else
+                    {
+                        if (@nm[3] == "dropdown")
+                        {
+                            <div class="container">
+                                <div class="row">
+
+
+                                    <div class="col-sm">
+                                        @{
+                                            if (@nm[4] == "mandatory")
+                                            {
+                                                <h7>*</h7>
+                                            }
+                                        }
+                                        @nm[2]
+                                    </div>
+                                    <div class="col-sm">
+                                        @if (temp.Count() > 1)
+                                        {
+                                            <p>@temp[0]</p>
+                                        }
+                                    </div>
+                                    <div class="col-sm">
+                                        <span>@nm[5]</span>
+                                        @{
+                                            int lastindex = nm.Length;
+                                            string[] nmOption = nm[lastindex - 1].Split(',');
+                                            string Fvalue = nm[lastindex - 2].ToString();
+                                        }
+                                        <select name=@nm[1] id=@nm[1]>
+                                            @for (int i = 0; i < nmOption.Length; i++)
+                                            {
+                                                if (@nmOption[i].Trim() == Fvalue)
+                                                {
+                                                    <option selected>@nmOption[i]</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                                }
+
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                        }
+                    }
+                    if (@nm[3] == "checkbox")
+                    {
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <span>@nm[5]</span>
+                                    @{
+                                        if (@nm[4] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[2]
+                                </div>
+                                <div class="col-sm">
+                                    @{
+                                        if (@nm[6] == "TRUE")
+                                        {
+                                            <input type="checkbox" style="width:2rem!important;" id=@nm[1] name=@nm[1] value="checked" checked>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" style="width:2rem!important;" id=@nm[1] name=@nm[1] value=@nm[1]>
+                                        }
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    if (@nm[3] == "fileUpload")
+                    {
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-sm">
+                                    @{
+                                        if (@nm[4] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[2]
+                                </div>
+                                <div class="col-sm">
+                                    <input type="file" id=@nm[1] name=@nm[1] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                                </div>
+                                <div class="col-sm">
+                                    @nm[5]
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+
+                    nm1 = nm[6];
+                }
+
+            </div>
+
+        }
+
+
+        string[] Comment1 = ReportComment.Split('|');
+        for (int j = 0; j < Comment1.Length; j++)
+        {
+            string[] comt1 = Comment1[j].Split('_');
+            if (nm1 == comt1[1])
+            {
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p>Action Remarks :</p>
+                        </div>
+                        <div class="col-md-8">
+                            <textarea id="Remarks_@comt1[1]" type="text" name="Remarks_@comt1[1]" value="@comt1[0]" style="vertical-align:top;text-align: left;">@comt1[0]</textarea>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-3" style="text-align:right;">
+                    @Html.ActionLink("Back", "GetRWQCTeamMemberDashBoardInfo", "ReportQC", new { CaseStatus = CheckStatusid, version = version }, new { @class = "btn btn-default VerEmailDetails" })
+                </div>
+
+                <div class="col-sm-2">
+                    <input class="btn bun-bg btn-default" onclick="return validateFormApprove()" type="submit" value="Update" name="action" />
+                </div>
+
+
+            </div>
+        </div>
+        <br />
+        <br />
+        <br />
+
+
+
+    }
+</div>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    <script src="~/Scripts/tinymceNew.min.js"></script>
+    <script src="~/Scripts/tinymce-jquery.min.js"></script>
+
+    <script>
+        $('textarea').tinymce({
+            height: 200,
+            plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+            ],
+            toolbar: 'undo redo | blocks | bold italic backcolor | ' +
+                'alignleft aligncenter alignright alignjustify | ' +
+                'bullist numlist outdent indent | removeformat | help'
+        });
+        // Prevent jQuery UI dialog from blocking focusin
+        $(document).on('focusin', function (e) {
+            if ($(e.target).closest(".tox-tinymce, .tox-tinymce-aux, .moxman-window, .tam-assetmanager-root").length) {
+                e.stopImmediatePropagation();
+            }
+        });
+    </script>
+    <style>
+        .tox-tinymce {
+            margin-top: 10px !important;
+        }
+
+        .tox-editor-header {
+            box-shadow: none !important;
+            z-index: 0 !important;
+            border-bottom: 0.5px solid #000 !important;
+        }
+
+        .tox-statusbar__branding {
+            display: none !important;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+        });
+
+        function validateFormReject() {
+            if ($('#Remarks').val() == '') {
+                alert("Please mention the reason!");
+                $('#Remarks').focus();
+                return false;
+            }
+
+            return true;
+        }
+
+        function GatDate(id, id1) {
+            var id3 = '#' + id + '_' + id1;
+            $(id3).datepicker({
+                dateFormat: "dd-M-yy",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: "-66:+0",
+            });
+            $(id3).keypress(function (e) {
+                return false;
+            });
+
+        }
+        function GatDate1(id, id1) {
+            var id3 = '#1_' + id + '_' + id1;
+            $(id3).datepicker({
+                dateFormat: "dd-M-yy",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: "-66:+0",
+            });
+            $(id3).keypress(function (e) {
+                return false;
+            });
+
+        }
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const mapping = [
+                { chk: "chk_69", hidden: "hidden_69" },
+                { chk: "chk_70", hidden: "hidden_70" },
+                { chk: "chk_71", hidden: "hidden_71" },
+                { chk: "chk_72", hidden: "hidden_72" }
+            ];
+
+            mapping.forEach(function (item) {
+                var checkbox = document.getElementById(item.chk);
+                var hidden = document.getElementById(item.hidden);
+
+                if (checkbox && hidden) {
+
+                    // Set initial value correctly
+                    hidden.value = checkbox.checked ? "1" : "0";
+
+                    checkbox.addEventListener("change", function () {
+                        hidden.value = this.checked ? "1" : "0";
+                    });
+                }
+            });
+
+        });
+    </script>
+
+}
+<style>
+    .mandatory-star {
+        color: red;
+    }
+
+    .btn {
+        padding: 10px 40px 10px 40px !important;
+    }
+
+    input[type=text], textarea {
+        width: 100%;
+        padding: 18px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    select {
+        width: 100%;
+        padding: 11px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    label {
+        padding: 12px 12px 12px 0;
+        display: inline-block;
+    }
+
+    input[type=submit] {
+        background-color: #04AA6D;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        float: right;
+    }
+
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+
+    .container {
+        border-radius: 5px;
+        /*background-color: #f2f2f2;*/
+        padding: 2px;
+        font-size: 1.2rem !important;
+    }
+
+    .col-25 {
+        float: left;
+        width: 25%;
+        margin-top: 6px;
+    }
+
+    .col-75 {
+        float: left;
+        width: 40%;
+        margin-top: 6px;
+        margin-left: 90px;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+
+    /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+    @@media screen and (max-width: 600px) {
+        .col-25, .col-75, input[type=submit] {
+            width: 100%;
+            margin-top: 0;
+        }
+    }
+</style>

@@ -1,0 +1,67 @@
+﻿@model IEnumerable<ViewModels.UserCheckDetailViewModel>
+@{
+    ViewBag.Title = "User Slot Details";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "TMProductivityRept", "Master", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+
+@section NavigationButton{ @Html.Partial("_NavigationButton")}
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        @if (!Model.Any())
+        {
+            <p>No records found.</p>
+        }
+        else
+        {
+            <table class="table table-bordered table-striped table-hover"style="margin-bottom: 50px;">
+                <thead class="table-dark text-center">
+                    <tr class="thead-inverse">
+                        <th>Sr.No.</th>
+                        <th>Client Name</th>
+                        <th>Securitas ID</th>
+                        <th>Candidate Name</th>
+                        <th>Check Name</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
+                        <th>Updated By</th>
+                        <th>Updated Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int srNo = 1;
+                    }
+                    @foreach (var item in Model)
+                    {
+                    <tr>
+                        <td>@srNo</td>
+                        <td>@item.ClientName</td>
+                        <td>@item.CompanyRefNo</td>
+                        <td>@item.CandidateName</td>
+                        <td>@item.SubCheckName</td>
+                        <td>@item.CheckStatus</td>
+                        <td>@item.Remarks</td>
+                        <td>@item.UpdatedByNameDesig</td>
+                        <td>@item.UpdatedDate</td>
+                    </tr>
+                        srNo++;
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th class="total-record" colspan = "9">
+                            Total Records: @Model.Count()
+                        </th>
+                    </tr>
+                   
+                </tfoot>
+            </table>
+        }
+    </div>
+</div>

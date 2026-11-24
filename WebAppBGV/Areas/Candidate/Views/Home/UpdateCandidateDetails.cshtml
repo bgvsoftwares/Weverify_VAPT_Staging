@@ -1,0 +1,1300 @@
+﻿@using WebAppBGV.CommonMethods;
+@model dynamic
+
+@{
+    ViewBag.Title = "Edit Candidate";
+    Layout = "~/Areas/Candidate/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "Home", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+
+
+    PersonalRowid = @ViewBag.PersonalRowid;
+
+    clientRowId = @ViewBag.clientRowId;
+
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftCandidateCaseInfoProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+
+@if (ViewBag.ErrorMsg != null)
+{
+    string err = @ViewBag.ErrorMsg.ToString();
+    string[] err2 = err.Split(',');
+    <script>
+        Swal.fire({
+            icon: 'info',
+            title: 'Mandatory Fields.',
+            html: '<div class="errormsg" style="text-align:center;"><ol type="1">@foreach (String item in err2) {<li> @item</li> }</ol></div>',
+            timer: 20000
+        })
+    </script>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <script>
+Swal.fire({
+        icon: 'error',
+        timer: 5000,
+        showConfirmButton: false,
+        html: '<div style="color:#A32D2D; font-weight:500;">@TempData["ErrorMessage"].ToString()</div>'    });
+    </script>
+}
+@if (ViewBag.Success != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'success',
+            html:'<div class="errormsg">@ViewBag.Success.ToString()</div>',
+            showConfirmButton: false,
+            timer: 20000
+        })
+    </script>
+}
+@if (clientRowId == "559")
+{
+    if (ViewBag.Information != null)
+    {
+        <script>
+        Swal.fire({
+            icon: 'info',
+            html:'<div class="errormsg">@ViewBag.Information.ToString()</div>',
+            showConfirmButton: false,
+            timer: 20000
+        })
+        </script>
+    }
+
+}
+
+<div class="container-fluid form_container">
+    @using (Html.BeginForm("UpdateCandidateDetails", "Home", FormMethod.Post, new { enctype = "multipart/form-data", @class = "mt-4" }))
+    {
+        @Html.AntiForgeryToken()
+        <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+        @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+        <input id="clientRowId" type="hidden" value=@clientRowId>
+        @Html.Hidden("clientRowId", clientRowId.ToString())
+
+        <div>
+            <p>
+                <span style="color: #53565a;font-size:12px;color:red; width: 100%;">
+                    <b>Note:</b> Do not share any documents via email with anyone under any circumstances.
+                </span><br />
+            </p>
+        </div>
+        if (clientRowId == "1071")
+        {
+            <div>
+                <p>
+                    <span style="color: #53565a;font-size:12px;color:red; width: 100%;">
+                        <b>Note:</b> Please fill your name as per Aadhar card only.
+                    </span><br />
+                </p>
+            </div>
+        }
+
+        foreach (var category in Model)
+        {
+            <div class="row row-sm ps-3">
+                @{
+                    string[] nm = category.Key.Split('_');
+                    if (@nm[2] == "textbox")
+                    {
+                        if (clientRowId == "75")
+                        {
+                            if (nm[0].ToString() == "579")
+                            {
+                                <div class="UANReason p-0">
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3">
+                                        <label class="form-label mg-b-0 fw-bolder">
+                                            @nm[1]
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <sup class="text-danger">*</sup>
+                                                }
+                                            }
+                                        </label>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                        <textarea type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]"></textarea>
+                                    </div>
+                                </div>
+                            }
+                            else if (nm[0].ToString() == "125")
+                            {
+                                <div class="UANNumber p-0">
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3">
+                                        <label class="form-label mg-b-0 fw-bolder">
+                                            @nm[1]
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <sup class="text-danger">*</sup>
+                                                }
+                                            }
+                                        </label>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3">
+                                    <label class="form-label mg-b-0 fw-bolder">
+                                        @nm[1]
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <sup class="text-danger">*</sup>
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                    <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3">
+                                @if (clientRowId == "559")
+                                {
+                                    if (ViewBag.FirstAmericanCheckID == "739")
+                                    {
+                                        if (nm[0].ToString() == "124")
+                                        {
+                                            <label class="form-label mg-b-0 fw-bolder">
+                                                @nm[1]
+                                            </label>
+                                        }
+                                        else
+                                        {
+                                            <label class="form-label mg-b-0 fw-bolder">
+                                                @nm[1]
+                                                @{
+                                                    if (@nm[3] == "mandatory")
+                                                    {
+                                                        <sup class="text-danger">*</sup>
+                                                    }
+                                                }
+                                            </label>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <label class="form-label mg-b-0 fw-bolder">
+                                            @nm[1]
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <sup class="text-danger">*</sup>
+                                                }
+                                            }
+                                        </label>
+                                    }
+                                }
+                                else
+                                {
+                                    <label class="form-label mg-b-0 fw-bolder">
+                                        @nm[1]
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <sup class="text-danger">*</sup>
+                                            }
+                                        }
+                                    </label>
+                                }
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                @if (clientRowId == "992" || clientRowId == "993" || clientRowId == "994")
+                                {
+                                    <span style="color:red; font-size:1.1rem;">  @nm[4] </span>
+                                }
+
+                                @if (nm[0].ToString() == "8")
+                                {
+                                    <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' readonly>
+                                }
+                                else if (nm[0].ToString() == "121")
+                                {
+                                    if (clientRowId == "1071")
+                                    {
+                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value'>
+                                    }
+                                    else
+                                    {
+                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' readonly>
+                                    }
+                                }
+                                else if (nm[0].ToString() == "124")
+                                {
+                                    if (clientRowId.ToString() == "2")
+                                    {
+                                        <input type="password" class="form-control" style="font-family: monospace;" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                    }
+                                    else
+                                    {
+                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                    }
+                                }
+                                else if (nm[0].ToString() == "125")
+                                {
+                                    if (clientRowId.ToString() == "2")
+                                    {
+                                        <input type="password" class="form-control" style="font-family: monospace;" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger tx-13">@nm[4]</span>
+                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                    }
+                                }
+                                else
+                                {
+                                    <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                }
+
+                            </div>
+                        }
+
+                    }
+                    if (@nm[2] == "dropdown")
+                    {
+                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3">
+                            <label class="form-label mg-b-0 fw-bolder">
+                                @nm[1]
+                                @{
+                                    if (@nm[3] == "mandatory")
+                                    {
+                                        <sup class="text-danger">*</sup>
+                                    }
+                                }
+                            </label>
+                        </div>
+                        if (clientRowId.ToString() == "559")
+                        {
+                            if (@nm[0].ToString() == "123")
+                            {
+                                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 mt-3">
+                                    <div class="row">
+                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                            <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                        </div>
+                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 d-flex">
+                                            <input type="checkbox" id=590 name=590 value="" style="width:16px;" />
+                                            <label class="form-label mg-b-0 fw-bolder ps-2 m-2">Applied For PAN</label>
+                                        </div>
+                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                            @{
+                                                string[] nmOption = nm[7].Split(',');
+                                            }
+                                            <select name=@nm[0] id=@nm[0] class="form-select">
+                                                @for (int i = 0; i < nmOption.Length; i++)
+                                                {
+                                                    if (@nmOption[i].Trim() == @nm[6])
+                                                    {
+                                                        <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                                    }
+                                                    if (@nmOption[i].Trim() != @nm[6])
+                                                    {
+                                                        <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                    <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                    @{
+                                        string[] nmOption = nm[7].Split(',');
+                                    }
+                                    <select name=@nm[0] id=@nm[0] class="form-select">
+                                        @for (int i = 0; i < nmOption.Length; i++)
+                                        {
+                                            if (@nmOption[i].Trim() == @nm[6])
+                                            {
+                                                <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                            }
+                                            if (@nmOption[i].Trim() != @nm[6])
+                                            {
+                                                <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                            }
+                                        }
+                                    </select>
+
+                                </div>
+                            }
+
+
+                        }
+                        else
+                        {
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                @{
+                                    string[] nmOption = nm[7].Split(',');
+                                }
+                                <select name=@nm[0] id=@nm[0] class="form-select">
+                                    @for (int i = 0; i < nmOption.Length; i++)
+                                    {
+                                        if (@nmOption[i].Trim() == @nm[6])
+                                        {
+                                            <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                        }
+                                        if (@nmOption[i].Trim() != @nm[6])
+                                        {
+                                            <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                        }
+                                    }
+                                </select>
+
+                            </div>
+                        }
+
+
+                    }
+                    if (@nm[2] == "checkbox")
+                    {
+                        if (clientRowId.ToString() == "559")
+                        {
+                            if (@nm[0].ToString() != "590")
+                            {
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3">
+                                    <label class="form-label mg-b-0 fw-bolder">
+                                        @nm[1]
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <sup class="text-danger">*</sup>
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                    <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                    @{
+                                        if (@nm[6] == "TRUE")
+                                        {
+                                            <input type="checkbox" id=@nm[0] name=@nm[0] value="checked" checked />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id=@nm[0] name=@nm[0] value=@nm[0] />
+                                        }
+                                    }
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    @nm[1]
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <sup class="text-danger">*</sup>
+                                        }
+                                    }
+                                </label>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                @{
+                                    if (@nm[6] == "TRUE")
+                                    {
+                                        <input type="checkbox" id=@nm[0] name=@nm[0] value="checked" checked />
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" id=@nm[0] name=@nm[0] value=@nm[0] />
+                                    }
+                                }
+                            </div>
+                        }
+
+
+                    }
+                    if (@nm[2] == "fileUpload")
+                    {
+                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3">
+                            @if (clientRowId == "559")
+                            {
+                                if (ViewBag.FirstAmericanCheckID == "739")
+                                {
+                                    if (nm[0].ToString() == "588")
+                                    {
+                                        <label class="form-label mg-b-0 fw-bolder">
+                                            @nm[1]
+                                        </label>
+                                    }
+                                    else
+                                    {
+                                        <label class="form-label mg-b-0 fw-bolder">
+                                            @nm[1]
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <sup class="text-danger">*</sup>
+                                                }
+                                            }
+                                        </label>
+                                    }
+                                }
+                                else
+                                {
+                                    <label class="form-label mg-b-0 fw-bolder">
+                                        @nm[1]
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <sup class="text-danger">*</sup>
+                                            }
+                                        }
+                                    </label>
+                                }
+                            }
+                            else
+                            {
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    @nm[1]
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <sup class="text-danger">*</sup>
+                                        }
+                                    }
+                                </label>
+                            }
+                        </div>
+                        if (nm[0].ToString() == "176")
+                        {
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                <span style="color:red; font-size:1.1rem;">  @nm[4] </span>
+                                <input class="form-control dropify" type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                            </div>
+                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mt-3">
+                                @if (nm[nm.Length - 1].ToString() == "100")
+                                {
+
+                                    if (clientRowId == "1428") //Europe
+                                    {
+                                        <a class="dwn_link mt-1" title='@category.Value' value=@nm[0] id="LOA" target="_blank" href='@Url.Content("~/Documents/MasterDocuments/Company/CandidateAgreement/Genpact Privacy Notice and Consent Form template_Pre-Employment Screening_EU (Securitas).docx")' download="Global Authorization-EU.docx">Download LOA</a>
+                                    }
+                                    else if (clientRowId == "1425") //Australia
+                                    {
+                                        <a class="dwn_link mt-1" title='@category.Value' value=@nm[0] id="LOA" target="_blank" href='@Url.Content("~/Documents/MasterDocuments/Company/CandidateAgreement/GlobalAuthorization-Australia.docx")' download="Global Authorization-Australia.doc">Download LOA</a>
+                                    }
+                                    else if (clientRowId == "1497") //CAPCO-I
+                                    {
+                                        <a class="dwn_link mt-1" title='@category.Value' value=@nm[0] id="LOA" target="_blank" href='@Url.Content("~/Documents/MasterDocuments/Company/Capco Privacy Notice and Consent Form template_Pre-Employment Screening(Securitas).docx")' download="Global Authorization-Australia.doc">Download LOA</a>
+                                    }
+                                    else if (clientRowId == "1395" || clientRowId == "1414" || clientRowId == "1415" || clientRowId == "1416") //USA
+                                    {
+                                        <a class="dwn_link mt-1" title='@category.Value' value=@nm[0] id="LOA" target="_blank" href='@Url.Content("~/Documents/MasterDocuments/Company/CandidateAgreement/Chargebee_LOA.docx")' download="Chargebee_LOA.docx">Download LOA</a>
+                                    }
+                                    else if (clientRowId == "1449") //Uniqus
+                                    {
+                                        <a class="dwn_link mt-1" title='@category.Value' value=@nm[0] id="LOA" target="_blank" href='@Url.Content("~/Documents/MasterDocuments/Company/CandidateAgreement/GlobalAuthorization-Uniqus.docx")' download="Global Authorization Uniqus.docx">Download LOA</a>
+                                    }
+                                    else if (clientRowId == "1514") //Sliverlink
+                                    {
+                                        <a class="dwn_link mt-1" title='@category.Value' value=@nm[0] id="LOA" target="_blank" href='@Url.Content("~/Documents/MasterDocuments/Company/CandidateAgreement/SILVERLINK-I.docx")' download="SILVERLINK-I.docx">Download LOA</a>
+                                    }
+                                }
+                                else
+                                {
+                                    if (clientRowId == "1731")
+                                    {
+                                        if (nm[nm.Length - 1].ToString() != "")
+                                        {
+                                            <a class="dwn_link mt-1" title='@category.Value' value=@nm[0] id="LOA" target="_blank" href='@Url.Content("~/Uploads/" + @category.Value)'>Download Photo</a>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (nm[nm.Length - 1].ToString() != "")
+                                        {
+                                            <a class="dwn_link mt-1" title='@category.Value' value=@nm[0] id="LOA" target="_blank" href='@Url.Content("~/Uploads/" + @category.Value)'>Download LOA</a>
+                                        }
+                                    }
+
+                                }
+                            </div>
+                        }
+                        else if (clientRowId == "1514" && nm[0].ToString() == "588")
+                        {
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                <span style="color:red; font-size:1.1rem;">  @nm[4] </span>
+                                <input class="form-control dropify" type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                <input class="form-control dropify" type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                            </div>
+                        }
+                    }
+
+                }
+            </div>
+        }
+        <div class="row row-sm justify-content-center d-flex mt-3">
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 text-center">
+                <input class="submit-btn ps-5 pe-5" type="submit" value="Save" id="btnSave" />
+            </div>
+        </div>
+        if (clientRowId == "974")
+        {
+            <div class="row adidasform_row">
+                <div class="col-md-12 d-flex p-0">
+                    <a class="adidasform text-white"><sup style="color:#FC273F !important;">*&nbsp;</sup>Mandatory Information Form<i class="fa fa-arrow-right" aria-hidden="true"></i></a>
+                    <a class="clickform" href="https://forms.office.com/e/hSeVxNZUgJ" target="_blank">https://forms.office.com/e/hSeVxNZUgJ &nbsp;<span>Click here</span></a>
+                </div>
+            </div>
+        }
+    }
+    @if (clientRowId == "559")
+    {
+        <div class="row row-sm d-flex justify-content-end ms-0 mt-4 mb-2">
+            @{
+                string[] NextPreviousButtonsURL = (string[])(Session["NextPreviousButtonsURL"]);
+                for (int I = 0; I < NextPreviousButtonsURL.Length; I++)
+                {
+                    if (NextPreviousButtonsURL[I] != null)
+                    {
+                        if (I == 0)
+                        {
+                            if (NextPreviousButtonsURL.Length > 1)
+                            {
+                                string[] Nenu1 = NextPreviousButtonsURL[I + 1].Split('|');
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    @if (ViewBag.CheckInfoStatus == "Pending" || ViewBag.CheckInfoStatus == null || ViewBag.CheckInfoStatus == "")
+                                    {
+                                        <a href="#" class="next_btn text-center notmove"><span>Next</span></a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Nenu1[1]" class="next_btn text-center"><span>Next</span></a>
+                                    }
+
+                                </div>
+                            }
+                            else
+                            {
+                                string[] Nenu1 = NextPreviousButtonsURL[I].Split('|');
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    @if (ViewBag.CheckInfoStatus == "Pending" || ViewBag.CheckInfoStatus == null || ViewBag.CheckInfoStatus == "")
+                                    {
+                                        <a href="#" class="next_btn text-center notmove"><span>Next</span></a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Nenu1[0]" class="next_btn text-center"><span>Next</span></a>
+                                    }
+
+                                </div>
+                            }
+
+                        }
+
+                    }
+                }
+            }
+        </div>
+    }
+    else
+    {
+        <div class="row row-sm d-flex justify-content-end ms-0 mt-4 mb-2">
+            @{
+                string[] NextPreviousButtonsURL = (string[])(Session["NextPreviousButtonsURL"]);
+                for (int I = 0; I < NextPreviousButtonsURL.Length; I++)
+                {
+                    if (NextPreviousButtonsURL[I] != null)
+                    {
+                        if (I == 0)
+                        {
+                            if (NextPreviousButtonsURL.Length > 1)
+                            {
+                                string[] Nenu1 = NextPreviousButtonsURL[I + 1].Split('|');
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+
+                                    <a href="@Nenu1[1]" class="next_btn text-center"><span>Next</span></a>
+                                </div>
+                            }
+                            else
+                            {
+                                string[] Nenu1 = NextPreviousButtonsURL[I].Split('|');
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    <a href="@Nenu1[0]" class="next_btn text-center"><span>Next</span></a>
+                                </div>
+                            }
+
+                        }
+
+                    }
+                }
+            }
+        </div>
+    }
+
+</div>
+@section Scripts{
+    <!-- JQuery min js -->
+    <script src="~/assets/plugins/jquery/jquery.min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <link href="~/assets/plugins/jquery-ui/themes/base/datepicker.css" rel="stylesheet" />
+    <script src="~/assets/plugins/jquery-ui/ui/widgets/datepicker.js"></script>
+    <script type="text/javascript">
+    $(function () {
+        //Bind Candidate code
+        $('#CaseType').change(function () {
+            if ($("#CaseType").val() == "Normal") {
+                GetClientTAT();
+                var tat = $('#hdnTAT').val();
+                $('#TAT').val(tat);
+                $('#TAT').attr("readonly", true);
+            }
+            if ($("#CaseType").val() == "Priority") {
+                $('#TAT').val(0);
+                $('#TAT').attr("readonly", false);
+            }
+        });
+    });
+
+    function GetClientTAT() {
+        var url = "/ProvidedInfo/GetClientTATByCandidateId/" + $("#PersonalRowID").val();
+        $.ajax({
+            url: url,
+            type: 'GET',
+            async: false,
+            dataType: 'json',
+            success: function (tat) {
+                $('#hdnTAT').val(tat);
+            }
+        });
+    }
+
+        function validateForm() {
+            var ClientRowID = $('#ClientRowID').val();
+            if (ClientRowID != 647 && ClientRowID != 576 )
+            {
+                var loa = $('#LOA').attr('title');
+                var ct = $('#CandidateTermsFile').val();
+                if (loa == "Blank" && ct == "") {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Info',
+                        html: '<div class="errormsg" style="text-align:center;">Please upload signed agreement</div>',
+                        timer: 20000
+                    });
+                    return false;
+                }
+            }
+
+            var Mcountry = $('#ddlMobCountry').val();
+
+
+            //$("#MobileNo").val('');
+            var Mob_No = $('#MobileNo').val();
+            if (Mob_No == "") {
+                $("#MobileNo").focus();
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Info',
+                    html: '<div class="errormsg" style="text-align:center;">Please fill mobile no</div>',
+                    timer: 20000
+                });
+                return false;
+            }
+
+            if (Mcountry == 'India') {
+                var minLength = 10;
+                var maxLength = 10;
+                //$("#MobileNo").attr("maxlength", 10);
+                //$("#MobileNo").attr("minlength", 10);
+
+                var char = $("#MobileNo").val();
+                var charLength = $("#MobileNo").val().length;
+                if (charLength < minLength) {
+                    $("#MobileNo").focus();
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Info',
+                        html: '<div class="errormsg" style="text-align:center;">Please fill 10 degit mobile no</div>',
+                        timer: 20000
+                    });
+                    return false;
+                } else if (charLength > maxLength) {
+                    $("#MobileNo").focus();
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Info',
+                        html: '<div class="errormsg" style="text-align:center;">Please fill 10 degit mobile no</div>',
+                        timer: 20000
+                    });
+                    return false;
+
+                }
+
+            }
+
+                if (ClientRowID == 679)
+                {
+                    var value = $('#mydrpNationalIDProof').val();
+                    if (value != "Pan Card") {
+                        $("#mydrpNationalIDProof").focus();
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Info',
+                            html: '<div class="errormsg" style="text-align:center;">Please select PAN card detail</div>',
+                            timer: 20000
+                        });
+                        return false;
+                    }
+                }
+            //// For TATA Elxsi
+
+            if (ClientRowID== 635)
+            {
+                var PersonalIdProof = $('#PersonalIdProof').attr('title');
+                var ct = $('#UploadIdProof').val();
+                if (PersonalIdProof == "Blank" && ct == "") {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Info',
+                        html: '<div class="errormsg" style="text-align:center;">Please upload Id proof detail</div>',
+                        timer: 20000
+                    });
+                    return false;
+                }
+
+                var FatherName = $("#FatherName").val();
+                if (FatherName == "") {
+                    $("#FatherName").focus();
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Info',
+                        html: '<div class="errormsg" style="text-align:center;">Please fill father name</div>',
+                        timer: 20000
+                    });
+                    return false;
+                }
+
+                var MaritalStatus = $("#mydrpMaritalStatus").val();
+                if (MaritalStatus == "") {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Info',
+                        html: '<div class="errormsg" style="text-align:center;">Please fill Marital Status</div>',
+                        timer: 20000
+                    });
+                    return false;
+                }
+
+                var DOJ = $("#DateofJoining").val();
+                if (DOJ == "") {
+                    $("#DateofJoining").focus();
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Info',
+                        html: '<div class="errormsg" style="text-align:center;">Please fill Date of Joining</div>',
+                        timer: 20000
+                    });
+                    return false;
+                }
+
+
+            }
+
+            if (ClientRowID == 647 || ClientRowID == 576)
+            {
+                var doj = $("#DateofJoining").val();
+                if (doj == "") {
+                    $("#DateofJoining").focus();
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Info',
+                        html: '<div class="errormsg" style="text-align:center;">Please fill Date of Joining</div>',
+                        timer: 20000
+                    });
+                    return false;
+                }
+
+            }
+
+
+            var dob = $('#DOB').val();
+
+            var doj = '@DateTime.Now.Date.ToString("yyyy-MM-dd")';
+
+    if (dob != '') {
+        var str = dob.split('-');
+        var dojday1 = str[2];
+        var dojmonth1 = str[1];
+        var dojyear1 = str[0];
+
+        var dateOfBorth = new Date(dojyear1, dojmonth1 - 1, dojday1);
+
+        var str1 = doj.split('-');
+        var day = str1[2];
+        var month = str1[1];
+        var year = str1[0];
+
+        var DateOfJoin = new Date(year, month - 1, day)
+
+        var timeDiff = DateOfJoin - dateOfBorth;
+
+        var diffDays = timeDiff / (1000 * 3600 * 24 * 365);
+        var age = parseInt(diffDays);
+
+        if (age < 18) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Info',
+                html: '<div class="errormsg" style="text-align:center;">Age should be more than 18 years. from date of joining</div>',
+                timer: 20000
+            });
+            return false;
+        }
+    }
+
+    if ($("#CaseType").val() == "Priority") {
+        GetClientTAT();
+        var tat = $("#TAT").val();
+        var hdtat = $("#hdnTAT").val();
+        if (tat >= hdtat) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Info',
+                html: '<div class="errormsg" style="text-align:center;">Please enter valid TAT</div>',
+                timer: 20000
+            });
+            return false;
+        }
+        }
+
+
+
+
+    var count = 0;
+        if (document.getElementById("#AadhaarCardNo").val() != '') {
+        count += 1;
+    }
+        if (document.getElementById("#DrivingLicenseNo").val() != '') {
+        count += 1;
+    }
+    if (document.getElementById("#PassportNo").val() != '') {
+        count += 1;
+    }
+        if (document.getElementById("#PanCardNo").val() != '') {
+        count += 1;
+    }
+        if (document.getElementById("#VoterIDCardNo").val() != '') {
+
+        count += 1;
+    }
+    if (count == 0) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Info',
+            html: '<div class="errormsg" style="text-align:center;">Please enter atleast one document no details</div>',
+            timer: 20000
+        });
+        return false;
+    }
+
+        return true;
+}
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            debugger
+            var ClientRowID = $("#clientRowId").val();
+            if (ClientRowID == 249) {
+                $("#EmployeeID").attr('maxlength', '5');
+
+                $("#EmployeeID").keypress(function (event) {
+                    // Allow only backspace and delete
+                    if (event.keyCode == 46 || event.keyCode == 8) {
+                        // let it happen, don't do anything
+                    }
+                    else {
+                        // Ensure that it is a number and stop the keypress
+                        if (event.keyCode < 48 || event.keyCode > 57) {
+                            event.preventDefault();
+                        }
+                    }
+                });
+            }
+            else if (ClientRowID == 1071)
+            {
+                $("#208").val('GCoE');
+                $("#208").prop("readonly", true);
+            }
+            else {
+                $("#EmployeeID").attr('maxlength', '100');
+                $('#EmployeeID').unbind("keypress");
+            }
+
+            //$('#5').datepicker({
+            //    dateFormat: "dd-mm-yy",
+            //    changeMonth: true,
+            //    changeYear: true,
+            //    showButtonPanel: true,
+            //    yearRange: "-66:+0",
+            //});
+
+
+            $(document).ready(function () {
+                $("#5").attr("placeholder", "DD-MM-YYYY");
+                var today = new Date();
+                var eighteenYearsAgo = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+
+                $('#5').datepicker({
+                    dateFormat: 'dd-mm-yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: 'c-100:c+100',
+                    maxDate: eighteenYearsAgo,
+                    autoclose: true,
+                });
+            });
+
+            $('#6').datepicker({
+                dateFormat: "dd-mm-yy",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: "-66:+0",
+                //onClose: function (dateText, inst) {
+                //    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
+                //}
+            });
+            var dNow = new Date();
+            var localdate = (dNow.getDate() + '-' + (dNow.getMonth() + 1) + '-' + dNow.getFullYear());
+            $('#OrderDate').val(localdate);
+            $('#goBack').click(function () {
+                parent.history.back();
+                return false;
+            });
+        });
+        $(function () {
+            $('#mydrpNationalIDProof').change(function () {
+                var value = $(this).val();
+                //alert(value);
+                $('#AadhaarCardNo').hide();
+                $('#DrivingLicenseNo').hide();
+                $('#PassportNo').hide();
+                $('#PanCardNo').hide();
+                $('#VoterIDCardNo').hide();
+
+                if (value == "Aadhaar Card") {
+                    $('#AadhaarCardNo').show();
+                }
+                else if (value == "Driving License") {
+                    $('#DrivingLicenseNo').show();
+                }
+                else if (value == "Passport") {
+
+                    $('#PassportNo').show();
+                }
+                else if (value == "Pan Card") {
+                    $('#PanCardNo').show();
+                }
+                else if (value == "Voter ID Card") {
+                    $('#VoterIDCardNo').show();
+                }
+                else {
+
+                }
+            });
+        });
+
+        $(function () {
+            var value = $('#mydrpNationalIDProof').val();
+            //alert(value);
+            $('#AadhaarCardNo').hide();
+            $('#DrivingLicenseNo').hide();
+            $('#PassportNo').hide();
+            $('#PanCardNo').hide();
+            $('#VoterIDCardNo').hide();
+
+            if (value == "Aadhaar Card") {
+                $('#AadhaarCardNo').show();
+            }
+            else if (value == "Driving License") {
+                $('#DrivingLicenseNo').show();
+            }
+            else if (value == "Passport") {
+
+                $('#PassportNo').show();
+            }
+            else if (value == "Pan Card") {
+                $('#PanCardNo').show();
+            }
+            else if (value == "Voter ID Card") {
+                $('#VoterIDCardNo').show();
+            }
+            else {
+
+            }
+        });
+
+
+        $(function () {
+            $('#mydrpMaritalStatus').change(function () {
+                var value = $(this).val();
+                if (value == "Married") {
+                    $('#dvMaritalStatus').show();
+                    $('#dvlblMaritalStatus').show();
+                }
+                else {
+                    $('#dvMaritalStatus').hide();
+                    $('#dvlblMaritalStatus').hide();
+                }
+            });
+        });
+
+
+        $(document).ready(function () {
+
+            // $('#Novo').hide();
+            $(".show").show();
+
+            var ClientRowID = $("#ClientRowID").val();
+
+            if (ClientRowID == 647) {
+                $('input:radio[name="favorite_pet"]').change(function () {
+
+                    if ($(this).val() == 'No') {
+                        $('#Novo').hide();
+                        $('#SSNNo').val("");
+                        $('#ProcessName').val("");
+
+                    }
+                    else {
+                        $('#Novo').show();
+                    }
+                });
+            }
+
+        });
+        $("#125").keypress(function (e) {
+            if ($("#125").val().length >= 12) {
+                return false;
+            }
+
+        });
+        $("#124").keypress(function (e) {
+            var clientRowId = $('#clientRowId').val();
+            if (clientRowId != 1449) {
+                var selectVal = $("#123").val();
+                if (selectVal == "" || selectVal == "--Select--") {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Info',
+                        html: '<div class="errormsg" style="text-align:center;">Please select first ID Type</div>',
+                        timer: 20000
+                    });
+                    return false;
+                }
+                else
+                {
+                    if (selectVal == "PAN") {
+                        if ($("#124").val().length >= 10) {
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Info',
+                                html: '<div class="errormsg" style="text-align:center;">Pan Can not be more then 10 digit.</div>',
+                                timer: 20000
+                            });
+                            return false;
+                        }
+                    }
+                    else if (selectVal == "Aadhaar") {
+                        if ($("#124").val().length >= 12) {
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Info',
+                                html: '<div class="errormsg" style="text-align:center;">Aadhaar Can not be more then 12 digit.</div>',
+                                timer: 20000
+                            });
+                            return false;
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+    <script>
+        //validation for candidatename
+        document.getElementById('121').onkeypress = function (e) {
+            if (!(/[a-z ]/i.test(String.fromCharCode(e.keyCode)))) {
+                e.preventDefault();
+                return false;
+            }
+        }
+
+
+
+        $("#19").keypress(function (e) {
+            $("19").attr("min", "10");
+            var valueLength = this.value.length;
+            if (valueLength == 10) {
+                return false;
+            }
+            var kk = e.which;
+            if (kk < 48 || kk > 57)
+                e.preventDefault();
+        });
+
+        $("#124").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        });
+
+        $("#btnSave").click(function () {
+            var obj = $('form input[type="text"]').NormalizedString();
+            if (obj == false) {
+                return false;
+            }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            //////////////////No/////////////////////
+            $("#578").change(function () {
+                var UANReason = $("#578").val();
+                if (UANReason == "No") {
+                    $('#579').attr("placeholder", "Enter reason for not have UAN");
+                    $('#125').attr("placeholder", "Enter UAN number");
+                    $(".UANReason").css("display", "flex");
+                    $(".UANNumber").css("display", "none");
+                }
+                else {
+                    $(".UANReason").css("display", "none");
+                    $(".UANNumber").css("display", "flex");
+                }
+            });
+            var UANReason = $("#578").val();
+            if (UANReason == "No") {
+                $('#579').attr("placeholder", "Enter reason for not have UAN");
+                $('#125').attr("placeholder", "Enter UAN number");
+                $(".UANReason").css("display", "flex");
+                $(".UANNumber").css("display", "none");
+            }
+            else {
+                $(".UANReason").css("display", "none");
+                $(".UANNumber").css("display", "flex");
+            }
+        });
+    </script>
+    <script>
+        $('#590').change(function () {
+            if ($(this).is(":checked")) {
+                $("#123 option").remove();
+                $("#123").append($("<option     />").val("--select--").text("--select--"));
+                $("#123").append($("<option    selected />").val("Aadhaar").text("Aadhaar"));
+            }
+            else {
+                $("#123 option").remove();
+                $("#123").append($("<option     />").val("--select--").text("--select--"));
+                $("#123").append($("<option    selected />").val("PAN").text("PAN"));
+            }
+        });
+    </script>
+}
+
+<style>
+    .dwn_link {
+        background: #ACC2DD;
+        border: 1px solid #ACC2DD;
+        color: #031F30;
+        padding: 6px 10px;
+        transition: .3s ease-in-out;
+        font-family: 'Securitas Pro';
+        font-size: .90rem;
+        border-radius: 0px;
+        display: inline-block;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: center;
+        text-decoration: none;
+        vertical-align: middle;
+    }
+
+        .dwn_link:hover {
+            background: #FFF;
+            color: #031F30;
+        }
+
+    .adidasform_row {
+        position: relative;
+        width: 100%;
+        left: -10px;
+        top: 20px;
+    }
+
+    .adidasform {
+        background: #031F30;
+        border: 1px solid #031F30;
+        padding: 10px 10px;
+        transition: 0.3s ease-in-out;
+        font-size: 1.1rem;
+    }
+
+    .fa-arrow-right {
+        margin-left: 5px;
+        transition: 0.3s ease-in-out;
+    }
+
+    .clickform {
+        display: flex;
+        align-items: center;
+        padding-left: 11px;
+        font-size: 1.2rem;
+        color: #8D5FFF;
+    }
+
+        .clickform:hover {
+            color: #031F30;
+        }
+
+    .UANReason {
+        display: none;
+        width: 100%;
+        transition: 0.3s ease-in-out;
+    }
+
+    .UANNumber {
+        display: flex;
+        width: 100%;
+        transition: 0.3s ease-in-out;
+    }
+</style>

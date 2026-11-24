@@ -1,0 +1,194 @@
+﻿@model ViewModels.ProvidedInfoViewModel.InsuffCheckClearViewModel
+@{
+    ViewBag.Title = "Insufficiency Check Clear By Client";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='bx bx-reply' aria-hidden='true'></i>");
+    string hyperLink = string.Format("<a class='headerbacklink' onclick='window.history.back()'><i class='fa fa-reply' aria-hidden='true'></i>Back</a>");
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-lg-12 col-md-12" style="background:#EAEAEA!important;">
+        <div class="card" style="height:auto!important;box-shadow: none; border-radius: 0px; background:#EAEAEA!important;">
+            <div class="card-body ps-0 pt-0">
+                <div class="d-flex" style="height:100vh;">
+                    <div class="col-md-3" style="background: #031F30;">
+                        <ul class="DataMenuList h-100 mt-0 ps-0" style="list-style-type:none;">
+                            @if (Session["NavInputDataMenuList"] != null)
+                            {
+                                @Html.Raw(Session["NavInputDataMenuList"].ToString());
+                            }
+                        </ul>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="pd-30 pd-sm-20">
+                            @using (Html.BeginForm("InsufficiencyClearByClient", "ClientInsuff", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                @Html.HiddenFor(model => model.CheckRowID)
+                                @Html.HiddenFor(model => model.SubCheckName)
+                                @Html.HiddenFor(model => model.INFReason)
+                                @Html.HiddenFor(model => model.ClientUserRowID)
+                                <input type="hidden" value="@Model.ClientRowID" id="ClientRowID" name="ClientRowID" />
+                                <input type="hidden" value="@Model.ChFamilRowId" id="ChFamilRowId" name="ChFamilRowId" />
+                                <input type="hidden" value="@Model.SubCheckRowID" id="SubCheckRowID" name="SubCheckRowID" />
+                                <input type="hidden" value="@Model.PersonalRowID" id="PersonalRowID" name="PersonalRowID" />
+                                <input type="hidden" value="@Model.SecuritasID" id="SecuritasID" name="SecuritasID" />
+
+                                if (Model.SubCheckRowID == 0)
+                                {
+                                    <div class="row row-xs align-items-center mg-b-20">
+                                        <div class="col-md-12 mg-t-5 mg-md-t-0 text-center">
+                                            <p style="font-family: seuritas pro;font-size: 1.2rem;font-weight: bold;color: #8D5FFF;">
+                                                Please click on the menu given in the left hand side to clear the insufficiency.
+                                            </p>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="row row-xs align-items-center mg-b-20">
+                                        <div class="col-md-4">
+                                            @Html.LabelFor(model => model.SubCheckName, htmlAttributes: new { @class = "form-label mg-b-0" })
+                                        </div>
+                                        <div class="col-md-8 mg-t-5 mg-md-t-0">
+                                            <input class="form-control" type="text" value="@Model.SubCheckName" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="row row-xs align-items-center mg-b-20">
+                                        <div class="col-md-4">
+                                            @Html.Label("Company Name", htmlAttributes: new { @class = "form-label mg-b-0" })
+                                        </div>
+                                        <div class="col-md-8 mg-t-5 mg-md-t-0">
+                                            <input class="form-control" type="text" value="@ViewBag.CompName" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="row row-xs align-items-center mg-b-20">
+                                        <div class="col-md-4">
+                                            @Html.Label("Insuff Remark:", htmlAttributes: new { @class = "form-label mg-b-0" })
+                                        </div>
+                                        <div class="col-md-8 mg-t-5 mg-md-t-0">
+                                            <textarea typeof="text" readonly class="form-control">@Model.INFReason</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="container" id="dvUplodDoc">
+
+                                    </div>
+                                    <div class="row row-xs align-items-center mg-b-20">
+                                        <div class="col-md-5">
+                                            @Html.LabelFor(model => model.EmployeeID, htmlAttributes: new { @class = "form-label mg-b-0" })
+                                        </div>
+                                        <div class="col-md-5">
+                                            @Html.TextAreaFor(model => model.EmployeeID, new { @class = "form-control" })
+                                        </div>
+                                        <div class="col-md-2">
+                                            @Html.ActionLink("Download", "InsuffClientAddresspdf", "ClientInsuff", new { PersonalRowID = Model.PersonalRowID, SubCheckRowID = Model.SubCheckRowID }, new { @class = "ManageClientCompany" })
+                                        </div>
+                                    </div>
+                                    <div class="row row-xs align-items-center mg-b-20">
+                                        <div class="col-md-5">
+                                            @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "form-label mg-b-0" })
+                                            @Html.Hidden("UploadHid", null)
+                                        </div>
+                                        <div class="col-md-7">
+                                            @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    <div class="row row-xs align-items-center mg-b-20 justify-content-center">
+                                        @if (Model.ClientUserRowID != 5026)
+                                        {
+                                            <div class="col-md-3">
+                                                <input class="submit-btn btn-block rounded-0 m-1" type="submit" value="Submit" id="validbtn" />
+                                            </div>
+                                        }
+                                        </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <script>
+        $(document).ready(function () {
+            if ($("#SubCheckRowID").val()>0) {
+                var url1 = "/ProvidedInfo/GetDocumentTypeListBySubCheckID/" + $("#SubCheckRowID").val();
+                $.ajax({
+                    url: url1,
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+                    success: function (allData) {
+                        if (allData != null && allData != "") {
+                            $('#dvChksPcks').show();
+                            var items = '';
+                            jQuery.each(allData, function (index, allData) {
+
+                                items += "<div class='row row-xs align-items-center mg-b-20'><div class='col-md-4'><label class='form-label mg-b-0'>" + allData.Text + "</label></div><div class='col-md-1'><input type='checkbox' name='chkDoc' value=" + allData.Value + " '/></div><div class='col-md-7'><input class='form-control dropify' data-val='true' name='UploadDoc' disabled='true' type='file' value=" + allData.Value + " id=" + allData.Value + " style='height:34px!important;'></div></div>"
+
+                                //"<label class='col-md-8 control-label'>" + allData.Text + " :</label><input type='checkbox' name='chkDoc'  value=" + allData.Value + " class='col-md-1'/><div class='col-md-2'><input data-val='true' name='UploadDoc' disabled='true' type='file' value=" + allData.Value + "  id=" + allData.Value + "> </div>";
+
+
+                            });
+                            $('#dvUplodDoc').html(items);
+                        }
+                        else {
+                            $('#dvChksPcks').hide();
+                            alert("No Doc Selected");
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("some error");
+                    }
+                });
+            }
+
+        });
+
+        $(document).on('change', 'input[name="chkDoc"]', function (e) {// on change of state
+            var chkDocs = '';
+            $('input[name="chkDoc"]').each(function (index, value) {
+                if (this.checked) {
+                    chkDocs += this.value + ',';
+                    $("#" + this.value + "").removeAttr("disabled");
+                }
+                else {
+                    $("#" + this.value + "").attr("disabled", "disabled");
+                }
+            });
+
+            if (chkDocs.length > 0) {
+                chkDocs = chkDocs.substring(0, chkDocs.length - 1);
+            } else { chkDocs = ''; }
+            $('#UploadHid').val(chkDocs.trim());
+        });
+
+
+    </script>
+}
+<style>
+    .insuff_li {
+        padding: 10px 0px 15px 0px;
+    }
+
+    .insuff_DataMenuList {
+        color: #fff !important;
+        cursor: pointer !important;
+        font-size: .85rem !important;
+    }
+    .headerbacklink:hover{
+        cursor:pointer;
+    }
+</style>

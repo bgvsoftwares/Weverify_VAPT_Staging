@@ -1,0 +1,179 @@
+﻿@model ViewModels.ProvidedInfoViewModel.VerifiedUploadDocViewModel
+@{
+    ViewBag.Title = "Upload Employment Check Ver Docs";
+    Layout = null;
+}
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/colorbox.css" rel="stylesheet" />
+<link href="~/Content/Site.css" rel="stylesheet" />
+
+<script src="~/Scripts/jquery-3.7.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/modernizr-2.8.3.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<div class="row">
+    <div class="col-md-12">
+        @if (ViewBag.SuccessMsg != null)
+        {
+            <div class="successmsg">@ViewBag.SuccessMsg.ToString()</div>
+        }
+
+        @if (ViewBag.ErrorMsg != null)
+        {
+            <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+        }
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="all-button-bg">
+            <strong> Upload Employment Check Ver Docs </strong>
+        </div>
+        @using (Html.BeginForm("UplodEmploymentVerDocs", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.SubCheckRowID)
+            @Html.HiddenFor(model => model.PersonalRowID)
+            @Html.HiddenFor(model => model.CheckStatus)
+            <div class="card">
+
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-3">
+                            @Html.LabelFor(model => model.DocumentType, htmlAttributes: new { @class = "control-label" })
+                        </div>
+                        <div class="col-md-3">
+                            @Html.EditorFor(model => model.DocumentType, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.DocumentType, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            @Html.LabelFor(model => model.UploadDoc1, htmlAttributes: new { @class = "control-label" })
+                        </div>
+                        <div class="col-md-3">
+                            @Html.TextBoxFor(model => model.UploadDoc1, new { @accept = "image/gif, image/jpeg, image/png, image/jpg, audio/mp3", type = "file", multiple = "multiple" })
+                            @Html.ValidationMessageFor(model => model.UploadDoc1, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "control-label" })
+                        </div>
+
+                        <div class="col-md-8">
+                            @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @rows = "2" })
+                            @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="all-button-bg">
+                        <input class="btn bun-bg btn-default" type="submit" value="Submit" name="Upload" />
+                    </div>
+                </div>
+                
+                <div class="all-button-bg">
+                </div>
+            </div>
+            <div class="card">
+                <table width="100%" id="displaydoc">
+                    <tr>
+                        <td>
+                            <div class="personal-details-head"><i class="fa fa-file-text-o" aria-hidden="true"></i> Document List :</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td height="2"></td>
+                    </tr>
+                    <tr>
+                        <td valign="top">
+
+                            <table class="table">
+                                <thead class="thead-inverse">
+                                    <tr>
+                                        <th class="top-head">Document Type</th>
+                                        <th class="top-head">Partner File Name</th>
+
+                                        <th class="top-head">Delete</th>
+                                        <th class="top-head">Date</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in ViewBag.GetDocumentList)
+                                    {
+                                    <tr>
+                                        <td class="name">@item.DocumentType</td>
+                                        <td class="filename">
+                                            @if (Session["VendorRowID"] != null && (item.GeoCo != null && item.GeoCo != ""))
+                                            {
+                                                <table>
+                                                    <tr>
+                                                        <td style="font-size:xx-small"> <a href="@Url.Action("GetSubNotMatchMail", "Home", new { ImageName = item.FileName })">@item.FileName</a></td>
+                                                       
+                                                        <td style="font-size:xx-small">  @item.GeoCo </td>
+                                                        <td>
+                                                            <a href="@Url.Action("MobiledeleteDoc", "Home", new { personalRowId = @item.PersonalRowID, subCheckId = @item.SubCheckRowID,doctype=@item.DocumentType,fileName=@item.FileName,gtr=HttpContext.Current.Request.Url.ToString().ToLower()  })" onclick="return confirm('Are you sure you want to delete doc?')"><img id="btndelete" src='@Url.Content("~/Images/Delete-Icon-PNG-Graphic-Cave.png")' width="5%" height="5%" /></a>
+                                                        </td>                                                   
+
+
+                                                    </tr>
+                                                </table>
+
+
+                                            }
+                                            else
+                                            {                                       
+                                            <a target="_blank" href='@Url.Content("~/Documents/CandidateDocuments/ProvidedDocuments/" + @item.FileName)'>@item.FileName</a>
+                                            }
+
+
+                                        </td>
+                                        <td class="name">
+                                            <a href="@Url.Action("delete", "Home", new { personalRowId = @item.PersonalRowID, subCheckId = @item.SubCheckRowID,doctype=@item.DocumentType,fileName=@item.FileName,gtr=HttpContext.Current.Request.Url.ToString().ToLower()  })" onclick="return confirm('Are you sure you want to delete doc?')"><img id="btndelete" src='@Url.Content("~/Images/Delete-Icon-PNG-Graphic-Cave.png")' width='5%' height="5%" /></a>
+
+                                        </td>
+                                            <td class="name">@item.Remarks</td>
+                                            <td class="name">@item.UploadDate</td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <td height="12" colspan="4"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+                }
+
+            </div>
+        </div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+
+
+}
+<script type="text/javascript">
+    function validateForm() {
+        var docType = $("#DocumentType").val();
+        if (docType=='')
+        {
+            alert('Please select Document Type');
+            return false;
+        }
+    }
+</script>
+
+
+

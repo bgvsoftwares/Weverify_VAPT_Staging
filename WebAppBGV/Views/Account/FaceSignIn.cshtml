@@ -1,0 +1,197 @@
+﻿@model ViewModels.HRViewModels.FaceCandidateLoginViewModel
+@{
+    ViewBag.Title = "Candidate Login";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+    string msg = "";
+    if (ViewBag.ErrorMsg != null)
+    {
+        msg = ViewBag.ErrorMsg.ToString();
+    }
+}
+
+@using (Html.BeginForm("FaceSignIn", "Account", FormMethod.Post, new { @onsubmit = "return validateForm()", @autocomplete = "off", @class = "sign-in-form index_form" }))
+{
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" id="GenCaptchaVal" value="@Model.GenerateCaptchaVal" />
+    <input type="hidden" name="PersonalRowId" id="PersonalRowId" value="@Model.PersonalRowId" />
+    <input type="hidden" name="OtpValue" id="OtpValue" value="" />
+    <input type="hidden" name="loginType" id="loginType" value="@Model.loginType" />
+
+    @Html.HiddenFor(T => T.GenerateCaptchaVal)
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="d-flex align-items-center login_error_div" style="width: 440px;height:40px;
+        text-align: center;
+        font-size: .90rem;
+        color:#AA1834!important; display:flex;">
+
+        @{
+            var valCaptcha = Convert.ToString(Session["CaptchaVal"]);
+            if (valCaptcha != null)
+            {
+                <input type="hidden" id="valCaptcha" value="@valCaptcha.ToString()" />
+            }
+            if (ViewBag.EncData != null)
+            {
+                <input type="hidden" id="EnSalt" value="@ViewBag.EncData.ToString()" />
+            }
+            if (msg != "")
+            {
+                <div class="errormsglogin" style="position: relative;top:0px;">
+                    <div class="drop">
+                        <p class="img_p">1</p>
+                        <img src="~/assets/LoginPageImages/marker.png" width="35" />
+                    </div>
+                    <ul class="Error_ul">
+                        <li>
+                            @msg.ToString()
+                        </li>
+                    </ul>
+                </div>
+            }
+        }
+
+        @{
+
+            <div class="errormsg">@Html.ValidationMessage("")</div>
+        }
+    </div>
+    <div class="heading mb-3">
+        <h2>User Login</h2>
+    </div>
+    <div class="actual-form">
+
+        <div id="number-hide">
+
+            <div class="d-flex align-items-center mt-1 mb-3 Mobilebox">
+                <fieldset class="highlight" id="fieldset">
+                    <legend class="legend">Email Id</legend>
+                    @Html.EditorFor(model => model.MobileNo, new { htmlAttributes = new { @placeholder = "Email Id", required = "required", @maxlength = "50", @id = "MobileNo", @class = "form-control", @autocomplete = "off" } })
+
+                </fieldset>
+            </div>
+        </div>
+
+
+        <div id="1_otp-show">
+            @*<div class="d-flex align-items-center mt-1 mb-3 OTPbox" style="display:none;">
+                <fieldset class="highlight" id="fieldset">
+                    <legend class="legend">OTP</legend>
+                    @Html.EditorFor(model => model.MobileOTP, new { htmlAttributes = new { @placeholder = "OTP", @maxlength = "50", @id = "MobileNoOTP", @class = "form-control", @autocomplete = "off" } })
+                </fieldset>
+            </div>*@
+            <div class="mt-2 mb-4 gap-2">
+                <img id="captchaImg" src="@Url.Action("GetImgCaptcha", "Account")" style="width:200px; height:50px;" alt="CAPTCHA" />
+                <button type="button" class="btn  btn-login-submit" style=" background:none !important; border:none !important; height:50px !important; padding:0px !important; display:unset; width:50px; font-size:24px !important; color:#fff;" onclick="reloadCaptcha()">&#x21bb;</button>
+
+                <input type="text" name="CaptchaVal" id="CaptchaVal" class="form-control" style="top:0px!important; margin-top:12px; " placeholder="Enter CAPTCHA" />
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center btn_box">
+            @Html.Hidden("hdnEnptStatus", "false")
+            @*<div>
+                <input class="btn fw-bold" type="button" value="Send OTP..." id="OTP_btn">
+            </div>*@
+            <button type="submit" id="Submit_btn" @*style="display:none;"*@ class="btn btn-login-submit">Submit</button>
+        </div>
+
+
+    </div>
+}
+@section Scripts{
+    <script>
+  function reloadCaptcha() {
+    document.getElementById("captchaImg").src = '@Url.Action("GetImgCaptcha", "Account")?'+ new Date().getTime();
+        }
+     $(document).ready(function () {
+     document.getElementById("captchaImg").src = '@Url.Action("GetImgCaptcha", "Account")?' + new Date().getTime();
+ });
+    </script>
+
+    <script>
+
+    $("#btnResend").click(function (e) {
+        var mobilenumber = $('#MobileNo').val();
+        var Pid = $('#PersonalRowId').val();
+        if (mobilenumber != '') {
+
+            var formData = new FormData();
+            formData.append("MobileNo", mobilenumber);
+            formData.append("Pid", Pid);
+
+            $.ajax({
+                url: '@Url.Action("OTP", "Account")',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data, textStatus, XMLHttpRequest) {
+                    //alert(data.success);
+                    $('#OtpValue').val(data.success);
+                    $('#number-hide').hide();
+                    $('#otp-show').show();
+                    $(".Mobilebox").hide();
+                    $(".OTPbox").show();
+                    $("#OTP_btn").hide();
+                    $("#Submit_btn").show();
+                },
+                error: function (xhr, status, error) {
+                    alert('Error uploading file: ' + error);
+                }
+            });
+
+        }
+    });
+
+
+    $("#OTP_btn").click(function (e) {
+        var mobilenumber = $('#MobileNo').val();
+        var Pid = $('#PersonalRowId').val();
+        if (mobilenumber != '') {
+
+            var formData = new FormData();
+            formData.append("MobileNo", mobilenumber);
+            formData.append("Pid", Pid);
+            $.ajax({
+                url: '@Url.Action("OTP", "Account")',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data, textStatus, XMLHttpRequest) {
+                    //alert("Please Check your register whatsapp for otp");
+                    $('#OtpValue').val(data.success);
+                    $('#number-hide').hide();
+                    $('#otp-show').show();
+                    $(".Mobilebox").hide();
+                    $(".OTPbox").show();
+                    $("#OTP_btn").hide();
+                    $("#Submit_btn").show();
+
+                },
+                error: function (xhr, status, error) {
+                    alert('Error uploading file: ' + error);
+                }
+            });
+        }
+        else {
+            $(".Mobilebox").show();
+            $(".OTPbox").hide();
+            $("#Submit_btn").hide();
+            $("#OTP_btn").show();
+        }
+    });
+
+    </script>
+
+}
+
+
+<style>
+    #otp-show {
+        display: none;
+    }
+</style>

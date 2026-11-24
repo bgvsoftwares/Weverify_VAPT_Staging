@@ -1,0 +1,107 @@
+﻿@model ViewModels.ProvidedInfoViewModel.UplodDocsForDEScanViewModel
+@{
+    ViewBag.Title = "Upload Documents For Check";
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="col-md-12">
+
+        @using (Html.BeginForm("UploadInsuffDocumentForCheck", "Insuff", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.ClientRowID)
+            @Html.HiddenFor(model => model.ChFamilRowId)
+            @Html.HiddenFor(model => model.SubCheckRowID)
+            @Html.HiddenFor(model => model.PersonalRowID)
+            @Html.HiddenFor(model => model.SecuritasID)
+            @Html.HiddenFor(model=> model.VerificationRowID)
+            @Html.HiddenFor(model => model.RedirectPage)
+
+            <div class="form-horizontal">                
+                <div class="form-group branch row">
+                    <div id="dvUplodDoc" class="">
+                    </div>
+                </div>
+                @Html.Hidden("UploadHid", null)
+                <div class="form-group branch row">
+                    @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-8">
+                        @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @rows = "2" })
+                    </div>
+                </div>
+
+                <div class="all-button-bg">
+                    @if (Model.RedirectPage != null && Model.RedirectPage== "rejected")
+                    {
+                        @Html.ActionLink("Back", "ManageRejectedChecksForDEScan", "Insuff", new { @class = "btn bun-bg btn-default" })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Back", "ManageInsuffChecksForUploadDoc", "Insuff", new { @class = "btn bun-bg btn-default" })
+                    }
+                    <input class="btn bun-bg btn-default" type="submit" value="Submit" />
+                </div>
+
+            </div>
+
+        }
+
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <script>
+        $(document).ready(function () {
+            var url1 = "/ProvidedInfo/GetDocumentTypeListBySubCheckID/" + $("#SubCheckRowID").val();
+            $.ajax({
+                url: url1,
+                type: 'GET',
+                async: false,
+                dataType: 'json',
+                success: function (allData) {
+                    if (allData != null && allData != "") {
+                        $('#dvChksPcks').show();
+                        var items = '';
+                        jQuery.each(allData, function (index, allData) {
+
+                            items += "<div  class='row'><label class='col-md-3 branch row name control-label'>" + allData.Text + " :</label><input type='checkbox' name='chkPkgChks'  value=" + allData.Value + " class='col-md-1'/><div class='col-md-2'><input data-val='true' name='UploadDoc' disabled='true' type='file' value=" + allData.Value + "  id=" + allData.Value + "> </div></div>";
+                        });
+                        $('#dvUplodDoc').html(items);
+                    }
+                    else {
+                        $('#dvChksPcks').hide();
+                        alert("No Doc Selected");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("some error");
+                }
+            });
+        });
+
+        $(document).on('change', 'input[name="chkPkgChks"]', function (e) {// on change of state
+            var chkPkgChkss = '';
+            $('input[name="chkPkgChks"]').each(function (index, value) {
+                if (this.checked) {
+                    chkPkgChkss += this.value + ',';
+                    $("#" + this.value + "").removeAttr("disabled");
+                }
+                else {
+                    $("#" + this.value + "").attr("disabled", "disabled");
+                }
+            });
+
+            if (chkPkgChkss.length > 0) {
+                chkPkgChkss = chkPkgChkss.substring(0, chkPkgChkss.length - 1);
+            } else { chkPkgChkss = ''; }
+            $('#UploadHid').val(chkPkgChkss.trim());
+        });
+
+    </script>
+}

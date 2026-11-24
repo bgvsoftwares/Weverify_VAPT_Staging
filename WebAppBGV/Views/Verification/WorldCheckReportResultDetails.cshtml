@@ -1,0 +1,313 @@
+﻿
+@model dynamic
+@{
+    ViewBag.Title = "World Check Report Result";
+    int Personalrowid = ViewBag.PersonalRowId;
+}
+
+
+
+<div class="container">
+    @using (Html.BeginForm("WorldCheckReportResultDetails", "Verification", FormMethod.Get, new { enctype = "multipart/form-data" }))
+    {
+
+        if (Model != null)
+        {
+            <div class="card m-3" style="height: 490px; overflow-y: scroll; scrollbar-width: thin;">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-md-6 text-left align-items-center">
+                            <span style="color:blue;">LSEG </span>World-Check One <br>Case Report
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <img src="https://bgv.securitas-india.com/Content/images/LSEGLogo2.png" style="width:250px;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Entity Id</th>
+                                <th>Entity Type</th>
+                                <th>Update Category</th>
+                                <th>age</th>
+                                <th>ageAsOfDate</th>
+                                <th>gender</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@Model.entityId</td>
+                                <td>@Model.entityType</td>
+                                <td>@Model.updateCategory</td>
+                                <td>@Model.age</td>
+                                <td>@Model.ageAsOfDate</td>
+                                <td>@Model.gender</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>code</th>
+                                <th>identifier</th>
+                                <th>master</th>
+                                <th>name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@Model.provider.code</td>
+                                <td>@Model.provider.identifier</td>
+                                <td>@Model.provider.master</td>
+                                <td>@Model.provider.name</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table table-bordered mt-3 table-striped">
+                        <thead>
+                            <tr>
+                                <th>full Name</th>
+                                <th>givenName</th>
+                                <th>languageCode</th>
+                                <th>lastName</th>
+                                <th>originalScript</th>
+                                <th>prefix</th>
+                                <th>suffix</th>
+                                <th>type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.names)
+                            {
+                                <tr>
+                                    <td>@Convert.ToString(item.fullName)</td>
+                                    <td>@Convert.ToString(item.givenName)</td>
+                                    <td>@Convert.ToString(item.languageCode)</td>
+                                    <td>@Convert.ToString(item.lastName)</td>
+                                    <td>@Convert.ToString(item.originalScript)</td>
+                                    <td>@Convert.ToString(item.prefix)</td>
+                                    <td>@Convert.ToString(item.suffix)</td>
+                                    <td>@Convert.ToString(item.type)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <div class="card mt-3">
+                        <div class="card-header" style="font-size:1.6rem;">
+                            addresses
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>city</th>
+                                        <th>country code</th>
+                                        <th>country name</th>
+                                        <th>postCode</th>
+                                        <th>region</th>
+                                        <th>street</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.addresses)
+                                    {
+                                        <tr style="font-weight:bolder;">
+                                            <td>@Convert.ToString(item.city)</td>
+                                            <td>@Convert.ToString(item.country.code)</td>
+                                            <td>@Convert.ToString(item.country.name)</td>
+                                            <td>@Convert.ToString(item.postCode)</td>
+                                            <td>@Convert.ToString(item.region)</td>
+                                            <td>@Convert.ToString(item.street)</td>
+                                        </tr>
+
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card mt-3">
+                        <div class="card-header" style="font-size:1.6rem;">
+                            Country Links
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Country code</th>
+                                        <th>country name</th>
+                                        <th>country Text</th>
+                                        <th>type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.countryLinks)
+                                    {
+                                        <tr style="font-weight:bolder;">
+                                            <td>@Convert.ToString(item.country.code)</td>
+                                            <td>@Convert.ToString(item.country.name)</td>
+                                            <td>@Convert.ToString(item.countryText)</td>
+                                            <td>@Convert.ToString(item.type)</td>
+                                        </tr>
+
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card mt-3">
+                        <div class="card-header" style="font-size:1.6rem;">
+                            Details
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>detailType</th>
+                                        <th>text</th>
+                                        <th>title</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.details)
+                                    {
+                                        <tr style="font-weight:bolder;">
+                                            <td>@Convert.ToString(item.detailType)</td>
+                                            <td>@Convert.ToString(item.text)</td>
+                                            <td>@Convert.ToString(item.title)</td>                                            
+                                        </tr>
+
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card mt-3">
+                        <div class="card-header" style="font-size:1.6rem;">
+                            sources
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>abbreviation</th>
+                                        <th>identifier</th>
+                                        <th>name</th>
+                                        <th>providerSourceStatus</th>
+                                        <th>regionOfAuthority</th>
+                                        <th>subscriptionCategory</th>
+                                        <th>description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.sources)
+                                    {
+                                        <tr style="font-weight:bolder;">
+                                            <td>@Convert.ToString(item.abbreviation)</td>
+                                            <td>@Convert.ToString(item.identifier)</td>
+                                            <td>@Convert.ToString(item.name)</td>
+                                            <td>@Convert.ToString(item.providerSourceStatus)</td>
+                                            <td>@Convert.ToString(item.regionOfAuthority)</td>
+                                            <td>@Convert.ToString(item.subscriptionCategory)</td>
+                                            <td>@Convert.ToString(item.description)</td>
+                                        </tr>
+
+                                        <tr style="font-weight:bolder;">
+                                            <td>sources type</td>
+                                        </tr>
+                                        <tr class="results_First">
+                                            <td>Type name</td>
+                                            <td>Type identifier</td>
+                                            <td>category name</td>
+                                            <td>category identifier</td>                                           
+                                            <td colspan="3">category description </td>
+                                        </tr>
+                                        <tr style="font-weight:bolder; background:#efe9e9">
+                                            <td>@Convert.ToString(item.type.name)</td>
+                                            <td>@Convert.ToString(item.type.identifier)</td>
+                                            <td>@Convert.ToString(item.type.category.name)</td>
+                                            <td>@Convert.ToString(item.type.category.identifier)</td>
+                                            <td colspan="3">@Convert.ToString(item.type.category.description)</td>
+                                        </tr>
+
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card mt-3">
+                        <div class="card-header" style="font-size:1.6rem;">
+                            weblinks
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>weblinks</th>
+                                        <th>tags</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.weblinks)
+                                    {
+                                        <tr style="font-weight:bolder;">
+                                            <td>@Convert.ToString(item.uri)</td>
+                                            <td>@Convert.ToString(item.tags[0])</td>
+                                        </tr>
+
+
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+<style>
+    body {
+        font-family: 'Securitas Pro';
+    }
+
+    .card-header {
+        color: #031F30 !important;
+        font-size: 2rem;
+        padding: .55rem 1.25rem !important;
+        text-align: center;
+        font-weight: bolder;
+        font-family: LSEG Motto,Helvetica Neue,Arial;
+    }
+
+    td {
+        padding: .50rem !important;
+    }
+
+    th {
+        padding: .50rem !important;
+    }
+
+    thead {
+        background: #031F30;
+        color: #FFF;
+        text-align: center;
+    }
+
+    .results_First {
+        background: #42638C !important;
+        font-weight: bolder;
+        color: #FFF;
+        text-align: center;
+    }
+
+    .results_Secondry {
+        background: #8D5FFF;
+        color: #FFF;
+        text-align: center;
+    }
+</style>

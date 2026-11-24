@@ -1,0 +1,263 @@
+﻿@{
+    ViewBag.Title = "Manage Other Employer Details";
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftProvidedInfo") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+
+
+
+
+@{
+
+
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    string hyperLinkExportExcel = "";
+    hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportChecksReport", "ProvidedInfo", new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+}
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("ManageResearchEmploymentChecks", "ProvidedInfo", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Client Name :</label>
+                                    <div class="col-md-8">
+                                        @Html.DropDownList("ClientRowID",
+                                        new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                                        "-- Select Client -- ",
+                                        new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Keyword :</label>
+                                    <div class="col-md-8">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, SecuritasID..." })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Recieving Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("RecievingDate", null, new { @class = "form-control", @id = "RecievingDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Completed Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("CompletedDate", null, new { @class = "form-control", @id = "CompletedDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">CheckStatus :</label>
+                                    <div class="col-md-3">
+                                        @Html.DropDownList("CheckStatus",
+                                            new SelectList(ViewBag.CheckStatusOptionList, "Value", "Text"),
+                                            "-- Select Check -- ",
+                                            new { @class = "form-control" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Case Status :</label>
+                                    <div class="col-md-3">
+                                        @Html.DropDownList("CaseStatus",
+                                            new SelectList(ViewBag.CaseStatusOptionList, "Value", "Text"),
+                                            "-- Select Case -- ",
+                                            new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Employer Name :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("EmployerName", null, new { @class = "form-control", placeholder = "Ex. Enter Employer name ..." })
+                                    </div>
+                                    <label class="col-md-2 control-label">Allocated to :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("Allocatedto", null, new { @class = "form-control", placeholder = "Ex. Enter Allocated to..." })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <div style="text-align:center;" class="col-md-12">
+                                        <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.PQEmploymentResearchs != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12 table table-striped">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.PQEmploymentResearchs, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+             htmlAttributes: new { id = "grid", @class = "table" },
+             headerStyle: "thead-inverse",
+             rowStyle: "ordertxt",
+             footerStyle: "custpaging",
+             mode: WebGridPagerModes.All,
+             columns: new[]
+             {
+                                    grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                    grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-2"),
+                                    grid.Column(columnName: "CompanyRefNo", header: "SecuritasID", canSort: false, style:"td-1"),
+                                    grid.Column(columnName: "Name", header: "Candidate Name", canSort: false, style:"td-2"),
+                                    grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-2"),
+                                    grid.Column(columnName: "UniqueComponentID", header: "Unique Check ID", canSort: false, style:"td-1"),
+                                    grid.Column(columnName: "OtherEmployer", header: "Other Employer Name", canSort: false, style:"td-2"),
+                                    grid.Column("AddedOn", "AddedOn", format: (item) => item.AddedOn != DateTime.MinValue ? item.AddedOn.ToString("dd/MM/yyyy") : "", canSort: false,style:"td-1"),
+
+                                    //grid.Column("", canSort: false, format: (item)=> {
+                                    //    string CompleteLink = string.Format("<a href=\"#\" id=\"Complete-{0}\" class=\"Complete\" >{1}</a>", (item.EmpResearchRowID+"_"+item.EmploymentRowId), "Complete");
+                                    //    return new HtmlString(CompleteLink);
+                                    //}, style:"td-1"),
+
+                                    grid.Column("Research", canSort: false, format: (item)=> {
+                                        string CompleteLink = string.Format("<a href=\"#\" id=\"{0}\" class=\"Research\" >{1}</a>", (item.CandCheckRowID), "Research");
+                                        return new HtmlString(CompleteLink);
+                                    }, style:"td-1"),
+
+                                     grid.Column("Tagging", canSort: false, format: (item)=> {
+                                        string CompleteLink = string.Format("<a href=\"#\" id=\"{0}\" class=\"Research1\" >{1}</a>", (item.CandCheckRowID), "Open");
+                                        return new HtmlString(CompleteLink);
+                                    }, style:"td-1"),
+
+                                      grid.Column("Enquiry Email", canSort: false, format: (item) =>
+                                        {
+                                        var link = Html.ActionLink(
+                                        "Enquiry Email",
+                                        "EnquiryEmail",
+                                        //"Verification",
+                                         "ProvidedInfo",
+                                        new
+                                        {
+                                        CandCheckRowID = item.CandCheckRowID,
+                                        PersonalRowID = item.PersonalRowID,
+                                        SubCheckRowID = item.SubCheckRowId,
+                                        CompanyName = item.OtherEmployer
+                                        },
+                                        new
+                                        {
+                                        @class = "iframeEnquiryEmail cboxElement"
+                                        }
+                                        );
+                                       
+                                        return link;
+                                        }, style: "td-1"),
+
+                                     grid.Column(header : "", format : (item) => {
+                                        var link = Html.ActionLink("documents", "ResearchUploaddoc", "ProvidedInfo", new { pid = item.PersonalRowID ,sid = item.SubCheckRowId}, new { @class = "iframeUpdateStatus cboxElement" });
+                                        return link;
+                                    }, style:"edit td-1"),
+
+
+
+             }
+
+
+                             )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+
+    <script type="text/javascript">
+        $(".Complete").on("click", function () {
+            var str = $(this).attr("id").split("-");
+            id = str[1] ;
+
+            var flag = confirm('Are you sure Employer Details uploaded successfully?');
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("CompleteEmploymentResearchJobs", "ProvidedInfo")',
+                    data: { "id": id, },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Researcher job Completed Successfully!!");
+                            setTimeout(function () { window.location.replace("ManageResearchEmploymentChecks"); }, 500);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+        });
+
+        $('.Research').on('click', function () {
+            var id = $(this).attr("id");
+
+
+            var url = "/Master/AddEmployer?EmploymentRowId=" + id;
+            window.open(url, '_blank');
+            //window.location.href = url;
+        })
+
+        $('.Research1').on('click', function () {
+            var id = $(this).attr("id");
+
+
+            var url = "/Master/AddEmployerResearch?EmploymentRowId=" + id;
+            window.open(url, '_blank');
+            //window.location.href = url;
+        })
+
+
+        $(document).ready(function () {
+            $(".iframeUpdateStatus").colorbox({ iframe: true, width: "80%", height: "60%" });
+        /*    pranav*/
+            $(".iframeEnquiryEmail").colorbox({
+                iframe: true,
+                width: "90%",
+                height: "90%",
+                overlayClose: false,
+                escKey: false
+            });
+
+            $('#RecievingDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                //showButtonPanel: true,
+                yearRange: "-66:+0",
+                //onClose: function (dateText, inst) {
+                //    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
+                //}
+            });
+            $('#CompletedDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                //showButtonPanel: true,
+                yearRange: "-66:+0",
+                //onClose: function (dateText, inst) {
+                //    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
+                //}
+            });
+        });
+    </script>
+}
+

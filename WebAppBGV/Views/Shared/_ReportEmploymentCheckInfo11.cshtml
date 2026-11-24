@@ -1,0 +1,426 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    /**/
+
+    var list = Model.EmploymentInfoModel.GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+
+
+}
+
+@if (Model != null && Model.EmploymentInfoModel != null && Model.EmploymentInfoModel.Count > 0)
+{
+
+
+
+
+
+
+
+    if (Model.EmploymentInfoModel != null)
+    {
+        int i = 0;
+        var Annexureindex = 2;
+        foreach (var a in list)
+        {
+
+            var Anticident = Model.EmploymentInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+            var ReportComment = a.ReportComment;
+            var modeofverification = a.modeofverification;
+
+            <page id="PrintSrc" size="A4">
+                <div style="page-break-after:always ;"></div>
+                <br />
+                @*<table width="793" border="0" style="border-collapse:collapse;position: relative;
+                    margin-left: 0;margin-right: 0; margin: auto;">
+                        <tr>
+                            <td align="right" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                        </tr>
+                        <tr><td>&nbsp;</td></tr>
+                    </table>*@
+                <table width="793" align="center" style="border-bottom:2px solid #ccc;">
+                    <tr>
+                        <td width="85%">
+                            <table width="100%">
+                                <tr>
+                                    <td style="
+    padding: 0 1%;" width="20%">
+                                        <p style="text-align: left;">
+                                            <strong>Subject Name:</strong>
+                                        </p>
+                                    </td>
+                                    <td style="
+    padding: 0 1%;" width="80%">
+                                        <p style="text-align: left;">
+                                            @Model.PersonalName
+                                        </p>
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+                                    <td style="padding: 0 1%; nowrap">
+                                        <p style="text-align: left; text-wrap:none">
+                                            <strong>Vendor Ref No.:</strong>
+                                        </p>
+                                    </td>
+                                    <td style="padding: 0 1%;">
+                                        <p style="text-align: left;">
+                                            @Model.CompanyRefNo
+                                        </p>
+                                    </td>
+                                </tr>
+
+
+                                <tr>
+                                    <td style="padding: 0 1%;">
+                                        <p style="text-align: left;">
+                                            <strong>Vendor Name :</strong>
+                                        </p>
+                                    </td>
+                                    <td style="padding: 0 1%;">
+                                        <p style="text-align: left;">
+                                            Securitas-India
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td width="15%" align="right" valign="top" style="padding-top:2%;">
+                            <table>
+                                <tr>
+                                    <td rowspan="3" valign="bottom">
+                                        <img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40">
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                <table width="793" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;position: relative;
+    margin-left: 0;margin-right: 0; margin: auto;">
+
+
+                    <tr>
+                        <p style="text-align: center;">
+                            <strong>Annexure @Convert.ToString(Annexureindex)</strong>
+                        </p>
+                        <p style="text-align: center;">
+                            <strong>Employment Verification</strong>
+                            <strong>Report</strong>
+                        </p>
+                        <table width="793" border="1" style="border-collapse:collapse;position: relative;
+    margin-left: 0;margin-right: 0; margin: auto;">
+                            <tbody>
+                                <tr>
+                                    <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p style="text-align: center;">
+                                            <strong>Details of Employment</strong>
+                                        </p>
+                                    </td>
+                                    <td width="246" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p style="text-align: center;">
+                                            <strong>Antecedents Stated</strong>
+                                        </p>
+                                    </td>
+                                    <td width="220" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p style="text-align: center;">
+                                            <strong>Antecedents Verified</strong>
+                                        </p>
+                                    </td>
+                                </tr>
+                                @foreach (var item in Anticident)
+                                {
+                                    if (item.AntecedentRowID == "81")
+                                    {
+                                        <tr>
+                                            <td width="160" style="background:#ccc;color-adjust:exact;
+                            padding: 0 1%;">
+                                                <p>
+                                                    <strong>Any Other Comments</strong>
+                                                </p>
+                                            </td>
+                                            <td colspan="2" width="472">
+                                                @Html.Raw(ReportComment)
+                                            </td>
+                                        </tr>
+                                    }
+                                    @*else  if (item.AntecedentRowID == "232")
+                                    {
+                                        <tr>
+                                            <td width = "160" style = "background:#ccc;color-adjust:exact;
+                                    padding: 0 1 %; ">
+                                                  <p>
+
+
+                                                      <strong> Respondent Contact Details</strong>
+
+
+                                                     </p>
+
+
+                                                 </td>
+
+
+                                            <td colspan="2" width="472">
+                                                @if (item.OpsValue != null)
+    {
+                                            <p>@item.OpsValue</p>
+}
+                                            </td>
+
+
+                                                </tr >
+                                            }*@
+                                    else
+                                    {
+                                        <tr>
+                                            <td width="167" style="background: #ccc; color-adjust:exact;
+            padding: 0 1%;">
+                                                <p>
+                                                    <strong>@item.DisplayNameRep</strong>
+                                                </p>
+                                            </td>
+                                            <td width="246">
+                                                <p>@item.DataEntryValue</p>
+                                            </td>
+                                            <td width="220">
+                                                @if (item.OpsValue != null)
+                                                        {
+                                                    <p>@item.OpsValue</p>
+                                                }
+                                            </td>
+                                        </tr>
+                                            }
+
+
+
+                                        @*<tr>
+                                                    <td width="167" style="background: #ccc; color-adjust:exact;
+                padding: 0 1%;">
+                                                        <p>
+                                                            <strong>Address Type</strong>
+                                                        </p>
+
+                                                    </td>
+                                                    <td width="246">
+                                                        <p>@ProvidedInfo.AV_Add_Type</p>
+                                                    </td>
+                                                    <td width="220">
+                                                        @if (AddressVerInfo != null)
+                                                        {
+                                                            <p>@AddressVerInfo.AV_Add_Type</p>
+                                                        }
+                                                    </td>
+                                                </tr>
+
+
+                                                <tr>
+                                                    <td width="167" style="background: #ccc; color-adjust:exact;
+                padding: 0 1%;">
+                                                        <p>
+                                                            <strong>Period of Stay</strong>
+                                                        </p>
+
+                                                    </td>
+                                                    <td width="246">
+                                                        <p>@ProvidedInfo.AV_Dur_of_Stay</p>
+                                                    </td>
+                                                    <td width="220">
+                                                        @if (AddressVerInfo != null)
+                                                        {
+                                                            <p>@AddressVerInfo.AV_Dur_of_Stay</p>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="167" style="background: #ccc; color-adjust:exact;
+                padding: 0 1%;">
+                                                        <p>
+                                                            <strong>Mode of Verification</strong>
+                                                        </p>
+                                                    </td>
+                                                    <td width="246">
+                                                        <p>@ProvidedInfo.ModeOfVerification</p>
+                                                    </td>
+                                                    <td width="220">
+                                                        @if (AddressVerInfo.ModeOfVerification != null)
+                                                        {
+                                                            if (@AddressVerInfo.ModeOfVerification.ToLower() == "verbal")
+                                                            {
+                                                                <p>Telephonic</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                <p>@AddressVerInfo.ModeOfVerification</p>
+                                                            }
+
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="167" style="background: #ccc; color-adjust:exact;
+                padding: 0 1%;">
+                                                        <p>
+                                                            <strong>Additional Remarks</strong>
+                                                        </p>
+                                                    </td>
+                                                    <td width="246">
+                                                        <p>@AddressVerInfo.AV_Any_Other_Cmmnts_AV</p>
+                                                    </td>
+                                                    <td width="220">
+                                                        @if (AddressVerInfo != null)
+                                                        {
+                                                            <p>@AddressVerInfo.AV_Any_Other_Cmmnts_AV</p>
+                                                        }
+                                                    </td>
+                                                </tr>*@
+                                    }
+
+
+                                </tbody>
+                        </table>
+                        <p>&nbsp;</p>
+                        @*<table width="793" border="1" style="border-collapse:collapse;position: relative;
+                            margin-left: 0;margin-right: 0; margin: auto;">
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="2" width="632" style="background: #ccc; color-adjust:exact;
+                            padding: 0 1%;">
+                                                            <p style="text-align: center;">
+                                                                <strong>Verifier&rsquo;s Comments</strong>
+                                                            </p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="160" style="background: #ccc;color-adjust:exact;
+                            padding: 0 1%;">
+                                                            <p>
+                                                                <strong>Mode of Verification</strong>
+                                                            </p>
+                                                        </td>
+                                                        <td width="472">
+                                                            @if (AddressVerInfo != null)
+                                                            {
+                                                                <p>@AddressVerInfo.ModeOfVerification</p>
+                                                                <p>Details verified by:- @AddressVerInfo.ModeOfVerification</p>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="160" style="background:#ccc;color-adjust:exact;
+                            padding: 0 1%;">
+                                                            <p>
+                                                                <strong>Any Other Comments</strong>
+                                                            </p>
+                                                        </td>
+                                                        <td width="472">
+                                                            @if (AddressVerInfo != null)
+                                                            {
+                                                                <p>@AddressVerInfo.ReportComment</p>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>*@
+                        <table width="793" style="border-collapse:collapse;position: relative;
+    margin-left: 0;margin-right: 0; margin: auto;border:1px solid #000;border-top:none;">
+                            <tr>
+
+                                <td colspan="2">@Html.Partial("_ReportFooterAddress")</td>
+                            </tr>
+                        </table>
+                    </tr>
+
+                </table>
+
+            </page>
+            if (Model.CandidateDocList != null)
+            {
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                {
+                    if (Doc.SubCheckRowID == a.SubcheckRowID)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                            <page id="PrintSrc" size="A4">
+                                <div style="page-break-after:always ;"></div>
+                                <table width="793" cellspacing="0" height="1100" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center">
+                                    <!--- Report Header Include -->
+                                    @*@Html.Partial("_ReportHeader")*@
+                                    <!--- Report Header Include -->
+                                    <tr>
+                                        @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                        <td valign="top" colspan="2" align="center" valign="bottom">
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td valign="top">
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tr>
+                                                                <td style="font-size:10px; font-family:Calibri;">
+                                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                        <tr>
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@a.SubCheckName (@Doc.DocumentType)</p></td>
+                                                                            <td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                                                                        </tr>
+                                                                        <tr><td colspan="2">&nbsp;</td></tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td valign="top">&nbsp;</td>
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td valign="top">
+                                                                    @{
+                                                                        FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                        System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                        if (image.Height > 600)
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                        }
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                                    </tr>
+                                    <!--- Report Footer with Address Include -->
+                                    @Html.Partial("_ReportFooterAddress")
+                                    <!--- Report Footer with Address Include -->
+                                    <!--- Report Footer Include -->
+                                    @*@Html.Partial("_ReportFooter")*@
+                                    <!--- Report Footer Include -->
+                                </table>
+                            </page>
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+
+                                                                                    i++;
+                                                                                    Annexureindex++;
+                                                                                }
+
+
+
+
+                                                                            }
+
+                                                                        }

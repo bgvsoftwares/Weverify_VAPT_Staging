@@ -1,0 +1,471 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    /**/
+
+    /**/
+
+    var list = Model.EmploymentInfoModel.Where(T => T.SubcheckRowID == 68).GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+
+
+}
+
+@if (list.Count > 0)
+{
+    if (Model.EmploymentInfoModel != null)
+    {
+        int i = 0;
+        int j = 0;
+        double annuxureno = Convert.ToDouble(Session["AnnexureNo"]);
+        int k = Convert.ToInt32(annuxureno);
+        foreach (var a in list)
+        {
+            var Anticident = Model.EmploymentInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+            var ReportComment = a.ReportComment;
+            if (j == 0)
+            {
+                annuxureno = k + 1;
+            }
+            else
+            {
+                annuxureno = annuxureno + .1;
+            }
+            j = 2;
+            Session["AnnexureNo"] = annuxureno.ToString();
+
+
+            <page id="PrintSrc" size="A4">
+                <div style="page-break-after:always ;"></div>
+                <table style="border: 3px solid #999999; margin: auto; width: 67%;">
+                    <tr>
+                        <td>
+                            <table width="793" align="center">
+                                <tr>
+                                    <td width="85%"></td>
+                                    <td width="15%" align="right" valign="top" style="padding-top:2%;">
+                                        <table>
+                                            <tr>
+                                                <td rowspan="3" valign="bottom">
+                                                    <img src='@Url.Content("~/Images/logo.jpg")' width="60" height="40">
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <p style="text-align: center;"><br></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <br />
+                    <tr>
+                        <td>
+                            <table style="margin: 0px auto; border-collapse: collapse; border: 1px solid;">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="3" style="width: 504.45pt; border: 1px solid; background: rgb(219, 228, 240) none repeat scroll 0% 0%; padding: 0cm; height: 11.65pt; vertical-align: top;">
+                                            <p style='margin-top:0cm;margin-right:170.75pt;margin-bottom:.0001pt;margin-left:171.55pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:center;line-height:10.7pt;'><strong><span style="font-size:13px;color:black;">CURRENT EMPLOYMENT CHECK (HR)</span></strong></p>
+                                        </td>
+                                    </tr>
+
+                                    @foreach (var item in Anticident)
+                                    {
+
+
+                                        if (item.AntecedentRowID == "141")
+                                        {
+                                            <tr>
+                                                <td style="width: 154.15pt; border: 1px solid; padding: 0cm; height: 14.05pt; vertical-align: top;">
+                                                    <p style='margin-top:.75pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.85pt;font-size:15px;font-family:"Calibri",sans-serif;'><strong><span style="font-size:13px;">Candidate Name</span></strong></p>
+                                                </td>
+                                                <td colspan="2" style="width: 350.3pt; border: 1px solid; padding: 0cm; height: 14.05pt; vertical-align: top;">
+                                                    <p style='margin-top:2.2pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.6pt;font-size:15px;font-family:"Calibri",sans-serif;line-height:10.85pt;'><strong><span style="font-size:13px;">@Model.PersonalName</span></strong></p>
+                                                </td>
+                                            </tr>
+
+                                        }
+                                        else if (item.AntecedentRowID == "82")
+                                        {
+                                            <tr>
+                                                <td style="width: 154.15pt; border: 1px solid; padding: 0cm; height: 14.05pt; vertical-align: top;">
+                                                    <p style='margin-top:.75pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.85pt;font-size:15px;font-family:"Calibri",sans-serif;'><strong><span style="font-size:13px;">@item.DisplayNameRep</span></strong></p>
+                                                </td>
+                                                @if (item.OpsValue == "")
+                                                {
+                                                    <td colspan="2" style="width: 350.3pt; border: 1px solid; padding: 0cm; height: 14.05pt; vertical-align: top;">
+                                                        <p style='margin-top:2.2pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.6pt;font-size:15px;font-family:"Calibri",sans-serif;line-height:10.85pt;'><strong><span style="font-size:13px;">@item.DataEntryValue</span></strong></p>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td colspan="2" style="width: 350.3pt; border: 1px solid; padding: 0cm; height: 14.05pt; vertical-align: top;">
+                                                        <p style='margin-top:2.2pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.6pt;font-size:15px;font-family:"Calibri",sans-serif;line-height:10.85pt;'><strong><span style="font-size:13px;">@item.OpsValue</span></strong></p>
+                                                    </td>
+                                                }
+
+                                            </tr>
+                                        }
+
+                                        else if (item.AntecedentRowID == "92")
+                                        {
+                                            <tr>
+                                                <td style="width: 154.15pt; border: 1px solid; padding: 0cm; height: 14.05pt; vertical-align: top;">
+                                                    <p style='margin-top:.75pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.85pt;font-size:15px;font-family:"Calibri",sans-serif;'><strong><span style="font-size:13px;">@item.DisplayNameRep</span></strong></p>
+                                                </td>
+                                                @if (item.DataEntryValue != null || item.DataEntryValue != "")
+                                                {
+                                                    <td colspan="2" style="width: 350.3pt; border: 1px solid; padding: 0cm; height: 14.05pt; vertical-align: top;">
+                                                        <p style='margin-top:2.2pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.6pt;font-size:15px;font-family:"Calibri",sans-serif;line-height:10.85pt;'><strong><span style="font-size:13px;">@item.DataEntryValue</span></strong></p>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td colspan="2" style="width: 350.3pt; border: 1px solid; padding: 0cm; height: 14.05pt; vertical-align: top;">
+                                                        <p style='margin-top:2.2pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.6pt;font-size:15px;font-family:"Calibri",sans-serif;line-height:10.85pt;'><strong><span style="font-size:13px;">@item.OpsValue</span></strong></p>
+                                                    </td>
+                                                }
+
+                                            </tr>
+                                        }
+                                    }
+                                    @*<tr>
+            <td style="width: 154.15pt; border: 1px solid; padding: 0cm; height: 14.3pt; vertical-align: top;">
+                <p style='margin-top:1.0pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.85pt;font-size:15px;font-family:"Calibri",sans-serif;'><strong><span style="font-size:13px;">Company Name</span></strong></p>
+            </td>
+            <td colspan="2" style="width: 350.3pt; border: 1px solid; padding: 0cm; height: 14.3pt; vertical-align: top;">
+                <p style='margin-top:2.45pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.6pt;font-size:15px;font-family:"Calibri",sans-serif;line-height:10.85pt;'><strong><span style="font-size:13px;">Cpf&nbsp;(india)&nbsp;Private&nbsp;Limited</span></strong></p>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 154.15pt; border: 1px solid; padding: 0cm; height: 13.8pt; vertical-align: top;">
+                <p style='margin-top:.75pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.85pt;font-size:15px;font-family:"Calibri",sans-serif;'><strong><span style="font-size:13px;">Company&nbsp;Location</span></strong></p>
+            </td>
+            <td colspan="2" style="width: 350.3pt; border: 1px solid; padding: 0cm; height: 13.8pt; vertical-align: top;">
+                <p style='margin-top:1.95pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.6pt;font-size:15px;font-family:"Calibri",sans-serif;line-height:10.85pt;'><strong><span style="font-size:13px;">C.P.&nbsp;Tower,&nbsp;313&nbsp;Silom Road,&nbsp;Bangrak,&nbsp;Bangkok&nbsp;10500&nbsp;Thailand</span></strong></p>
+            </td>
+        </tr>*@
+
+
+
+                                    <tr>
+                                        <td colspan="3" style="width: 504.45pt; border: 1px solid; background: rgb(219, 228, 240) none repeat scroll 0% 0%; padding: 0cm; height: 11.65pt; vertical-align: top;">
+                                            <p style='margin-top:0cm;margin-right:170.75pt;margin-bottom:.0001pt;margin-left:171.85pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:center;line-height:10.65pt;'><strong><span style="font-size:13px;color:black;">EMPLOYMENT&nbsp;DETAILS</span></strong></p>
+                                        </td>
+                                    </tr>
+
+
+                                    <tr>
+                                        <td style="width: 154.15pt; border: 1px solid; background: rgb(219, 228, 240) none repeat scroll 0% 0%; padding: 0cm; height: 11.65pt; vertical-align: top;">
+                                            <p style='margin-top:0cm;margin-right:60.85pt;margin-bottom:.0001pt;margin-left:61.8pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:center;line-height:10.65pt;'><strong><span style="font-size:13px;color:black;">Details</span></strong></p>
+                                        </td>
+                                        <td style="width: 188.95pt; border: 1px solid; background: rgb(219, 228, 240) none repeat scroll 0% 0%; padding: 0cm; height: 11.65pt; vertical-align: top;">
+                                            <p style='margin-top:0cm;margin-right:0cm;margin-bottom:.0001pt;margin-left:56.5pt;font-size:15px;font-family:"Calibri",sans-serif;line-height:10.65pt;'><strong><span style="font-size:13px;color:black;">Information&nbsp;stated</span></strong></p>
+                                        </td>
+                                        <td style="width: 161.35pt; border: 1px solid; background: rgb(219, 228, 240) none repeat scroll 0% 0%; padding: 0cm; height: 11.65pt; vertical-align: top;">
+                                            <p style='margin-top:0cm;margin-right:34.45pt;margin-bottom:.0001pt;margin-left:35.25pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:center;line-height:10.65pt;'><strong><span style="font-size:13px;color:black;">Information&nbsp;Validated</span></strong></p>
+                                        </td>
+                                    </tr>
+
+
+                                    @foreach (var item in Anticident)
+                                    {
+                                        if (item.AntecedentRowID == "87" || item.AntecedentRowID == "97")
+                                        {
+
+                                            <tr>
+                                                <td style="width: 154.15pt; border: 1px solid; padding: 0cm; height: 14.8pt; vertical-align: top;">
+                                                    <p style='margin-top:1.3pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.85pt;font-size:15px;font-family:"Calibri",sans-serif;'><strong><span style="font-size:13px;">@item.DisplayNameRep</span></strong></p>
+                                                </td>
+
+
+                                                <td style="width: 188.95pt; border: 1px solid; padding: 0cm; height: 14.8pt; vertical-align: top;">
+                                                    <p style='margin-top:2.95pt;margin-right:0cm;margin-bottom:0cm;font-size:15px;text-align:center; font-family:"Calibri",sans-serif;line-height:10.85pt;'><strong><span style="font-size:13px;">@item.DataEntryValue</span></strong></p>
+                                                </td>
+
+                                                @*else
+                    {
+                        <td style="width: 188.95pt; border: 1px solid; padding: 0cm; height: 14.8pt; vertical-align: top;">
+                            <p style='margin-top:2.95pt;margin-right:0cm;margin-bottom:0cm;font-size:15px;text-align:center; font-family:"Calibri",sans-serif;line-height:10.85pt;'><strong><span style="font-size:13px;">@item.OpsValue</span></strong></p>
+                        </td>
+                    }*@
+
+                                                @if (!string.IsNullOrEmpty(item.OpsValue))
+                                                {
+                                                    if (item.DataEntryValue.ToLower().Trim() == item.OpsValue.ToLower().Trim())
+                                                    {
+                                                        <td style="width: 161.35pt; border: 1px solid; padding: 0cm; height: 14.8pt; vertical-align: top;">
+                                                            <p style='margin-top:2.95pt;margin-right:  33.4pt;margin-bottom:.0001pt;margin-left:35.25pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:center;line-height:10.85pt;'><strong><span style="font-size:13px;">Verified</span></strong></p>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td style="width: 161.35pt; border: 1px solid; padding: 0cm; height: 14.8pt; vertical-align: top;">
+                                                            <p style='margin-top:2.95pt;margin-right:  33.4pt;margin-bottom:.0001pt;margin-left:35.25pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:center;line-height:10.85pt;'><strong><span style="font-size:13px;">@item.OpsValue</span></strong></p>
+                                                        </td>
+                                                    }
+                                                }
+                                                else if (a.CheckColorName.ToLower() == "ytr on hold")
+                                                {
+                                                    <td style="width: 161.35pt; border: 1px solid; padding: 0cm; height: 14.8pt; vertical-align: top;">
+                                                        <p style='margin-top:2.95pt;margin-right:  33.4pt;margin-bottom:.0001pt;margin-left:35.25pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:center;line-height:10.85pt;'><strong><span style="font-size:13px;">Not Applicable</span></strong></p>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="width: 161.35pt; border: 1px solid; padding: 0cm; height: 14.8pt; vertical-align: top;">
+                                                        <p style='margin-top:2.95pt;margin-right:  33.4pt;margin-bottom:.0001pt;margin-left:35.25pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:center;line-height:10.85pt;'><strong><span style="font-size:13px;"></span></strong></p>
+                                                    </td>
+                                                }
+                                            </tr>
+                                        }
+                                    }
+                                    @*<tr>
+            <td style="width: 154.15pt; border: 1px solid; padding: 0cm; height: 23.65pt; vertical-align: top;">
+                <p style='margin-top:5.55pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.85pt;font-size:15px;font-family:"Calibri",sans-serif;'><strong><span style="font-size:13px;">Last&nbsp;Designation</span></strong></p>
+            </td>
+            <td style="width: 188.95pt; border: 1px solid; padding: 0cm; height: 23.65pt; vertical-align: top;">
+                <p style='margin-top:3.85pt;margin-right:40.4pt;margin-bottom:.0001pt;margin-left:50.7pt;font-size:15px;font-family:"Calibri",sans-serif;text-indent:-13.0pt;line-height:9.4pt;'><strong><span style="font-size:13px;">Assistant Section Manager-&nbsp;Warehouse&nbsp;&amp;&nbsp;Logistic</span></strong></p>
+            </td>
+            <td style="width: 161.35pt; border: 1px solid; padding: 0cm; height: 23.65pt; vertical-align: top;">
+                <p style='margin-top:.15pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:0cm;font-size:15px;font-family:"Calibri",sans-serif;'><span style='font-size:9px;font-family:"Arial MT",sans-serif;'>&nbsp;</span></p>
+                <p style='margin-top:0cm;margin-right:33.4pt;margin-bottom:.0001pt;margin-left:35.25pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:center;'><strong><span style="font-size:13px;">Not&nbsp;Applicable</span></strong></p>
+            </td>
+        </tr>*@
+
+                                    @foreach (var item in Anticident)
+                                    {
+                                        if (item.AntecedentRowID == "153")
+                                        {
+                                            <tr>
+                                                <td style="width: 154.15pt; border: 1px solid; padding: 0cm; height: 11.4pt; vertical-align: top;">
+                                                    <p style='margin-top:0cm;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.85pt;font-size:15px;font-family:"Calibri",sans-serif;line-height:10.45pt;'><strong><span style="font-size:13px;">@item.DisplayNameRep</span></strong></p>
+                                                </td>
+                                                @if (a.CheckColorName.ToLower() == "ytr on hold")
+                                                {
+                                                    <td colspan="2" style="width: 350.3pt; border: 1px solid; padding: 0cm; height: 11.4pt; vertical-align: top;">
+                                                        <p style='margin-top:.05pt;margin-right:  7.45pt;margin-bottom:.0001pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  left;'><strong><span style="font-size:13px;">Not Applicable</span></strong></p>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td colspan="2" style="width: 350.3pt; border: 1px solid; padding: 0cm; height: 11.4pt; vertical-align: top;">
+                                                        <p style='margin-top:.05pt;margin-right:  7.45pt;margin-bottom:.0001pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  left;'><strong><span style="font-size:13px;">@item.OpsValue.Replace("Paper", "Document").Replace("EBGC", "E-BGC")</span></strong></p>
+                                                    </td>
+                                                }
+
+
+
+
+                                            </tr>
+
+                                        }
+                                        else if (item.AntecedentRowID == "81")
+                                        {
+                                            <tr>
+                                                <td style="width: 154.15pt; border: 1px solid; padding: 0cm; height: 11.4pt; vertical-align: top;">
+                                                    <p style='margin-top:0cm;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.85pt;font-size:15px;font-family:"Calibri",sans-serif;line-height:10.45pt;'><strong><span style="font-size:13px;">@item.DisplayNameRep</span></strong></p>
+                                                </td>
+                                                @if (a.CheckColorName.ToLower() == "ytr on hold")
+                                                {
+                                                    <td colspan="2" style="width: 350.3pt; border: 1px solid; padding: 0cm; height: 11.4pt; vertical-align: top;">
+                                                        <p style='margin-top:.05pt;margin-right:  7.45pt;margin-bottom:.0001pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  left;'><strong><span style="font-size:13px;">Candidate is still active at current employer and go ahead is awaited, hence closing the check as Orange</span></strong></p>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td colspan="2" style="width: 350.3pt; border: 1px solid; padding: 0cm; height: 11.4pt; vertical-align: top;">
+                                                        <p style='margin-top:.05pt;margin-right:  7.45pt;margin-bottom:.0001pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  left;'><strong><span style="font-size:13px;">@Html.Raw(ReportComment)</span></strong></p>
+                                                    </td>
+                                                }
+
+                                            </tr>
+
+                                        }
+
+                                        else if (item.AntecedentRowID == "629" || item.AntecedentRowID == "632" || item.AntecedentRowID == "630" || item.AntecedentRowID == "631" || item.AntecedentRowID == "632" || item.AntecedentRowID == "633" || item.AntecedentRowID == "635" || item.AntecedentRowID == "636" || item.AntecedentRowID == "637" || item.AntecedentRowID == "640")
+                                        {
+                                            <tr>
+                                                <td style="width: 154.15pt; border: 1px solid; padding: 0cm; height: 11.4pt; vertical-align: top;">
+                                                    <p style='margin-top:0cm;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.85pt;font-size:15px;font-family:"Calibri",sans-serif;line-height:10.45pt;'><strong><span style="font-size:13px;">@item.DisplayNameRep</span></strong></p>
+                                                </td>
+
+                                                @if ((item.CheckColorName == null || item.CheckColorName.ToLower() == "orange") && (item.OpsValue.ToUpper() == "NA" || item.OpsValue.ToUpper() == "--"))
+                                                {
+                                                    <td colspan="2" style="width: 350.3pt; border: 1px solid; padding: 0cm; height: 11.4pt; vertical-align: top;">
+                                                        <p style='margin-top:.05pt;margin-right:  7.45pt;margin-bottom:.0001pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  left;'><strong><span style="font-size:13px;">-</span></strong></p>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td colspan="2" style="width: 350.3pt; border: 1px solid; padding: 0cm; height: 11.4pt; vertical-align: top;">
+                                                        <p style='margin-top:.05pt;margin-right:  7.45pt;margin-bottom:.0001pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  left;'><strong><span style="font-size:13px;">@item.OpsValue</span></strong></p>
+                                                    </td>
+                                                }
+
+
+
+
+                                            </tr>
+                                        }
+
+                                        //          else if ((a.EmpNewEmpVerAlert == "2") && (item.AntecedentRowID == "629" || item.AntecedentRowID == "632" || item.AntecedentRowID == "630" || item.AntecedentRowID == "631"))
+                                        //{
+                                        //              < tr >
+                                        //                  < td style = "width: 154.15pt; border: 1px solid; padding: 0cm; height: 11.4pt; vertical-align: top;" >
+
+                                        //                       < p style = 'margin-top:0cm;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.85pt;font-size:15px;font-family:"Calibri",sans-serif;line-height:10.45pt;' >< strong >< span style = "font-size:13px;" > @item.DisplayNameRep </ span ></ strong ></ p >
+
+                                        //                          </ td >
+
+
+
+                                        //                              < td colspan = "2" style = "width: 350.3pt; border: 1px solid; padding: 0cm; height: 11.4pt; vertical-align: top;" >
+
+                                        //                                     < p style = 'margin-top:.05pt;margin-right:  7.45pt;margin-bottom:.0001pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  left;' >< strong >< span style = "font-size:13px;" > @item.OpsValue </ span ></ strong ></ p >
+
+                                        //                                        </ td >
+
+
+
+
+                                        //                                </ tr >
+
+                                        //          }
+                                    }
+                                    @*<tr>
+            <td style="width: 154.15pt; border: 1px solid; padding: 0cm; height: 23.15pt; vertical-align: top;">
+                <p style='margin-top:5.55pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.85pt;font-size:15px;font-family:"Calibri",sans-serif;'><strong><span style="font-size:13px;">Remarks</span></strong></p>
+            </td>
+            <td colspan="2" style="width: 350.3pt; border: 1px solid; padding: 0cm; height: 23.15pt; vertical-align: top;">
+                <p style='margin-top:.05pt;margin-right:7.45pt;margin-bottom:.0001pt;margin-left:4.6pt;font-size:15px;font-family:"Calibri",sans-serif;'><strong><span style="font-size:13px;color:#00AF50;">The verification has been conducted on the basis of UAN provided by the candidate. Only date of joining was found However, the format of the provided document is matching as per the previous record. Hence, closed the case through Document Validation process.</span></strong></p>
+            </td>
+        </tr>*@
+                                    <tr>
+                                        <td style="width: 154.15pt; border: 1px solid; padding: 0cm; height: 11.9pt; vertical-align: top;">
+                                            <p style='margin-top:0cm;margin-right:0cm;margin-bottom:.0001pt;margin-left:4.85pt;font-size:15px;font-family:"Calibri",sans-serif;line-height:10.95pt;'><strong><span style="font-size:13px;">Color&nbsp;Code</span></strong></p>
+                                        </td>
+                                        @if (a.CheckColorName.ToLower() == "ytr on hold")
+                                        {
+                                            <td colspan="2" style="width: 350.3pt; border: 1px solid; padding: 0cm; height: 11.9pt; vertical-align: top;">
+                                                <p style='margin-top:.05pt;margin-right:7.45pt;margin-bottom:.0001pt;font-size:15px;font-family:"Calibri",sans-serif;'><strong><span style="font-size:13px; color:#FF9933">Orange</span></strong></p>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td colspan="2" style="width: 350.3pt; border: 1px solid; padding: 0cm; height: 11.9pt; vertical-align: top;">
+                                                <p style='margin-top:.05pt;margin-right:7.45pt;margin-bottom:.0001pt;font-size:15px;font-family:"Calibri",sans-serif;'><strong><span style="font-size:13px; color:@a.CheckColorCode">@a.CheckColorName</span></strong></p>
+                                            </td>
+                                        }
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <p><br></p>
+                    <tr>
+                        <td valign="bottom">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:15rem;">
+                                <tbody>
+                                    <tr>
+                                        <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                                            &nbsp;
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                        <td width="1%">&nbsp;</td>
+                                        <td width="79%">
+                                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                            <p style="font-size:16px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+            </page>
+
+            if (Model.CandidateDocList != null)
+            {
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                {
+                    if (Doc.SubCheckRowID == a.SubcheckRowID)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                            <page id="PrintSrc" size="A4">
+                                <div style="page-break-after:always ;"></div>
+                                <table width="793" cellspacing="0" height="1100" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center">
+                                    <!--- Report Header Include -->
+                                    @*@Html.Partial("_ReportHeader")*@
+                                    <!--- Report Header Include -->
+                                    <tr>
+                                        @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                        <td valign="top" colspan="2" align="center" valign="bottom">
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td valign="top">
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tr>
+                                                                <td style="font-size:10px; font-family:Calibri;">
+                                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                        <tr>
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@a.SubCheckName (@Doc.DocumentType)</p></td>
+                                                                            <td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                                                                        </tr>
+                                                                        <tr><td colspan="2">&nbsp;</td></tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td valign="top">&nbsp;</td>
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td valign="top">
+                                                                    @{
+                                                                        FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                        System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                        if (image.Height > 600)
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                        }
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                                    </tr>
+                                    <!--- Report Footer with Address Include -->
+                                    @Html.Partial("_ReportFooterAddress")
+                                    <!--- Report Footer with Address Include -->
+                                    <!--- Report Footer Include -->
+                                    @*@Html.Partial("_ReportFooter")*@
+                                    <!--- Report Footer Include -->
+                                </table>
+                            </page>
+                        }
+                    }
+                }
+            }
+            i++;
+        }
+    }
+}
+<br />

@@ -1,0 +1,247 @@
+﻿@model ViewModels.ClientViewModel.CheckAddAndReverification
+@{
+//Layout = null;
+}
+
+<!DOCTYPE html>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("AddChecks", "ClientServicing", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch search-frame">
+                                    <label class="col-md-2 control-label">CompanyRefNo :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBoxFor(model => model.ClientRowId, null, new { @class = "form-control" })
+                                        @Html.TextBoxFor(model => model.SecuritasID, null, new { @class = "form-control", placeholder = "Ex Enter CompanyRefNo..." })
+
+                                        @*@Html.HiddenFor(model => model.ClientRowId, new { @id= "HfclientRowId" })*@
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <input class="btn bun-bg btn-default" type="submit" value="Search" name="SaveWork" />
+                                    </div>
+
+                                    @*<div class="col-md-2">
+                                            <input class="btn bun-bg btn-default" type="submit"  value="DeleteCase" name="SaveWork" onclick="myFunction()" />
+                                        </div>*@
+                                </div>
+
+                                @*<div class="form-group branch search-frame">
+                                    <label class="col-md-2 control-label">Select Action :</label>
+                                    <div class="col-md-3">
+                                        @Html.DropDownList("ddlAction", new List<SelectListItem>
+    {new SelectListItem{Text="-- Select --", Value="-- Select --", Selected = true },
+    new SelectListItem{Text="Add Check", Value="Add Check" },
+    new SelectListItem{Text="ReVerification", Value="ReVerification"},
+
+    //new SelectListItem{Text="STOP", Value="STOP", Selected = true, }
+                              },
+    new { @class = "form-control" })
+
+                                    </div>
+
+
+                                </div>*@
+                                @*<div class="form-group branch search-frame">
+                                    <label class="col-md-2 control-label">Check Details :</label>
+                                    <div class="col-md-3">
+
+
+                                        @if (ViewBag.CheckList != null)
+                                        {
+
+                                            @Html.DropDownList("ddlCheckDetail",
+    new SelectList(ViewBag.CheckList, "SubCheckRowID", "SubCheckName"),
+
+    new { @class = "form-control" })
+                                        }
+                                        @if (ViewBag.chek != null)
+                                        {
+
+                                            @Html.DropDownList("ddlCheckStatus",
+    new SelectList(ViewBag.chek, "SubCheckRowID", "SubCheckName"), "-- Select check -- ",
+
+    new { @class = "form-control" })
+
+
+                                        }
+
+                                    </div>
+
+
+
+                                </div>*@
+
+                                @*<div class="form-group branch search-frame">
+                                    <label class="col-md-2 control-label">Billing Status :</label>
+                                    <div class="col-md-3">
+                                        @Html.DropDownList("ddlBillable", new List<SelectListItem>
+    {
+                                       new SelectListItem{Text="-- Select --", Value="-- Select --", Selected = true},
+                                       new SelectListItem{Text="Billable", Value="Billable"},
+                                       new SelectListItem{Text="Not Billable", Value="Not Billable"},
+
+    //new SelectListItem{Text="STOP", Value="STOP", Selected = true, }
+                              },
+    new { @class = "form-control" })
+
+                                    </div>
+
+
+                                </div>*@
+
+
+
+                                @*<div class="form-group branch search-frame">
+
+                                    <label class="col-md-2 control-label">Action Remarks :</label>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(model => model.Remark, null, new { @class = "form-control", @id = "TextBoxMode", placeholder = "Ex Enter Remarks...", style = "height:60px;" })
+
+                                    </div>
+                                </div>*@
+
+
+
+                                @*<div class="form-group branch search-frame">
+
+                                    <label class="col-md-2 control-label">Attachment :</label>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(model => model.UploadDoc, new { @id = "UploadAddressDoc", @accept = "image/gif, image/jpeg, image/png, image/jpg", type = "file", multiple = "multiple" })
+
+
+                                    </div>
+                                </div>*@
+
+                                <div class="all-button-bg">
+
+
+                                    @*<input class="btn bun-bg btn-default" type="submit" value="CheckDelete" name="CheckDel" onclick="DeleteCheck()" />*@
+                                    @*<input class="btn bun-bg btn-default" type="submit" value="CheckMove" name="MoveCheck" onclick="DeleteCheck()" />*@
+                                    <input class="btn bun-bg btn-default" type="submit" onclick="return validateForm()" value="Check Action" name="MoveCheck" />
+                                    @*<button type="button" class="btn bun-bg btn-default" onclick="location.href='@Url.Action("DeleteCheck", "ClientServicing")'">DeleteCheck</button>*@
+
+
+
+
+
+                                </div>
+
+                            </div>
+                        }
+                    </div>
+
+
+                </div>
+                @*@if (Model != null && Model.ClientServiceChecks != null)
+
+                    {
+                        <div class="row">
+                            <div class="col-md-12">
+                                @{
+
+                                    WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                    grid.Bind(Model.ClientServiceChecks, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                                }
+                                @grid.GetHtml(
+                                                                                           htmlAttributes: new { id = "grid", @class = "table" },
+                                                                                           headerStyle: "thead-inverse",
+                                                                                           rowStyle: "ordertxt",
+                                                                                           footerStyle: "custpaging",
+                                                                                           mode: WebGridPagerModes.All,
+                                                                                           columns: new[]
+                                                                                          {
+                                                                                                                                                                                grid.Column(header: "No.", style:"col-md-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                                                                                                                                                                grid.Column(columnName: "SecuritasID", header: "Company Ref No", canSort: false, style:"col-md-3"),
+                                                                                                                                                                                grid.Column(columnName: "CheckName", header: "Check Name", canSort: false, style:"col-md-2"),
+                                                                                                                                                                                grid.Column(columnName: "CheckStatus", header: "Check Status", canSort: false, style:"col-md-2"),
+
+                                                                                                                                                                                grid.Column(columnName: "ColorName", header: "ColorName", canSort: false, style:"col-md-2"),
+                                                                                               //                                                                                                                 grid.Column("Delete", canSort: false, format: (item)=> {
+                                                                                               //    string DeleteLink = string.Format("<a href=\"#\" id=\"Delete_{0}\" class=\"delete\" >{1}</a>", item.PersonalRowID,"<a href=\"#\" Sub=\"Delete_{1}\" class=\"delete\" >{2}</a>",item.PersonalRowID,"Reject");
+                                                                                               //    return new HtmlString(DeleteLink);
+                                                                                               //}, style:"delete col-md-1")
+                                                                                               //grid.Column("Delete", canSort: false, format: (item)=> {
+
+
+                                                                                               //grid.Column("orderDate", "order Date", format: (item) => item.orderDate != DateTime.MinValue ? item.orderDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"col-md-2"),
+                                                                                               // grid.Column(columnName: "CaseStatus", header: "Status", canSort: false, style:"col-md-1"),
+                                                                                               //grid.Column("Remarks", canSort: false, format: (item)=> {
+
+
+                                                                                           }
+                                                                                    )
+                                <div class="total-record">Total Records: @Model.TotalRecords</div>
+                            </div>
+                        </div>
+                    }*@
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    <script>
+        //$(document).ready(function () {
+        //    $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+        //    $("#ddlCheckStatus").hide();
+        //    $("#ddlCheckDetail").hide();
+
+        //    $("#ddlBillable").change(function () {
+
+        //        //var clientRowId = $("#clientRowId").val();
+        //        //alert(clientRowId);
+        //        $.ajax({
+        //            url: 'ClientServicing/BillableStatus?clientRowId=10' + 10,
+        //            //url: 'ClientServicing/BillableStatus?clientRowId=' + clientRowId,
+        //            method: "GET",
+        //            success: function (data) {
+
+
+        //            },
+        //            error: function (data) {
+        //                console.log(data);
+        //            }
+        //        })
+        //    });
+
+
+        //    $(function () {
+        //        $("#ddlAction").change(function () {
+        //            var check = $("#ddlAction").val();
+        //            alert(check);
+        //            if (check == 'Add Check') {
+
+        //                $("#ddlCheckStatus").show();
+        //                $("#ddlCheckDetail").hide();
+        //            }
+        //            else {
+        //                $("#ddlCheckDetail").show();
+        //                $("#ddlCheckStatus").hide();
+        //            }
+
+
+
+        //        });
+        //    });
+        //});
+    </script>
+
+
+
+}

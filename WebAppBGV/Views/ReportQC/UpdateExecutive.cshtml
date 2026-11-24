@@ -1,0 +1,159 @@
+﻿@{
+
+    ViewBag.Title = "UpdateExecutive";
+
+    Layout = null;
+
+}
+<div id="exampleModal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel" style="text-align: center; margin: auto;">Update Excutive Summary</h1>
+            </div>
+            <div class="modal-body">
+                @model List<ViewModels.ReportQCViewModel.BackgroundCheck>
+                <table id="checkTable" class="table table-striped table-hover" style="text-align: center; margin: auto;">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Type of Check</th>
+                            <th>BGC Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="text" class="type-check" name="updatedChecks[@i].TypeOfCheck" value="@Model[i].TypeOfCheck" />
+                                </td>
+                                <td>
+                                    <select class="bgc-status form-select" name="updatedChecks[@i].BgcStatus">
+                                        @if (Model[i].TypeOfCheck == "Current Address Verification" || Model[i].TypeOfCheck == "Criminal Verification through E-Court - Current Address")
+                                        {
+                                            <option value="" selected hidden>@Model[i].BgcStatus</option>
+                                            <option value="Verified">Verified</option>
+                                            <option value="Same As Present">Same As Present</option>
+                                            <option value="Same As Permanent">Same As Permanent</option>
+                                            <option value="WIP">WIP</option>
+
+                                        }
+                                        else if (Model[i].TypeOfCheck == "Current Employment Verification")
+                                        {
+                                            <option value="" selected hidden>@Model[i].BgcStatus</option>
+                                            <option value="Verified">Verified</option>
+                                            <option value="YTR">YTR</option>
+                                        }
+                                        else if (Model[i].TypeOfCheck == "Highest Education")
+                                        {
+                                            <option value="" selected hidden>@Model[i].BgcStatus</option>
+                                            <option value="Verified">Verified</option>
+                                            <option value="WIP">WIP</option>
+                                        }
+                                        else if (Model[i].TypeOfCheck.ToUpper() == "INTERNATIONAL DATABASE CHECK")
+                                        {
+                                            <option value="" selected hidden>@Model[i].BgcStatus</option>
+                                            <option value="Verified">Verified</option>
+                                        }
+                                        else
+                                        {
+                                        <option value="" selected hidden>@Model[i].BgcStatus</option>
+                                        <option value="Verified">Verified</option>
+                                        <option value="Same As Present">Same As Present</option>
+                                        <option value="WIP">WIP</option>
+                                        }
+
+                                    </select>
+                                    @*<input type="text" class="bgc-status" name="updatedChecks[@i].BgcStatus" value="@Model[i].BgcStatus" />*@
+                                </td>
+                                <td>
+                                    <input type="hidden" class="personal-rowid" name="updatedChecks[@i].PersonalRowID" value="@Model[i].PersonalRowID" />
+                                </td>
+                                <td>
+                                    <input type="hidden" class="SubCheck-rowid" name="updatedChecks[@i].SubCheckID" value="@Model[i].SubCheckID" />
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <br />
+                <div class="row">
+                    <button type="button" id="updateAllBtn" class="btn btn-primary btn-sm" style="margin-left: 496px;">Update</button>
+                </div>
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script src="~/Scripts/sweetalert2.all.min.js"></script>
+                <script>
+                    $(document).on("click", "#updateAllBtn", function () {
+                        var allData = [];
+                        debugger;
+                        $("#checkTable tbody tr").each(function () {
+                            var row = $(this);
+                            var rowData = {
+                                SubCheckID: row.find(".SubCheck-rowid").val(),
+                                TypeOfCheck: row.find(".type-check").val(),
+                                BgcStatus: row.find(".bgc-status").val(),
+                                PersonalRowID: row.find(".personal-rowid").val()
+                            };
+
+                            allData.push(rowData);
+                        });
+
+                        $.ajax({
+                            url: '@Url.Action("UpdateAllChecks", "ReportQC")',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify(allData),
+                            success: function (response) {
+                                if (response != "500") {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Success!',
+                                        text: 'All records updated successfully.',
+                                        confirmButtonText: 'OK'
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Update Failed',
+                                        text: 'Bulk update failed !!!!.'
+                                    });
+                                }
+                            }
+                        });
+                    });
+                </script>
+
+
+                <style>
+                    .btn-sm {
+                        background-color: #4CAF50; /* Green */
+                        color: white;
+                        padding: 5px 14px;
+                        border: none;
+                        border-radius: 16px;
+                        cursor: pointer;
+                        font-size: 16px;
+                        transition: background-color 0.3s ease;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    }
+
+                        .btn-sm:hover {
+                            background-color: #45a049;
+                        }
+
+                    .table-striped tbody tr:hover {
+                        background-color: #f2f2f2;
+                        cursor: pointer;
+                    }
+
+                    .modal-content {
+                        border-radius: 10px;
+                    }
+                </style>
+            </div>
+        </div>
+    </div>
+</div>
+

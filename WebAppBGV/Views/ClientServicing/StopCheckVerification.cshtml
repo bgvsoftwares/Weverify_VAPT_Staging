@@ -1,0 +1,100 @@
+﻿@model dynamic
+@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Stop Checks Verification";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+}
+
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("StopCheckVerification", "ClientServicing", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                        {
+                        @Html.AntiForgeryToken()
+                        <div class="form-horizontal">
+                            <div class="form-group branch search-frame">
+                                <label class="col-md-2 control-label text-right">Company Ref No</label>
+                                <div class="col-md-8">
+                                    @Html.TextBox("CompanyRefNo", null, new { @class = "form-control", placeholder = "Company Ref No", @autocomplete = "off", @maxLength = "100" })
+                                </div>
+                            </div>
+                            <div class="form-group branch search-frame">
+                                <div style="text-align:center;">
+                                    <input class="btn bun-bg btn-default" type="submit" value="Search" id="btnSearch" autofocus />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <table style="width:100%">
+                                <tr>
+                                    <td valign="top">
+
+                                        <table class="table">
+                                            <thead class="thead-inverse">
+                                                <tr>
+                                                    <th class="top-head" style="width:15%;">Candidate Name</th>
+                                                    <th class="top-head" style="width:15%;">Company Ref No</th>
+                                                    <th class="top-head" style="width:30%;">Client Name</th>
+                                                    <th class="top-head" style="width:30%;">Check Name</th>
+                                                    <th class="top-head" style="width:10%;">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model!= null && Model.CheckVerificationList != null)
+                                                {
+
+                                                foreach (var item in Model.CheckVerificationList)
+                                                {
+                                                var CCRid = clsCommonMethods.PEncrypt(item.CandCheckRowId.ToString());
+                                                <tr>
+                                                    <td class="name">@item.CandidateFullName</td>
+                                                    <td class="name">@item.CompanyRefNo</td>
+                                                    <td class="name">@item.ClientName</td>
+                                                    <td class="name">@item.CheckName</td>
+                                                    <td class="filename"><a target="_blank" href='@Url.Content("~/ClientServicing/UpdateCheckVerification?Id=" + CCRid)'>Edit</a></td>
+
+                                                </tr>
+                                                }
+                                                }
+                                                <tr>
+                                                    <td height="12" colspan="5"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+<script src="~/Scripts/normalizePlugin.js"></script>
+<script type="text/javascript">
+    $("#btnSearch").click(function () {
+        var obj = $('form input[type="text"]').NormalizedString();
+        if (obj == false) {
+            return false;
+        }
+    });
+    $("#Search").SearchString();
+</script>
+}

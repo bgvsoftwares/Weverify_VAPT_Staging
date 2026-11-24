@@ -1,0 +1,170 @@
+﻿@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Manage Funds Approval";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "DashboardClient", "Home", new { area = "ClientArea" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    var clid = "";
+    clid = Session["ClientRowID"].ToString();
+
+}
+
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="container-fluid ps-0 bg_gradient_CaseWise mt-2">
+    <div class="row row-sm">
+        @section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+    </div>
+    <div class="row row-sm ms-2">
+        @using (Html.BeginForm("ManageFundPendingChecksForClient", "Home", FormMethod.Post))
+        {
+            <div class="col-xl-12 mb-5">
+                @if (Model != null && Model.PQVerifyInfo != null)
+                {
+
+                    <table class="table mb-0 text-md-nowrap fl-table table-responsive table-scroll js-serial items" id="example1" style="border:none; cursor:all-scroll;">
+                        <thead>
+                            <tr>
+                                <th>Securitas ID</th>
+                                @if (clid == "869")
+                                {
+                                    <th>EmployeID</th>
+                                }
+                                else
+                                {
+                                    <th>ClientRefID</th>
+                                }
+                                <th>Candidate Name</th>
+                                @if (clid == "576")
+                                {
+                                    <th>Email ID</th>
+                                    <th>Mobile No</th>
+                                }
+                                else
+                                {
+
+                                }
+                                <th>Check Status</th>
+                                <th>Fund Pending</th>
+                                <th>Remarks</th>
+                                <th>Package</th>
+                                <th>Entity</th>
+                                <th>Documents</th>
+                                @if (clid == "576")
+                                {
+
+                                }
+                                else
+                                {
+                                    <th>Candidate Details</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody class="text-start tx-10">
+                            @foreach (var a in Model.PQVerifyInfo)
+                            {
+                                if (clid == "576")
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href='@Url.Action("CheckListForClientByPersonalID", "Home", new { PersonalId = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn_refno iframeFundCompanyRefNo" id="clip_@a.PersonalRowID">@a.CompanyRefNo</a><i class="las la-clipboard clipboard-icon" data-clipboard-target="#clip_@a.PersonalRowID" style="position:relative; top:5px!important; right:0px!important; padding:10px!important; border:none!important; line-height:0px!important; font-size:30px;"></i>
+                                        </td>
+                                        <td><a class="td_class">@a.ClientRefID </a></td>
+                                        <td>@a.PersonalName</td>
+                                        <td>@a.Emailid</td>
+                                        <td>@a.MobileNo</td>
+                                        <td>@a.CheckStatus</td>
+                                        <td>
+                                            <a href='@Url.Action("FundPendingApproveByClient", "Home", new { PersonalId = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()), VerId = clsCommonMethods.PEncrypt(a.VerificationRowID.ToString()), chkFmlyId = clsCommonMethods.PEncrypt(a.CheckFamilyRowID.ToString()), SubchkFmlyId = clsCommonMethods.PEncrypt(a.SubCheckRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn iframeUpdatefund">Update<i class="bx bx-delete"></i></a>
+                                        </td>
+                                        <td>@a.Remarks</td>
+                                        <td>@a.Package</td>
+                                        <td>@a.Entity</td>
+                                        <td>
+                                            <a href='@Url.Action("UploadCandidateDoc", "Home", new { area = "ClientArea", CompanyRefNo = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),SubCheckRowID=0,personalrowid=clsCommonMethods.PEncrypt(a.PersonalRowID.ToString())})' class="btn btn-outline-primary btn-block table_btn iframefundCheckdoc">Documents</a>
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href='@Url.Action("CheckListForClientByPersonalID", "Home", new { PersonalId = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn_refno iframeFundCompanyRefNo" id="clip_@a.PersonalRowID">@a.CompanyRefNo</a><i class="las la-clipboard clipboard-icon" data-clipboard-target="#clip_@a.PersonalRowID" style="position:relative; top:5px!important; right:0px!important; padding:10px!important; border:none!important; line-height:0px!important; font-size:30px;"></i>
+                                        </td>
+                                        <td><a class="td_class">@a.ClientRefID </a></td>
+                                        <td>@a.PersonalName</td>
+                                        <td>@a.CheckStatus</td>
+                                        <td>
+                                            <a href='@Url.Action("FundPendingApproveByClient", "Home", new { PersonalId = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()), VerId = clsCommonMethods.PEncrypt(a.VerificationRowID.ToString()), chkFmlyId = clsCommonMethods.PEncrypt(a.CheckFamilyRowID.ToString()), SubchkFmlyId = clsCommonMethods.PEncrypt(a.SubCheckRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn iframeUpdatefund">Update<i class="bx bx-delete"></i></a>
+                                        </td>
+                                        <td>  @Html.Raw(a.Remarks)</td>
+                                        <td>@a.Package</td>
+                                        <td>@a.Entity</td>
+                                        <td>
+                                            <a href='@Url.Action("UploadCandidateDoc", "Home", new { area = "ClientArea", CompanyRefNo = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),SubCheckRowID=0,personalrowid=clsCommonMethods.PEncrypt(a.PersonalRowID.ToString())})' class="btn btn-outline-primary btn-block table_btn iframefundCheckdoc">Documents</a>
+                                        </td>
+                                        <td>
+                                            <a href='@Url.Action("PersonalInformation", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Download<i class="bx bx-delete"></i></a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        }
+    </div>
+</div>
+@section Scripts{
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script type="text/javascript">
+         $(document).ready(function () {
+            $('#Search').val('@Model.ItemSearch.Search');
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $(".iframeFundCompanyRefNo").colorbox({ iframe: true, width: "85%", height: "70%" });
+            $(".iframefundCheckdoc").colorbox({ iframe: true, width: "75%", height: "65%" });
+            $(".callbacks").colorbox({
+                onClosed: function () {
+                    window.location.reload(false);
+                }
+            });
+
+            $(".iframeUpdatefund").colorbox({ iframe: true, width: "80%", height: "65%" });
+        });
+    </script>
+    <script>
+        $("#btnSearch").click(function () {
+            var obj = $('form input[type="text"]').NormalizedString();
+            if (obj == false) {
+                return false;
+            }
+        });
+        $("#Search").SearchString();
+    </script>
+}
+<style>
+    .table_btn {
+        color: #8D5FFF !important;
+        transition: 0.3s ease-in-out !important;
+    }
+
+        .table_btn:hover {
+            background: #FFF !important;
+            background-color: rgb(255, 255, 255);
+            color: #fff !important;
+            border: 1px solid #031F30 !important;
+            background-color: #031F30 !important;
+        }
+
+    .table tr td {
+        line-height: 2.757 !important;
+    }
+</style>
+
+

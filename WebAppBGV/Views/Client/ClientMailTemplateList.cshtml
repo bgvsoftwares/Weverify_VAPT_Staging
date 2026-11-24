@@ -1,0 +1,96 @@
+﻿@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Mail Template list";
+
+    string faIconAddNew = string.Format("<i class='fa fa-plus-circle' aria-hidden='true'></i> Add New Mail Template");
+    string hyperLinkAddNew = Html.ActionLink("linkTitle", "AddEditClientMailTemplate", "Client", new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnAddNew = new HtmlString(hyperLinkAddNew.ToString().Replace("linkTitle", faIconAddNew));
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="container">
+        @using (Html.BeginForm("ClientMailTemplateList", "Client", FormMethod.Get))
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="container">                    
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="control-label">Client Name :</label>
+                        </div>
+                        <div class="col-md-9">
+                            @Html.DropDownList("ClientRowID", new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"), "-- Select Client -- ", new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" style="margin:20px; text-align:center">
+                            <input class="btn bun-bg btn-default" type="submit" value="Search" id="btnSubmit" />
+                        </div>
+                    </div>
+                </div>
+                <div class="container">
+                    <div class="row">
+                        <table style="width:100%">
+                            <tr>
+                                <td valign="top">
+
+                                    <table class="table">
+                                        <thead class="thead-inverse">
+                                            <tr>
+                                                <th class="top-head" style="width:30%;">Client Name</th>
+                                                <th class="top-head" style="width:15%;">Alert Type</th>
+                                                <th class="top-head" style="width:15%;">Template Name</th>
+                                                <th class="top-head" style="width:10%;">Mail Type</th>
+                                                <th class="top-head" style="width:10%;">Package Name</th>
+                                                <th class="top-head" style="width:10%;">Status</th>
+                                                <th class="top-head" style="width:10%;">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (ViewBag.EmailTemplateList != null)
+                                            {
+
+                                                foreach (var item in ViewBag.EmailTemplateList)
+                                                {
+                                                    var prid = clsCommonMethods.PEncrypt(item.AutoRowId.ToString());
+                                            <tr>
+                                                <td class="name">@item.ClientName</td>
+                                                <td class="name">@item.AlertType</td>
+                                                <td class="name">@item.TemplateName</td>
+                                                <td class="name">@item.MailTypeName</td>
+                                                <td class="name">@item.PackageName</td>
+                                                @if (item.Status == false)
+                                                {
+                                                    <td class="name" style="color:red;font-weight: bold;">@item.TempStatus</td>
+                                                }
+                                                else
+                                                {
+                                                    <td class="name" style="color:green; font-weight: bold;">@item.TempStatus</td>
+                                                }
+
+                                                <td class="filename"><a target="_blank" href='@Url.Content("~/Client/AddEditClientMailTemplate?Id=" + prid)'>Edit</a></td>
+
+                                            </tr>
+                                                }
+                                            }
+                                            <tr>
+                                                <td height="12" colspan="4"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
+
+
+

@@ -1,0 +1,132 @@
+﻿@model ViewModels.HRViewModels.UpdateWebUserViewModel
+
+@{
+    ViewBag.Title = "Edit WebUser";
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftHRMgmt") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("EditWebUser", "HRMgmt", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.WebUserRowID)
+            @Html.HiddenFor(model => model.EncPWD)
+
+            <div class="form-horizontal">
+                <div class="form-group branch row ">
+                    @Html.LabelFor(model => model.CRPUserName, htmlAttributes: new { @class = "col-md-2 control-label colonsymbl" })
+                    <div class="col-md-6">
+                        @Html.DisplayFor(model => model.CRPUserName)
+                    </div>
+                </div>
+                <div class="form-group branch row ">
+                    @Html.LabelFor(model => model.CRPPassWord, htmlAttributes: new { @class = "col-md-2 control-label colonsymbl required" })
+                    <div class="col-md-6">
+                        @Html.EditorFor(model => model.CRPPassWord, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.CRPPassWord, "", new { @class = "text-danger" })
+                        <progress max="100" value="0" id="meter" style="width:100%"></progress>
+                        <div class="textbox text-center"></div>
+                    </div>
+                </div>
+                <div class="form-group branch row ">
+                    @Html.LabelFor(model => model.IsExportedExcel, htmlAttributes: new { @class = "col-md-2 control-label colonsymbl " })
+                    <div class="col-md-1">
+                        @Html.CheckBoxFor(model => model.IsExportedExcelBool, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.IsExportedExcel, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-5">&nbsp;</div>
+                </div>
+                <div class="form-group branch row ">
+                    @Html.LabelFor(model => model.IsExportedWord, htmlAttributes: new { @class = "col-md-2 control-label colonsymbl " })
+                    <div class="col-md-1">
+                        @Html.CheckBoxFor(model => model.IsExportedWordBool, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.IsExportedWord, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-5">&nbsp;</div>
+                </div>
+                <div class="form-group branch row ">
+                    @Html.LabelFor(model => model.IsExportedPDF, htmlAttributes: new { @class = "col-md-2 control-label colonsymbl " })
+                    <div class="col-md-1">
+                        @Html.CheckBoxFor(model => model.IsExportedPDFBool, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.IsExportedPDF, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-5">&nbsp;</div>
+                </div>
+                <div class="all-button-bg">
+                    @Html.ActionLink("Back", "ManageWebUsers", "HRMgmt", null, new { @class = "btn bun-bg btn-default" })
+                    <input class="btn bun-bg btn-default" type="submit" id="btnSubmit" onclick="return validateForm()" value="Submit" />
+                </div>
+            </div>
+
+        }
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+}
+
+    <script>
+        var code = document.getElementById("CRPPassWord");
+        var strengthbar = document.getElementById("meter");
+        var display = document.getElementsByClassName("textbox")[0];
+
+        code.addEventListener("keyup", function () {
+            checkpassword(code.value);
+        });
+
+
+        function checkpassword(password) {
+            var strength = 0;
+            if (password.match(/[a-z]+/)) {
+                strength += 1;
+            }
+            if (password.match(/[A-Z]+/)) {
+                strength += 1;
+            }
+            if (password.match(/[0-9]+/)) {
+                strength += 1;
+            }
+            if (password.match(/[!#$%^&*()?><]+/)) {
+                strength += 1;
+            }
+            if (password.length >= 14) {
+                strength += 1;
+            }
+
+            if (password.length >= 14) {
+                display.innerHTML = "minimum number of characters is 14";
+            }
+
+            switch (strength) {
+                case 0:
+                    strengthbar.value = 0;
+                    break;
+                case 1:
+                    strengthbar.value = 20;
+                    break;
+
+                case 2:
+                    strengthbar.value = 40;
+                    break;
+
+                case 3:
+                    strengthbar.value = 60;
+                    break;
+
+                case 4:
+                    strengthbar.value = 80;
+                    break;
+                case 5:
+                    strengthbar.value = 100;
+                    break;
+            }
+        }
+    </script>
+
+

@@ -1,0 +1,300 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    var list = Model.NationalInfoModel.GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+
+
+}
+
+
+@if (Model != null && Model.NationalInfoModel != null && Model.NationalInfoModel.Count > 0)
+{
+
+
+
+
+
+    if (Model.NationalInfoModel != null)
+    {
+        int i = 0;
+        foreach (var a in list)
+        {
+            var Anticident = Model.NationalInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+
+            var ReportComment = a.ReportComment;
+<page id="PrintSrc" size="A4">
+    <div style="page-break-after:always ;"></div>
+    <table style="width:100%; border: 2px solid #DDDDDD; margin: auto; font-family:'Arial', sans-serif; border-collapse: collapse;">
+        <tr>
+            <td>
+                <table style="width:100%;">
+                    <tr>
+                        <td style="text-align:right">
+                            <img src="https://bgv.securitas-india.com/Images/Securitas-logo.png"
+                                 style="width:70px; padding: .60rem;">
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td valign="top">
+                <table style="width:100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;font-family:'Arial', sans-serif; font-size: 14px; font-weight: bolder;"><a name="@a.SubcheckRowID">@a.SubCheckName</a></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td valign="top" style="height:60rem;">
+                <table style="width:95%; border-collapse: collapse; border:1px solid #000; margin: auto;font-size: 10px!important;" border="1">
+                    <tr>
+                        <td colspan="2" style="padding: 5px !important;width: 25%; text-align: center; background-color: #CCC;padding:5px!important; font-size: 10px!important;font-weight: bolder;">Details as per Subject’s Application Form</td>
+                        <td style="padding: 5px !important;text-align: center;background-color: #CCC;font-size: 10px!important;font-weight: bolder;">Verification Remarks</td>
+                    </tr>
+                    @if (a.SubcheckRowID == 132)
+                    {
+
+                        if (a != null)
+                        {
+                            <tr>
+                                <td style="padding: 5px !important;width: 25%; text-align: center;background-color: #CCC;padding:5px!important;font-size: 10px!important;font-weight: bolder;">Name as per Aadhar Card</td>
+                                <td style="padding: 5px !important;text-align: center;font-size: 10px!important;">@Model.PersonalName</td>
+                                <td style="padding: 5px !important;text-align: center;font-size: 10px!important;">@Model.PersonalName</td>
+                            </tr>
+                            foreach (var item in Anticident)
+                            {
+
+                                if (item.AntecedentRowID == "104" || item.AntecedentRowID == "100")
+                                {
+
+                                    if (item.AntecedentRowID == "100")
+                                    {
+                                        try
+                                        {
+                                            <tr>
+                                                <td style="padding: 5px !important;width: 25%; text-align: center;background-color: #CCC;padding:5px!important;font-size: 10px!important;font-weight: bolder;">@item.DisplayNameRep</td>
+                                                <td style="padding: 5px !important;text-align: center;font-size: 10px!important;">@Convert.ToDateTime(item.DataEntryValue).ToString("dd-MMM-yyyy")</td>
+                                                <td style="padding: 5px !important;text-align: center;font-size: 10px!important;">@Convert.ToDateTime(item.OpsValue).ToString("dd-MMM-yyyy")</td>
+                                            </tr>
+                                        }
+                                        catch
+                                        {
+                                            <tr>
+                                                <td style="padding: 5px !important;width: 25%; text-align: center;background-color: #CCC;padding:5px!important;font-size: 10px!important;font-weight: bolder;">@item.DisplayNameRep</td>
+                                                <td style="padding: 5px !important;text-align: center;font-size: 10px!important;">@item.DataEntryValue</td>
+                                                <td style="padding: 5px !important;text-align: center;font-size: 10px!important;">@item.OpsValue</td>
+                                            </tr>
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td style="padding: 5px !important;width: 25%; text-align: center;background-color: #CCC;padding:5px!important;font-size: 10px!important;font-weight: bolder;">@item.DisplayNameRep</td>
+                                            <td style="padding: 5px !important;text-align: center;font-size: 10px!important;">@item.DataEntryValue</td>
+                                            <td style="padding: 5px !important;text-align: center;font-size: 10px!important;">@item.OpsValue</td>
+                                        </tr>
+                                    }
+
+
+
+
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td style="padding: 5px !important;width: 25%; text-align: center;background-color: #CCC;padding:5px!important;font-size: 10px!important;font-weight: bolder;">@item.DisplayNameRep</td>
+                                        <td colspan="2" style="padding: 5px !important;text-align: center;font-size: 10px!important;">@item.OpsValue</td>
+                                    </tr>
+                                }
+
+                            }
+                        }
+                    }
+                    else
+                    {
+
+                        if (a != null)
+                        {
+
+                            foreach (var item in Anticident)
+                            {
+
+                                if (item.AntecedentRowID == "99" || item.AntecedentRowID == "104" || item.AntecedentRowID == "100")
+                                {
+
+                                    if (item.AntecedentRowID == "100")
+                                    {
+                                        try
+                                        {
+                                            if (item.DataEntryValue != "")
+                                            {
+                                                <tr>
+                                                    <td style="padding: 5px !important;width: 25%; text-align: center;background-color: #CCC;padding:5px!important;font-size: 10px!important;font-weight: bolder;">@item.DisplayNameRep</td>
+                                                    <td style="padding: 5px !important;text-align: center;font-size: 10px!important;">@Convert.ToDateTime(item.DataEntryValue).ToString("dd-MMM-yyyy")</td>
+                                                    <td style="padding: 5px !important;text-align: center;font-size: 10px!important;">@Convert.ToDateTime(item.OpsValue).ToString("dd-MMM-yyyy")</td>
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td style="padding: 5px !important;width: 25%; text-align: center;background-color: #CCC;padding:5px!important;font-size: 10px!important;font-weight: bolder;">@item.DisplayNameRep</td>
+                                                    <td style="padding: 5px !important;text-align: center;font-size: 10px!important;">@item.DataEntryValue</td>
+                                                    <td style="padding: 5px !important;text-align: center;font-size: 10px!important;">@Convert.ToDateTime(item.OpsValue).ToString("dd-MMM-yyyy")</td>
+                                                </tr>
+                                            }
+
+                                        }
+                                        catch
+                                        {
+                                            <tr>
+                                                <td style="padding: 5px !important;width: 25%; text-align: center;background-color: #CCC;padding:5px!important;font-size: 10px!important;font-weight: bolder;">@item.DisplayNameRep</td>
+                                                <td style="padding: 5px !important;text-align: center;font-size: 10px!important;">@item.DataEntryValue</td>
+                                                <td style="padding: 5px !important;text-align: center;font-size: 10px!important;">@item.OpsValue</td>
+                                            </tr>
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td style="padding: 5px !important;width: 25%; text-align: center;background-color: #CCC;padding:5px!important;font-size: 10px!important;font-weight: bolder;">@item.DisplayNameRep</td>
+                                            <td style="padding: 5px !important;text-align: center;font-size: 10px!important;">@item.DataEntryValue</td>
+                                            <td style="padding: 5px !important;text-align: center;font-size: 10px!important;">@item.OpsValue</td>
+                                        </tr>
+                                    }
+
+
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td style="padding: 5px !important;width: 25%; text-align: center;background-color: #CCC;padding:5px!important;font-size: 10px!important;font-weight: bolder;">@item.DisplayNameRep</td>
+                                        <td colspan="2" style="padding: 5px !important;text-align: center;font-size: 10px!important;">@item.OpsValue</td>
+                                    </tr>
+                                }
+
+                            }
+                        }
+                    }
+
+
+
+
+
+
+                    <tr>
+                        <td style="text-align: center;font-family:'Calibri', sans-serif; font-size: 12px;background: #CCC; width: 25%;">Annexure Details</td>
+                        <td colspan="2" style="text-align: center;font-family:'Calibri', sans-serif; font-size: 12px; width: 25%;"><a href="#P+@a.SubcheckRowID">Please refer Identity Annexure</a></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px !important;width: 25%; text-align: center;background-color: #CCC;padding:5px!important;font-size: 10px!important;font-weight: bolder;">Additional comments</td>
+                        <td colspan="2" style="padding: 5px !important;text-align: center;font-size: 10px!important;">@Html.Raw(ReportComment)</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+
+</page>
+
+            if (Model.CandidateDocList != null)
+            {
+                int j = 0;
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                {
+                    if (Doc.SubCheckRowID == a.SubcheckRowID)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                            <page id="PrintSrc" size="A4">
+                                <div style="page-break-after:always ;"></div>
+                                <table width="793" cellspacing="0" height="1100" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center">
+                                    <!--- Report Header Include -->
+                                    @*@Html.Partial("_ReportHeader")*@
+                                    <!--- Report Header Include -->
+                                    <tr>
+                                        @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                        <td valign="top" colspan="2" align="center" valign="bottom">
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td valign="top">
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tr>
+                                                                <td style="font-size:10px; font-family:Calibri;">
+                                                            <tr>
+                                                                <td>
+                                                                    <table style="width:100%;">
+                                                                        <tr>
+                                                                            @if (j == 0)
+                                                                            {
+                                                                                <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;"><a name="P+@a.SubcheckRowID"> </a></p></td>
+                                                                                j++;
+
+                                                                            }
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td style="text-align:right">
+                                                                                <img src="https://bgv.securitas-india.com/Images/Securitas-logo.png"
+                                                                                     style="width:70px; padding: .60rem;">
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td valign="top">&nbsp;</td>
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td valign="top">
+                                                                    @{
+                                                                        FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                        System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                        if (image.Height > 600)
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                        }
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                                    </tr>
+                                    <!--- Report Footer with Address Include -->
+                                    @*@Html.Partial("_ReportFooterAddress")*@
+                                    
+                                </table>
+                            </page>
+                        }
+                    }
+                }
+            }
+
+            i++;
+        }
+    }
+
+}
+
+
+
+
+

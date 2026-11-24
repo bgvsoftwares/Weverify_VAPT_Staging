@@ -1,0 +1,401 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+
+
+
+<table style="border:2px solid #000; margin:auto; width:99%;" id="Table_id">
+    <tr>
+        <td>
+            <table style="width:100%; margin-top: 5px;">
+                <tr>
+                    <td style="border:none; font-weight:bold; font-size: 33px; text-align: center;">Walsons Services</td>
+                </tr>
+            </table>
+            <br>
+            
+            <br>
+            @*<table style="width:97%; margin: auto; border-collapse:collapse;" border="1">
+                <tr style="border:1px solid #000;">
+                    <td class="table_td td_bg">Name Of Candidate</td>
+                    <td class="table_td" colspan="3">@Model.PersonalName</td>
+                </tr>
+                <tr style="border:1px solid #000;">
+                    <td class="table_td td_bg">
+                        Vendor Reference ID
+                    </td>
+                    <td colspan="3" class="table_td">@Model.CompanyRefNo</td>
+                   
+                </tr>
+
+                <tr style="border:1px solid #000;">
+                    <td class="table_td td_bg">
+                        Employee ID
+                    </td>
+                    <td class="table_td">@Model.EmploymentId</td>
+                    <td class="table_td td_bg">Date Initiated</td>
+                    <td class="table_td">
+
+                        @if (!string.IsNullOrEmpty(Model.OrderDate.ToString()))
+                        {
+                            <p>@Model.OrderDate.Value.ToString("dd-MMM-yyyy")</p>
+                        }
+                    </td>
+                </tr>
+                <tr style="border:1px solid #000;">
+                    <td class="table_td td_bg">Report</td>
+                    <td class="table_td">
+                        @DateTime.Now.Date.ToString("dd-MMM-yyyy")
+                    </td>
+
+                    <td class="table_td td_bg">Color Code</td>
+                    <td class="table_td" style="background-color:@Model.FinalColorCode">@Model.FinalColor</td>
+                </tr>
+            </table>*@
+            <br>
+           
+            <br>
+
+            @{
+                /**/
+
+                var list = Model.SpecialInfoModel.Where(T => T.SubcheckRowID == 416).GroupBy(x =>
+                x.SubcheckRowID)
+                .Select(g => g.First())
+                .ToList();
+
+            }
+
+
+
+            <table style="width:97%; margin:auto; border-collapse: collapse;" border="1">
+                @if (Model != null && Model.SpecialInfoModel != null && Model.SpecialInfoModel.Count > 0)
+                {
+                    if (Model.SpecialInfoModel != null)
+                    {
+                        int i = 0;
+                        foreach (var a in list)
+                        {
+                            var Anticident = Model.SpecialInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+
+                            var ReportComment = a.ReportComment;
+                            <tr>
+                                <td colspan="4" style="background:#dddd; font-weight:bolder; font-size: 17px; text-align: center; padding: 4px 0px 4px 0px;">UAN Verification</td>
+                            </tr>
+                            <tr style="border:1px solid #000; text-align: left;">
+                                <th class="table_th" style="margin-left:10px;">Details</th>
+                                <th class="table_th" style="margin-left:10px;">Provided</th>
+                                <th class="table_th" style="margin-left:10px;">Verified</th>
+                            </tr>
+
+                            <tr style="border:1px solid #000;">
+                                <td class="table_td">Candidate Name</td>
+                                <td class="table_td">@Model.PersonalName</td>
+                                <td class="table_td">
+
+
+                                    <p>Yes</p>
+
+                                </td>
+                            </tr>
+                            foreach (var item in Anticident)
+                            {
+                                if (item.AntecedentRowID == "346" || item.AntecedentRowID == "347" || item.AntecedentRowID == "444" || item.AntecedentRowID == "445" || item.AntecedentRowID == "446" || item.AntecedentRowID == "447" || item.AntecedentRowID == "449" || item.AntecedentRowID == "175")
+                                {
+                                    <tr style="border:1px solid #000;">
+                                        <td class="table_td">
+                                            @if (item.AntecedentRowID == "175")
+                                            {
+                                                <p>Checks Initiation Date</p>
+                                            }
+                                            else
+                                            {
+                                                @item.DisplayNameRep
+                                            }
+
+
+                                        </td>
+                                        <td colspan="2" class="table_td">
+
+                                            @if (item.AntecedentRowID == "175")
+                                            {
+                                                @Model.OrderDate.Value.ToString("dd MMMM yyyy")
+                                            }
+                                            else
+                                            {
+                                                if (!string.IsNullOrEmpty(item.OpsValue) && item.OpsValue != "NA")
+                                                {
+                                                    try
+                                                    {
+                                                        <p>@Convert.ToDateTime(@item.OpsValue).ToString("dd-MMM-yyyy") </p>
+                                                    }
+                                                    catch
+                                                    {
+                                                        <p>@item.OpsValue</p>
+                                                    }
+
+
+                                                }
+                                                else
+                                                {
+                                                    <p>@item.OpsValue</p>
+                                                }
+                                            }
+
+
+
+
+                                        </td>
+                                        @*<td class="table_td">
+                                    @if (item.CheckStatusId == "11")
+                                    {
+                                        <p></p>
+                                    }
+                                    else if (item.OpsValue != "")
+                                    {
+
+                                        <p>Correct</p>
+                                    }
+                                </td>*@
+                                    </tr>
+                                }
+
+                                else if (item.AntecedentRowID == "205")
+                                {
+                                    <tr style="border:1px solid #000;">
+                                        <td class="table_td">
+                                            @item.DisplayNameRep
+
+                                        </td>
+                                        <td colspan="2" class="table_td">
+
+
+                                            <p>@item.OpsValue</p>
+
+                                        </td>
+                                        @*<td class="table_td">
+                                    @if (item.CheckStatusId == "11")
+                                    {
+                                        <p></p>
+                                    }
+                                    else if (item.OpsValue != "")
+                                    {
+
+                                        <p>Correct</p>
+                                    }
+                                </td>*@
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr style="border:1px solid #000;">
+                                        <td class="table_td">@item.DisplayNameRep</td>
+                                        <td class="table_td">@item.OpsValue</td>
+                                        <td class="table_td">
+                                            @if (item.CheckStatusId == "11")
+                                            {
+                                                <p></p>
+                                            }
+                                            else if (item.OpsValue != "")
+                                            {
+
+                                                <p>Yes</p>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+
+                            <tr style="border:1px solid #000;">
+                                <td class="table_td">
+                                    UAN Color Code
+
+                                </td>
+
+                                <td colspan="3" class="table_td" style="color:@Model.FinalColorCode">
+                                    @Model.FinalColor
+                                </td>
+                            </tr>
+
+                            
+
+                            <tr style="border:1px solid #000;">
+                                <td class="table_td">
+                                    Verifier’s Comment
+
+                                </td>
+
+                                <td colspan="3" class="table_td">
+                                    @Html.Raw(ReportComment)
+                                    @*@ReportComment.Replace("<p>","").Replace("</p>", "")*@
+                                </td>
+                            </tr>
+
+                        }
+                    }
+                }
+            </table>
+            <br />
+            <p><br /></p>
+            <p><br /></p>
+            <p><br /></p>
+            <p><br /></p>
+            <p><br /></p>
+            <p><br /></p>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td valign="top">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="border-top:3px solid #c0c0c0;">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td width="20%">
+                        <img src='@Url.Content("~/Images/footer-logo.jpg")' width="120"
+                             height="50">
+                    </td>
+                    <td width="1%">&nbsp;</td>
+                    <td width="79%">
+
+
+                        <p style="font-size:16px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#000080; font-weight:500; text-align:center; margin:10px 0px 0px 0px;">
+                            <img src='@Url.Content("~/Images/StampSignatureUpdated.jpg")'
+                                 width="60" height="60">
+                        </p>
+
+                        <p style="font-size:16px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#000080; font-weight:700; text-align:center; margin:15px 0px 0px 0px;">
+                            SECURITAS INDIA
+                        </p>
+                        <p style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#828484; text-align:center; margin:0px;">
+                            496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp;&nbsp; Tel: + 91
+                            124 4718888
+                        </p>
+                        <p style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px;">
+                            <a href="http://www.securitas.in/"
+                               target="_blank">www.securitas.in</a>&nbsp;<span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;">
+                                <a href="http://www.walsons.com/"
+                                   target="_blank">www.walsons.com</a>
+                            </span>
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+@if (Model.CandidateDocList != null)
+{
+    foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == list[0].SubcheckRowID))
+    {
+        if (Doc.SubCheckRowID == list[0].SubcheckRowID)
+        {
+            FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+            if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") ||
+            fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+            {
+                <page id="PrintSrc" size="A4">
+                    <div style="page-break-after:always ;"></div>
+                    <table width="793" height="800" cellspacing="0" cellpadding="0" align="center"
+                           style="border:3px solid #999999; align-content:center">
+                        <!--- Report Header Include -->
+                        @*@Html.Partial("_ReportHeader")*@
+                        <!--- Report Header Include -->
+                        <tr>
+                            @*<td width="2%" align="left" valign="bottom"
+                                style="border-left:2px solid #999999;">&nbsp;</td>*@
+                            <td valign="top" colspan="2" align="center" valign="bottom">
+                                <p style="text-align:center;font-family:Arial; font-size:33px;">
+                                    <strong>
+                                        Walsons
+                                        Services
+                                    </strong>
+                                </p>
+                               
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td valign="top">
+                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">
+                                                        <table width="100%" border="0" cellspacing="0"
+                                                               cellpadding="0">
+                                                            <tr>
+                                                                <td width="88%"></td>
+                                                                @*<td width="6%" valign="top"><img
+                                                                    src='@Url.Content("~/Images/logo.jpg")'
+                                                                    width="71" height="40"></td>*@
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="2">&nbsp;</td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td valign="top">&nbsp;</td>
+                                                </tr>
+                                                <tr style="text-align:center">
+                                                    <td valign="top">
+                                                        @{
+                                                            FileStream fs = new
+                                                            FileStream(Server.MapPath(Model.DocPath + Doc.DocFile),
+                                                            FileMode.Open, FileAccess.Read);
+                                                            System.Drawing.Image image =
+                                                            System.Drawing.Image.FromStream(fs);
+
+                                                            if (image.Height > 600)
+                                                            {
+                                                                <img src="@Url.Content(Model.DocPath + Doc.DocFile)"
+                                                                     alt="@Doc.DocumentType" width="730" height="550" />
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="@Url.Content(Model.DocPath + Doc.DocFile)"
+                                                                     alt="@Doc.DocumentType" width="730" />
+                                                            }
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>
+                            *@
+                        </tr>
+                        <!--- Report Footer with Address Include -->
+                        @Html.Partial("_ReportFooterAddress")
+                        <!--- Report Footer with Address Include -->
+                        <!--- Report Footer Include -->
+                        @*@Html.Partial("_ReportFooter")*@
+                        <!--- Report Footer Include -->
+                    </table>
+                </page>
+            }
+        }
+    }
+}
+
+
+
+<style>
+    .table_td {
+        padding: 3px 0px 3px 10px;
+        font-size: 1.1rem;
+    }
+
+    .table_th {
+        padding: 3px 0px 3px 10px;
+        font-size: 1.1rem;
+    }
+
+    .td_bg {
+        background-color: #ddd;
+    }
+
+    body {
+        font-family: 'calibri',sans-serif;
+    }
+</style>
+

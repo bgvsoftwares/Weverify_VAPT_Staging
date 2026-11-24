@@ -1,0 +1,444 @@
+﻿
+@model List<ViewModels.ReportQCViewModel.CriminalCourtVerificationVM>
+@{
+
+    ViewBag.Title = "UpdateCriminal";
+
+    Layout = null;
+
+}
+
+<div class="container-fluid">
+
+    <div class="card shadow-lg border-0 mt-3">
+
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0 text-center" style="text-align: center;">
+                Criminal Court Verification
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <!-- Check Dropdown -->
+            <div class="row mb-4">
+                <div class="col-md-6 offset-md-3" style="text-align:center;font-size:21px;">
+
+                    <label class="form-label fw-bold">
+                        Select Check
+                    </label>
+
+                    <select id="ddlCheck" class="form-control">
+                        <option value="">-- Select Check --</option>
+
+                        @foreach (var item in Model.GroupBy(x => x.TypeOfCheck).Select(x => x.First()))
+                        {
+                            <option value="@item.TypeOfCheck"
+                                    data-personalid="@item.PersonalRowID"
+                                    data-subcheckid="@item.SubCheckRowID">
+                                @item.TypeOfCheck
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+            </div>
+
+
+            <div id="courtSection" style="display:none;">
+
+                <table class="table table-bordered table-striped text-center align-middle" style="width: 100%">
+
+                    <thead class="table-dark">
+                        <tr>
+                            <th width="25%" style="text-align: center">Court Type</th>
+                            <th width="25%" style="text-align: center">Status</th>
+                            <th width="50%" style="text-align: center">Remarks</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr data-courttype="High Court">
+                            <td style="text-align: center">
+                                <span class="badge bg-secondary p-2">High Court</span>
+                            </td>
+                            <td style="text-align: center">
+                                <select class="courtStatus form-control">
+                                    <option value="">Select</option>
+                                    <option value="Record Found">Record Found</option>
+                                    <option value="No Found">No Found</option>
+                                </select>
+                            </td>
+                            <td style="text-align: center">
+                                <input type="text"
+                                       class="remarks form-control"
+                                       placeholder="Enter High Court Details"
+                                       style="display:none;" />
+                            </td>
+                        </tr>
+
+                        <tr data-courttype="Civil Court">
+                            <td style="text-align: center">
+                                <span class="badge bg-secondary p-2">Civil Court</span>
+                            </td>
+                            <td style="text-align: center">
+                                <select class="courtStatus form-control">
+                                    <option value="">Select</option>
+                                    <option value="Record Found">Record Found</option>
+                                    <option value="No Found">No Found</option>
+                                </select>
+                            </td>
+                            <td style="text-align: center">
+                                <input type="text"
+                                       class="remarks form-control"
+                                       placeholder="Enter Civil Court Details"
+                                       style="display:none;" />
+                            </td>
+                        </tr>
+
+                        <tr data-courttype="Magistrate Court">
+                            <td style="text-align: center">
+                                <span class="badge bg-secondary p-2">Magistrate Court</span>
+                            </td>
+                            <td style="text-align: center">
+                                <select class="courtStatus form-control">
+                                    <option value="">Select</option>
+                                    <option value="Record Found">Record Found</option>
+                                    <option value="No Found">No Found</option>
+                                </select>
+                            </td>
+                            <td style="text-align: center">
+                                <input type="text"
+                                       class="remarks form-control"
+                                       placeholder="Enter Magistrate Court Details"
+                                       style="display:none;" />
+                            </td>
+                        </tr>
+
+                        <tr data-courttype="Supreme Court">
+                            <td style="text-align: center">
+                                <span class="badge bg-secondary p-2">Supreme Court</span>
+                            </td>
+                            <td style="text-align: center">
+                                <select class="courtStatus form-control">
+                                    <option value="">Select</option>
+                                    <option value="Record Found">Record Found</option>
+                                    <option value="No Found">No Found</option>
+                                </select>
+                            </td>
+                            <td style="text-align: center">
+                                <input type="text"
+                                       class="remarks form-control"
+                                       placeholder="Enter Supreme Court Details"
+                                       style="display:none;" />
+                            </td>
+                        </tr>
+
+                        <tr data-courttype="Session Court">
+                            <td style="text-align: center">
+                                <span class="badge bg-secondary p-2">Session Court</span>
+                            </td>
+                            <td style="text-align: center">
+                                <select class="courtStatus form-control">
+                                    <option value="">Select</option>
+                                    <option value="Record Found">Record Found</option>
+                                    <option value="No Found">No Found</option>
+                                </select>
+                            </td>
+                            <td style="text-align: center">
+                                <input type="text"
+                                       class="remarks form-control"
+                                       placeholder="Enter Session Court Details"
+                                       style="display:none;" />
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <div class="card-footer text-end" style="text-align: center; margin-top: 15px">
+
+            <button type="button" id="updateAllBtn" class="btn btn-success px-4">
+                Save
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+
+<script>
+
+    $(function () {
+        debugger
+        var criminalData = @Html.Raw(Json.Encode(Model))
+
+        $(document).on('change', '#ddlCheck', function () {
+
+            var selectedOption = $(this).find('option:selected');
+            var subCheckRowID = selectedOption.data('subcheckid');
+
+            $('.courtStatus').val('');
+            $('.remarks').val('').hide();
+
+            if ($(this).val() === '') {
+
+                $('#courtSection').hide();
+                return;
+            }
+
+            $('#courtSection').show();
+
+            var filteredData = criminalData.filter(function (x) {
+
+                return x.SubCheckRowID == subCheckRowID;
+
+            });
+
+            $.each(filteredData, function (i, item) {
+
+                var row = $("#courtSection tbody tr[data-courttype='" + item.CourtType + "']");
+
+                if (row.length > 0) {
+
+                    row.find('.courtStatus').val(item.Status);
+
+                    if (item.Status === "Record Found") {
+
+                        row.find('.remarks')
+                            .show()
+                            .val(item.Remarks);
+                    }
+                }
+
+            });
+
+        });
+
+
+        $(document).on('change', '.courtStatus', function () {
+
+            var row = $(this).closest('tr');
+
+            if ($(this).val() === 'Record Found') {
+
+                row.find('.remarks').show();
+
+            }
+            else {
+
+                row.find('.remarks').hide().val('');
+
+            }
+
+        });
+
+
+        $(document).on('click', '#updateAllBtn', function () {
+
+            var allData = [];
+
+            var selectedOption = $('#ddlCheck option:selected');
+
+            var personalRowID = selectedOption.data('personalid');
+            var subCheckRowID = selectedOption.data('subcheckid');
+
+            if ($('#ddlCheck').val() === '') {
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Validation',
+                    text: 'Please select check first.'
+                });
+
+                return;
+            }
+
+            $('#courtSection tbody tr').each(function () {
+
+                var row = $(this);
+
+                var status = row.find('.courtStatus').val();
+                var remarks = row.find('.remarks').val();
+
+                if (status !== '') {
+
+                    allData.push({
+
+                        PersonalRowID: personalRowID,
+                        SubCheckRowID: subCheckRowID,
+                        TypeOfCheck: $('#ddlCheck').val(),
+                        CourtType: row.attr('data-courttype'),
+                        Status: status,
+                        Remarks: status === 'Record Found' ? remarks : ''
+
+                    });
+
+                }
+
+            });
+
+            if (allData.length === 0) {
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Validation',
+                    text: 'Please select at least one status.'
+                });
+
+                return;
+            }
+
+            $.ajax({
+
+                url: '/ReportQC/UpdateCriminalResultSet',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify(allData),
+
+                success: function (response) {
+
+                    if (response.Success) {
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.Message
+                        });
+
+                        $('#ddlCheck').prop('selectedIndex', 0);
+
+                        $('.courtStatus').val('');
+                        $('.remarks').val('').hide();
+
+                        $('#courtSection').hide();
+                    }
+                    else {
+
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning',
+                            text: response.Message
+                        });
+                    }
+
+                },
+
+                error: function () {
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong.'
+                    });
+
+                }
+
+            });
+
+        });
+
+    });
+
+</script>
+
+<style>
+
+    .criminal-wrapper {
+        max-width: 950px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .criminal-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,.08);
+    }
+
+    .title-section {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+        .title-section h2 {
+            color: #1e40af;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .title-section p {
+            color: #6b7280;
+            margin: 0;
+        }
+
+    #ddlCheck {
+        height: 35px;
+        border-radius: 10px;
+    }
+
+    .court-box {
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 15px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: all .3s ease;
+    }
+
+        .court-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,.08);
+        }
+
+    .court-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 10px;
+    }
+
+    .courtStatus {
+        height: 25px;
+        border-radius: 10px;
+    }
+
+    .remarks {
+        height: 25px;
+        border-radius: 10px;
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg,#16a34a,#15803d);
+        color: white;
+        border: none;
+        padding: 12px 35px;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+        .btn-save:hover {
+            color: white;
+            transform: scale(1.03);
+        }
+
+    .save-section {
+        text-align: center;
+        margin-top: 25px;
+    }
+</style>
+

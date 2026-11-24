@@ -1,0 +1,377 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    /**/
+
+    /**/
+
+    var list = Model.CriminalInfoModel.Where(T => T.SubcheckRowID == 29 || T.SubcheckRowID == 226 || T.SubcheckRowID == 352 || T.SubcheckRowID == 353 || T.SubcheckRowID == 354 || T.SubcheckRowID == 355 || T.SubcheckRowID == 356).GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+
+
+}
+
+@if (Model != null && Model.CriminalInfoModel != null && Model.CriminalInfoModel.Count > 0)
+{
+    if (Model.CriminalInfoModel != null)
+    {
+        int i = 0;
+        int j = 0;
+        double annuxureno = Convert.ToDouble(Session["AnnexureNo"]);
+        int k = Convert.ToInt32(annuxureno);
+        foreach (var a in list)
+        {
+            var Anticident = Model.CriminalInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+
+            var ReportComment = list[i].ReportComment;
+            if (j == 0)
+            {
+                annuxureno = k + 1;
+            }
+            else
+            {
+                annuxureno = annuxureno + .1;
+            }
+            j = 2;
+            Session["AnnexureNo"] = annuxureno.ToString();
+
+
+            <page id="PrintSrc" size="A4">
+                <div style="page-break-after:always ;"></div>
+                <table style="border: 3px solid #000; margin: auto; width: 67%;">
+                    <tr>
+                        <td>
+                            <table width="793" align="center">
+                                <tr>
+                                    <td width="85%"></td>
+                                    <td width="15%" align="right" valign="top" style="padding-top:2%;">
+                                        <table>
+                                            <tr>
+                                                <td rowspan="3" valign="bottom">
+                                                    <img src='@Url.Content("~/Images/logo.jpg")' width="60" height="40">
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <br />
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <table style="width: 99%; margin:auto; border-collapse: collapse; border: 1px solid;">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="2" style="width: 99.9194%; border: 1px solid; background:rgb(218, 228, 240) none repeat scroll 0% 0%;">
+                                            @if (Model.Criminal_currentPermanantSame.ToLower() == "yes" && (a.SubcheckRowID == 23 || a.SubcheckRowID == 24))
+                                            {
+                                                <div style="text-align: center;"><strong><span style='font-size:15px;font-family:"Calibri",sans-serif;'>&nbsp;CRIMINAL COURT CHECK (CURRENT & PERMANENT ADDRESS)</span></strong></div>
+                                            }
+                                            else if (Model.Criminal_currentPermanantSame.ToLower() == "yes" && a.SubcheckRowID == 29)
+                                            {
+                                                <div style="text-align: center;"><strong><span style='font-size:15px;font-family:"Calibri",sans-serif;'>&nbsp;CRIMINAL VERIFICATION THROUGH POLICE (CURRENT & PERMANENT ADDRESS)</span></strong></div>
+
+                                            }
+                                            else
+                                            {
+                                                <div style="text-align: center;"><strong><span style='font-size:15px;font-family:"Calibri",sans-serif;'>&nbsp;@a.SubCheckName.ToUpper()</span></strong></div>
+
+                                            }
+                                        </td>
+                                    </tr>
+                                    @foreach (var item in Anticident)
+                                    {
+                                        if (item.AntecedentRowID == "55" || item.AntecedentRowID == "59" || item.AntecedentRowID == "61" || item.AntecedentRowID == "52" || item.AntecedentRowID == "171" || item.AntecedentRowID == "60")
+                                        {
+                                            <tr>
+                                                <td style="width: 36.595%; border: 1px solid;"><span style='font-size:15px;font-family:"Calibri",sans-serif;'>@item.DisplayNameRep</span></td>
+                                                <td style="width: 63.2258%; border: 1px solid;"><span style='font-size:15px;font-family:"Calibri",sans-serif;'>@item.OpsValue</span></td>
+                                            </tr>
+                                        }
+                                    }
+                                    @*<tr>
+                                            <td style="width: 36.595%; border: 1px solid;"><span style='font-size:15px;font-family:"Calibri",sans-serif;'>&nbsp;Date of Birth</span></td>
+                                            <td style="width: 63.2258%; border: 1px solid;">&nbsp; 20-jul-1978</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 36.595%; border: 1px solid;"><span style='font-size:15px;font-family:"Calibri",sans-serif;'>&nbsp;Father Name</span></td>
+                                            <td style="width: 63.2258%; border: 1px solid;"><span style='font-size:15px;font-family:"Calibri",sans-serif;'>&nbsp;Adusumalli Venkateswara Rao</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 36.595%; border: 1px solid;">&nbsp;Address</td>
+                                            <td style="width: 63.2258%; border: 1px solid;"><span style='font-size:15px;font-family:"Calibri",sans-serif;'>&nbsp;Ayyappa Nagar, R R Layout, Near Muneswarara Temple Back Side, Bangalore, Karnataka-560036</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 36.595%; border: 1px solid;"><span style='font-size:15px;font-family:"Calibri",sans-serif;'>&nbsp;Date of Verification</span></td>
+                                            <td style="width: 63.2258%; border: 1px solid;">&nbsp;01-March-2022</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 36.595%; border: 1px solid;"><span style='font-size:15px;font-family:"Calibri",sans-serif;'>&nbsp;Tenure</span></td>
+                                            <td style="width: 63.2258%; border: 1px solid;"><span style='font-size:15px;font-family:"Calibri",sans-serif;'>&nbsp;22 May 2017 to Till Date</span></td>
+                                        </tr>*@
+                                    <tr>
+                                        <td style="width: 36.595%; border: 1px solid;"><span style='font-size:15px;font-family:"Calibri",sans-serif;'>Remarks</span></td>
+                                        <td style="width: 63.2258%; border: 1px solid;"><span style='font-size:15px;font-family:"Calibri",sans-serif;'>@Html.Raw(ReportComment)</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <p><br></p>
+                            @*<table style="margin:auto; border-collapse: collapse; border: 1px solid; width: 60%;">
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="5" style="width: 496pt; border: 1px solid; padding: 0cm; height: 21.1pt; vertical-align: top;">
+                                                <p style='margin-top:3.65pt;margin-right:  56.35pt;margin-bottom:.0001pt;margin-left:57.2pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:center;'><strong><span style="font-size:15px;">RESULTS</span></strong></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="5" style="width: 496pt; border: 1px solid; padding: 0cm; height: 20.85pt; vertical-align: top;">
+                                                <p style='margin-top:3.65pt;margin-right:  57.55pt;margin-bottom:.0001pt;margin-left:57.2pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:center;'><span style="font-size:15px;">Civil&nbsp;Proceedings: Original&nbsp;Suit&nbsp;/&nbsp;Miscellaneous Suit&nbsp;/&nbsp;Execution&nbsp;/&nbsp;Arbitration&nbsp;Case</span></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 61.95pt; border: 1px solid; padding: 0cm; height: 21.1pt; vertical-align: top;">
+                                                <p style='margin-top:3.65pt;margin-right:  4.4pt;margin-bottom:.0001pt;margin-left:5.05pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  center;'><span style="font-size:15px;">Court</span></p>
+                                            </td>
+                                            <td style="width: 166.4pt; border: 1px solid; padding: 0cm; height: 21.1pt; vertical-align: top;">
+                                                <p style='margin-top:3.65pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:56.6pt;font-size:15px;font-family:"Calibri",sans-serif;'><span style="font-size:15px;">Jurisdiction</span></p>
+                                            </td>
+                                            <td colspan="2" style="width: 208pt; border: 1px solid; padding: 0cm; height: 21.1pt; vertical-align: top;">
+                                                <p style='margin-top:3.65pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:69.35pt;font-size:15px;font-family:"Calibri",sans-serif;'><span style="font-size:15px;">Name&nbsp;of&nbsp;Court</span></p>
+                                            </td>
+                                            <td style="width: 59.65pt; border: 1px solid; padding: 0cm; height: 21.1pt; vertical-align: top;">
+                                                <p style='margin-top:3.65pt;margin-right:  4.05pt;margin-bottom:.0001pt;margin-left:4.35pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  center;'><span style="font-size:15px;">Result</span></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 61.95pt; border: 1px solid; padding: 0cm; height: 21.1pt; vertical-align: top;">
+                                                <p style='margin-top:3.9pt;margin-right:  4.4pt;margin-bottom:.0001pt;margin-left:5.05pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  center;'><span style="font-size:15px;">Civil Court</span></p>
+                                            </td>
+                                            <td style="width: 166.4pt; border: 1px solid; padding: 0cm; height: 21.1pt; vertical-align: top;">
+                                                <p style='margin-top:3.9pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:59.5pt;font-size:15px;font-family:"Calibri",sans-serif;'><span style="font-size:15px;">Bangalore</span></p>
+                                            </td>
+                                            <td colspan="2" style="width: 208pt; border: 1px solid; padding: 0cm; height: 21.1pt; vertical-align: top;">
+                                                <p style='margin-top:3.9pt;margin-right:  71.5pt;margin-bottom:.0001pt;margin-left:71.8pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  center;'><span style="font-size:15px;">Civil&nbsp;Court&nbsp;of</span></p>
+                                            </td>
+                                            <td style="width: 59.65pt; border: 1px solid; padding: 0cm; height: 21.1pt; vertical-align: top;">
+                                                <p style='margin-top:3.9pt;margin-right:  4.4pt;margin-bottom:.0001pt;margin-left:4.35pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  center;'><span style="font-size:15px;">No&nbsp;Record</span></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 61.95pt; border: 1px solid; padding: 0cm; height: 21.1pt; vertical-align: top;">
+                                                <p style='margin-top:3.9pt;margin-right:  4.4pt;margin-bottom:.0001pt;margin-left:5.05pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  center;'><span style="font-size:15px;">High&nbsp;Court</span></p>
+                                            </td>
+                                            <td style="width: 166.4pt; border: 1px solid; padding: 0cm; height: 21.1pt; vertical-align: top;">
+                                                <p style='margin-top:3.9pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:59.5pt;font-size:15px;font-family:"Calibri",sans-serif;'><span style="font-size:15px;">Bangalore</span></p>
+                                            </td>
+                                            <td colspan="2" style="width: 208pt; border: 1px solid; padding: 0cm; height: 21.1pt; vertical-align: top;">
+                                                <p style='margin-top:3.9pt;margin-right:  71.5pt;margin-bottom:.0001pt;margin-left:71.8pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  center;'><span style="font-size:15px;">High&nbsp;Court&nbsp;of</span></p>
+                                            </td>
+                                            <td style="width: 59.65pt; border: 1px solid; padding: 0cm; height: 21.1pt; vertical-align: top;">
+                                                <p style='margin-top:3.9pt;margin-right:  4.4pt;margin-bottom:.0001pt;margin-left:4.35pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  center;'><span style="font-size:15px;">No&nbsp;Record</span></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="5" style="width: 496pt; border: 1px solid; padding: 0cm; height: 47.75pt; vertical-align: top;">
+                                                <p style='margin-top:4.95pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:5.5pt;font-size:15px;font-family:"Calibri",sans-serif;line-height:85%;'><strong><span style="font-size:15px;line-height:85%;">Criminal&nbsp;Proceedings:&nbsp;Criminal&nbsp;Petitions / Criminal&nbsp;Appeal&nbsp;/&nbsp;Sessions Case&nbsp;/Special&nbsp;Sessions&nbsp;Case&nbsp;/&nbsp;Criminal</span></strong></p>
+                                                <p style='margin-top:1.25pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:5.5pt;font-size:15px;font-family:"Calibri",sans-serif;'><strong><span style="font-size:15px;">Miscellaneous&nbsp;Petition /&nbsp;Criminal&nbsp;Revision&nbsp;Appeal</span></strong></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 61.95pt; border: 1px solid; padding: 0cm; height: 32.6pt; vertical-align: top;">
+                                                <p style='margin-top:9.45pt;margin-right:  4.4pt;margin-bottom:.0001pt;margin-left:4.95pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  center;'><strong><span style="font-size:15px;">Court</span></strong></p>
+                                            </td>
+                                            <td colspan="2" style="width: 315.6pt; border: 1px solid; padding: 0cm; height: 32.6pt; vertical-align: top;">
+                                                <p style='margin-top:9.45pt;margin-right:  129.1pt;margin-bottom:.0001pt;margin-left:129.6pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:center;'><strong><span style="font-size:15px;">Jurisdiction</span></strong></p>
+                                            </td>
+                                            <td style="width: 58.8pt; border: 1px solid; padding: 0cm; height: 32.6pt; vertical-align: top;">
+                                                <p style='margin-top:5.05pt;margin-right:7.9pt;margin-bottom:.0001pt;margin-left:16.05pt;font-size:15px;font-family:"Calibri",sans-serif;text-indent:-7.25pt;line-height:85%;'><strong><span style="font-size:15px;line-height:85%;">Name of&nbsp;Court</span></strong></p>
+                                            </td>
+                                            <td style="width: 59.65pt; border: 1px solid; padding: 0cm; height: 32.6pt; vertical-align: top;">
+                                                <p style='margin-top:9.45pt;margin-right:  4.15pt;margin-bottom:.0001pt;margin-left:4.35pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  center;'><strong><span style="font-size:15px;">Result</span></strong></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 61.95pt; border: 1px solid; padding: 0cm; height: 82.55pt; vertical-align: top;">
+                                                <p style='margin-top:2.95pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:7.05pt;font-size:15px;font-family:"Calibri",sans-serif;margin:0cm;'><span style='font-family:"Arial MT",sans-serif;'>&nbsp;</span></p>
+                                                <p style='margin-top:.5pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:0cm;font-size:15px;font-family:"Calibri",sans-serif;'><span style='font-size:20px;font-family:"Arial MT",sans-serif;'>&nbsp;</span></p>
+                                                <p style='margin-top:0cm;margin-right:3.9pt;margin-bottom:.0001pt;margin-left:17.95pt;font-size:15px;font-family:"Calibri",sans-serif;text-indent:-12.25pt;line-height:83%;'><span style="font-size:15px;line-height:83%;">Magistrate&nbsp;Court</span></p>
+                                            </td>
+                                            <td colspan="2" style="width: 315.6pt; border: 1px solid; padding: 0cm; height: 82.55pt; vertical-align: top;">
+                                                <p style='margin-top:2.95pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:7.05pt;font-size:15px;font-family:"Calibri",sans-serif;margin:0cm;'><span style='font-family:"Arial MT",sans-serif;'>&nbsp;</span></p>
+                                                <p style='margin-top:2.95pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:7.05pt;font-size:15px;font-family:"Calibri",sans-serif;margin:0cm;'><span style='font-family:"Arial MT",sans-serif;'>&nbsp;</span></p>
+                                                <p style='margin-top:8.9pt;margin-right:  128.75pt;margin-bottom:.0001pt;margin-left:129.6pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:center;'><span style="font-size:15px;">Bangalore</span></p>
+                                            </td>
+                                            <td style="width: 58.8pt; border: 1px solid; padding: 0cm; height: 82.55pt; vertical-align: top;">
+                                                <p style='margin-top:5.55pt;margin-right:  3.05pt;margin-bottom:.0001pt;margin-left:4.05pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  center;text-indent:-.4pt;line-height:82%;'><span style="font-size:15px;line-height:82%;">Criminal&nbsp;Cases (CC),&nbsp;Private</span></p>
+                                                <p style='margin-top:3.1pt;margin-right:  4.9pt;margin-bottom:.0001pt;margin-left:5.5pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  center;line-height:83%;'><span style="font-size:15px;line-height:83%;">Complaint</span><span style="font-size:15px;line-height:  83%;">&nbsp;</span><span style="font-size:15px;line-height:83%;">Report&nbsp;(PCR)</span></p>
+                                            </td>
+                                            <td style="width: 59.65pt; border: 1px solid; padding: 0cm; height: 82.55pt; vertical-align: top;">
+                                                <p style='margin-top:2.95pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:7.05pt;font-size:15px;font-family:"Calibri",sans-serif;margin:0cm;'><span style='font-family:"Arial MT",sans-serif;'>&nbsp;</span></p>
+                                                <p style='margin-top:2.95pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:7.05pt;font-size:15px;font-family:"Calibri",sans-serif;margin:0cm;'><span style='font-family:"Arial MT",sans-serif;'>&nbsp;</span></p>
+                                                <p style='margin-top:8.9pt;margin-right:  4.4pt;margin-bottom:.0001pt;margin-left:4.35pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  center;'><span style="font-size:15px;">No&nbsp;Record</span></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 61.95pt; border: 1px solid; padding: 0cm; height: 32.6pt; vertical-align: top;">
+                                                <p style='margin-top:5.2pt;margin-right:12.1pt;margin-bottom:.0001pt;margin-left:17.95pt;font-size:15px;font-family:"Calibri",sans-serif;text-indent:-4.35pt;line-height:83%;'><span style="font-size:15px;line-height:83%;">Session&nbsp;Court</span></p>
+                                            </td>
+                                            <td colspan="2" style="width: 315.6pt; border: 1px solid; padding: 0cm; height: 32.6pt; vertical-align: top;">
+                                                <p style='margin-top:9.65pt;margin-right:  128.75pt;margin-bottom:.0001pt;margin-left:129.6pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:center;'><span style="font-size:15px;">Bangalore</span></p>
+                                            </td>
+                                            <td style="width: 58.8pt; border: 1px solid; padding: 0cm; height: 32.6pt; vertical-align: top;">
+                                                <p style='margin-top:5.2pt;margin-right:8.95pt;margin-bottom:.0001pt;margin-left:10.8pt;font-size:15px;font-family:"Calibri",sans-serif;text-indent:-1.0pt;line-height:83%;'><span style="font-size:15px;line-height:83%;">Criminal&nbsp;Appeals</span></p>
+                                            </td>
+                                            <td style="width: 59.65pt; border: 1px solid; padding: 0cm; height: 32.6pt; vertical-align: top;">
+                                                <p style='margin-top:9.65pt;margin-right:  4.4pt;margin-bottom:.0001pt;margin-left:4.35pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  center;'><span style="font-size:15px;">No&nbsp;Record</span></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 61.95pt; border: 1px solid; padding: 0cm; height: 32.6pt; vertical-align: top;">
+                                                <p style='margin-top:5.2pt;margin-right:8.4pt;margin-bottom:.0001pt;margin-left:17.95pt;font-size:15px;font-family:"Calibri",sans-serif;text-indent:-7.95pt;line-height:83%;'><span style="font-size:15px;line-height:83%;">Supreme&nbsp;Court</span></p>
+                                            </td>
+                                            <td colspan="2" style="width: 315.6pt; border: 1px solid; padding: 0cm; height: 32.6pt; vertical-align: top;">
+                                                <p style='margin-top:9.7pt;margin-right:  128.7pt;margin-bottom:.0001pt;margin-left:129.6pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:center;'><span style="font-size:15px;">Delhi</span></p>
+                                            </td>
+                                            <td style="width: 58.8pt; border: 1px solid; padding: 0cm; height: 32.6pt; vertical-align: top;">
+                                                <p style='margin-top:5.2pt;margin-right:8.95pt;margin-bottom:.0001pt;margin-left:10.8pt;font-size:15px;font-family:"Calibri",sans-serif;text-indent:-1.0pt;line-height:83%;'><span style="font-size:15px;line-height:83%;">Criminal&nbsp;Appeals</span></p>
+                                            </td>
+                                            <td style="width: 59.65pt; border: 1px solid; padding: 0cm; height: 32.6pt; vertical-align: top;">
+                                                <p style='margin-top:9.7pt;margin-right:  4.4pt;margin-bottom:.0001pt;margin-left:4.35pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  center;'><span style="font-size:15px;">No&nbsp;Record</span></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 61.95pt; border: 1px solid; padding: 0cm; height: 32.6pt; vertical-align: top;">
+                                                <p style='margin-top:9.45pt;margin-right:  4.4pt;margin-bottom:.0001pt;margin-left:5.05pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  center;'><span style="font-size:15px;">High&nbsp;Court</span></p>
+                                            </td>
+                                            <td colspan="2" style="width: 315.6pt; border: 1px solid; padding: 0cm; height: 32.6pt; vertical-align: top;">
+                                                <p style='margin-top:9.45pt;margin-right:  128.75pt;margin-bottom:.0001pt;margin-left:129.6pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:center;'><span style="font-size:15px;">Bangalore</span></p>
+                                            </td>
+                                            <td style="width: 58.8pt; border: 1px solid; padding: 0cm; height: 32.6pt; vertical-align: top;">
+                                                <p style='margin-top:5.2pt;margin-right:8.95pt;margin-bottom:.0001pt;margin-left:10.8pt;font-size:15px;font-family:"Calibri",sans-serif;text-indent:-1.0pt;line-height:83%;'><span style="font-size:15px;line-height:83%;">Criminal&nbsp;Appeals</span></p>
+                                            </td>
+                                            <td style="width: 59.65pt; border: 1px solid; padding: 0cm; height: 32.6pt; vertical-align: top;">
+                                                <p style='margin-top:9.45pt;margin-right:  4.4pt;margin-bottom:.0001pt;margin-left:4.35pt;font-size:15px;font-family:"Calibri",sans-serif;text-align:  center;'><span style="font-size:15px;">No&nbsp;Record</span></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="5" style="width: 496pt; border: 1px solid; padding: 0cm; height: 47.75pt; vertical-align: top;">
+                                                <p style='margin-top:5.65pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:5.5pt;font-size:15px;font-family:"Calibri",sans-serif;line-height:81%;'><span style="font-size:15px;line-height:  81%;">In&nbsp;Conclusion,&nbsp;as&nbsp;on&nbsp;the&nbsp;date&nbsp;of&nbsp;this&nbsp;search, and&nbsp;as&nbsp;on&nbsp;the&nbsp;records&nbsp;of&nbsp;jurisdictional&nbsp;court&nbsp;there is&nbsp;no&nbsp;civil&nbsp;or&nbsp;criminal</span></p>
+                                                <p style='margin-top:1.65pt;margin-right:0cm;margin-bottom:.0001pt;margin-left:5.5pt;font-size:15px;font-family:"Calibri",sans-serif;'><span style="font-size:15px;">case against the subject-Refer annexure below.</span></p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>*@
+                            <p><br></p>
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:15rem;">
+                                <tbody>
+                                    <tr>
+                                        <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                                            &nbsp;
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                        <td width="1%">&nbsp;</td>
+                                        <td width="79%">
+                                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                            <p style="font-size:16px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+            </page>
+
+            if (Model.CandidateDocList != null)
+            {
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                {
+                    if (Doc.SubCheckRowID == a.SubcheckRowID)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                            <page id="PrintSrc" size="A4">
+                                <div style="page-break-after:always ;"></div>
+                                <table width="793" cellspacing="0" height="1100" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center">
+                                    <!--- Report Header Include -->
+                                    @*@Html.Partial("_ReportHeader")*@
+                                    <!--- Report Header Include -->
+                                    <tr>
+                                        @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                        <td valign="top" colspan="2" align="center" valign="bottom">
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td valign="top">
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tr>
+                                                                <td style="font-size:10px; font-family:Calibri;">
+                                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                        <tr>
+
+                                                                            @if (Model.Criminal_currentPermanantSame.ToLower() == "yes" && (a.SubcheckRowID == 23 || a.SubcheckRowID == 24  ||  a.SubcheckRowID == 29))
+                                                                            {
+                                                                                @*<div style="text-align: center;"><strong><span style='font-size:15px;font-family:"Calibri",sans-serif;'>&nbsp;Criminal court Check (Current & permanant Address)</span></strong></div>*@
+                                                                                <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">Criminal court Check Current & permanant Address (@Doc.DocumentType)</p></td>
+
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@a.SubCheckName (@Doc.DocumentType)</p></td>
+                                                                            }
+                                                                            <td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                                                                        </tr>
+                                                                        <tr><td colspan="2">&nbsp;</td></tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td valign="top">&nbsp;</td>
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td valign="top">
+                                                                    @{
+                                                                        FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                        System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                        if (image.Height > 600)
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                        }
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                                    </tr>
+                                    <!--- Report Footer with Address Include -->
+                                    @Html.Partial("_ReportFooterAddress")
+                                    <!--- Report Footer with Address Include -->
+                                    <!--- Report Footer Include -->
+                                    @*@Html.Partial("_ReportFooter")*@
+                                    <!--- Report Footer Include -->
+                                </table>
+                            </page>
+                        }
+                    }
+                }
+            }
+            i++;
+        }
+    }
+}
+<br />

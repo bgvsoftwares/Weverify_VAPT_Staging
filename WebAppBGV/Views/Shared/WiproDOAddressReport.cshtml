@@ -1,0 +1,440 @@
+﻿
+@model ViewModels.ReportQCViewModel.InterimReportGenerateViewModel
+
+@if (Model != null && Model.AddressProvidedList != null && Model.AddressProvidedList.Count() > 0 && Model.AntecedentList != null && Model.AntecedentList.Count() > 0)
+{
+    foreach (var ProvidedInfo in Model.AddressProvidedList)
+    {
+        var AddressVerInfo = Model.AddressVerifiedList.Where(ver => ver.AddressRowID == ProvidedInfo.AddressRowID).FirstOrDefault();
+        var antecentList = Model.AntecedentList.Where(a => a.CheckFamilyRowID == ProvidedInfo.CheckFamilyRowID && a.SubCheckRowID == ProvidedInfo.SubCheckRowID).ToList();
+        var ReportCmt = Model.CaseAntecedentComment.Where(a => a.PersonalRowID == ProvidedInfo.PersonalRowID && a.SubCheckFamilyID == ProvidedInfo.SubCheckRowID).ToList();
+
+        <page id="PrintSrc" size="A4">
+            <div style="page-break-after:always ;"></div>
+            <table width="793" height="1250" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999;border-collapse:collapse;  margin-top:5px">
+                <!--- Report Header Include -->
+                @*@Html.Partial("_ReportHeader")*@
+                <!--- Report Header Include -->
+                <tr>
+                    <td width="2%" align="left" valign="bottom" @*style="border-left:2px solid #999999;"*@>&nbsp;</td>
+                    <td valign="top">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+                            <tr>
+                                <td valign="top">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                        <tr>
+                                            <td>
+                                                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+                                                  
+                                                    <tr>
+                                                        <td width="94%" style="padding-top:4%"><p style="font-size:32px; color:black; text-decoration:underline; text-align:center; margin:0px 0px 0px 0px; font-weight:bold;"></p> </td>
+                                                        @*<td width="6%" align="right"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>*@
+                                                        @*<td width="6%" align="right"><img src='@Url.Content("~/Images/logo.jpg")' width="45" height="auto"></td>*@
+                                                        <td align="right"><img src='@Url.Content("~/Images/logo.jpg")' height="40" width="71" height="auto"></td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td height="30">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            @if (ProvidedInfo.SubCheckRowID == 13)
+                                            {
+                                                <td style="font-weight:bold; font-size:20px;font-family:Calibri;">Section @ProvidedInfo.AnnexureNo: Address Verification – Permanent    </td>
+                                            }
+                                            else if (ProvidedInfo.SubCheckRowID == 2)
+                                            {
+                                                <td style="font-weight:bold; font-size:20px;font-family:Calibri;">Section @ProvidedInfo.AnnexureNo: Address Verification – Current    </td>
+                                            }
+
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-top:10px;" valign="top" align="center">
+                                                <table width="100%" border="1" cellspacing="5" cellpadding="2" style="border-collapse:collapse;font-family:Calibri;font-size:16px">
+                                                    <tr>
+                                                        <td>Address Type</td>
+                                                        <td colspan="3">@ProvidedInfo.SubCheckName</td>
+                                                        @*@if (AddressVerInfo.SubCheckName != null)
+            {
+                <td width="25%">Verified</td>
+            }
+            else
+            {
+                <td width="25%">NA</td>
+            }
+            @if (ReportCmt.Any())
+            {
+                if (ReportCmt[0].AntecedentName == "AV_Add_Type")
+                {
+                    <td width="25%">@ReportCmt[0].Comment</td>
+                }
+                else
+                {
+                    <td width="25%">NA</td>
+                }
+            }
+            else
+            {
+                <td width="25%">NA</td>
+            }*@
+
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="25%">Complete Address</td>
+                                                        <td width="25%">@ProvidedInfo.AV_Add</td>
+                                                        @if (AddressVerInfo.AV_Add != null)
+                                                        {
+                                                            <td width="25%">Verified</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="25%">NA</td>
+                                                        }
+                                                        @if (ReportCmt.Any())
+                                                        {
+                                                            var comm = ReportCmt.FirstOrDefault(T => T.AntecedentName == "AV_Add");
+                                                            if (comm != null)
+                                                            {
+                                                                <td width="25%">@comm.Comment</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td width="25%">NA</td>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="25%">NA</td>
+                                                        }
+                                                    </tr>
+                                                    @*<tr>
+            <td width="25%">Contact Details</td>
+            <td width="25%">@ProvidedInfo.AV_Resp_ConDet</td>
+            @if (AddressVerInfo.AV_Resp_ConDet != null)
+            {
+                <td width="25%">Verified</td>
+            }
+            else
+            {
+                <td width="25%">NA</td>
+            }
+
+            @if (ReportCmt.Any())
+            {
+                if (ReportCmt[0].AntecedentName == "AV_Resp_ConDet")
+                {
+                    <td width="25%">@ReportCmt[0].Comment</td>
+                }
+                else
+                {
+                    <td width="25%">NA</td>
+                }
+            }
+            else
+            {
+                <td width="25%">NA</td>
+            }
+        </tr>*@
+
+                                                    <tr>
+                                                        <td width="25%">Period of Stay</td>
+                                                        <td width="25%">@ProvidedInfo.AV_Dur_of_Stay</td>
+                                                        @*@if (AddressVerInfo.AV_Dur_of_Stay != null)
+            {
+                <td width="25%">Verified</td>
+            }
+            else*@
+
+                                                        <td width="25%">Verified</td>
+
+
+                                                        @if (ReportCmt.Any())
+                                                        {
+                                                            var comm = ReportCmt.FirstOrDefault(T => T.AntecedentName == "AV_Dur_of_Stay");
+                                                            if (comm != null)
+                                                            {
+                                                                <td width="25%">@comm.Comment</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td width="25%">NA</td>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="25%">NA</td>
+                                                        }
+                                                    </tr>
+
+
+
+                                                    @*<tr>
+            <td width="25%">Verified By</td>
+            <td width="25%">@AddressVerInfo.AV_Resp_Name</td>
+            @if (AddressVerInfo.AV_Resp_Name != null && AddressVerInfo.AV_Resp_Name != "")
+            {
+                <td width="25%">Verified</td>
+            }
+            else
+            {
+                <td width="25%"></td>
+            }
+
+            @if (ReportCmt.Any())
+            {
+                if (ReportCmt[0].AntecedentName == "AV_Resp_Name")
+                {
+                    <td width="25%">@ReportCmt[0].Comment</td>
+                }
+                else
+                {
+                    <td width="25%">NA</td>
+                }
+            }
+            else
+            {
+                <td width="25%">NA</td>
+            }
+        </tr>*@
+
+                                                    <tr>
+                                                        @if (AddressVerInfo.SubCheckRowID == 2)
+                                                        {
+                                                            <td width="25%">Is Proof of Current <br /> Address provided</td>
+                                                        }
+                                                        @if (AddressVerInfo.SubCheckRowID == 13)
+                                                        {
+                                                            <td width="25%">Is Proof of permanent <br /> Address provided</td>
+                                                        }
+
+
+
+                                                        <td width="75%" colspan="3">@AddressVerInfo.AV_Idproof_Prov_Resp</td>
+
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td width="25%">Mode of Verification</td>
+
+                                                        <td width="75%" colspan="3">Self-Declared / Validated with proof</td>
+                                                        @*@if (@ProvidedInfo.AnnexureNo != null)
+            {
+                <td width="25%">Annexure @Session["Annexure"].ToString()</td>
+            }
+            else
+            {
+                <td width="25%"></td>
+            }*@
+
+                                                        @*@if (ReportCmt.Any())
+            {
+                if (ReportCmt[0].AntecedentName == "AV_OtherDetails10")
+                {
+                    <td width="25%">@ReportCmt[0].Comment</td>
+                }
+                else
+                {
+                    <td width="25%">NA</td>
+                }
+            }
+            else
+            {
+                <td width="25%">NA</td>
+            }*@
+
+                                                        @*@if (ReportCmt.Any())
+            {
+                var comm = ReportCmt.FirstOrDefault(T => T.AntecedentName == "AV_OtherDetails10");
+                if (comm != null)
+                {
+                    <td width="25%">@comm.Comment</td>
+                }
+                else
+                {
+                    <td width="25%">NA</td>
+                }
+            }
+            else
+            {
+                <td width="25%">NA</td>
+            }*@
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td width="25%">Date verified</td>
+                                                        @if (AddressVerInfo.AV_Date_Verification != null)
+                                                        {
+                                                            <td colspan="3" width="75%">@AddressVerInfo.AV_Date_Verification.Value.ToString("dd-MMM-yyyy")</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td colspan="3" width="75%"></td>
+                                                        }
+
+                                                        
+
+
+
+                                                    </tr>
+
+
+                                                    <tr>
+                                                        <td width="25%">Additional Remarks</td>
+                                                        <td width="25%" colspan="3">@AddressVerInfo.AV_Any_Other_Cmmnts_AV</td>
+                                                        @*@if (AddressVerInfo.AV_Any_Other_Cmmnts_AV != null)
+            {
+                <td width="25%">Verified</td>
+            }
+            else
+            {
+                <td width="25%"></td>
+            }*@
+
+                                                        @*@if (ReportCmt.Any())
+            {
+                if (ReportCmt[0].AntecedentName == "AV_Any_Other_Cmmnts_AV")
+                {
+                    <td width="25%">@ReportCmt[0].Comment</td>
+                }
+                else
+                {
+                    <td width="25%">NA</td>
+                }
+            }
+            else
+            {
+                <td width="25%">NA</td>
+            }*@
+                                                    </tr>
+
+
+
+
+
+
+
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top">&nbsp;</td>
+                                        </tr>
+
+                                        <tr>
+                                            <td height="30">&nbsp;</td>
+                                        </tr>
+
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td @*style="border-right:2px solid #999999;"*@ align="left" valign="top" width="2%">&nbsp;</td>
+                </tr>
+                <!--- Report Footer Address Include -->
+                @Html.Partial("_ReportFooterAddress")
+                <!--- Report Footer Address Include -->
+                <!--- Report Footer Include -->
+                @*@Html.Partial("_ReportFooter")*@
+                <!--- Report Footer Include -->
+            </table>
+        </page>
+
+        if (Model.CandidateDocList != null)
+        {
+            int index = 0;
+            foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == ProvidedInfo.SubCheckRowID))
+            {
+                if (Doc.SubCheckRowID == ProvidedInfo.SubCheckRowID)
+                {
+                    FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                    if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                    {
+                        <page id="PrintSrc" size="A4">
+                            <div style="page-break-after:always ;"></div>
+                            <table width="793" height="1250" cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center;border-collapse:collapse;">
+                                <!--- Report Header Include -->
+                                @*@Html.Partial("_ReportHeader")*@
+                                <!--- Report Header Include -->
+                                <tr>
+                                    @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                    <td valign="top" colspan="2" align="center" valign="bottom">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td valign="top">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr>
+                                                            <td>
+                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                    <tr>
+                                                                        <td width="88%"><p style="font-size:32px; color:black; text-decoration:underline; text-align:center; margin:0px 0px 0px 0px; font-weight:bold;"></p> </td>
+                                                                        @*<td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@ProvidedInfo.SubCheckName (@Doc.DocumentType)</p></td>*@
+                                                                        @*<td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>*@
+                                                                        @*<td width="6%" align="right"><img src='@Url.Content("~/Images/logo.jpg")' width="45" height="auto"></td>*@
+                                                                        <td align="right"><img src='@Url.Content("~/Images/logo.jpg")' height="40" width="71" height="auto"></td>
+                                                                    </tr>
+                                                                    <tr><td colspan="2">&nbsp;</td></tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+
+                                                            @if (index == 0)
+                                                            {
+                                                                int AnnexureNo = Convert.ToInt32(Session["Annexure"].ToString());
+                                                                <td style="padding-left:30px;font-weight:bold">Annexure @AnnexureNo   </td>
+                                                                Session["Annexure"] = AnnexureNo + 1;
+                                                            }
+                                                            else
+                                                            {
+                                                                <td></td>
+                                                            }
+                                                        </tr>
+
+                                                        <tr>
+
+                                                            <td style="padding-top:10px">  </td>
+                                                        </tr>
+                                                        <tr style="text-align:center">
+                                                            <td valign="top">
+                                                                @{
+                                                                    FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                    System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                    if (image.Height > 600)
+                                                                    {
+                                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                    }
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>&nbsp;</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                                </tr>
+                                <!--- Report Footer Address Include -->
+                                @Html.Partial("_ReportFooterAddress")
+                                <!--- Report Footer Address Include -->
+                                <!--- Report Footer Include -->
+                                @*@Html.Partial("_ReportFooter")*@
+                                <!--- Report Footer Include -->
+                            </table>
+                        </page>
+                    }
+                }
+                index++;
+            }
+        }
+    }
+}

@@ -1,0 +1,164 @@
+﻿
+@{
+    ViewBag.Title = "Manage Insuff Checks";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+}
+
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@*@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }*@
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("ManageInsuffChecksForUploadDoc", "Insuff", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Client Name :</label>
+                                    <div class="col-md-8">
+                                        @Html.DropDownList("ClientRowID",
+                                         new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                                         "-- Select Client -- ",
+                                         new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Keyword :</label>
+                                    <div class="col-md-8">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, Ref No..." })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Recieving From Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("RecievingfromDate", null, new { @class = "form-control", @id = "RecievingToDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Recieving To Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("RecievingToDate", null, new { @class = "form-control", @id = "RecievingFromDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Completed From Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("CompletedFromDate", null, new { @class = "form-control", @id = "CompletedToDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Completed To Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("CompletedToDate", null, new { @class = "form-control", @id = "CompletedFromDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                </div>
+                                <div class="all-button-bg">
+                                    <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.PQVerificationInfo != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.PQVerificationInfo, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                    htmlAttributes: new { id = "grid", @class = "table" },
+                                    headerStyle: "thead-inverse",
+                                    rowStyle: "ordertxt",
+                                    footerStyle: "custpaging",
+                                    mode: WebGridPagerModes.All,
+                                    columns: new[]
+                                    {
+                                    grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                    grid.Column(columnName: "CompanyRefNo", header: "Securitas ID", canSort: false, style:"col-md-1"),
+                                    grid.Column(columnName: "PersonalName", header: "Candidate Name", canSort: false, style:"col-md-2"),
+                                    grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"col-md-2"),
+                                    grid.Column("CreatedDate", "Insuff-Raise-Date", format: (item) => item.CreatedDate != DateTime.MinValue ? item.CreatedDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"col-md-2"),
+                                    grid.Column(columnName: "RevwRequestBy", header: "Insuff Raise By", canSort: false, style:"col-md-2"),
+                                    grid.Column(columnName: "CheckStatus", header: "Status", canSort: false, style:"col-md-1"),
+                                    grid.Column(header : "Documents", format : (item) => {
+                                        var link = Html.ActionLink("Upload", "UploadInsuffDocumentForCheck", "Insuff", new { id = item.VerificationRowID, ClientRowId=item.ClientRowId, PersonalRowID=item.PersonalRowID, ChFamilRowId=item.CheckFamilyRowID, subCheckId=item.SubCheckRowID,item.CompanyRefNo }, null);
+                                        return link;
+                                    }, style:"edit col-md-1"),
+
+                                      grid.Column(header : "Action", format : (item) => {
+                                        var link = Html.ActionLink("History", "CheckActionHistory", "Verification", new { scid = item.SubCheckRowID, pe = item.PersonalRowID }, new { @class = "iframeActionHistories cboxElement callbacks" });
+                                        return link;
+                                    }, style:"edit col-md-1"),
+
+                                    }
+                             )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".iframeUpdateStatus").colorbox({ iframe: true, width: "60%", height: "60%" });
+            $(".callbacks").colorbox({
+                //onOpen: function () { alert('onOpen: colorbox is about to open'); },
+                //onLoad: function () { alert('onLoad: colorbox has started to load the targeted content'); },
+                //onComplete: function () { alert('onComplete: colorbox has displayed the loaded content'); },
+                //onCleanup: function () { alert('onCleanup: colorbox has begun the close process'); },
+                onClosed: function () {
+                    //alert('onClosed: colorbox has completely closed');
+                    window.location.reload(false);
+                }
+            });
+
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+            //$(".callbacks").colorbox({
+            //    onClosed: function () {
+            //        window.location.reload(false);
+            //    }
+            //}); 
+            
+            $('#RecievingToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#RecievingFromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedFromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+        });
+
+    </script>
+
+}

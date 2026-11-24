@@ -1,0 +1,153 @@
+﻿@model ViewModels.ViewTCSPenaltyamount
+
+@{
+    Layout = null;
+
+}
+
+
+
+@*@section LeftNavigation{ @Html.Partial("_NavLeftClientServicingInsuff") }*@
+
+<table width="100%" cellspacing="0" cellpadding="0">
+    <tr>
+        <td valign="top">
+
+            <table width="100%" border="1">
+                @{
+                    @*<tr>
+                            <td width="20%" style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0; padding-left:5px;"><strong>Verified Data</strong></td>
+                            <td width="50%" style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0; text-align:center;"><strong>Particulars</strong></td>
+                            <td width="17%" style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0; text-align:center;"><strong>Status (Color)</strong></td>
+                        </tr>*@
+                    string check = string.Empty;
+                    foreach (var item in Model.WiproChecklist1)
+                    {
+                        if (check != item.CheckDetails)
+                        {
+                            @*<tr>
+                                    <td colspan="4" bgcolor="#c0c0c0" style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0; padding:5px; text-align:center;"> <strong> @item.CheckFName</strong></td>
+                                </tr>*@
+
+                            check = item.CheckDetails;
+                        }
+                        <tr style=" font-size:12px; font-weight:bold; padding:5px;">
+                            <td style="padding-left:5px; font-size:10px; font-family:Calibri;">@item.CheckDetails</td>
+                            <td align="center" style="font-size:10px; font-family:Calibri;">@item.CheckSOW</td>
+
+
+                        </tr>
+                    }
+
+
+
+
+
+                }
+            </table>
+        </td>
+    </tr>
+</table>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("InsertSOWCheck", "ReportQC",FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+
+                            @Html.HiddenFor(model => model.PersonalRowID)
+
+                            @Html.HiddenFor(model => model.ClientRowId)
+
+
+
+                            <div class="form-group">
+
+                                <label class="control-label col-md-6">SOW  :</label>
+                                <div class="form-group branch">
+                                    @Html.LabelFor(model => model.Check, htmlAttributes: new { @class = "col-md-4 control-label" })
+                                    <div class="col-md-4">
+                                        @Html.DropDownListFor(model => model.Check, new List<SelectListItem>
+            { new SelectListItem{Text="Education", Value="Education"},
+            new SelectListItem{Text="Employment", Value="Employment"},
+            new SelectListItem{Text="Address", Value="Address"},
+            new SelectListItem{Text="Criminal", Value="Criminal"},
+            new SelectListItem{Text="Database", Value="Database"},
+            new SelectListItem { Text = "Identity", Value = "Identity" },
+            new SelectListItem { Text = "Other checks", Value = "Other checks" }},
+            new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Check, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    @Html.TextAreaFor(model => model.CheckSOW, new { @class = "form-control col-md-6", @rows = "2", @style = "width:100%;" })
+
+                                </div>
+                                <div class="col-md-6">
+                                    @Html.TextAreaFor(model => model.ReportSequence, new { @class = "form-control col-md-6", @rows = "2", @style = "width:100%;" })
+
+                                </div>
+
+                            </div>
+
+
+                            <br />
+                            <div class="form-group branch search-frame">
+                                <div style="text-align:center;">
+
+                                    <input class="btn bun-bg btn-success" type="submit" value="Update" name="Process" />
+                                </div>
+                            </div>
+
+                        }
+                    </div>
+                </div>
+
+
+                
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts{
+
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,145 @@
+﻿@{
+    ViewBag.Title = "eSign Callback Response";
+    Layout = "~/Areas/Candidate/Views/Shared/_Layout.cshtml";
+}
+@section LeftNavigation{ @Html.Partial("_NavLeftCandidateCaseInfoProvided") }
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+    <div>
+
+
+
+        @using (Html.BeginForm("eSigns", "Home", FormMethod.Post))
+        {
+
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>Signer Name</label>
+                    <input type="text" id="SignerName" name="SignerName" class="form-control" required />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label>Aadhaar Last 4 Digits</label>
+                    <input type="text" id="AadhaarLast4" maxlength="4" name="AadhaarLast4" class="form-control" required />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label>Location</label>
+                    <input type="text" id="Location" maxlength="50" name="Location" class="form-control" required />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label>Reason</label>
+                    <input type="text" id="Reason" name="Reason" maxlength="50" class="form-control" required />
+                </div>
+
+                <!-- Signature Coordinates -->
+                @*<div class="col-md-3 mb-3">
+                        <label>X Coordinate</label>
+                        <input type="number" name="XCoordinate" value="72" class="form-control" required />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Y Coordinate</label>
+                        <input type="number" name="YCoordinate" value="432" class="form-control" required />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Width</label>
+                        <input type="number" name="Width" value="144" class="form-control" required />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Height</label>
+                        <input type="number" name="Height" value="72" class="form-control" required />
+                    </div>*@
+            </div>
+
+            <button class="btn btn-success mt-3">Generate PDF</button>
+        }
+
+    </div>
+
+    <div>
+
+
+
+
+        @using (Html.BeginForm("SendEsignRequest", "Home", FormMethod.Post))
+        {
+
+            <button type="submit"
+                    class="btn btn-primary mt-3"
+                    @(ViewBag.SignedXML == null ? "disabled" : "")>
+                Send Request to eSign
+            </button>
+
+        }
+
+
+    </div>
+</body>
+</html>
+
+@section Scripts{
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/assets/Client_Page_images/Forget Password_files/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/assets/css/bootstrap-datepicker.min.css" rel="stylesheet" />
+    <script src="~/assets/js/bootstrap-datepicker.min.js"></script>
+    <script src="~/Scripts/loginScript.js"></script>
+    <script>
+        
+
+        $("#AadhaarLast4").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        });
+
+        $("#SignerName").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        });
+
+        $("#SignerName").on("input", function () {
+            this.value = this.value.replace(/[^a-zA-Z]/g, '');
+        });
+
+        $("#Location").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        });
+
+        $("#Reason").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        });
+        $("#Reason").on("input", function () {
+            this.value = this.value.replace(/[^a-zA-Z]/g, '');
+        });
+
+        
+
+        $("#AadhaarLast4").on("keypress", function (e) {
+            if (e.which < 48 || e.which > 57) {
+                e.preventDefault();
+            }
+        });
+
+    </script>
+
+
+    }

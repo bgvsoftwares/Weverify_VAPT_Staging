@@ -1,0 +1,292 @@
+﻿
+
+@{
+    ViewBag.Title = "Welcome To " + ViewBag.Dashboard;
+    //Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+    Layout = "~/Areas/ClientArea/Views/Shared/_LayoutDepartmentNew.cshtml";
+    string[] fruits = new string[] { ViewBag.Newmonths };
+
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "DashboardClient", "Home", new { area = "ClientArea" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="col-md-2">
+        @*ViewBag.totalcases= String.Join(",", list.Select(o => o.totalCases));
+            ViewBag.ActiveCases = String.Join(",", list.Select(o => o.ActiveCases));
+            ViewBag.Stoped = String.Join(",", list.Select(o => o.Stoped));
+            ViewBag.month = String.Join(",", list.Select(o => o.month));*@
+
+
+
+        <input type="hidden" id="Hftotalcases" value=@ViewBag.totalcases />
+        <input type="hidden" id="HfActiveCases" value=@ViewBag.ActiveCases />
+        <input type="hidden" id="HfStoped" value=@ViewBag.Stoped />
+        <input type="hidden" id="Hfmonths" value=@ViewBag.Newmonths />
+
+    </div>
+    <div class="col-md-10" style="padding-left:2%;margin-top:1.5%;">
+        <div class="tab-pane" id="revDashboard" role="tabpanel">
+            <div class="content" style="padding:1% 2%;">
+                <div class="row">
+                    <style>
+                        .thead {
+                            background: #797979;
+                            color: #fff;
+                        }
+                        table tbody tr:nth-child(3) {
+                            display: none;
+                        }
+                        th {
+                            text-align: center;
+                            padding: 5px;
+                            font-size: 14px;
+                        }
+
+                        td {
+                            padding: 5px;
+                        }
+                    </style>
+                    <div class="col-md-8">
+                        <div class="card ">
+                            @*<div class="card-header ">
+                                    <h4 class="text-center"> Check Family Wise Report </h4>
+                                </div>*@
+                            <div class="card-body ">
+                                <h1 class="text-center text-info text-bold">Check Color Codes</h1>
+                                <br/>
+                                @*<div id="Barchart"></div>*@
+                                @*<canvas id="myChart"></canvas>*@
+                                @*<div id="columnchart_material" style="width: 800px; height: 500px;"></div>*@
+                                <canvas id="CheckFamilycolorCanvas"></canvas>
+                                @*<canvas id=chartHours width="400" height="100"></canvas>*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div id="trendChecktable" class="pt-family-table">
+                            <table border="1" width="100%" id="table">
+                                <tr class="thead">
+                                    <th align="center"></th>
+                                    <th align="center">Total&nbsp; <span id="totalPercentage"></span></th>
+                                    <th align="center">WIP&nbsp; <span id="wipPercentage"></span></th>
+                                    <th align="center">Green&nbsp; <span id="greenPercentage"></span></th>
+                                    <th align="center">Orange&nbsp; <span id="orangePercentage"></span></th>
+                                    <th align="center">Red&nbsp; <span id="redPercentage"></span></th>
+                                    <th align="center">No Color&nbsp; <span id="nocolorPercentage"></span></th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src='@Url.Content("~/Scripts/modernizr-2.8.3.js")'></script>
+
+<script src='@Url.Content("~/Scripts/jquery-3.7.1.min.js")'></script>
+<script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+<script src='@Url.Content("~/Scripts/DisableBackForwordBtn.js")'></script>
+<script src='@Url.Content("~/Scripts/DisableBackForwordBtn.js")'></script>
+<script src='@Url.Content("~/Scripts/bootstrap.min.js")'></script>
+<script src='@Url.Content("~/Content/newscripts/chartjs.js")'></script>
+
+@*<script src='@Url.Content("~/Content/newscripts/demo.js")'></script>*@
+<script src="~/Content/newscripts/propermin.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: "/ClientArea/Home/CheckFamilyColorBarChart",
+            method: "GET",
+            success: function (data) {
+                // console.log(data);
+                var CheckFamilyName = [];
+                var WIP = [];
+                var Orange = [];
+                var Green = [];
+                var Red = [];
+                var Nocolor = [];
+                for (var i in data) {
+                    CheckFamilyName.push(data[i].CheckFamilyName);
+                    WIP.push(data[i].WIP);
+                    Orange.push(data[i].Orange);
+                    Green.push(data[i].Green);
+                    Red.push(data[i].Red);
+                    Nocolor.push(data[i].Nocolor);
+
+                }
+                ////table code
+                //var tr;
+                //for (var j = 0; j < data.length; j++) {
+                //    tr = $('<tr/>');
+                //    tr.append("<td>" + CheckFamilyName[j] + "</td>");
+                //    tr.append("<td>" + WIP[j] + "</td>");
+                //    tr.append("<td>" + Green[j] + "</td>");
+                //    tr.append("<td>" + Orange[j] + "</td>");
+
+                //    tr.append("<td>" + Red[j] + "</td>");
+                //    //tr.append("<td>" + Nocolor[j] + "</td>");
+                //    $('#table').append(tr);
+                //}
+                //tablecode ends
+
+                var chartdata = {
+                    labels: CheckFamilyName,
+                    datasets: [
+                        {
+                            label: 'Wip',
+                            backgroundColor: '#146EB4',
+                            borderColor: '#146EB4',
+                            hoverBackgroundColor: 'rgb(48, 219, 219)',
+                            hoverBorderColor: 'rgb(48, 219, 219)',
+                            data: WIP
+                        },
+                        {
+                            label: 'Green',
+                            backgroundColor: '#008000',
+                            borderColor: '#008000',
+                            hoverBackgroundColor: 'rgb(129, 209, 154)',
+                            hoverBorderColor: 'rgb(129, 209, 154) ',
+                            data: Green
+                        },
+                        {
+                            label: 'Orange',
+                            backgroundColor: '#FFA500',
+                            borderColor: '#FFA500',
+                            hoverBackgroundColor: 'rgb(186, 201, 209)',
+                            hoverBorderColor: 'rgb(186, 201, 209)',
+                            data: Orange
+                        },
+
+                        {
+                            label: 'Red',
+                            backgroundColor: '#FF0000',
+                            borderColor: '#FF0000',
+                            hoverBackgroundColor: 'rgb(129, 209, 154)',
+                            hoverBorderColor: 'rgb(129, 209, 154) ',
+                            data: Red
+                        }
+
+                    ]
+                };
+
+                var ctx = $("#CheckFamilycolorCanvas");
+                var opt = {
+                    events: false,
+                    tooltips: {
+                        enabled: false
+                    },
+                    hover: {
+                        animationDuration: 0
+                    },
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                autoSkip: false,
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Value'
+                            }
+                        }]
+                    },
+                };
+                var barGraph = new Chart(ctx, {
+                    type: 'bar',
+                    data: chartdata,
+                    options: opt
+                });
+            },
+            error: function (data) {
+               // console.log(data);
+            }
+        });
+
+        $.ajax({
+            url: "/ClientArea/Home/CheckFamilWiseGraph_table",
+            method: "GET",
+            success: function (data) {
+                // console.log(data);
+                var CheckFamilyName = [];
+                var WIP = [];
+                var Orange = [];
+                var Green = [];
+                var Red = [];
+                var Nocolor = [];
+                var Total = [];
+                var PercentageTotal = "";
+                var PercentageWip = "";
+                var PercentageOrange = "";
+                var PercentageGreen = "";
+                var PercentageRed = "";
+                var PercentageNocolor = "";
+                for (var i in data) {
+                    if (data[i].CheckFamilyName == 'Percentage') {
+                        PercentageTotal = data[i].Total + "%";
+                        PercentageWip = data[i].WIP + "%";
+                        PercentageOrange = data[i].Orange + "%";
+                        PercentageGreen = data[i].Green + "%";
+                        PercentageRed = data[i].Red + "%";
+                        PercentageNocolor = data[i].Nocolor + "%";
+                    }
+                    CheckFamilyName.push(data[i].CheckFamilyName);
+                    WIP.push(data[i].WIP);
+                    Orange.push(data[i].Orange);
+                    Green.push(data[i].Green);
+                    Red.push(data[i].Red);
+                    Nocolor.push(data[i].Nocolor);
+                    Total.push(data[i].Total);
+
+                }
+                //table code
+                //table code
+                $("#totalPercentage").text(PercentageTotal);
+                $("#wipPercentage").text(PercentageWip);
+                $("#orangePercentage").text(PercentageOrange);
+                $("#greenPercentage").text(PercentageGreen);
+                $("#redPercentage").text(PercentageRed);
+                $("#nocolorPercentage").text(PercentageNocolor);
+                var tr;
+                for (var j = 0; j < data.length; j++) {
+                    tr = $('<tr/>');
+                    tr.append("<td>" + CheckFamilyName[j] + "</td>");
+                    tr.append("<td>" + Total[j] + "</td>");
+                    tr.append("<td>" + WIP[j] + "</td>");
+                    tr.append("<td>" + Green[j] + "</td>");
+                    tr.append("<td>" + Orange[j] + "</td>");
+
+                    tr.append("<td>" + Red[j] + "</td>");
+                    tr.append("<td>" + Nocolor[j] + "</td>");
+                    $('#table').append(tr);
+                }
+                //tablecode ends
+                
+            },
+            error: function (data) {
+               // console.log(data);
+            }
+        });
+
+    })
+
+
+</script>
+
+
+
+
+
+
+
+}
+

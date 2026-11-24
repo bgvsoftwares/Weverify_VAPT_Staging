@@ -1,0 +1,826 @@
+﻿@using WebAppBGV.CommonMethods;
+@{
+    /**/
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+    var ClientRowId = "0";
+    var clid = "";
+    if (Request.QueryString["ClientRowID"] != null)
+    {
+        ClientRowId = Request.QueryString["ClientRowID"].ToString();
+    }
+    clid = Session["ClientRowID"].ToString();
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "DashboardClient", "Home", new { area = "ClientArea" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+}
+@{
+
+    string tatHours1 = "";
+    string CaseStatus1 = "";
+    string AllocatedToTL1 = "";
+    if (Request.QueryString["tatHours"] != null)
+    {
+        tatHours1 = Request.QueryString["tatHours"].ToString();
+    }
+    if (Request.QueryString["AllocatedToTL"] != null)
+    {
+        AllocatedToTL1 = Request.QueryString["AllocatedToTL"].ToString();
+    }
+    if (Request.QueryString["CaseStatus"] != null)
+    {
+        CaseStatus1 = @Request.QueryString["CaseStatus"].ToString();
+    }
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    string hyperLinkExportExcel = "";
+    if (CaseStatus1 == "ReportReceived")
+    {
+        if (ViewBag.FinalReportRights == true)
+        {
+            hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportCandidateArea", "Home", new { ClientRowID = ClientRowId }, new { @class = "export-btn_Candidatesearch edit-candidate-btn", style = "display:none;" }).ToString();
+
+        }
+        else
+        {
+            hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportCandidateArea", "Home", new { ClientRowID = ClientRowId }, new { @class = "export-btn_Candidatesearch edit-candidate-btn" }).ToString();
+
+        }
+    }
+    else if (CaseStatus1 == "CRCReports")
+    {
+        hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportCandidateArea1", "Home", new { ClientRowID = ClientRowId }, new { @class = "export-btn_Candidatesearch edit-candidate-btn" }).ToString();
+    }
+    else if (CaseStatus1 == "Pendingcandidate")
+    {
+        hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportPendingcandidate", "Home", new { ClientRowID = ClientRowId }, new { @class = "export-btn_Candidatesearch edit-candidate-btn" }).ToString();
+
+    }
+    else if (CaseStatus1 == "Insufficiency")
+    {
+        hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportInsufficency", "Home", new { ClientRowID = ClientRowId }, new { @class = "export-btn_Candidatesearch edit-candidate-btn" }).ToString();
+
+    }
+
+
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+    if (CaseStatus1 == "ReportReceivedInterim")
+    {
+        ViewBag.Title = "Download Interim Report";
+    }
+    else if (CaseStatus1 == "AutoGallagherInterims")
+    {
+        ViewBag.Title = "4 checks Interim Report";
+    }
+    else if (CaseStatus1 == "GallagherSecondInterims")
+    {
+        ViewBag.Title = "2nd Interim Report";
+    }
+    else if (CaseStatus1 == "SupplymentryGallagher")
+    {
+        ViewBag.Title = "Supplementary/2nd Interim Reports";
+    }
+    else
+    {
+        ViewBag.Title = "Download Final Report";
+    }
+}
+
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+
+
+<div class="container-fluid ps-0 bg_gradient_CaseWise mt-2">
+    <div class="row row-sm">
+        @section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+    </div>
+
+    @if (true)
+    {
+        if (Model != null && Model.DashboardClientCandidates != null)
+        {
+            foreach (var a in Model.DashboardClientCandidates)
+            {
+                if (a.FinalStatus == "Interim")
+                {
+                    if (CaseStatus1 == "ReportReceivedInterim")
+                    {
+                        if (ViewBag.InterimReportRights == true)
+                        {
+                            <a class="btn_IntrimExcel" href='@Url.Action("MISTrackerInterimReprot", "Home", new { area = "ClientArea" })' data-bs-placement="right" data-bs-toggle="tooltip" title="Click to Download" hidden>Export Excel</a>
+
+                        }
+                        else
+                        {
+                            <a class="btn_IntrimExcel" href='@Url.Action("MISTrackerInterimReprot", "Home", new { area = "ClientArea" })' data-bs-placement="right" data-bs-toggle="tooltip" title="Click to Download">Export Excel</a>
+
+                        }
+                    }
+                    else
+                    {
+                        if (CaseStatus1 == "AllReportPerCase" || CaseStatus1 == "SupplymentryGallagher" || CaseStatus1 == "AutoGallagherInterims" || CaseStatus1 == "GallagherSecondInterims")
+                        {
+
+                        }
+                        else
+                        {
+                            <a class="btn_IntrimExcel" href='@Url.Action("MISTrackerInterimReprot", "Home", new { area = "ClientArea" })' data-bs-placement="right" data-bs-toggle="tooltip" title="Click to Download">Export Excel</a>
+
+                        }
+
+                    }
+
+                }
+
+            }
+        }
+    }
+
+
+
+    @using (Html.BeginForm("GetClientCasesDashBoardInfo", "Home", FormMethod.Get))
+    {
+        @Html.AntiForgeryToken()
+        <div class="row g-3 px-3 align-items-center">
+            <div class="col-md-2">
+                <label for="inputPassword6" class="col-form-label">Keyword :</label>
+            </div>
+            <div class="col-md-8">
+                @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name,SecuritasID,Status...", @autocomplete = "off", @maxlength = "100" })
+            </div>
+        </div>
+        <div class="row g-3 align-items-center mt-2 px-3">
+            <div class="col-md-2">
+                <label for="inputPassword6" class="col-form-label">From :</label>
+            </div>
+            <div class="col-md-3">
+                @Html.TextBox("RecievingfromDate", null, new { @class = "form-control", @id = "RecievingToDate", @placeholder = "yyyy-mm-dd", @autocomplete = "off", @maxlength = "11", type = "date" })
+            </div>
+            <div class="col-md-2">
+                <label for="inputPassword6" class="col-form-label">To :</label>
+            </div>
+            <div class="col-md-3">
+                @Html.TextBox("RecievingToDate", null, new { @class = "form-control", @id = "RecievingFromDate", @placeholder = "yyyy-mm-dd", @autocomplete = "off", @maxlength = "11", type = "date" })
+            </div>
+            @if (clid == "1803")
+            {
+                <div class="row g-3 align-items-center mt-2 px-3">
+                    <div class="col-md-2">
+                        <label for="SpocName" class="col-form-label">SPOC Name :</label>
+                    </div>
+                    <div class="col-md-3">
+                        @Html.DropDownList("SpocName",
+                            ViewBag.SpocList as SelectList,
+                            "All",
+                            new { @class = "form-control", id = "SpocName" })
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="row g-3 align-items-center justify-content-center mt-2 mb-2">
+            @Html.Hidden("CaseStatus", (string)ViewBag.CaseStatus)
+            @Html.Hidden("ClientUserRowId", (string)ViewBag.ClientUserRowId)
+            @Html.Hidden("ClientRowID", (string)ViewBag.ClientRowID)
+            @Html.Hidden("PersonalIds", null)
+            <div class="col-lg-3 col-md-3">
+                <input class="search-btn" type="submit" onclick="return SearchFunction()" value="Search" id="btnSearch" />
+            </div>
+        </div>
+        <div class="row row-sm ms-2">
+            <div class="col-xl-12 mb-5 client-table-responsive">
+                @if (Model != null && Model.DashboardClientCandidates != null)
+                {
+                    <table class="mb-0 client--table-responsive js-serial items table" id="example1" style="border:none; cursor:all-scroll;">
+                        <thead>
+                            @if (clid == "576")
+                            {
+                                <tr>
+                                    <th>Candidate Name</th>
+                                    <th>Securitas ID</th>
+                                    <th>Status</th>
+                                    <th>Report Date</th>
+                                    <th>Report</th>
+                                    <th>Package</th>
+                                    <th>Emailid</th>
+                                    <th>Mobile No</th>
+                                    <th>Entity</th>
+                                    <th>Created Date</th>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <th>Candidate Name</th>
+                                    <th>Securitas ID</th>
+                                    @if (clid == "1777")
+                                    {
+                                        <th>Client Ref Id</th>
+                                    }
+                                    @if ((clid == "869") || (clid == "1803"))
+                                    {
+                                        <th>EmployeID</th>
+                                    }
+                                    @if (clid == "635")
+                                    {
+                                        <th>Summary Report</th>
+                                    }
+                                    <th>Status</th>
+                                    <th>Report Date</th>
+                                    @if (CaseStatus1 == "SupplymentryGallagher")
+                                    {
+                                        <th>Report Type</th>
+                                    }
+                                    <th>Report</th>
+                                    @if (clid != "1834")
+                                    {
+                                        <th>Document</th>
+                                    }
+                                    <th>Candidate Details</th>
+                                    <th>Created Date</th>
+                                    <th>Case Docs</th>
+                                    @if (clid == "869")
+                                    {
+                                        <th>Active Status</th>
+                                    }
+                                    @if (clid == "753")
+                                    {
+                                        <th>Action</th>
+                                    }
+                                    else if (clid == "1481")
+                                    {
+                                        <th>YTR Docs</th>
+                                    }
+
+                                    @if (clid == "1803")
+                                    {
+                                        <th>SPOC Name</th>
+                                    }
+
+                                </tr>
+                            }
+                        </thead>
+                        <tbody class="tx-10 text-start">
+                            @foreach (var a in Model.DashboardClientCandidates)
+                            {
+                                if (clid == "576")
+                                {
+                                    <tr>
+                                        <td>@a.CandidateName</td>
+                                        <td>
+                                            <a href='@Url.Action("CheckListForClientByPersonalID", "Home", new { PersonalId = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn_refno iframeCompanyRefNofinal" id="clip_@a.PersonalRowID">@a.CompanyRefNo</a><i class="las la-clipboard clipboard-icon" data-clipboard-target="#clip_@a.PersonalRowID" style="position:relative; top:5px!important; right:0px!important; padding:10px!important; border:none!important; line-height:0px!important; font-size:30px;"></i>
+                                        </td>
+                                        <td>@a.CaseStatus</td>
+                                        <td>
+                                            @a.ReportUploadedDate
+                                        </td>
+                                        <td>
+                                            @if (Model.ReportVisibality == true && CaseStatus1 != "ReportReceivedInterim" && CaseStatus1 != "AllReportPerCase")
+                                            {
+                                                <a href='@Url.Action("GetReport", new { ImageName = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),ReportType = clsCommonMethods.PEncrypt(a.FinalStatus.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Report</a>
+                                            }
+                                            else if (Model.ReportVisibality == true && CaseStatus1 == "AllReportPerCase")
+                                            {
+                                                <a href='@Url.Action("GetAllReport", new { ImageName = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),ReportType = clsCommonMethods.PEncrypt(a.FinalStatus.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Report</a>
+
+                                            }
+                                            else if (Model.ReportVisibilityInterim == true && CaseStatus1 == "ReportReceivedInterim")
+                                            {
+                                                <a href='@Url.Action("GetReport", new { ImageName = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),ReportType = clsCommonMethods.PEncrypt(a.FinalStatus.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Report</a>
+                                            }
+                                            else
+                                            {
+                                                <a href=""></a>
+                                            }
+                                        </td>
+                                        <td>@a.Package</td>
+                                        <td>@a.Emailid</td>
+                                        <td>@a.MobileNo</td>
+                                        <td>@a.Entity</td>
+                                        <td>
+                                            @a.CreatedDate
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td>@a.CandidateName</td>
+                                        <td>
+                                            <a href='@Url.Action("CheckListForClientByPersonalID", "Home", new { PersonalId = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn_refno iframeCompanyRefNofinal" id="clip_@a.PersonalRowID">@a.CompanyRefNo</a><i class="las la-clipboard clipboard-icon" data-clipboard-target="#clip_@a.PersonalRowID" style="position:relative; top:5px!important; right:0px!important; padding:10px!important; border:none!important; line-height:0px!important; font-size:30px;"></i>
+                                        </td>
+                                        @if ((a.ClientRowID == 1777) || (a.ClientRowID == 869) || (a.ClientRowID == 1803))
+                                        {
+                                            <td>
+                                                @a.ClientRefID
+                                            </td>
+                                        }
+                                        @if (a.ClientRowID == 635)
+                                        {
+                                            <td>
+                                                <a href='@Url.Action("ReportInterim", "Home", new { id = a.PersonalRowID, ReportPart = "TataElxsi" }) class="btn btn-outline-primary btn-block table_btn"'>Summary</a>
+                                            </td>
+                                        }
+                                        <td>@a.CaseStatus</td>
+                                        <td>
+                                            @if (a.ReportUploadedDate != Convert.ToDateTime("01/01/1900") && a.ReportUploadedDate != null)
+                                            {
+                                                @a.ReportUploadedDate.ToString("dd/MM/yyyy");
+                                            }
+                                            else
+                                            {
+
+                                            }
+                                        </td>
+                                        @if (CaseStatus1 == "SupplymentryGallagher")
+                                        {
+                                            <td>
+                                                @a.ClientRefID
+                                            </td>
+                                        }
+                                        <td>
+                                            @if (Model.ReportVisibality == true && CaseStatus1 != "ReportReceivedInterim")
+                                            {
+                                                if (Model.ReportVisibilityFinal == false)
+                                                {
+                                                    <a href=""></a>
+                                                }
+                                                else if (Model.ReportVisibality == true && CaseStatus1 == "AutoGallagherInterims")
+                                                {
+                                                    <a href='@Url.Action("GetReportGallagherInterims", new { ImageName = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),ReportType = clsCommonMethods.PEncrypt("AutoGallagherInterims") })' class="btn btn-outline-primary btn-block table_btn">Report</a>
+                                                }
+                                                else if (Model.ReportVisibality == true && CaseStatus1 == "GallagherSecondInterims")
+                                                {
+                                                    <a href='@Url.Action("GetReportGallagherSecondInterims", new { ImageName = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),ReportType = clsCommonMethods.PEncrypt("GallagherSecondInterims") })' class="btn btn-outline-primary btn-block table_btn">Report</a>
+                                                }
+                                                else if (Model.ReportVisibality == true && CaseStatus1 == "SupplymentryGallagher")
+                                                {
+                                                    <a href='@Url.Action("GetReportSupp", new { ImageName = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),ReportType = clsCommonMethods.PEncrypt("SupplymentryGallagher") , date = a.ReportUploadedDate.ToString("dd/MM/yyyy")})' class="btn btn-outline-primary btn-block table_btn">Report</a>
+                                                }
+                                                else if (clid == "1803")
+                                                {
+                                                    <a href='@Url.Action("GetReport_Excl", new { ImageName = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),ReportType = clsCommonMethods.PEncrypt(a.FinalStatus.ToString()), ReportUploadName = clsCommonMethods.PEncrypt(a.ReportUploadedName.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Report</a>
+                                                }
+                                                else
+                                                {
+                                                    @*if (ViewBag.FinalReportRights == true)
+                    {
+                        <a href='@Url.Action("GetReport", new { ImageName = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),ReportType = clsCommonMethods.PEncrypt(a.FinalStatus.ToString()) })' class="btn btn-outline-primary btn-block table_btn" hidden>Report</a>
+
+
+                    }*@
+                                                    //else
+                                                    //{
+                                                    <a href='@Url.Action("GetReport", new { ImageName = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),ReportType = clsCommonMethods.PEncrypt(a.FinalStatus.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Report</a>
+
+                                                    // }
+                                                }
+                                            }
+                                            else if (Model.ReportVisibilityInterim == true && CaseStatus1 == "ReportReceivedInterim")
+                                            {
+                                                @*if (ViewBag.InterimReportRights == true)
+                {
+                    <a href='@Url.Action("GetReport", new { ImageName = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),ReportType = clsCommonMethods.PEncrypt(a.FinalStatus.ToString()) })' class="btn btn-outline-primary btn-block table_btn" hidden>Report</a>
+
+                }
+                else
+                {*@
+                                                <a href='@Url.Action("GetReport", new { ImageName = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),ReportType = clsCommonMethods.PEncrypt(a.FinalStatus.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Report</a>
+
+                                                //}
+                                            }
+                                            else
+                                            {
+                                                <a href=""></a>
+                                            }
+                                        </td>
+                                        @if (clid != "1834")
+                                        {
+                                            <td>
+                                                @if (CaseStatus1 == "ReportReceivedInterim")
+                                                {
+                                                    if (ViewBag.InterimReportRights == true)
+                                                    {
+                                                        <a href='@Url.Action("UploadCandidateDoc", "Home", new { area = "ClientArea", CompanyRefNo = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),personalrowid = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn iframeDocumentfinal" hidden>Document</a>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <a href='@Url.Action("UploadCandidateDoc", "Home", new { area = "ClientArea", CompanyRefNo = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),personalrowid = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn iframeDocumentfinal">Document</a>
+
+                                                    }
+
+                                                }
+                                                else
+                                                {
+
+                                                    if (CaseStatus1 == "ReportReceived")
+                                                    {
+                                                        if (ViewBag.FinalReportRights == true)
+                                                        {
+                                                            <a href='@Url.Action("UploadCandidateDoc", "Home", new { area = "ClientArea", CompanyRefNo = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),personalrowid = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn iframeDocumentfinal" hidden>Document</a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href='@Url.Action("UploadCandidateDoc", "Home", new { area = "ClientArea", CompanyRefNo = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),personalrowid = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn iframeDocumentfinal">Document</a>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <a href='@Url.Action("UploadCandidateDoc", "Home", new { area = "ClientArea", CompanyRefNo = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),personalrowid = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn iframeDocumentfinal">Document</a>
+
+                                                    }
+                                                }
+                                            </td>
+                                        }
+
+                                        <td>
+                                            @if (a.CreatedDate > Convert.ToDateTime("01/03/2022"))
+                                            {
+                                                if (CaseStatus1 == "ReportReceivedInterim")
+                                                {
+                                                    if (ViewBag.InterimReportRights == true || clid == "1834")
+                                                    {
+                                                        <a href='@Url.Action("PersonalInformation", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn" hidden>Download</a>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <a href='@Url.Action("PersonalInformation", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Download</a>
+
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                    if (CaseStatus1 == "ReportReceived" )
+                                                    {
+                                                        if (ViewBag.FinalReportRights == true || clid == "1834")
+                                                        {
+                                                            <a href='@Url.Action("PersonalInformation", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn" hidden>Download</a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href='@Url.Action("PersonalInformation", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Download</a>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <a href='@Url.Action("PersonalInformation", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Download</a>
+
+                                                    }
+
+                                                }
+                                            }
+                                        </td>
+                                        <td>
+                                            @a.CreatedDate.ToString("dd/MM/yyyy")
+                                        </td>
+                                        <td>
+                                            @if (a.casedocument != "")
+                                            {
+                                                if ((CaseStatus1 == "ReportReceived" && ViewBag.FinalReportRights == true) || (CaseStatus1 == "ReportReceivedInterim" && ViewBag.InterimReportRights == true))
+                                                {
+                                                    <a href='@Url.Action("GetCaseDocRecive", new { ImageName = clsCommonMethods.PEncrypt(a.casedocument.ToString()) })' class="btn btn-outline-primary btn-block table_btn" hidden>Download</a>
+
+                                                }
+                                                else
+                                                {
+                                                    <a href='@Url.Action("GetCaseDocRecive", new { ImageName = clsCommonMethods.PEncrypt(a.casedocument.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Download</a>
+
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <a href=""></a>
+                                            }
+                                        </td>
+                                        @if (a.ClientRowID == 753)
+                                        {
+                                            <td>
+                                                <text>
+                                                    @Html.ActionLink("Add", "AddFordRemark", "Home", new { PersonalRowID = a.PersonalRowID, ClientRowID = a.ClientRowID }, new { @class = "Remindermail iframeAddFordRemark  callbacks" }) <br /><span id="comments" class="display-mode">@a.ReportActionRemark</span>
+                                                </text>
+                                            </td>
+                                        }
+                                        @if (a.ClientRowID == 1481)
+                                        {
+                                            <td>
+                                                <a href='@Url.Action("YTRDocs", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn iframeDocumentfinal">Document</a>
+
+                                            </td>
+                                        }
+                                        @if (clid == "869")
+                                        {
+                                            <td>
+                                                @(a.CandidateActiveStatus == 1 ? "Active" : "InActive")
+                                                <br />
+                                                <button type="button"
+                                                        class="btn btn-success btn-sm"
+                                                        onclick="fnUpdateActiveStatus(@a.PersonalRowID, 1)">
+                                                    Active
+                                                </button>
+
+                                                <button type="button"
+                                                        class="btn btn-danger btn-sm"
+                                                        onclick="fnUpdateActiveStatus(@a.PersonalRowID, 0)">
+                                                    Inactive
+                                                </button>
+                                            </td>
+                                        }
+                                        @if (a.ClientRowID == 1803)
+                                        {
+                                            <td>@a.HRRecruiterName</td>
+                                        }
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    }
+</div>
+@section Scripts{
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeCheckList").colorbox({ iframe: true, width: "100%", height: "100%" });
+            $(".iframeCheckList1").colorbox({ iframe: true, width: "60%", height: "65%" });
+            $(".Remindermail").colorbox({ iframe: true, width: "40%", height: "50%" });
+            // 1st replace first column header text with checkbox
+            $("#grid th").each(function () {
+                if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                    $(this).text('');
+                    $("<input/>", { type: "checkbox", id: "select_all", value: "" }).appendTo($(this));
+                    //$(this).append("<span>Select All</span>");
+                }
+            });
+            //2nd click event for header checkbox for select /deselect all
+            $('#select_all').change(function () {
+                $('input[class="personalId"]').prop('checked', $(this).prop('checked'));
+                var personalIds = '';
+                $('input[class="personalId"]').each(function (index, value) {
+                    if (this.checked) { personalIds += this.value + ','; }
+                });
+                if (personalIds.length > 0) {
+                    personalIds = personalIds.substring(0, personalIds.length - 1);
+                } else { personalIds = ''; }
+                $('#PersonalIds').val(personalIds.trim());
+            });
+            $('#RecievingToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#RecievingFromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedFromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+        });
+        function SearchFunction() {
+            $('#PersonalIds').val("");
+        }
+
+        //3rd click event for checkbox of each row
+        $(document).on('change', 'input[class="personalId"]', function (e) {// on change of state
+            var personalIds = '';
+            $('input[class="personalId"]').each(function (index, value) {
+                if (this.checked) { personalIds += this.value + ','; }
+            });
+
+            if (false == $(this).prop("checked")) { //if this item is unchecked
+                $("#select_all").prop('checked', false); //change "select all" checked status to false
+            }
+            //check "select all" if all checkbox items are checked
+            if ($('.personalId:checked').length == $('.personalId').length) {
+                $("#select_all").prop('checked', true);
+            }
+
+            if (personalIds.length > 0) {
+                personalIds = personalIds.substring(0, personalIds.length - 1);
+            } else { personalIds = ''; }
+            $('#PersonalIds').val(personalIds.trim());
+        })
+
+        function validateForm() {
+
+            var count = 0;
+            $('input[class="personalId"]').each(function (index, value) {
+                if (this.checked) { count += 1; }
+            });
+
+            if (count == 0) {
+                alert("Please select atleast one Candidate.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+    <script>
+
+        $("#btnSearch").click(function () {
+            var obj = $('form input[type="text"]').NormalizedString();
+            if (obj == false) {
+                return false;
+            }
+        });
+
+        $("#SearchValue").SearchString();
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeCompanyRefNofinal").colorbox({ iframe: true, width: "90%", height: "72%" });
+        });
+        $(document).ready(function () {
+            $(".iframeDocumentfinal").colorbox({ iframe: true, width: "79%", height: "72%" });
+        });
+        $(document).ready(function () {
+            $(".iframeAddFordRemark").colorbox({ iframe: true, width: "79%", height: "72%" });
+        });
+        $(document).ready(function () {
+            $(".iframeReject").colorbox({ iframe: true, width: "55%", height: "75%" });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#cars').on('change', function () {
+                $('#submit').click();
+
+            });
+        });
+    </script>
+    <script>
+        function fnUpdateActiveStatus(personalId, status) {
+            $.ajax({
+                url: '@Url.Action("UpdateActiveStatus", "Home", new { area = "ClientArea" })',
+                type: 'POST',
+                data: {
+                    PersonalRowID: personalId,
+                    Status: status
+                },
+                success: function (res) {
+                    if (res.success) {
+                        alert("Status updated successfully.");
+                        location.reload();
+                    } else {
+                        alert(res.message);
+                    }
+                },
+                error: function () {
+                    alert("Request failed");
+                }
+            });
+}
+    </script>
+    <script type="text/javascript">
+        $(document).on('click', '.export-btn_Candidatesearch', function () {
+            // select by NAME, because the ids of the From/To inputs are swapped in the markup
+            var from = $('input[name="RecievingfromDate"]').val() || '';
+            var to = $('input[name="RecievingToDate"]').val() || '';
+            var url = new URL(this.href, window.location.origin);
+            url.searchParams.set('RecievingfromDate', from);
+            url.searchParams.set('RecievingToDate', to);
+            this.href = url.toString();
+        });
+    </script>
+}
+<style>
+    .page-item {
+        padding: 3px;
+    }
+
+    .table_btn {
+        color: #8d5fff !important;
+        transition: 0.3s ease-in-out !important;
+    }
+
+        .table_btn:hover {
+            background: #FFF !important;
+            background-color: rgb(255, 255, 255);
+            color: #fff !important;
+            border: 1px solid #031F30 !important;
+            background-color: #031F30 !important;
+        }
+
+    .table tr td {
+        line-height: 2.757 !important;
+        text-align: left !important;
+    }
+
+    .search-btn {
+        background: #8D5FFF !important;
+        color: #FFF;
+        font-family: 'Securitas Pro';
+        font-size: .90rem !important;
+        border-radius: 0px;
+        display: inline-block;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: center;
+        text-decoration: none;
+        vertical-align: middle;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+        background-color: transparent;
+        border: 1px solid transparent;
+        padding: .35rem 1rem .35rem 1rem;
+        width: 100%;
+        transition: color .3s ease-in-out,background-color .3s ease-in-out,border-color .3s ease-in-out,box-shadow .3s ease-in-out;
+    }
+
+        .search-btn:hover {
+            background: #fff !important;
+            color: #031F30 !important;
+            border: 1px solid #8D5FFF;
+        }
+
+    .total-record {
+        color: #9ba5ca;
+    }
+
+    .export-btn_Candidatesearch {
+        background: #8D5FFF !important;
+        color: #FFF;
+        font-family: 'Securitas Pro';
+        font-size: .90rem !important;
+        border-radius: 0px;
+        display: inline-block;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: center;
+        text-decoration: none;
+        vertical-align: middle;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+        background-color: transparent;
+        border: 1px solid transparent;
+        padding: .35rem 1rem .35rem 1rem;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        position: absolute;
+        left: 380px;
+        top: 308px;
+        z-index: 100;
+    }
+
+        .export-btn_Candidatesearch:hover {
+            color: #000 !important;
+            background: #FFF !important;
+            border: 1px solid #8D5FFF !important;
+        }
+
+    .btn_IntrimExcel {
+        background: #8D5FFF !important;
+        color: #FFF;
+        font-family: 'Securitas Pro';
+        font-size: .90rem !important;
+        border-radius: 0px;
+        display: inline-block;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: center;
+        text-decoration: none;
+        vertical-align: middle;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+        background-color: transparent;
+        border: 1px solid transparent;
+        padding: .35rem 1rem .35rem 1rem;
+        transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        position: absolute;
+        left: 390px;
+        top: 307px;
+        z-index: 100;
+    }
+
+        .btn_IntrimExcel:hover {
+            color: #000 !important;
+            background: #FFF !important;
+            border: 1px solid #8D5FFF !important;
+        }
+</style>

@@ -1,0 +1,148 @@
+﻿@model ViewModels.AddEduMailMappingViewModel
+
+@{
+    ViewBag.Title = "Add Education New Mail";
+    //Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+}
+
+@{
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManageEduMailMapping", "Master", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+@*@section LeftNavigation{ @Html.Partial("_NavLeftMaster") }*@
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+
+                <div class="form-group branch row">
+                    @Html.LabelFor(m => m.EMailType, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                    <div class="col-md-4">
+                        @Html.DropDownListFor(m => m.EMailType,
+                            new SelectList(new[]
+                            {
+                                new { Value = "University", Text = "University" },
+                                new { Value = "College", Text = "College" }
+                            }, "Value", "Text"),
+                            "-- Select Email Type --",
+                            new { @class = "form-control", id = "EMailType" })
+                        @Html.ValidationMessageFor(m => m.EMailType, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group branch row">
+                    @Html.LabelFor(m => m.UniversityRowID, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                    <div class="col-md-4">
+                        @Html.DropDownList("UniversityRowID",
+                            new SelectList(ViewBag.UniversityList, "UniversityRowID", "UniversityName"),
+                            "-- Select University --",
+                            new { @class = "form-control", id = "ddlUniversity" })
+                        @Html.ValidationMessageFor(m => m.UniversityRowID, "", new { @class = "text-danger" })
+                    </div>
+
+                    @Html.LabelFor(m => m.CollegeRowID, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                    <div class="col-md-4">
+                        @Html.DropDownList("CollegeRowID",
+                            new SelectList(ViewBag.CollegeList, "CollegeRowID", "CollegeName"),
+                            "-- Select College --",
+                            new { @class = "form-control", id = "ddlCollege" })
+                        @Html.ValidationMessageFor(m => m.CollegeRowID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group branch row">
+                    @Html.LabelFor(m => m.EMailID, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(m => m.EMailID, new { @class = "form-control", id = "txtEmailID", placeholder = "Enter Email ID" })
+                        @Html.ValidationMessageFor(m => m.EMailID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="all-button-bg">
+                    <a href="@Url.Action("ManageEduMailMapping", "Master")" class="btn bun-bg btn-default">Back</a>
+                    <input type="submit" value="Save" class="btn bun-bg btn-default" />
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            // Initially disable both dropdowns
+            $("#ddlUniversity").prop("disabled", true);
+            $("#ddlCollege").prop("disabled", true);
+
+            // Email Type change event
+            $("#EMailType").change(function () {
+                var emailType = $(this).val();
+
+                if (emailType === "University") {
+                    // Enable only university dropdown
+                    $("#ddlUniversity").prop("disabled", false);
+                    $("#ddlCollege").prop("disabled", true);
+                    $("#ddlCollege").val("");
+                    $("#txtEmailID").attr("placeholder", "Enter University Email ID");
+                }
+                else if (emailType === "College") {
+                    // Enable university, wait for university selection to load colleges
+                    $("#ddlUniversity").prop("disabled", false);
+                    $("#ddlCollege").prop("disabled", true);
+                    $("#ddlCollege").val("");
+                    $("#txtEmailID").attr("placeholder", "Enter College Email ID");
+                }
+                else {
+                    // Reset both
+                    $("#ddlUniversity").prop("disabled", true).val("");
+                    $("#ddlCollege").prop("disabled", true).val("");
+                    $("#txtEmailID").attr("placeholder", "Enter Email ID");
+                }
+            });
+
+            // University change event
+            $("#ddlUniversity").change(function () {
+                var universityId = $(this).val();
+                var emailType = $("#EMailType").val();
+
+                if (emailType === "College") {
+                    if (universityId) {
+                        $("#ddlCollege").prop("disabled", false);
+                        $("#ddlCollege").empty();
+                        $("#ddlCollege").append($('<option>', { value: "", text: "-- Loading Colleges --" }));
+
+                        $.ajax({
+                            url: '@Url.Action("GetCollegesByUniversity", "Master")',
+                            type: 'GET',
+                            data: { universityRowID: universityId },
+                            success: function (data) {
+                                $("#ddlCollege").empty();
+                                $("#ddlCollege").append($('<option>', { value: "", text: "-- Select College --" }));
+                                $.each(data, function (i, item) {
+                                    $("#ddlCollege").append($('<option>', { value: item.CollegeRowID, text: item.CollegeName }));
+                                });
+                            },
+                            error: function () {
+                                alert("Error while loading colleges.");
+                            }
+                        });
+                    } else {
+                        $("#ddlCollege").prop("disabled", true);
+                        $("#ddlCollege").empty().append($('<option>', { value: "", text: "-- Select College --" }));
+                    }
+                }
+            });
+        });
+    </script>
+}

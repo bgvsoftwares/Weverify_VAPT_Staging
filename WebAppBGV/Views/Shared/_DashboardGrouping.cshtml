@@ -1,0 +1,1295 @@
+﻿@using WebAppBGV.CommonMethods;
+@{
+
+
+    if (ViewBag.ClientCasesDashboard != null)
+    {
+        ViewModels.ClientViewModel.ClientDashboardViewModel item = ViewBag.ClientCasesDashboard;
+
+        var ClientRowID = "0";
+        if (Request.QueryString["objval"] != null)
+        {
+            ClientRowID = Request.QueryString["objval"].ToString();
+            @Html.Hidden("hdnClientRowID", Request.QueryString["objval"])
+            @Html.Hidden("ClientRowID", Request.QueryString["objval"])
+            @Html.Hidden("ClientUserRowID", Request.QueryString["objval"])
+        }
+
+        <!--Qicks Linkls Start from here-->
+        if (ViewBag.InterimReportRights == true || ViewBag.FinalReportRights == true || ViewBag.WIPStatusRights == true)
+        {
+
+        }
+        else
+        {
+            <div>
+
+                <marquee width="100%" direction="left" height="20px" behavior="scroll" scrollamount="3" style="margin-top:10px">
+                    Data Retention Notice- Please download and save any required data before they expire & automatically removed permanently.
+                </marquee>
+
+            </div>
+            <div class="container-fluid ps-0 bg_gradient_Quicks_links">
+                <div class="row row-sm">
+                    <div class="card-header card_header_quikslink">
+                        <span>QUICK LINKS</span>
+                    </div>
+
+                    @if (Session["ClientUserRowID"] != null &&
+                        Session["ClientUserRowID"].ToString() != "5342")
+                    {
+                        <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                            <div class="card overflow-hidden sales-card bg_card_quick_link" style="height:8.2rem!important;">
+                                <div class="ps-3 pt-1 pe-1 pb-2 pt-0">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="mb-1 text-white tx-20 fw-bolder">Register Cases</span>
+                                        <i class="fa fa-info-circle text-white tx-16 p-2" data-bs-placement="top" data-bs-toggle="tooltip" title="Initiate cases or invite candidate to fill the form."></i>
+                                    </div>
+                                    <div class="pb-0 mt-0">
+                                        <div class="d-flex">
+                                            <div class="">
+                                                <p class="mb-0 tx-12 text-white"><a class="quick_link" href='@Url.Action("AddCandidateBySelf", "Home", new { area = "ClientArea" })'>Create Case</a></p>
+                                            </div>
+                                            <div class="">
+                                                <p class="mb-0 tx-12 text-white ms-1 me-1">|</p>
+                                            </div>
+                                            <div class="">
+                                                <p class="mb-0 tx-12 text-white"><a class="quick_link" href='@Url.Action("AddSingleCandidateCaseUpload", "ClientCandidate")'>Invite Candidate</a></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                            <div class="card overflow-hidden sales-card bg_card_quick_link" style="height:8.2rem!important;">
+                                <div class="ps-3 pt-1 pb-2 pt-0">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="mb-1 text-white tx-20 fw-bolder">Download MIS</span>
+                                        <i class="fa fa-info-circle text-white tx-16 p-2" data-bs-placement="top" data-bs-toggle="tooltip" title="Track status of all cases"></i>
+                                    </div>
+                                    <div class="pb-0 mt-0">
+                                        <div class="d-flex">
+                                            <div class="">
+                                                @using (Html.BeginForm("CommonMISTracker", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                                {
+                                                    @Html.AntiForgeryToken()
+                                                    @Html.Hidden("ClientRowID1", ClientRowID)
+                                                    <input class="mb-0 tx-12 quick_link ps-0" type="submit" onclick="return validateForm()" value="Common MIS Tracker" id="ExportMIS" style="cursor:pointer!important;background: none;border: 0px; font-weight:400; font-size:12px; padding-left:0px;" />
+                                                }
+                                                @*<p class=""><a href='@Url.Action("CommonMISTracker", "Home", new { area = "ClientArea" })' ></a></p>*@
+                                            </div>
+                                            @*<div class="">
+                                                    <p class="mb-0 tx-12 text-white ms-1 me-1">|</p>
+                                                </div>*@
+                                            @*<div class="">
+                                                    <p class="mb-0 tx-9 text-white">Insuff Tracker</p>
+                                                </div>*@
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+
+                    @if (@Session["ClientRowID"].ToString() == "679")
+                    {
+                        <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                            <div class="card overflow-hidden sales-card bg_card_quick_link" id="result" style="height:auto!important;">
+                                <div class="ps-3 pt-1 pb-2 pt-0">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="mb-1 text-white tx-20 fw-bolder">Search Case</span>
+                                        <i class="fa fa-info-circle text-white tx-16 p-2" data-bs-placement="top" data-bs-toggle="tooltip" title="Get sort info of cases"></i>
+                                    </div>
+                                    <div class="pb-0 mt-0">
+                                        <div class="d-block">
+                                            <div class="d-flex">
+                                                <p class="mb-0 tx-12 text-white">Status :</p>
+                                                <p class="mb-0 tx-12 text-white ps-2" id="QStatus" value="">
+
+                                                </p>
+                                            </div>
+                                            <div class="d-flex">
+                                                <p class="mb-0 tx-12 text-white">Initiated On : </p>
+                                                <p class="mb-0 tx-12 text-white ps-2" id="QInitiatedDate" value="">@ViewBag.casesearcherr</p>
+                                            </div>
+                                            <div class="d-flex">
+                                                <p class="mb-0 tx-12 text-white">Report :</p>
+                                                <p class="mb-0 tx-12 text-white ps-2" id="QFinalReprot" value=""></p>
+                                            </div>
+                                            <div class="d-flex">
+                                                <p class="mb-0 tx-12 text-white">Candidate Docs :</p>
+
+                                                @*<a href="/ClientArea/Home/GetAllCadndidateDocInZip?CompanyRefNo=VVJvSnlmS0J1OE8zMWNRL3VuTDdpWmVoMDFWNUc1S3E%3D&amp;SubCheckRowID=0&amp;personalrowid=TFFKazhNSEdIWE09" class="btn btn-outline-primary btn-block table_btn">Download ZIP</a>*@
+                                                <a class="quick_link" id="downloadZipLink" href="#" style="display: none;">Download Zip</a>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="float-end me-1">
+                                        <input type="hidden" value="@Session["ClientRowID"].ToString()" id="clientrowid" />
+                                        <input list="candidateList" id="candidateName" class="form-control case_search p-0 ps-1" placeholder="Candidate Name or CompanyRefNo" />
+                                        <datalist id="candidateList" style="height:0px;"></datalist>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @*else
+                        {
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                                <div class="card overflow-hidden sales-card bg_card_quick_link" id="result" style="height:8.2rem!important;">
+                                    <div class="ps-3 pt-1 pb-2 pt-0">
+                                        <div class="d-flex justify-content-between">
+                                            <span class="mb-1 text-white tx-20 fw-bolder">Search Case</span>
+                                            <i class="fa fa-info-circle text-white tx-16 p-2" data-bs-placement="top" data-bs-toggle="tooltip" title="Get sort info of cases"></i>
+                                        </div>
+                                        <div class="pb-0 mt-0">
+                                            <div class="d-block">
+                                                <div class="d-flex">
+                                                    <p class="mb-0 tx-12 text-white">Status :</p>
+                                                    <p class="mb-0 tx-12 text-white ps-2" id="QStatus" value="">
+
+                                                    </p>
+                                                </div>
+                                                <div class="d-flex">
+                                                    <p class="mb-0 tx-12 text-white">Initiated On : </p>
+                                                    <p class="mb-0 tx-12 text-white ps-2" id="QInitiatedDate" value="">@ViewBag.casesearcherr</p>
+                                                </div>
+                                                <div class="d-flex">
+                                                    <p class="mb-0 tx-12 text-white">Final Report :</p>
+                                                    <p class="mb-0 tx-12 text-white ps-2" id="QFinalReprot" value=""></p>
+                                                </div>
+                                                <div class="d-flex">
+                                                    <p class="mb-0 tx-12 text-white">Color Code :</p>
+                                                    <p class="mb-0 tx-12 text-white ps-2" id="QColorCode" value=""></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="float-end me-1" style="position: absolute;right: 0px;bottom: -17px;">
+                                            <input class="form-control case_search p-0 ps-1" placeholder="Securitas Ref No.." type="search" id="CaseSearchID" name="search" onchange="iconhover()">
+                                            <i class="fa-sharp fa fa-arrow-right case_search_icon" onclick="GetCaseDetails()"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }*@
+
+                    <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                        <div class="card overflow-hidden sales-card bg_card_quick_link" style="height:8.2rem!important;">
+                            <div class="ps-3 pt-1 pb-2 pt-0">
+                                <div class="d-flex justify-content-between">
+                                    <span class="mb-1 text-white tx-20 fw-bolder">Help Center</span>
+                                    <i class="fa fa-info-circle text-white tx-16 p-2" data-bs-placement="top" data-bs-toggle="tooltip" title="Help in use portal"></i>
+                                </div>
+                                <div class="pb-0 mt-0">
+                                    <div class="d-flex">
+                                        <div class="">
+                                            <p class="mb-0 tx-12 text-white">
+                                                <a class="quick_link" href='@Url.Action("MediaGallary", "Home", new { area = "ClientArea" })'>Tutorial Video</a>
+                                            </p>
+                                        </div>
+                                        <div class="">
+                                            <p class="mb-0 tx-12 text-white ms-1 me-1">|</p>
+                                        </div>
+                                        <div class="">
+                                            <p class="mb-0 tx-12 text-white">
+                                                <a class="quick_link" href='@Url.Action("ClientFAQ", "Home", new { area = "ClientArea" })'>FAQ</a>
+                                            </p>
+                                        </div>
+                                        <div class="">
+                                            <p class="mb-0 tx-12 text-white ms-1 me-1">|</p>
+                                        </div>
+                                        <div class="">
+                                            <p class="mb-0 tx-12 text-white">
+                                                <a class="quick_link" href='@Url.Action("UserManual", "Home", new { area = "ClientArea" })'>User Manual</a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*<div class="col-lg-3">
+                            <div class="overflow-hidden sales-card bg_card_quick_link white">
+                                <a class="quick_link edit-card-graph" href='@Url.Action("Reviewdetail", "Home", new { area = "ClientArea" })'>
+                                    Analyse
+
+                                    <video width="256" height="256" preload="none" style="background: transparent  url('https://cdn-icons-png.flaticon.com/512/19011/19011044.png') 50% 50% / fit no-repeat;" autoplay="autoplay" loop="true" muted="muted" playsinline="">
+                                        <source src="https://cdn-icons-mp4.flaticon.com/512/19011/19011044.mp4" type="video/mp4">
+                                    </video>
+                                </a>
+
+                            </div>
+                        </div>*@
+
+                    @if (Session["ClientRowID"] != null && (Session["ClientRowID"].ToString() == "1749" || Session["ClientRowID"].ToString() == "7" || Session["ClientRowID"].ToString() == "296" || Session["ClientRowID"].ToString() == "305" || Session["ClientRowID"].ToString() == "306" || Session["ClientRowID"].ToString() == "761" || Session["ClientRowID"].ToString() == "987"))
+                    {
+                        <div class="col-lg-3">
+                            <div class="overflow-hidden sales-card bg_card_quick_link white">
+                                <a class="quick_link edit-card-graph"
+                                   href='@Url.Action("Reviewdetail", "Home", new { area = "ClientArea" })'>
+                                    Analyse
+
+                                    <video width="256" height="256"
+                                           preload="none"
+                                           style="background: transparent url('https://cdn-icons-png.flaticon.com/512/19011/19011044.png') 50% 50% / fit no-repeat;"
+                                           autoplay="autoplay"
+                                           loop="true"
+                                           muted="muted"
+                                           playsinline="">
+                                        <source src="https://cdn-icons-mp4.flaticon.com/512/19011/19011044.mp4"
+                                                type="video/mp4">
+                                    </video>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        if (ViewBag.InterimReportRights == true || ViewBag.FinalReportRights == true || ViewBag.WIPStatusRights == true)
+        {
+            <div class="container-fluid ps-0 bg_gradient_CaseWise mt-2">
+                <div class="row row-sm">
+                    <div class="card-header card_header_casewise">
+                        <span>CASE WISE | STATUS</span>
+                    </div>
+
+
+                    <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                        <a href='@Url.Action("Index", "Home", new { ClientRowId=clsCommonMethods.PEncrypt(ClientRowID) })'>
+                            <div class="card overflow-hidden sales-card bg_card_Case_wise">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                        <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Cases in progress with Securitas"></i>
+                                    </div>
+                                    <div class="card-widget text-white d-flex">
+                                        <h2 class="text-start">
+                                            <img src="~/assets/DashboaredImages/3.png" class="bucket_icon" />
+                                        </h2>
+                                        <div class="">
+                                            <span class="card_numbering">@item.totWIP</span>
+                                            <p class="mb-0 text-left card_name">WIP Status</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="container-fluid ps-0 bg_gradient_CaseWise mt-2">
+                <div class="row row-sm">
+                    <div class="card-header card_header_casewise">
+                        <span>CASE WISE | STATUS</span>
+                    </div>
+                    <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                        <a href='@Url.Action("ManagependingWithCandidateCases", "Home", new { CaseStatus = "Pendingcandidate", ClientRowID = clsCommonMethods.PEncrypt(ClientRowID) })'>
+                            <div class="card overflow-hidden sales-card bg_card_Case_wise">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                        <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Information yet to be provided by the candidate
+"></i>
+                                    </div>
+                                    <div class="card-widget text-white d-flex">
+                                        <h2 class="text-start">
+                                            <img src="~/assets/DashboaredImages/1.png" class="bucket_icon" />
+                                        </h2>
+                                        <div class="">
+                                            <span class="card_numbering">@item.totPendingwithcandidate</span>
+                                            <p class="mb-0 text-left card_name">Pending With Candidate</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    @if (Session["ClientUserRowID"] != null &&
+                        Session["ClientUserRowID"].ToString() != "5342")
+                    {
+                        <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                            <a href='@Url.Action("ManageClientHrApprovalCases", "Home", new { ClientRowId=clsCommonMethods.PEncrypt(ClientRowID)})'>
+                                <div class="card overflow-hidden sales-card bg_card_Case_wise">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                            <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Approve cases to start the verification process"></i>
+                                        </div>
+                                        <div class="card-widget text-white d-flex">
+                                            <h2 class="text-start">
+                                                <img src="~/assets/DashboaredImages/2.png" class="bucket_icon" />
+                                            </h2>
+                                            <div class="">
+                                                <span class="card_numbering">@item.totCaseApprovalpending</span>
+                                                <p class="mb-0 text-left card_name">Case Approval Pending</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+
+                    <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                        <a href='@Url.Action("Index", "Home", new { ClientRowId=clsCommonMethods.PEncrypt(ClientRowID) })'>
+                            <div class="card overflow-hidden sales-card bg_card_Case_wise">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                        <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Cases in progress with Securitas"></i>
+                                    </div>
+                                    <div class="card-widget text-white d-flex">
+                                        <h2 class="text-start">
+                                            <img src="~/assets/DashboaredImages/3.png" class="bucket_icon" />
+                                        </h2>
+                                        <div class="">
+                                            <span class="card_numbering">@item.totWIP</span>
+                                            <p class="mb-0 text-left card_name">WIP Status</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                        <a href='@Url.Action("GetClientCasesDashBoardInsuffInfo", "Home", new { CaseStatus = "Insufficiency",ClientRowId=clsCommonMethods.PEncrypt(ClientRowID) })'>
+                            <div class="card overflow-hidden sales-card bg_card_Case_wise">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                        <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Case with document/details required"></i>
+                                    </div>
+                                    <div class="card-widget text-white d-flex">
+                                        <h2 class="text-start">
+                                            <img src="~/assets/DashboaredImages/4.png" class="bucket_icon" />
+                                        </h2>
+                                        <div class="">
+                                            <span class="card_numbering">@item.totInsufficiency</span>
+                                            <p class="mb-0 text-left card_name">Insufficiency</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+        <!--Qicks Linkls end from here-->
+        <!--Case Wise Status Start from here-->
+
+        <!--Case Wise Status end from here-->
+
+        <!--Action to be taken Start from here-->
+        if (ViewBag.InterimReportRights == true || ViewBag.FinalReportRights == true || ViewBag.WIPStatusRights == true)
+        {
+            <div class="container-fluid ps-0 bg_gradient_action mt-2 mb-3">
+                <div class="row row-sm">
+                    <div class="card-header card_header_Action">
+                        <span>ACTION TO BE TAKEN | PENDING</span>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                        <a href='@Url.Action("GetClientCasesDashBoardInfo", "Home", new { CaseStatus = "ReportReceivedInterim",ClientRowId=clsCommonMethods.PEncrypt(ClientRowID)})'>
+                            <div class="card overflow-hidden sales-card bg-card_action">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                        <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Download interim reports from this tab"></i>
+                                    </div>
+                                    <div class="card-widget text-white d-flex">
+                                        <h2 class="text-start">
+                                            <img src="~/assets/DashboaredImages/2_.png" class="bucket_icon" />
+
+                                        </h2>
+                                        <div class="">
+                                            <span class="card_numbering">@item.totReportReceivedInterim</span>
+                                            <p class="mb-0 text-left card_name">Interim Report</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    @if (Session["ClientUserRowID"].ToString() == "5026")
+
+                    {
+
+                        <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                            <a href='@Url.Action("GetClientCasesDashBoardInsuffInfo", "Home", new { CaseStatus = "Insufficiency",ClientRowId=clsCommonMethods.PEncrypt(ClientRowID) })'>
+                                <div class="card overflow-hidden sales-card bg_card_Case_wise">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                            <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Case with document/details required"></i>
+                                        </div>
+                                        <div class="card-widget text-white d-flex">
+                                            <h2 class="text-start">
+                                                <img src="~/assets/DashboaredImages/4.png" class="bucket_icon" />
+                                            </h2>
+                                            <div class="">
+                                                <span class="card_numbering">@item.totInsufficiency</span>
+                                                <p class="mb-0 text-left card_name">Insufficiency</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                    }
+
+
+
+                    @if ((Session["ClientUserRowID"].ToString() == "4281" || Session["ClientUserRowID"].ToString() == "4846" || Session["ClientUserRowID"].ToString() == "4844" || Session["ClientUserRowID"].ToString() == "4839" || Session["ClientUserRowID"].ToString() == "4838" || Session["ClientUserRowID"].ToString() == "4837" || Session["ClientUserRowID"].ToString() == "4836" || Session["ClientUserRowID"].ToString() == "4835" || Session["ClientUserRowID"].ToString() == "4828" || Session["ClientUserRowID"].ToString() == "4827" || Session["ClientUserRowID"].ToString() == "4826" || Session["ClientUserRowID"].ToString() == "4825" || Session["ClientUserRowID"].ToString() == "4824") && Session["ClientRowID"].ToString() == "1481")
+                    {
+
+                    }
+                    else
+                    {
+                        <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                            <a href='@Url.Action("GetClientCasesDashBoardInfo", "Home", new { CaseStatus = "ReportReceived", ClientRowId = clsCommonMethods.PEncrypt(ClientRowID) })'>
+                                <div class="card overflow-hidden sales-card bg-card_action">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                            <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Download completed reports from this tab"></i>
+                                        </div>
+                                        <div class="card-widget text-white d-flex">
+                                            <h2 class="text-start">
+                                                <img class="bucket_icon" src="~/assets/DashboaredImages/4_.png" />
+                                            </h2>
+                                            <div class="">
+                                                <span class="card_numbering">@item.totReportReceived</span>
+
+                                                <p class="mb-0 text-left card_name">Final Report</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </a>
+
+                        </div>
+                    }
+
+                </div>
+            </div>
+        }
+        else
+        {
+            if (Session["ClientUserRowID"] != null &&
+                Session["ClientUserRowID"].ToString() != "5342")
+            {
+                <div class="container-fluid ps-0 bg_gradient_action mt-2 mb-3">
+                    <div class="row row-sm">
+                        <div class="card-header card_header_Action">
+                            <span>ACTION TO BE TAKEN | PENDING</span>
+                        </div>
+                        @if (Session["ClientRowID"].ToString() == "331" || Session["ClientRowID"].ToString() == "21" || Session["ClientRowID"].ToString() == "332" || Session["ClientRowID"].ToString() == "333" || Session["ClientRowID"].ToString() == "587")
+                        {
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                                <a href='@Url.Action("ManageFundPendingChecksForClient", "Home", new { ClientRowId = clsCommonMethods.PEncrypt(ClientRowID) })'>
+                                    <div class="card overflow-hidden sales-card bg-card_action">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                                <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Approve cases with extra cost"></i>
+                                            </div>
+                                            <div class="card-widget text-white d-flex">
+                                                <h2 class="text-start">
+                                                    <img src="~/assets/DashboaredImages/1_.png" class="bucket_icon" />
+                                                </h2>
+                                                <div class="">
+                                                    <span class="card_numbering">@item.totFundApproval</span>
+                                                    <p class="mb-0 text-left card_name">Education Hold</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+                        else if ((Session["ClientUserRowID"].ToString() == "4281" || Session["ClientUserRowID"].ToString() == "4394" || Session["ClientUserRowID"].ToString() == "4846" || Session["ClientUserRowID"].ToString() == "4844" || Session["ClientUserRowID"].ToString() == "4839" || Session["ClientUserRowID"].ToString() == "4838" || Session["ClientUserRowID"].ToString() == "4837" || Session["ClientUserRowID"].ToString() == "4836" || Session["ClientUserRowID"].ToString() == "4835" || Session["ClientUserRowID"].ToString() == "4828" || Session["ClientUserRowID"].ToString() == "4827" || Session["ClientUserRowID"].ToString() == "4826" || Session["ClientUserRowID"].ToString() == "4825" || Session["ClientUserRowID"].ToString() == "4824") && Session["ClientRowID"].ToString() == "1481")
+                        {
+
+                        }
+                        else
+                        {
+
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                                <a href='@Url.Action("ManageFundPendingChecksForClient", "Home", new { ClientRowId = clsCommonMethods.PEncrypt(ClientRowID) })'>
+                                    <div class="card overflow-hidden sales-card bg-card_action">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                                <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Approve cases with extra cost"></i>
+                                            </div>
+                                            <div class="card-widget text-white d-flex">
+                                                <h2 class="text-start">
+                                                    <img src="~/assets/DashboaredImages/1_.png" class="bucket_icon" />
+                                                </h2>
+                                                <div class="">
+                                                    <span class="card_numbering">@item.totFundApproval</span>
+                                                    <p class="mb-0 text-left card_name">Fund Approval</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+                        @if (Session["ClientRowID"].ToString() == "1481" && Session["ClientUserRowID"].ToString() == "4394")
+                        {
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                                <a href='@Url.Action("ManageClientResultAwaitedCases", "Home", new { ClientRowId = clsCommonMethods.PEncrypt(ClientRowID) })'>
+                                    <div class="card overflow-hidden sales-card bg-card_action">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                                <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Approve cases with extra cost"></i>
+                                            </div>
+                                            <div class="card-widget text-white d-flex">
+                                                <h2 class="text-start">
+                                                    <img src="~/assets/DashboaredImages/1_.png" class="bucket_icon" />
+                                                </h2>
+                                                <div class="">
+                                                    <span class="card_numbering">@item.ResultAwaited</span>
+                                                    <p class="mb-0 text-left card_name">Result Awaited</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+
+                        @if ((Session["ClientUserRowID"].ToString() == "4281" || Session["ClientUserRowID"].ToString() == "4846" || Session["ClientUserRowID"].ToString() == "4844" || Session["ClientUserRowID"].ToString() == "4839" || Session["ClientUserRowID"].ToString() == "4838" || Session["ClientUserRowID"].ToString() == "4837" || Session["ClientUserRowID"].ToString() == "4836" || Session["ClientUserRowID"].ToString() == "4835" || Session["ClientUserRowID"].ToString() == "4828" || Session["ClientUserRowID"].ToString() == "4827" || Session["ClientUserRowID"].ToString() == "4826" || Session["ClientUserRowID"].ToString() == "4825" || Session["ClientUserRowID"].ToString() == "4824") && Session["ClientRowID"].ToString() == "1481")
+                        {
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                                <a href='@Url.Action("ManageClientResultAwaitedCases", "Home", new { ClientRowId = clsCommonMethods.PEncrypt(ClientRowID) })'>
+                                    <div class="card overflow-hidden sales-card bg-card_action">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                                <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Approve cases with extra cost"></i>
+                                            </div>
+                                            <div class="card-widget text-white d-flex">
+                                                <h2 class="text-start">
+                                                    <img src="~/assets/DashboaredImages/1_.png" class="bucket_icon" />
+                                                </h2>
+                                                <div class="">
+                                                    <span class="card_numbering">@item.ResultAwaited</span>
+                                                    <p class="mb-0 text-left card_name">Result Awaited</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            if (Session["ClientRowID"].ToString() == "1481" && Session["ClientUserRowID"].ToString() != "4394")
+                            {
+                                <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                                    <a href='@Url.Action("ManageClientResultAwaitedCases", "Home", new { ClientRowId = clsCommonMethods.PEncrypt(ClientRowID) })'>
+                                        <div class="card overflow-hidden sales-card bg-card_action">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                                    <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Approve cases with extra cost"></i>
+                                                </div>
+                                                <div class="card-widget text-white d-flex">
+                                                    <h2 class="text-start">
+                                                        <img src="~/assets/DashboaredImages/1_.png" class="bucket_icon" />
+                                                    </h2>
+                                                    <div class="">
+                                                        <span class="card_numbering">@item.ResultAwaited</span>
+                                                        <p class="mb-0 text-left card_name">Result Awaited</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            }
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                                <a href='@Url.Action("GetClientCasesDashBoardInfo", "Home", new { CaseStatus = "ReportReceivedInterim",ClientRowId=clsCommonMethods.PEncrypt(ClientRowID)})'>
+                                    <div class="card overflow-hidden sales-card bg-card_action">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                                <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Download interim reports from this tab"></i>
+                                            </div>
+                                            <div class="card-widget text-white d-flex">
+                                                <h2 class="text-start">
+                                                    <img src="~/assets/DashboaredImages/2_.png" class="bucket_icon" />
+
+                                                </h2>
+                                                <div class="">
+                                                    <span class="card_numbering">@item.totReportReceivedInterim</span>
+                                                    <p class="mb-0 text-left card_name">Interim Report</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+                        @if (Session["ClientRowID"].ToString() == "1428")
+                        {
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                                <a href='@Url.Action("ManageClientYTRCases", "Home", new { CheckStatus = "YTR" ,ClientRowId=clsCommonMethods.PEncrypt(ClientRowID)})'>
+                                    <div class="card overflow-hidden sales-card bg-card_action">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                                <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Cases with active current employment (on Hold)"></i>
+                                            </div>
+                                            <div class="card-widget text-white d-flex">
+                                                <h2 class="text-start">
+                                                    <img src="~/assets/DashboaredImages/3_.png" class="bucket_icon" />
+                                                </h2>
+                                                <div class="">
+                                                    <span class="card_numbering">@item.totYTRHold</span>
+                                                    <p class="mb-0 text-left card_name">Current Employment - Hold</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                                <a href='@Url.Action("ManageClientYTRCases", "Home", new { CheckStatus = "YTR" ,ClientRowId=clsCommonMethods.PEncrypt(ClientRowID)})'>
+                                    <div class="card overflow-hidden sales-card bg-card_action">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                                <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Cases with active current employment (on Hold)"></i>
+                                            </div>
+                                            <div class="card-widget text-white d-flex">
+                                                <h2 class="text-start">
+                                                    <img src="~/assets/DashboaredImages/3_.png" class="bucket_icon" />
+                                                </h2>
+                                                <div class="">
+                                                    <span class="card_numbering">@item.totYTRHold</span>
+                                                    <p class="mb-0 text-left card_name">YTR</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+                        @if ((Session["ClientUserRowID"].ToString() == "4281" || Session["ClientUserRowID"].ToString() == "4846" || Session["ClientUserRowID"].ToString() == "4844" || Session["ClientUserRowID"].ToString() == "4839" || Session["ClientUserRowID"].ToString() == "4838" || Session["ClientUserRowID"].ToString() == "4837" || Session["ClientUserRowID"].ToString() == "4836" || Session["ClientUserRowID"].ToString() == "4835" || Session["ClientUserRowID"].ToString() == "4828" || Session["ClientUserRowID"].ToString() == "4827" || Session["ClientUserRowID"].ToString() == "4826" || Session["ClientUserRowID"].ToString() == "4825" || Session["ClientUserRowID"].ToString() == "4824") && Session["ClientRowID"].ToString() == "1481")
+                        {
+
+                        }
+                        else
+                        {
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                                <a href='@Url.Action("GetClientCasesDashBoardInfo", "Home", new { CaseStatus = "ReportReceived", ClientRowId = clsCommonMethods.PEncrypt(ClientRowID) })'>
+                                    <div class="card overflow-hidden sales-card bg-card_action">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                                <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Download completed reports from this tab"></i>
+                                            </div>
+                                            <div class="card-widget text-white d-flex">
+                                                <h2 class="text-start">
+                                                    <img class="bucket_icon" src="~/assets/DashboaredImages/4_.png" />
+                                                </h2>
+                                                <div class="">
+                                                    <span class="card_numbering">@item.totReportReceived</span>
+
+                                                    <p class="mb-0 text-left card_name">Final Report</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </a>
+
+                            </div>
+
+
+
+                            @* <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                <a href='@Url.Action("ManageClientReviewCases", "Home", new { CaseStatus = "ClientReview" ,ClientRowId=clsCommonMethods.PEncrypt(ClientRowID)})'>
+                    <div class="card overflow-hidden sales-card bg-card_action">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Client Review"></i>
+                            </div>
+                            <div class="card-widget text-white d-flex">
+                                <h2 class="text-start">
+                                    <img src="~/assets/DashboaredImages/3_.png" class="bucket_icon" />
+                                </h2>
+                                <div class="">
+                                    <span class="card_numbering">@item.ClientReviewBucket</span>
+                                    <p class="mb-0 text-left card_name">Client Review</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>*@
+                        }
+
+                        @if (Session["ClientRowID"].ToString() == "1071")
+                        {
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                                <a href='@Url.Action("GetClientCasesDashBoardInfo", "Home", new { CaseStatus = "AutoGallagherInterims" ,ClientRowId=clsCommonMethods.PEncrypt(ClientRowID)})'>
+                                    <div class="card overflow-hidden sales-card bg-card_action">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                                <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Download 4 check Interim reports from this tab"></i>
+                                            </div>
+                                            <div class="card-widget text-white d-flex">
+                                                <h2 class="text-start">
+                                                    <img src="~/assets/DashboaredImages/3_.png" class="bucket_icon" />
+                                                </h2>
+                                                <div class="">
+                                                    <span class="card_numbering">@item.AutoGallagherInterims</span>
+                                                    <p class="mb-0 text-left card_name">4 check Interim</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                                <a href='@Url.Action("GetClientCasesDashBoardInfo", "Home", new { CaseStatus = "SupplymentryGallagher" ,ClientRowId=clsCommonMethods.PEncrypt(ClientRowID)})'>
+                                    <div class="card overflow-hidden sales-card bg-card_action">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                                <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Download 4 check Interim reports from this tab"></i>
+                                            </div>
+                                            <div class="card-widget text-white d-flex">
+                                                <h2 class="text-start">
+                                                    <img src="~/assets/DashboaredImages/3_.png" class="bucket_icon" />
+                                                </h2>
+                                                <div class="">
+                                                    <span class="card_numbering">@item.AutoGallagherInterims1</span>
+                                                    <p class="mb-0 text-left card_name">Supplementary/2nd Interim Reports</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                                <a href='@Url.Action("GetClientCasesDashBoardInfo", "Home", new { CaseStatus = "GallagherSecondInterims" ,ClientRowId=clsCommonMethods.PEncrypt(ClientRowID)})'>
+                                    <div class="card overflow-hidden sales-card bg-card_action">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                                <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Download 2nd Interim reports from this tab"></i>
+                                            </div>
+                                            <div class="card-widget text-white d-flex">
+                                                <h2 class="text-start">
+                                                    <img src="~/assets/DashboaredImages/3_.png" class="bucket_icon" />
+                                                </h2>
+                                                <div class="">
+                                                    <span class="card_numbering">@item.GallagherSecondInterims</span>
+                                                    <p class="mb-0 text-left card_name">2nd Interim Reports</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+
+                        @if (Session["ClientRowID"].ToString() == "576")
+                        {
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                                <a href='@Url.Action("GetClientCasesDashBoardInfo", "Home", new { CaseStatus = "AllReportPerCase" ,ClientRowId=clsCommonMethods.PEncrypt(ClientRowID)})'>
+                                    <div class="card overflow-hidden sales-card bg-card_action">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                                <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Download 4 check Interim reports from this tab"></i>
+                                            </div>
+                                            <div class="card-widget text-white d-flex">
+                                                <h2 class="text-start">
+                                                    <img src="~/assets/DashboaredImages/3_.png" class="bucket_icon" />
+                                                </h2>
+                                                <div class="">
+                                                    <span class="card_numbering">@item.CasesAllReports</span>
+                                                    <p class="mb-0 text-left card_name">Cases With Reports</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+
+                        @if (Session["ClientRowID"].ToString() == "709")
+                        {
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                                <a href='@Url.Action("GetClientCasesDashBoardInfo", "Home", new { CaseStatus = "CRCReports" ,ClientRowId=clsCommonMethods.PEncrypt(ClientRowID)})'>
+                                    <div class="card overflow-hidden sales-card bg-card_action">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                                <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Download completed reports from this tab"></i>
+                                            </div>
+                                            <div class="card-widget text-white d-flex">
+                                                <h2 class="text-start">
+                                                    <img class="bucket_icon" src="~/assets/DashboaredImages/4_.png" />
+                                                </h2>
+                                                <div class="">
+                                                    <span class="card_numbering">@item.CRCReports</span>
+
+                                                    <p class="mb-0 text-left card_name">CRC Report</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                                <a href='@Url.Action("GetClientCasesDashBoardInfo", "Home", new { CaseStatus = "PCCReports" ,ClientRowId=clsCommonMethods.PEncrypt(ClientRowID)})'>
+                                    <div class="card overflow-hidden sales-card bg-card_action">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                                <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Download completed reports from this tab"></i>
+                                            </div>
+                                            <div class="card-widget text-white d-flex">
+                                                <h2 class="text-start">
+                                                    <img class="bucket_icon" src="~/assets/DashboaredImages/4_.png" />
+                                                </h2>
+                                                <div class="">
+                                                    <span class="card_numbering">@item.PCCReports</span>
+                                                    <p class="mb-0 text-left card_name">PCC Report</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                          }
+
+                                <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                                    @if (Session["ClientRowID"].ToString() == "7" || Session["ClientRowID"].ToString() == "296" || Session["ClientRowID"].ToString() == "305" || Session["ClientRowID"].ToString() == "306" || Session["ClientRowID"].ToString() == "987" || Session["ClientRowID"].ToString() == "761" || Session["ClientRowID"].ToString() == "1590")
+                                    {
+
+                                        <a href='@Url.Action("GetClientCasesDashBoardInfo", "Home", new { CaseStatus = "InterimReportCRC" ,ClientRowId=clsCommonMethods.PEncrypt(ClientRowID)})'>
+                                            <div class="card overflow-hidden sales-card bg-card_action">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                                        <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Download completed reports from this tab"></i>
+                                                    </div>
+                                                    <div class="card-widget text-white d-flex">
+                                                        <h2 class="text-start">
+                                                            <img class="bucket_icon" src="~/assets/DashboaredImages/4_.png" />
+                                                        </h2>
+                                                        <div class="">
+                                                            <span class="card_numbering">@item.InterimCRC</span>
+
+                                                            <p class="mb-0 text-left card_name">1st Interim  Report</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </a>
+                                    }
+                                </div>
+
+                            </div>
+                        </div>
+
+            }
+
+
+        }
+
+        @*if (Session["ClientRowID"].ToString() == "1255")
+            {
+
+                <div class="container-fluid ps-0 bg_gradient_action mb-3 mt-2">
+                    <div class="row row-sm">
+                        <div class="card-header card_header_Action">
+                            <span>Non Green Check | Bucket</span>
+                        </div>
+                        <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
+                            <a href='@Url.Action("GetColorCodeReviewClientCheck", "Home", new { CaseStatus = "NonGreenCheck", ClientRowId = clsCommonMethods.PEncrypt(ClientRowID) })'>
+                                <div class="card overflow-hidden sales-card bg-card_action">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-end pos-absolute bucket_info">
+                                            <i class="fa fa-info-circle text-white tx-16 p-2 me-1" data-bs-placement="top" data-bs-toggle="tooltip" title="Download interim reports from this tab"></i>
+                                        </div>
+                                        <div class="card-widget text-white d-flex">
+                                            <h2 class="text-start">
+                                                <img src="~/assets/DashboaredImages/2_.png" class="bucket_icon" />
+
+                                            </h2>
+                                            <div class="">
+                                                <span class="card_numbering">@item.NonGreenCheck</span>
+                                                <p class="mb-0 text-left card_name">Non Green Check</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }*@
+
+        if (TempData["AcknowledgeStatus"] != null && Convert.ToInt32(TempData["AcknowledgeStatus"].ToString()) == 0)
+        {
+            <!-- Modal Wrapper CSS fix ke saath -->
+            <div class="modal fade" id="ackModal" data-backdrop="static" data-keyboard="false" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true" style="z-index: 99999 !important;">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-warning text-white">
+                            <h5 class="modal-title fw-bold">Data Retention Acknowledgment</h5>
+                        </div>
+                        <div class="modal-body p-4">
+                            <!-- Note: Yahan class modal-content ki jagah modal-body honi chahiye -->
+                            <p class="fs-6 text-dark">
+                              <span>  In accordance with our Data Retention Policy and applicable data protection requirements, information available on this platform will be retained only for the agreed retention period. Data and reports exceeding the retention period may be permanently deleted and may not be recoverable thereafter. </span> <br /><br />
+                              <span>  By clicking "I Acknowledge", you confirm that you have read and understood this notice and are responsible for downloading and securely retaining any information required beyond the applicable retention period </span>  
+</p>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" id="btnAcceptAck" class="btn btn-primary px-5 fw-bold">I Accept & Acknowledge</button>
+                            <a href="/Account/LogOutClient" class="btn btn-danger px-4">Decline & Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+<script>
+        $(document).ready(function () {
+            $('#candidateName').keyup(function () {
+                var candidateName = $(this).val();
+                var clientRowID = $("#clientrowid").val();
+                var url = "/ClientArea/Home/GetCandidatesByName"
+                if (candidateName.length > 4) {
+                    $.ajax({
+                        type: 'GET',
+                        url: url,
+                        data: {
+                            candidateName: candidateName,
+                            clientRowID: clientRowID
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            $('#candidateList').empty();
+                            $.each(data, function (CandidateFullName, option) {
+                                $('#candidateList').append("<option value='" + option.CandidateFullName + "'>");
+                            });
+                        }
+                    });
+                }
+            });
+
+            if ($('#ackModal').length > 0) {
+                debugger;
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    var myModal = new bootstrap.Modal(document.getElementById('ackModal'));
+                    myModal.show();
+                }
+
+                else if (typeof $.fn.modal !== 'undefined') {
+                    $('#ackModal').modal('show');
+                }
+
+                else {
+                    $('#ackModal').css('display', 'block').addClass('show');
+                    $('body').append('<div class="modal-backdrop fade show"></div>');
+                }
+            }
+
+
+          $('#btnAcceptAck').click(function () {
+    var btn = $(this);
+    btn.prop('disabled', true).text('Processing...');
+
+    $.ajax({
+        url: "/ClientArea/Home/AcceptAcknowledgment",
+        type: "POST",
+       
+        data: {
+            clientRowID: '@(TempData["ClientRowID"] ?? 0)',
+            clientUserRowID: '@(TempData["ClientUserRowID"] ?? 0)'
+        },
+        success: function (response) {
+            if (response.success) {
+                location.reload();
+            } else {
+                alert("Kuch galat hua. Kripya dobara koshish karein: " + response.message);
+                btn.prop('disabled', false).text('I Accept & Acknowledge');
+            }
+        },
+        error: function () {
+            alert("Server se connect nahi ho pa raha hai.");
+            btn.prop('disabled', false).text('I Accept & Acknowledge');
+        }
+    });
+});
+        });
+     //   });
+
+        $("#candidateName").on('input', function () {
+            var val = this.value;
+            if ($('#candidateList option').filter(function () {
+                return this.value.toUpperCase() === val.toUpperCase();
+            }).length) {
+                var candidateName = $("#candidateName").val();
+                var clientRowID = $("#clientrowid").val();
+                var url = "/ClientArea/Home/QuickCaseSearch"
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: { candidateName: candidateName },
+                    async: false,
+                    dataType: 'json',
+                    success: function (Data) {
+                        if (Data != null || Data != '') {
+                            $('#QStatus').html(Data.CaseStatus);
+                            $('#QInitiatedDate').html(Data.CreatedDate);
+                            $('#QColorCode').html(Data.ColorCode);
+                            $('#QFinalReprot').html(Data.UploadedDate);
+                            debugger;
+                            var downloadUrl = '/ClientArea/Home/GetAllCadndidateDocInZip?CompanyRefNo=' + encodeURIComponent(Data.companyrefno) + '&SubCheckRowID=0&personalrowid=' + encodeURIComponent(Data.PersonalRowID);
+                            $('#downloadZipLink').attr('href', downloadUrl);
+                            if (Data.companyrefno != null && Data.companyrefno != '')
+                                document.getElementById('downloadZipLink').style.display = 'inline';
+                        }
+                    }
+                });
+
+            }
+            else {
+                var candidateName = $("#candidateName").val();
+                var clientRowID = $("#clientrowid").val();
+                var url = "/ClientArea/Home/QuickCaseSearch"
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: { candidateName: candidateName },
+                    async: false,
+                    dataType: 'json',
+                    success: function (Data) {
+                        if (Data != null || Data != '') {
+                            $('#QStatus').html(Data.CaseStatus);
+                            $('#QInitiatedDate').html(Data.CreatedDate);
+                            $('#QColorCode').html(Data.ColorCode);
+                            $('#QFinalReprot').html(Data.UploadedDate);
+                            debugger;
+                            var downloadUrl = '/ClientArea/Home/GetAllCadndidateDocInZip?CompanyRefNo=' + encodeURIComponent(Data.companyrefno) + '&SubCheckRowID=0&personalrowid=' + encodeURIComponent(Data.PersonalRowID);
+                            $('#downloadZipLink').attr('href', downloadUrl);
+                            document.getElementById('downloadZipLink').style.display = 'inline';
+                        }
+                    }
+                });
+            }
+        });
+
+
+        $('#candidateName').keyup(function () {
+            var candidateName = $(this).val();
+            if (candidateName != "") {
+                $("#candidateList").css("display", "block");
+            }
+            else {
+                $("#candidateList").css("display", "none");
+            }
+        });
+</script>
+
+    <script>
+        function GetCaseDetails() {
+            debugger;
+            var CaseSearchID = $("#CaseSearchID").val();
+            var url = "/ClientArea/Home/QuickCaseSearch?id=" + CaseSearchID.trim();
+            $.ajax({
+                url: url,
+                type: 'GET',
+                async: false,
+                dataType: 'json',
+                success: function (Data) {
+                    if (Data != null || Data != '') {
+                        debugger;
+                        $('#QStatus').html(Data.CaseStatus);
+                        $('#QInitiatedDate').html(Data.CreatedDate);
+                        $('#QColorCode').html(Data.ColorCode);
+                        $('#QFinalReprot').html(Data.UploadedDate);
+                        //$('#lblStatus').val(Data.CaseStatus);
+                        debugger;
+                        var downloadUrl = '/ClientArea/Home/GetAllCadndidateDocInZip?CompanyRefNo=' + encodeURIComponent(Data.companyrefno) + '&SubCheckRowID=0&personalrowid=' + encodeURIComponent(Data.PersonalRowID);
+                        $('#downloadZipLink').attr('href', downloadUrl);
+                        document.getElementById('downloadZipLink').style.display = 'inline';
+                    }
+                }
+            });
+        }
+    </script>
+}
+<!--Action to be taken end from here-->
+
+<style>
+    .bucket_info {
+        right: 0px;
+        top: 5px;
+    }
+
+    .tooltip {
+        font-family: 'Securitas Pro';
+    }
+
+    .card {
+        cursor: pointer;
+    }
+
+    .card_numbering {
+        font-weight: bold;
+        font-size: 1.7rem;
+        margin-left: 12px;
+    }
+
+    .card-body {
+        padding: 1rem .40rem 1rem .60rem !important;
+    }
+
+    .card_name {
+        font-weight: 500;
+        font-size: .80rem;
+        font-family: 'Securitas Pro';
+        margin-left: 12px;
+    }
+
+    .bg_gradient_Quicks_links {
+        background-color: #DEEDFF !important;
+    }
+
+    .bg_gradient_CaseWise {
+        background-color: #CEC3FF5C !important;
+    }
+
+    .bg_gradient_action {
+        background-color: #FFD0D8 !important;
+    }
+
+    .bg_card_quick_link {
+        background-color: #42638C !important;
+        border: none !important;
+        border-radius: 0px !important;
+        box-shadow: none !important;
+    }
+
+    .bg_card_Case_wise {
+        background-color: #8D5FFF !important;
+        border: none !important;
+        border-radius: 0px !important;
+        box-shadow: none !important;
+    }
+
+    .bg-card_action {
+        background-color: #FF8DA3 !important;
+        border: none !important;
+        border-radius: 0px !important;
+        box-shadow: none !important;
+    }
+
+    .card-header {
+        background-color: transparent !important;
+        border-radius: 0px !important;
+        font-weight: bolder !important;
+        padding: 5px 0px 10px 10px !important;
+        font-size: 1.3rem !important;
+    }
+
+    .card_header_quikslink {
+        color: #42638C !important;
+    }
+
+    .card_header_casewise {
+        color: #55419E !important;
+    }
+
+    .card_header_Action {
+        color: #AA1834 !important;
+    }
+
+    .case_search {
+        height: 1rem;
+        background: transparent;
+        background-color: transparent;
+        background-color: transparent;
+        border: none;
+        border-radius: 1.25rem;
+        width: 10rem;
+        font-size: .55rem !important;
+        margin-left: 56px;
+        background-color: rgba(236, 240, 250, .7);
+    }
+
+        .case_search::placeholder {
+            color: #031F30 !important;
+            text-align: left !important;
+        }
+
+        .case_search:focus {
+            background-color: rgba(236, 240, 250, .7);
+            color: #031F30 !important;
+            box-shadow: none !important;
+        }
+
+    .case_search_icon {
+        position: relative;
+        color: #000;
+        top: -11px;
+        right: -210px;
+        width: 27px;
+        *-webkit-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        transition: 0.3s ease-in-out;
+    }
+
+        .case_search_icon:hover {
+            right: -214px;
+        }
+
+    .quick_link {
+        color: #FFF;
+        cursor: pointer;
+    }
+
+        .quick_link:hover {
+            color: #FF8DA3 !important;
+        }
+
+
+    .review-graph {
+        padding: 10px;
+    }
+
+        .review-graph a {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+
+    a.edit-card-graph {
+        display: flex;
+        justify-content: space-between;
+        padding: 14px;
+        font-weight: 600;
+        font-size: 21px;
+    }
+
+    .edit-card-graph video {
+        width: 100PX;
+        height: auto;
+    }
+</style>
+
+

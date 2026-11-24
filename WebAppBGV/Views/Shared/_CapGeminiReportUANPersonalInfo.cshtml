@@ -1,0 +1,363 @@
+﻿@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    /**/
+
+    var list = Model.SpecialInfoModel.Where(T => T.SubcheckRowID == 416)
+
+                               .ToList();
+
+    var Preliminary = "";
+    var Amended = "";
+    var CheckColorName = "";
+    var CheckColorCode = "";
+    var UANInitiate = "";
+
+    if (list.Count>0)
+    {
+         Preliminary = list.Where(T => T.AntecedentRowID == "445").FirstOrDefault().OpsValue;
+         Amended = list.Where(T => T.AntecedentRowID == "446").FirstOrDefault().OpsValue;
+         CheckColorName = list.FirstOrDefault().CheckColorName;
+         CheckColorCode = list.FirstOrDefault().CheckColorCode;
+         UANInitiate = list.FirstOrDefault().CreationDate.ToString();
+
+    }
+
+
+
+
+}
+
+<table width="793" height="1185" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; margin-top:5px">
+    <tr>
+        <td valign="top" border="1">
+            <p style="text-align:center;font-family:Arial; font-size:33px;"><strong>Walsons Services </strong></p>
+
+            <table width="793" border="1" cellspacing="0" cellpadding="0" align="center" style=" text-align:center; font-family:Arial;font-size:13px;">
+                <tbody>
+                    <tr>
+                        <td width="121" style="padding:10px!important;">
+                            <p><strong>Vendor Ref Id</strong></p>
+                        </td>
+                        <td width="254" style="padding:10px!important;">
+                            <p><strong>Candidate Name</strong></p>
+                        </td>
+                        <td width="128" style="padding:10px!important;">
+                            <p><strong>Entity</strong></p>
+                        </td>
+                        @*<td width="141" style="padding:10px!important;">
+                                <p><strong>Supplementary Report Date</strong></p>
+                            </td>*@
+                    </tr>
+                    <tr>
+                        <td width="121" style="padding:10px!important;">
+                            <p>@Model.CompanyRefNo</p>
+                        </td>
+                        <td width="254" style="padding:10px!important;">
+                            <p>@Model.PersonalName</p>
+                        </td>
+                        <td width="128" style="padding:10px!important;">
+                            <p>@Model.BusinessName</p>
+                        </td>
+                        @*<td width="141" style="padding:10px!important;">
+                                @if (Model.FinalReportDate != "NA")
+                                {
+                                    <p>@Model.FinalReportDate</p>
+                                }
+                                else
+                                {
+                                    <p></p>
+                                }
+
+                            </td>*@
+                    </tr>
+                </tbody>
+            </table>
+            <div style="margin-top:1%; margin-bottom:1%; text-align: center; border:groove;background: #ccc; -webkit-print-color-adjust:exact!important; height:25px;font-family:Arial;font-size:17px; ">
+                <strong><b>BACKGROUND CHECK REPORT – SUMMARY</b></strong>
+            </div>
+            <table border="1" style="border-collapse: collapse; font-family:Arial;font-size:13px; -webkit-print-color-adjust:exact" width="793">
+                <tbody>
+
+                    <tr style="border: 1px solid black;
+  border-collapse: collapse;">
+                        <td width="123" style="background: #ccc; padding: 10px!important; -webkit-print-color-adjust:exact;
+    padding: 0 1%;">
+                            <p><strong>Name of Candidate</strong></p>
+                        </td>
+                        <td colspan="3" width="197" style="padding: 10px!important;">
+                            <p>@Model.PersonalName</p>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td width="133" style="background: #ccc; padding: 10px!important; -webkit-print-color-adjust:exact;
+    padding: 0 1%;">
+                            <p><strong>Vendor Reference</strong></p>
+                        </td>
+                        <td width="199" style="padding: 10px!important;">
+                            <p>@Model.CompanyRefNo</p>
+                        </td>
+                        <td width="123" style="background: #ccc; padding: 10px!important; -webkit-print-color-adjust:exact;
+    padding: 0 1%;">
+                            <p><strong>UAN Initiated</strong></p>
+                        </td>
+                        <td width="197" style="padding: 10px!important;">
+
+                            @if (string.IsNullOrEmpty(UANInitiate.ToString()))
+                            {
+                                <p>NA</p>
+                            }
+                            else
+                            {
+                                <p>@Convert.ToDateTime(UANInitiate).ToString("dd MMMM yyyy")</p>
+                            }
+
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td width="133" style="background: #ccc; padding: 10px!important; -webkit-print-color-adjust:exact;
+    padding: 0 1%;">
+                            <p><strong>Entity</strong></p>
+                        </td>
+                        <td colspan="3" width="199" style="padding: 10px!important;">
+                            <p>@Model.BusinessName</p>
+                        </td>
+                        @*<td width="123" style="background: #ccc; padding: 10px!important; -webkit-print-color-adjust:exact;
+            padding: 0 1%;">
+                                    <p><strong>Date of Interim Report</strong></p>
+                                </td>
+                                <td width="197" style="padding: 10px!important;">
+                                    @if (Model.InterimReportDate != "")
+                                    {
+                                        <p>@Convert.ToDateTime(@Model.InterimReportDate).ToString("dd MMMM yyyy")</p>
+                                    }
+                                    else
+                                    {
+                                        <p>NA</p>
+                                    }
+                                </td>*@
+                    </tr>
+                   
+
+
+                    <tr>
+                        <td width="123" style="background: #ccc; padding: 10px!important; -webkit-print-color-adjust:exact;
+    padding: 0 1%;">
+                            <p><strong>Date of Preliminary Report</strong></p>
+                        </td>
+                        <td width="197" style="padding: 10px!important;">
+                           
+                                @if (string.IsNullOrEmpty(Preliminary))
+                                {
+                                    <p>NA</p>
+                                }
+                                else
+                                {
+                                    <p>@Convert.ToDateTime(Preliminary).ToString("dd MMMM yyyy")</p>
+                                }
+                            
+                        </td>
+                        @*<td width="133" style="background: #ccc; padding: 10px!important; -webkit-print-color-adjust:exact;
+                padding: 0 1%;">
+                                        <p><strong>Date of Supplementary Report</strong></p>
+                                    </td>
+                                    <td width="199" style="padding: 10px!important;">
+                                        @if (Model.FinalReportDate != "NA")
+                        {
+                            <p>@Model.FinalReportDate</p>
+            }
+            else
+            {
+                            <p></p>
+            }
+
+
+                                    </td>*@
+
+                        <td width="133" style="background: #ccc; padding: 10px!important; -webkit-print-color-adjust:exact;
+            padding: 0 1%;">
+                            <p><strong>Date of Amended Report</strong></p>
+                        </td>
+                        <td colspan="3" style="padding: 0 1%;">
+                           
+                                @if (string.IsNullOrEmpty(Amended))
+                                {
+                                    <p>NA</p>
+                                }
+                                else
+                                {
+                                    <p>@Convert.ToDateTime(Amended).ToString("dd MMMM yyyy")</p>
+                                }
+                           
+
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td width="123" style="background: #ccc; padding: 10px!important; -webkit-print-color-adjust:exact;
+    padding: 0 1%;">
+                            <p><strong>Applicant id</strong></p>
+                        </td>
+                        <td width="197" style="padding: 10px!important;">
+                            <p>@Model.ClientRefID</p>
+                        </td>
+                        <td width="133" style="background: #ccc; padding: 10px!important; -webkit-print-color-adjust:exact;
+    padding: 0 1%;">
+                            <p><strong>Clarification Clear date</strong></p>
+                        </td>
+                        <td width="199" style="padding: 10px!important;">
+                            @*@if (Model.InsuffClearDate != "")
+                            {
+                                <p>@Convert.ToDateTime(Model.InsuffClearDate).ToString("dd MMMM yyyy")</p>
+                            }
+                            else
+                            {
+                                <p>NA</p>
+                            }*@
+                        </td>
+                    </tr>
+
+
+
+
+
+                    <tr>
+                        <td width="123" style="background: #ccc; -webkit-print-color-adjust:exact;
+    padding: 12px!important;">
+                            <p><strong>Employee ID & Grade</strong></p>
+                        </td>
+                        <td width="197" style="padding: 12px!important;">
+                            @if (!string.IsNullOrEmpty(Model.EmploymentId) && !string.IsNullOrEmpty(Model.Designation))
+                            {
+                                if (Model.EmploymentId == "-" || Model.EmploymentId == "Not provide")
+                                {
+                                    <p> @Model.Designation</p>
+                                }
+                                else
+                                {
+                                    <p>@Model.EmploymentId &, @Model.Designation</p>
+                                }
+
+
+
+                            }
+                            else if (!string.IsNullOrEmpty(Model.EmploymentId) && string.IsNullOrEmpty(Model.Designation))
+                            {
+                                <p>@Model.EmploymentId </p>
+                            }
+                            else if (string.IsNullOrEmpty(Model.EmploymentId) && !string.IsNullOrEmpty(Model.Designation))
+                            {
+                                <p>@Model.Designation </p>
+                            }
+                            else
+                            {
+                                <p>NA</p>
+                            }
+                        </td>
+                        <td width="133" style="background: #ccc; -webkit-print-color-adjust:exact;
+    padding: 12px!important;">
+                            <p><strong>Colour code</strong></p>
+                        </td>
+                        @if (CheckColorName.ToUpper() == "AMBER")
+                        {
+                            <td width="199" style="padding: 12px!important; -webkit-print-color-adjust:exact; background:#e36c0a;">@Model.FinalColor</td>
+                        }
+                        else
+                        {
+                            if (CheckColorCode == "#000")
+                            {
+                            <td width="199" style="padding: 12px; -webkit-print-color-adjust:exact;">CheckColorName</td>
+
+                            }
+                            else
+                            {
+                            <td width="199" style="padding: 12px; color-adjust:exact; background:@CheckColorCode;">@CheckColorName</td>
+                            }
+                        }
+
+                    </tr>
+
+                    <tr>
+                        <td width="123" style="background: #ccc; padding: 10px!important; -webkit-print-color-adjust:exact;
+    padding: 0 1%;">
+                            <p><strong>Type of Employee</strong></p>
+                        </td>
+                        <td width="197" style="padding: 10px!important;">@Model.EmploymentType</td>
+                        <td width="133" style="background:  #ccc; padding: 10px!important; -webkit-print-color-adjust:exact;
+    padding: 0 1%;">
+                            <p><strong>TAT (Excluding insufficiency period)</strong></p>
+                        </td>
+                        <td width="199" style="padding: 10px!important;">@Model.TANnumberofCompany</td>
+                    </tr>
+
+
+                    @*<tr>
+                            <td width="123" style="background: #ccc; padding: 10px!important; -webkit-print-color-adjust:exact;
+        padding: 0 1%;">
+                                <p><strong>Re-verification date</strong></p>
+                            </td>
+                            <td colspan="3" style="padding: 0 1%;">
+
+                            </td>
+
+                        </tr>*@
+
+
+                </tbody>
+            </table>
+
+
+
+            <p>&nbsp;</p>
+            <table width="100%" border="1" cellpadding="2" cellspacing="5">
+                <tbody>
+                    <tr>
+                        <td style="text-align:center; padding-left:60px;">
+                            <img src='@Url.Content("~/Images/CapGeminiLegents.JPG")' width="650" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            @*<p>&nbsp;</p>
+                <p>&nbsp;</p>
+                <p>&nbsp;</p>*@
+        </td>
+    </tr>
+    <tr>
+
+        <td colspan="2" height="100">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td valign="top">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="border-top:3px solid #c0c0c0;">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td width="20%"><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                    <td width="1%">&nbsp;</td>
+                    <td width="79%">
+
+
+                        <p style="font-size:16px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#000080; font-weight:500; text-align:center; margin:10px 0px 0px 0px;"><img src='@Url.Content("~/Images/StampSignatureUpdated.jpg")' width="60" height="60"></p>
+
+                        <p style="font-size:16px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#000080; font-weight:700; text-align:center; margin:15px 0px 0px 0px;">SECURITAS INDIA</p>
+                        <p style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp;&nbsp; Tel: + 91 124 4718888</p>
+                        <p style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a>&nbsp;<span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                    </td>
+                </tr>
+                @*<tr>
+                        @if (Model.ReportTemplate == 6)
+                        {
+
+                    <td colspan="2" align="right" style="font-size:11px; font-family:Calibri">Confidential</td>
+                       }
+                    </tr>*@
+            </table>
+        </td>
+
+    </tr>
+</table>
+

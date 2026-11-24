@@ -1,0 +1,18 @@
+namespace DAL.Migrations
+{
+    using System;
+    using System.Data.Entity.Migrations;
+    
+    public partial class AddColumnIntoCaseActionHistory : DbMigration
+    {
+        public override void Up()
+        {
+            AddColumn("dbo.CaseActionHistories", "UpdatedByNameDesig", c => c.String(maxLength: 100));
+        }
+        
+        public override void Down()
+        {
+            DropColumn("dbo.CaseActionHistories", "UpdatedByNameDesig");
+        }
+    }
+}

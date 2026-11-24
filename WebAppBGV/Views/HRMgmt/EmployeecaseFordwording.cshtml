@@ -1,0 +1,121 @@
+﻿
+@model ViewModels.HRViewModels.AddTeamDepartmentViewModel
+@{
+    ViewBag.Title = "Team Member-Operations";
+}
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<h2>Team Member-Operation</h2>
+
+@using (Html.BeginForm("EmployeecaseFordwording", "HRMgmt", FormMethod.Post))
+{
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group branch row ">
+
+                <div class="col-md-3">
+
+
+                    @Html.DropDownListFor(model => model.DesignationRowID,
+                   new SelectList(ViewBag.Designations, "DesignationRowID", "DesignationName"),
+                   "-- Select Designation -- ",
+                   new { @class = "form-control" })
+
+                    <input type="hidden" id="DesignationName" name="DesignationName" value="">
+                </div>
+                <div class="col-md-3">
+
+
+
+
+
+                    @Html.DropDownListFor(model => model.TeamMemberRowID,
+        new SelectList(string.Empty, "Value", "Text"),
+        "-- Select TeamMember  --",
+        new { @class = "form-control", @id = "TMID" })
+                    @Html.ValidationMessageFor(model => model.TeamMemberRowID, "", new { @class = "text-danger" })
+
+
+
+
+                </div>
+
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.TeamMemberAllocationRowID,
+      new SelectList(string.Empty, "Value", "Text"),
+      "-- Select TeamMember allocation --",
+      new { @class = "form-control", @id = "TMlistAllocationvar" })
+                    @Html.ValidationMessageFor(model => model.TeamMemberAllocationRowID, "", new { @class = "text-danger" })
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="form-group branch row ">
+                <input class="btn bun-bg btn-default" type="submit" value="Case Forwarding" name="MoveCheck" />
+            </div>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    $(
+        function () {
+            //$(function ()
+            //{
+            //    $("#DesignationRowID").change(function ()
+            //    {
+            //        var CurOrg = $("#DesignationRowID").val();
+            //        alert(CurOrg);
+            //        var url = "/HRMgmt/BindTM/" + $("#DesignationRowID").val();
+
+            //        $.ajax({
+            //            url: url,
+            //            type: 'GET',
+            //            async: false,
+            //            dataType: 'json',
+            //            success: function (Address)
+            //            {
+            //                $('#TeamMemberName').val(TeamMemberRowID);
+            //            }
+            //        });
+            //    });
+            //});
+
+            $('#DesignationRowID').change(function () {
+                var CurOrg = $("#DesignationRowID").val();
+
+                var CurOrgName = $("#DesignationRowID option:selected").text();
+
+                $("#DesignationName").val(CurOrgName);
+
+                $.getJSON('/HRMgmt/BindTM/' + $('#DesignationRowID').val(),
+
+                    function (data) {
+                        $('#TMID').empty();
+                        var items = '<option>--Select Team--</option>';
+
+                        $.each(data, function (nm, val) {
+                            items += "<option value='" + val.Value + "'>" + val.Text + "</option>";
+
+                        });
+                        $('#TMID').append(items);
+                        //console.log(items);
+                    });
+            });
+            $('#DesignationRowID').change(function () {
+                var CurOrg = $("#DesignationRowID").val();
+
+                $.getJSON('/HRMgmt/BindTMAllocation/' + $('#DesignationRowID').val(),
+
+                    function (data) {
+                        $('#TMlistAllocationvar').empty();
+                        var items = '<option>--Select TeamMember allocation--</option>';
+                        $.each(data, function (nm, val) {
+                            items += "<option value='" + val.Value + "'>" + val.Text + "</option>";
+
+                        });
+                        $('#TMlistAllocationvar').append(items);
+                        //console.log(items);
+                    });
+            });
+        });
+</script>

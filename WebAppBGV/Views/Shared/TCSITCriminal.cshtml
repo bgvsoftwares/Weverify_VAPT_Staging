@@ -1,0 +1,336 @@
+﻿@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    /**/
+
+    /**/
+
+    var list = Model.CriminalInfoModel.Where(T => T.SubcheckRowID != 195).GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+
+
+}
+@if (Model != null && Model.CriminalInfoModel != null && Model.CriminalInfoModel.Count > 0)
+{
+    if (Model.CriminalInfoModel != null)
+    {
+
+        //int j = 0;
+        int annuxureno = Convert.ToInt32(Session["AnnexureNo"]);
+        int k = Convert.ToInt32(annuxureno);
+        foreach (var a in list)
+        {
+            int i = 1;
+            var Anticident = Model.CriminalInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+            var DOV= Anticident.Where(T => T.AntecedentRowID == "171").FirstOrDefault().OpsValue;
+            var VerifierName = Anticident.Where(T => T.AntecedentRowID == "283").FirstOrDefault().OpsValue;
+            var VerifierDesig = Anticident.Where(T => T.AntecedentRowID == "284").FirstOrDefault().OpsValue;
+
+
+
+
+            var ReportComment = a.ReportComment;
+            //if (j == 0)
+            //{
+            //    annuxureno = k + 1;
+            //}
+            //else
+            //{
+            //    annuxureno = annuxureno + 1;
+            //}
+            //j = 2;
+            //Session["AnnexureNo"] = annuxureno.ToString();
+
+
+            <page id="PrintSrc" size="A4">
+                <div style="page-break-after:always ;"></div>
+                <table style="width:100%;">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <table style="width:100%; margin: auto; margin-bottom: 10px;">
+                                    <tr>
+                                        <td style="text-align: end;padding: 5px;"><img src="~/Images/Walsons_logo.jpg" style="width: 150px;"></td>
+                                    </tr>
+                                </table>
+                                <table style="width:100%; margin: auto;">
+                                    <tr>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;font-size: 14px;padding: 5px; text-decoration-line: underline;">@a.SubCheckName</td>
+                                    </tr>
+                                </table>
+                                <table style="width:100%; margin: auto; border:2px solid #000; border-collapse: collapse; margin-top: 10px;">
+                                    <tr>
+                                        <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;background: #B3B3B3; border: 2px solid #000; font-size: 14px;padding: 5px;">TCS APPLICANT ID/UNIQUE ID</td>
+                                        <td style="padding:5px; font-size: 14px; font-family: 'Times New Roman', Times, serif;font-weight: bolder;border: 2px solid #000;">@Model.EmploymentId</td>
+                                        <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;background: #B3B3B3; border: 2px solid #000; font-size: 14px;padding: 5px;">VENDOR RF-ID</td>
+                                        <td style="padding:5px; font-size: 14px; font-family: 'Times New Roman', Times, serif;font-weight: bolder;border: 2px solid #000;">@Model.CompanyRefNo</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;background: #B3B3B3; border: 2px solid #000; font-size: 14px;padding: 5px;">RECRUITMENT BRANCH</td>
+                                        <td style="padding:5px; font-size: 14px; font-family: 'Times New Roman', Times, serif;font-weight: bolder;border: 2px solid #000;">@Model.Location</td>
+                                        <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;background: #B3B3B3; border: 2px solid #000; font-size: 14px;padding: 5px;">NSR IT_PIN</td>
+                                        <td style="padding:5px; font-size: 14px; font-family: 'Times New Roman', Times, serif;font-weight: bolder;border: 2px solid #000;">NIL</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;background: #B3B3B3; border: 2px solid #000; font-size: 14px;padding: 5px;">NAME OF CANDIDATE</td>
+                                        <td colspan="3" style="padding:5px; font-size: 14px; font-family: 'Times New Roman', Times, serif;font-weight: bolder;border: 2px solid #000;">@Model.PersonalName</td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="2" style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;background: #B3B3B3; border: 2px solid #000; font-size: 14px;padding: 5px;">DATE OF BIRTH</td>
+                                      
+                                        <td rowspan="2" style="padding:5px; font-size: 14px; font-family: 'Times New Roman', Times, serif;font-weight: bolder;border: 2px solid #000;">
+                                            @try
+                                            {
+                                                @Model.DOB.Value.ToString("dd/MM/yyyy")
+                                            }
+                                            catch
+                                            {
+
+                                            }
+
+
+                                            
+                                        </td>
+                                       
+
+                                        <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;background: #B3B3B3; border: 2px solid #000; font-size: 14px;padding: 5px;">FINAL BGC STATUS (RED/GREEN)</td>
+                                        <td style="padding:5px; font-size: 14px; font-family: 'Times New Roman', Times, serif;font-weight: bolder;border: 2px solid #000;color:green;">@Model.FinalColor.ToUpper()</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" rowspan="2" style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border: 2px solid #000; font-size: 14px;padding: 5px;">
+                                            <div style="width: 100%; display: flex;">
+                                                <div style="background: red; width: 10px; height: 10px; border: 1px solid #000; margin-right:5px;"></div>
+                                                <span style="font-size:14px;">RED (DISCREPENCY)</span>
+                                                <div style="background: green; width: 10px; height: 10px; border: 1px solid #000; margin-right:5px; margin-left:5px;"></div><span style="font-size:14px;">GREEN (POSITIVE)</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;background: #B3B3B3; border: 2px solid #000; font-size: 14px;padding: 5px;">CATEGORY (CAMPUS/DT/EP/EP From CAMPUS)</td>
+                                        <td style="padding:5px; font-size: 14px; font-family: 'Times New Roman', Times, serif;font-weight: bolder;border: 2px solid #000;">@Model.EmploymentType</td>
+                                    </tr>
+                                </table>
+
+                                <table style="width:100%; margin: auto; border:2px solid #000; border-collapse: collapse; margin-top: 10px;">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border: 2px solid #000; font-size: 14px;padding: 5px;">Sl.No</th>
+                                            <th style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border: 2px solid #000; font-size: 14px;padding: 5px;">PARTICULARS</th>
+                                            <th style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder; border: 2px solid #000; font-size: 14px;padding: 5px; width:30%;">Details Verified and Confirmed by BGC Agency</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="3" style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border: 2px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;">Verification Details</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border: 2px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;">1</td>
+                                            <td style="text-align: center; font-family: 'Times New Roman', Times, serif; border: 2px solid #000; font-size: 14px;padding: 5px;font-weight: bolder;">Name and Designation of verified person</td>
+                                            <td style="text-align: center; font-family: 'Times New Roman', Times, serif; border: 2px solid #000; font-size: 14px;padding: 5px;">@VerifierDesig   @VerifierName </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <table style="width:100%; margin: auto; border:1px solid #000; border-collapse: collapse; margin-top: 10px;">
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border:1px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;background: #B3B3B3;">Civil Proceedings</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; font-family: 'Times New Roman', Times, serif; border: none; font-size: 14px;padding: 5px;">Includes Original Suit, Miscellaneous Suit, Execution and Arbitration Case</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border:1px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;background: #B3B3B3;">Date of Search</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border:1px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;background: #B3B3B3;">Court</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border:1px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;background: #B3B3B3;">Jurisdiction</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border:1px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;background: #B3B3B3;">Name Of the Court</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border:1px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;background: #B3B3B3;">Result</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">@DOV</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">High Court</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">All High Courts of India</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">All High Courts of India</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">No Record</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">@DOV</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">Civil Court</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">All India Courts</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">All India Courts</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">No Record</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">@DOV</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">Supreme Court</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">Supreme Court of India </td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">Supreme Courts</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">No Record</td>
+                                    </tr>
+                                    <!--Criminal proceeding-->
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border:1px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;background: #B3B3B3;">Criminal Proceedings</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; font-family: 'Times New Roman', Times, serif; border: none; font-size: 14px;padding: 5px;">
+                                            Includes Criminal Petitions, Criminal Appeal, Sessions Case, Special Sessions Case,
+                                            Criminal Miscellaneous Petition and Criminal Revision Appeal
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border:1px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;background: #B3B3B3;">Date of Search</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border:1px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;background: #B3B3B3;">Court</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border:1px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;background: #B3B3B3;">Jurisdiction</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border:1px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;background: #B3B3B3;">Name Of the Court</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border:1px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;background: #B3B3B3;">Result</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">@DOV</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">Magistrate Court</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">
+                                            All Magistrate
+                                            courts
+                                        </td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">
+                                            All Magistrate
+                                            courts
+                                        </td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">No Record</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">@DOV</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">Session Court Court</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">
+                                            All Session Courts
+                                        </td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">
+                                            All Session Courts
+                                        </td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">No Record</td>
+                                    </tr>
+
+
+
+                                    <tr>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">@DOV</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">High Court</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">
+                                            All High Courts of India
+                                        </td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">
+                                            All High Courts of India
+                                        </td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">No Record</td>
+                                    </tr>
+
+
+
+                                    <tr>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">@DOV</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">Supreme Court</td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">
+                                            Supreme Court of India
+                                        </td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">
+                                            Supreme Courts
+                                        </td>
+                                        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: normal;border:1px solid #000; font-size: 14px;padding: 5px;">No Record</td>
+                                    </tr>
+
+                                </table>
+
+
+                                <table style="width:100%; margin: auto;">
+                                    <tr>
+                                        <td style="font-size:14px; font-weight: bolder; font-family: 'Times New Roman', Times, serif; padding:5px; text-align: left;">STAMP / SEAL OF BGC AGENCY </td>
+                                        <td style="font-size:14px; font-weight: bolder; font-family: 'Times New Roman', Times, serif; padding:5px; text-align: left;width: 30%;">NAME & SIGNATURE OF BRANCH MANAGER / TEAM LEAD: Subhash Priyadarshi. </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left;"><img style="width: 100px;" src="~/Images/BGCAGENCY.png"></td>
+                                        <td style="text-align: left;"><img style="width: 100px;" src="~/Images/SIGNATUREBRANCHMANAGER.jpg"></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" style="font-size:14px; font-weight: bolder; font-family: 'Times New Roman', Times, serif; padding:5px; text-align: left;">Date: @DateTime.Now.Date.ToString("dd MMMM yyyy")</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </page>
+
+            if (Model.CandidateDocList != null)
+            {
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                {
+                    if (Doc.SubCheckRowID == a.SubcheckRowID)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                            <page id="PrintSrc" size="A4">
+                                <div style="page-break-after:always ;"></div>
+                                <table width="793" cellspacing="0" height="1100" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center">
+
+                                    <tr>
+                                        @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                        <td valign="top" colspan="2" align="center" valign="bottom">
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td valign="top">
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tr>
+                                                                <td style="font-size:10px; font-family:Calibri;">
+                                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                        <tr>
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@a.SubCheckName (@Doc.DocumentType)</p></td>
+                                                                            <td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                                                                        </tr>
+                                                                        <tr><td colspan="2">&nbsp;</td></tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td valign="top">&nbsp;</td>
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td valign="top">
+                                                                    @{
+                                                                        FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                        System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                        if (image.Height > 600)
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                        }
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+
+                                    </tr>
+
+                                    @Html.Partial("_ReportFooterAddress")
+
+                                </table>
+                            </page>
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+}
+

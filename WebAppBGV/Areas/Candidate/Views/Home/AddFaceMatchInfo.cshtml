@@ -1,0 +1,247 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "Selfie Capture from Webcam";
+}
+
+<h3 class="text-center m-3">Selfie Capture from Webcam</h3>
+
+@using (Html.BeginForm("FaceSignIn", "Account", FormMethod.Post, new { @onsubmit = "return validateForm()", @autocomplete = "off", @class = "sign-in-form index_form" }))
+{
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" id="PersonalRowId" value="@Model.PersonalRowId" />
+    <input type="hidden" id="SubCheckRowId" value="@Model.SubCheckRowId" />
+    <input type="hidden" id="Face_Match" />
+    <input type="hidden" id="Face_MatchStatus" />
+
+    <div class="camera-capture">
+
+        <!-- CAMERA ICON -->
+        <div id="camera-icon" style="cursor:pointer;">
+            <img src="~/Images/camera.png" />
+            <p style="margin:10px 0px 0px 20px;">Click On Camera</p>
+        </div>
+
+        <!-- CAMERA STREAM -->
+        <div id="camera-container" style="display:none;">
+            <video id="video" style="width:350px;height:350px;" autoplay></video>
+            <div id="capture-div" style="cursor:pointer;background:#8D5FFF;color:#fff;padding:10px;text-align:center;">
+                Capture
+            </div>
+        </div>
+
+        <!-- CAPTURED IMAGE -->
+        <div id="images-container">
+            <canvas id="canvas" style="display:none;"></canvas>
+
+            <div class="main_FaceMatchBox" style="display:none;">
+                <div class="text">
+                    <img id="selfie" src="" style="width: 350px; height: 350px; display: none;" />
+                </div>
+                <div class="message" style="width:200px;font-size:1.5rem;background:#8D5FFF;color:#FFF;text-align:center;margin-top:15px;">
+                    <h5 style="padding:10px;">Face Matched</h5>
+                </div>
+            </div>
+            <div class="text2" style="margin-top:5px;">
+                <button id="Proceedbtn" type="button" style="display:none;background:#28a745;color:#fff;padding:10px;width:100%;margin-top:10px;">
+                    SUBMIT
+                </button>
+                <button id="refresh_page" type="button" style="display:none;background:#28a745;color:#fff;padding:10px;width:100%;margin-top:10px;">
+                    REUPLOAD
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- PRO TIPS -->
+        <div class="pro-tips">
+            <h3>Pro tips</h3>
+            <ul>
+                <li>Please position yourself inside the frame.</li>
+                <li>Ensure good lighting in the room.</li>
+                <li>Do not wear a mask or sunglasses.</li>
+                <li>Use the front camera of your device.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SPINNER -->
+    <div id="Face_Matchspinner" class="overlay1" style="display:none;">
+        <div class="popup">
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border" role="status"></div>
+            </div>
+        </div>
+    </div>
+
+    @*<div class="row mt-2 pe-5">
+            <div class="col-md-12 d-flex text-center justify-content-end mb-3">
+                <input type="submit" class="btn" value="FINAL SUBMIT">
+            </div>
+        </div>*@
+}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function () {
+
+    const cameraIcon = $('#camera-icon');
+    const captureDiv = $('#capture-div');
+    const cameraContainer = $('#camera-container');
+    const video = $('#video')[0];
+    const selfieImage = $('#selfie');
+    const canvas = $('#canvas')[0];
+    const context = canvas.getContext('2d');
+    const reupload = $('#refresh_page');
+    const Proceed = $('#Proceedbtn');
+    const main_FaceMatchBox = $('.main_FaceMatchBox');
+
+    // ✅ Open Camera
+    cameraIcon.on('click', function () {
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (stream) {
+                video.srcObject = stream;
+                cameraContainer.show();
+                cameraIcon.hide();
+            })
+            .catch(function () {
+                alert("Camera access denied");
+            });
+    });
+
+    // ✅ Reupload
+    reupload.on('click', function () {
+        selfieImage.hide();
+        Proceed.hide();
+        reupload.hide();
+        main_FaceMatchBox.hide();
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (stream) {
+                video.srcObject = stream;
+                cameraContainer.show();
+                cameraIcon.hide();
+            })
+            .catch(function () {
+                alert("Camera access denied");
+            });
+    });
+
+    // ✅ Capture Image
+    captureDiv.on('click', function () {
+
+        if (video.videoWidth === 0) {
+            alert("Camera not ready");
+            return;
+        }
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        const dataURL = canvas.toDataURL("image/jpeg", 0.9);
+
+        selfieImage.attr("src", dataURL);
+
+        if (video.srcObject) {
+            video.srcObject.getTracks().forEach(track => track.stop());
+            video.srcObject = null;
+        }
+
+        cameraContainer.hide();
+        selfieImage.show();
+        reupload.show();
+        Proceed.show();
+        main_FaceMatchBox.show();
+    });
+
+    // ✅ Upload to MVC
+    $("#Proceedbtn").click(function () {
+
+        const spinner = $('#Face_Matchspinner');
+        spinner.show();
+
+        const dataURL = selfieImage.attr("src");
+        const pid = $('#PersonalRowId').val();
+        const sid = $('#SubCheckRowId').val();
+
+        $.ajax({
+            url: '@Url.Action("SaveSelfie", "Home", new { area = "Candidate" })',
+            type: "POST",
+            data: {
+                base64Image: dataURL,
+                Pid: pid,
+                Sid: sid
+            },
+            success: function (data) {
+
+                $('#Face_Match').val(data.Face_Match);
+                $('#Face_MatchStatus').val(data.Face_MatchStatus);
+                spinner.hide();
+                alert("Image Saved Successfully");
+            },
+            error: function () {
+                spinner.hide();
+                alert("Upload failed");
+            }
+        });
+    });
+
+});
+</script>
+
+
+<style>
+
+    #camera-icon img {
+        width: 204px;
+    }
+
+    .camera-capture {
+        display: flex;
+        justify-content: space-evenly;
+        margin-top: 66px;
+        align-items: center;
+    }
+
+
+    .pro-tips {
+        background: #a13bbf;
+        color: #fff;
+        padding: 11px;
+        border-radius: 10px;
+        height: max-content;
+    }
+
+        .pro-tips ul li {
+            font-size: 19px;
+            font-weight: 300;
+        }
+
+    .message {
+        display: none;
+    }
+
+
+    @@media(max-width:768px) {
+        .camera-capture {
+            flex-direction: column;
+            padding: 10px;
+        }
+
+        .pro-tips {
+            margin-top: 15px;
+        }
+
+        .camera-container {
+            justify-content: center;
+        }
+    }
+
+    a#UserLogo {
+        margin-left: 83px;
+    }
+</style>

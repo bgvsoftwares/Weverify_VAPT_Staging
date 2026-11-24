@@ -1,0 +1,124 @@
+﻿<tr>
+    <td valign="top">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            @if (Session["Type"].ToString() == "ReprtToPDF")
+                    {
+                        <td width="94%"><p style="font-size:19px;  color:#000080; text-align:center; font-weight:bold; text-decoration:underline; padding:10px 0px 10px 0px;"><h1 style="font-size:19px;  color:#000080; text-align:center; font-weight:bold; text-decoration:underline; padding:10px 0px 10px 0px;"><a name="Background Verification Report - Executive Summary">Background Verification Report - Executive Summary</a></h1></p></td>
+            }
+            else
+            {
+                <td width="94%"><p style="font-size:19px;  color:#000080; text-align:center; font-weight:bold; text-decoration:underline; padding:10px 0px 10px 0px;">Background Verification Report – Executive Summary</p></td>
+    }
+                            <td width="6%" align="right"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    <table width="100%" border="1" cellpadding="2" cellspacing="5">
+                        <tr>
+                            <td width="25%" style="font-size:12px;font-family:Calibri; color-adjust:exact; background:#c0c0c0; "><strong>Verified Data</strong></td>
+                            <td width="50%" style="text-align:center; font-family:Calibri;font-size:12px; color-adjust:exact; background:#c0c0c0;"><strong>Particulars</strong></td>
+                            @*<td width="10%" style="text-align:center; font-size:16px; "><strong>Status</strong></td>*@
+                            <td width="15%" style="text-align:center;font-family:Calibri; font-size:12px; color-adjust:exact; background:#c0c0c0;"><strong>Status (Color)</strong></td>
+                        </tr>
+                        @{
+                    foreach (var item in Model.PersonalChecksBriefDetails)
+                    {
+                        <tr style="font-size:12px; font-weight:bold; padding:5px;">
+                            @if (Session["Type"].ToString() == "ReprtToPDF")
+                    {
+                        <td style="font-size:12px; font-family:Calibri; padding-left:5px;"><a href="#@item.SubCheckFName.TrimEnd()" style="font-size:12px; font-family:Calibri; padding-left:5px;">@item.SubCheckFName.TrimEnd()</a></td>
+            }
+            else
+            {
+                <td style="font-size:12px; font-family:Calibri; padding-left:5px;">@item.SubCheckFName</td>
+    }
+                            @if (@item.Status == "Not Applicable")
+                    {
+                        <td style="font-size:12px; font-family:Calibri; padding-left:5px;">@item.Status</td>
+            }
+            else
+            {
+                <td style="font-size:12px; font-family:Calibri; padding-left:5px;">@item.SubCheckDetail</td>
+    }
+                            @if (@item.Status == "Not Applicable")
+                    {
+                        <td style="font-size:12px; font-family:Calibri; color-adjust:exact; background:@item.ColorCode;" align="center">Not Applicable</td>
+            }
+            else
+            {
+                <td style="font-size:12px; font-family:Calibri; color-adjust:exact; background:@item.ColorCode;" align="center">@item.ColorName</td>
+    }
+                            @*<td align="center">@item.Status</td>*@
+
+                        </tr>
+            }
+                        }
+                        <tr>
+                            @if (Session["Designation"].ToString() == "Manager-CS" || Session["Designation"].ToString() == "Team Leader-CS" || Session["Designation"].ToString() == "Team Member-CS")
+                    {
+                        <td width="25%" style="font-size:12px;font-family:Calibri; text-align:center">INTERIM REPORT</td>
+            }
+            else
+            {
+                if (Model.Report_Type != "1")
+                {
+                    <td width="25%" style="font-size:12px;font-family:Calibri; text-align:center">FINAL REPORT</td>
+        }
+        else
+        {
+            <td width="25%" style="font-size:12px;font-family:Calibri; text-align:center">INTERIM REPORT</td>
+}
+}
+                            <td width="50%" colspan="2" style="text-align:center; font-size:10px; font-family:Calibri;color-adjust:exact; background:@Model.FinalColorCode;">@Model.FinalColor</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            @if (Model.ClientRowID == 576)
+    {
+        <tr>
+            <td height="30"><b>@Model.EmpNoteRemark<b /></td>
+        </tr>
+        <tr>
+            <td height="30"><b>@Model.AddressNoteRemark<b /></td>
+        </tr>
+}
+
+            <tr>
+                <td height="30">&nbsp;</td>
+            </tr>
+            <tr>
+                @if (Model.ClientRowID == 649)
+    {
+            <td align="center">
+                <img style="width:500px" src='@Url.Content("~/Images/IDBI.jpg")' />
+            </td>
+}
+                else if (Model.ClientRowID == 576)
+    {
+            <td align="center">
+                <img style="width:500px" src='@Url.Content("~/Images/Nagarrow-Color.jpg")' />
+            </td>
+}
+else
+{
+            <td align="center">
+                <img src='@Url.Content("~/Images/fivecolor.jpg")' />
+            </td>
+}
+
+            </tr>
+        </table>
+    </td>
+</tr>
+

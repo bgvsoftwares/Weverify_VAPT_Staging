@@ -1,0 +1,995 @@
+﻿@using WebAppBGV.CommonMethods;
+
+@{
+    string personalRowID = "";
+    if (Request.QueryString["PersonalRowID"] != null)
+    {
+        personalRowID = Request.QueryString["PersonalRowID"].ToString();
+    }
+
+}
+
+<html>
+<head>
+    @{Layout = null; }
+</head>
+<body>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    <script src="~/Scripts/multiemail.js"></script>
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/modernizr-2.8.3.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <div class="panel panel-primary">
+        
+        <div id="repo">
+            <div class="panel-heading" style="background-color:#2F74AF;">
+                <h2 style="text-align: center;padding: 1%;font-size: 20px!important;color: #fff;">@ViewBag.checkDetail</h2>
+                <input type="hidden" id="hdCheckName" value="@ViewBag.checkDetail" />
+                <input type="hidden" id="hdPUniqueReferenceID" value="@ViewBag.PUniqueReferenceID" />
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 1
+                        </div>
+                        foreach (var SummaryList in ViewBag.data)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold;">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data1 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 2
+                        </div>
+                        foreach (var SummaryList in ViewBag.data1)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url1 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url1>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data2 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 3
+                        </div>
+                        foreach (var SummaryList in ViewBag.data2)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url2 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url2>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data3 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 4
+                        </div>
+                        foreach (var SummaryList in ViewBag.data3)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url3 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url3>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data4 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 5
+                        </div>
+                        foreach (var SummaryList in ViewBag.data4)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url4 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url4>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data5 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 6
+                        </div>
+                        foreach (var SummaryList in ViewBag.data5)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url5 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url5>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data6 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 7
+                        </div>
+                        foreach (var SummaryList in ViewBag.data6)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url6 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url6>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data7 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 8
+                        </div>
+                        foreach (var SummaryList in ViewBag.data7)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url7 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url7>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data8 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 9
+                        </div>
+                        foreach (var SummaryList in ViewBag.data8)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url8 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url8>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data9 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 10
+                        </div>
+                        foreach (var SummaryList in ViewBag.data9)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url9 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url9>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data10 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 11
+                        </div>
+                        foreach (var SummaryList in ViewBag.data10)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url10 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url10>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data11 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 12
+                        </div>
+                        foreach (var SummaryList in ViewBag.data11)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url11 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url11>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data12 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 13
+                        </div>
+                        foreach (var SummaryList in ViewBag.data12)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url12 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url12>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data13 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 14
+                        </div>
+                        foreach (var SummaryList in ViewBag.data13)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url13 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url13>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data14 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 15
+                        </div>
+                        foreach (var SummaryList in ViewBag.data14)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url14 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url14>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data15 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 16
+                        </div>
+                        foreach (var SummaryList in ViewBag.data15)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url15 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url15>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data16 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 17
+                        </div>
+                        foreach (var SummaryList in ViewBag.data16)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url16 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url16>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data17 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 18
+                        </div>
+                        foreach (var SummaryList in ViewBag.data17)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url17 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url17>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data18 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 19
+                        </div>
+                        foreach (var SummaryList in ViewBag.data18)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url18 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url18>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    @if (ViewBag.data19 != null)
+                    {
+                        <div style="text-align: center;color: #fff;background: #808181;padding: 0%;font-size: 15px;">
+                            Detail 20
+                        </div>
+                        foreach (var SummaryList in ViewBag.data19)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 text-right" style="font-weight:bold">@SummaryList.Key:</div>
+                                @if (ViewBag.checkDetail == "DocumentDetails" && SummaryList.Key == "DocumentUrl")
+                                {
+                                    if (ViewBag.ForUrl == 1)
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url19 target="_blank">download</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-9">
+                                            <a href=@ViewBag.url19>download</a>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-9"> @SummaryList.Value</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            @if (ViewBag.Docs != null)
+            {
+                <div style="text-align: center;color: #fff;background: #808181;padding: 1%;font-size: 15px;">
+                    Documents
+                    @{
+                        var docs = ViewBag.Docs as string[];
+                    }
+                </div>
+                foreach (var SummaryList in docs)
+                {
+                    <div class="col-md-6 table-striped">
+                        <table border="1">
+                            <tr>
+                                @*<td><b style="font-size: 13px;">@SummaryList.Key :</b> &nbsp; </td>*@
+                                @if (SummaryList.ToString() != "")
+                                {
+                                    <td colspan="6">
+                                        @SummaryList
+                                    </td>
+                                    try
+                                    {
+                                        var item = SummaryList.ToString();
+                                        string[] tokens = item.Split(new[] { "_", "-" }, StringSplitOptions.None);
+                                        string ClientID = Convert.ToString(tokens[1]);
+                                        if (ClientID == "113")
+                                        {
+                                            <td>
+                                                <a href="https://api.walsonsverify.com/CaseDocsFromAPIMic?fileName=@SummaryList">Download</a>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>
+                                                <a href="https://api.weverifyglobal.com/CaseDocsFromAPI?fileName=@SummaryList">Download</a>
+                                            </td>
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        <td>
+                                            <a href="https://api.weverifyglobal.com/CaseDocsFromAPI?fileName=@SummaryList">Download</a>
+                                        </td>
+                                    }
+
+                                }
+                                else
+                                {
+                                    <td>NA</td>
+                                }
+                            </tr>
+                        </table>
+                        @*<div class="col-md-6" style="font-weight:bold">@SummaryList.Key </div>
+                            @if (SummaryList.Value != "")
+                            {
+                                <div class="col-md-6"> @SummaryList.Value</div>
+                            }
+                            else
+                            {
+                                <div class="col-md-6">NA </div>
+                            }*@
+                    </div>
+                }
+            }
+        </div>
+        <div class="panel-footer" style="float:right;">
+            @if ((ViewBag.checkDetail != "DocumentDetails") && (ViewBag.checkDetail != null))
+            {
+                <input type="button" class="btn bun-bg btn-default" style="padding: 5px 10px 5px 10px;font-weight: bold;" value="Print" onclick="CallPrint('repo')" />
+                <br />
+                <input type="button" class="btn bun-bg btn-default" style="padding: 5px 10px 5px 10px;font-weight: bold;" value="Download/Upload PDF" onclick="fnUploadDocumentCheckWise()" />                
+
+            }
+            else
+            {
+                <a class="btn bun-bg btn-success" id="downloadZipBtn"
+                   href="@Url.Action("DownloadAllDocsAsZip", "ProvidedInfo", new { UniqueReferenceID = Request["UniqueReferenceID"], Types = "DocumentDetails", PersonalRowID = Request["PersonalRowID"] })">
+                    Download All as ZIP
+                </a>
+
+            }
+        </div>
+    </div>
+    <script>
+        function CallPrint(strid) {
+            var prtContent = document.getElementById(strid);
+            var WinPrint = window.open('', 'Report', 'left=0,top=0,width=800,height=600,toolbar=0,scrollbars=yes,status=0');
+            WinPrint.document.open();
+            WinPrint.document.write(
+                '<html>\n<head>' +
+                '<link href="/Images/report.css" rel="stylesheet" type="text/css" />' +
+                '\n</head>' +
+                '<body>' +
+                '<div> \n' + prtContent.innerHTML + ' \n</div> ' +
+                '</body>' +
+                '\n</html>'
+            );
+
+            WinPrint.document.close();
+            WinPrint.focus();
+            WinPrint.print();
+            //WinPrint.close();
+        }
+    </script>
+    <script>
+        async function fnDownloadAsPDF() {
+
+            // div content
+            const content = document.getElementById("repo");
+            const checkName = document.getElementById("hdCheckName").value;
+            const PUniqueId = document.getElementById("hdPUniqueReferenceID").value;
+            // PDF File Name
+            const strFileName = `${PUniqueId}_${checkName}.pdf`;
+
+            const opt = {
+                msrgin: 10,
+                filename: strFileName,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 1 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'p' }
+
+            };
+
+            html2pdf().from(content).set(opt).save();
+
+        }
+    </script>
+   
+    <script>
+        async function fnUploadDocumentCheckWise() {
+
+            // div content
+            const content = document.getElementById("repo");
+            const checkName = document.getElementById("hdCheckName").value;
+            const PUniqueId = document.getElementById("hdPUniqueReferenceID").value;
+            // PDF File Name
+            const strFileName = `${PUniqueId}_${checkName}.pdf`;
+
+            try
+            {
+                // render HTML to the canvas
+                const canvas = await html2canvas(content, { scale: 1.2, useCORS: true });
+                const imgData = canvas.toDataURL("image/jpeg", 0.65);
+
+                // Create PDF
+                const pdf = new jspdf.jsPDF("p", "mm", "a4");
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+
+                const imgWidth = pdfWidth;
+                const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
+                heightLeft -= pdfHeight;
+
+                // Add Multiple Page
+                while (heightLeft > 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+                    heightLeft -= pdfHeight;
+                }
+
+                // Create Blob
+                const pdfBlob = pdf.output("blob");
+
+                // Trigger file download
+                pdf.save(strFileName);
+                
+                // Prepare form data for upload
+                const formData = new FormData();
+                formData.append("PersonalRowID", '@personalRowID');
+                formData.append("DocumentType", checkName);
+                formData.append("uploadDoc", pdfBlob, strFileName);
+
+                // Send to Server
+                const response = await fetch("/ProvidedInfo/fnUploadAPIDocumentCheckWise", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert("Document uploaded successfully!");
+                } else {
+                    alert("Upload failed.");
+                }
+
+            } catch (error) {
+                alert("Error while uploading PDF.");
+            }
+        }
+    </script>
+    
+    <script>
+        async function fnDownloadAsPDFMultiPage() {
+            const { jsPDF } = window.jspdf;
+
+            // div content
+            const content = document.getElementById("repo");
+            const checkName = document.getElementById("hdCheckName").value;
+            const PUniqueId = document.getElementById("hdPUniqueReferenceID").value;
+            // PDF File Name
+            const strFileName = `${PUniqueId}_${checkName}.pdf`;
+
+            content.style.background = '#fff';
+
+            const canvas = await html2canvas(content, {
+                scale: 2, // better quality
+                useCORS: true, // allow external images/css
+                allowTaint: true,
+                logging: false,
+                scrollX: 0,
+                scrollY: -window.scrollY,
+                windowWidth: document.documentElement.offsetWidth,
+                windowHeight: document.documentElement.scrollHeight
+            });
+
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+            const imgWidth = pdfWidth;
+            const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            // Add first page
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pdfHeight;
+
+            // Add remaining pages if content overflows
+            while (heightLeft > 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pdfHeight;
+            }
+
+            // Save the PDF
+            pdf.save(strFileName);
+
+        }
+    </script>
+
+    
+</body>
+</html>
+
+
+

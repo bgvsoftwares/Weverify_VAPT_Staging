@@ -1,0 +1,78 @@
+﻿@model ViewModels.ReportQCViewModel.ReportViewModel
+
+@if (Model.CandidateDocList != null)
+{
+    var i = 0;
+    foreach (var Doc in Model.CandidateDocList)
+    {
+
+        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+        {
+<page id="PrintSrc" size="A4">
+    <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center; width:100%; page-break-after:always;">
+        <tr>
+            <td valign="top" colspan="2" align="center" valign="bottom">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td style="font-size:10px; font-family:Calibri;">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td width="88%" align="center" style="font-size:25px;"><u><b>SECURITAS INDIA</b> </u></td>
+                                    <td width="6%" valign="top"><img src='@Url.Content("~/Content/images/Securitas-logo.png")' style="width:5rem;margin: 10px 10px 0px 10px;"></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr style="text-align:center">
+                        <td valign="top">
+                            @{
+                                FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                if (image.Height > 600)
+                                {
+                                    <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" style="width: 100%;height:60rem;" />
+                                }
+                                else
+                                {
+                                    <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" style="width: 100%;height:60rem;" />
+                                }
+                            }
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                    <tbody>
+                        <tr>
+                            <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                                &nbsp;
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                            <td width="1%">&nbsp;</td>
+                            <td width="79%">
+                                <p style="font-size:13px; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                <p style="font-size:13px; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                <p style="font-size:15px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                <p style="font-size:15px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</page>
+        }
+
+    }
+    i++;
+}
+
+

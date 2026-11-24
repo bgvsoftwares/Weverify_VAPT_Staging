@@ -1,0 +1,25 @@
+﻿using System.Web.Mvc;
+
+namespace WebAppBGV.Areas.Partner
+{
+    public class PartnerAreaRegistration : AreaRegistration 
+    {
+        public override string AreaName 
+        {
+            get 
+            {
+                return "Partner";
+            }
+        }
+
+        public override void RegisterArea(AreaRegistrationContext context) 
+        {
+            context.MapRoute(
+                "Partner_default",
+                "Partner/{controller}/{action}/{id}",
+                new { action = "Index", controller = "Home", id = UrlParameter.Optional },
+                new string[] { "WebAppBGV.Areas.Partner.Controllers" }
+            );
+        }
+    }
+}

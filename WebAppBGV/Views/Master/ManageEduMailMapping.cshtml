@@ -1,0 +1,203 @@
+﻿@model ViewModels.EduMailMappingListPagedModel
+
+@{
+
+    ViewBag.Title = "Education Mail Mapping";
+    //Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+}
+
+@{
+    // Add New Button
+    string faIconAddNew = string.Format("<i class='fa fa-plus-circle' aria-hidden='true'></i> Add New Mail");
+    string hyperLinkAddNew = Html.ActionLink("linkTitle", "AddEduMailMapping", "Master", null, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnAddNew = new HtmlString(hyperLinkAddNew.ToString().Replace("linkTitle", faIconAddNew));
+
+    // Export Excel Button
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    string hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportEducationMailMappingList", "Master", null, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+}
+
+@*@section LeftNavigation{ @Html.Partial("_NavLeftMaster") }*@
+
+@section DisplayTitle{
+    @Html.Partial("_DisplayTitle")
+}
+@section NavigationButton{
+    @Html.Partial("_NavigationButton")
+}
+@section DisplayErrorMessage{
+    @Html.Partial("_DisplayErrorMessage")
+}
+
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("ManageEduMailMapping", "Master", FormMethod.Get))
+        {
+            <div class="form-horizontal">
+                <div class="form-group branch row search-frame">
+                    <label class="col-md-2 control-label">University Name :</label>
+                    <div class="col-md-3">
+                        @Html.DropDownList("UniversityRowID", new SelectList(ViewBag.UniversityList, "UniversityRowID", "UniversityName"), "-- Select University -- ",
+                            new { @class = "form-control", id = "ddlUniversity" })
+                    </div>
+
+                    <label class="col-md-2 control-label">College Name :</label>
+                    <div class="col-md-3">
+                        @Html.DropDownList("CollegeRowID", new SelectList(ViewBag.CollegeList, "CollegeRowID", "CollegeName"),"-- Select College -- ",
+                            new { @class = "form-control", id = "ddlCollege" })
+                    </div>
+
+                    <div class="col-md-1">
+                        <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                    </div>
+                </div>
+            </div>
+        }
+        @if (Model != null && Model.EduMailMapping != null)
+        {
+            <div class="row">
+                <div class="col-md-12 table">
+                    @{
+                        WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                        grid.Bind(Model.EduMailMapping, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                    }
+
+                    @grid.GetHtml(
+                        htmlAttributes: new { id = "grid", @class = "table" },
+                        headerStyle: "thead-inverse",
+                        rowStyle: "ordertxt",
+                        footerStyle: "custpaging",
+                        mode: WebGridPagerModes.All,
+                        columns: new[]
+                        {
+                            grid.Column(header: "S.No.", style:"td-1",
+                                format: item => item.WebGrid.Rows.IndexOf(item) + 1 + (grid.PageIndex * grid.RowsPerPage)),
+
+                            grid.Column("UniversityName", header: "University Name", canSort: true, style:"td-3"),
+                            grid.Column("CollegeName", header: "College Name", canSort: true, style:"td-3"),
+                            grid.Column("EMailType", header: "Email Type", canSort: false, style: "td-3", format: (item) => new HtmlString("<div style='width:100px;'>" + item.EMailType + "</div>")),
+                            grid.Column("EMailID", header: "Email Id", canSort: false, style:"td-3"),
+                            grid.Column(header: "Status", canSort: false, format: (item) => {
+                             string strActive=string.Empty;
+                             if (item.Status == 1)
+                                {
+                                    strActive += "<input name="+ item.EduMailMappingRowID +" id="+ item.EduMailMappingRowID +" checked='true' type='checkbox' onchange='adchange(this)' />";
+                                }
+                             else
+                                {
+                                    strActive += "<input name="+ item.EduMailMappingRowID +" id="+ item.EduMailMappingRowID +" type='checkbox' onchange='adchange(this)' />";
+                                }
+                                return new HtmlString(strActive);
+                         },style:"delete td-1"),
+
+                            grid.Column(header: "Edit", format: (item) =>
+                            {
+                                var link = Html.ActionLink("Edit", "EditEduMailMapping", "Master", new { id = item.EduMailMappingRowID }, null);
+                                return link;
+                            }, style:"edit td-1"),
+                        }
+                    )
+
+                    <div class="total-record">Total Records: @Model.TotalRecords</div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="text-center text-muted">No records found.</div>
+        }
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.6.0.min.js"></script>
+    <script>
+    $(document).ready(function () {
+        $("#ddlUniversity").change(function () {
+            var universityId = $(this).val();
+            $("#ddlCollege").empty(); //
+            $("#ddlCollege").append($('<option>', {
+                value: "",
+                text: "-- Loading Colleges --"
+            }));
+
+            if (universityId) {
+                $.ajax({
+                    url: '@Url.Action("GetCollegesByUniversity", "Master")',
+                    type: 'GET',
+                    data: { universityRowID: universityId },
+                    success: function (data) {
+                        $("#ddlCollege").empty();
+                        $("#ddlCollege").append($('<option>', {
+                            value: "",
+                            text: "-- Select College --"
+                        }));
+
+                        $.each(data, function (i, item) {
+                            $("#ddlCollege").append($('<option>', {
+                                value: item.CollegeRowID,
+                                text: item.CollegeName
+                            }));
+                        });
+                    },
+                    error: function () {
+                        alert("Error while loading colleges.");
+                    }
+                });
+            } else {
+                $("#ddlCollege").empty();
+                $("#ddlCollege").append($('<option>', {
+                    value: "",
+                    text: "-- Select College --"
+                }));
+            }
+        });
+    });
+    </script>
+
+    <script type="text/javascript">
+        function adchange(ChkData) {
+            var id = ChkData.id;
+            var checkeds = ChkData.checked;
+            var flag = "";
+            if (ChkData.checked == true) {
+                flag = confirm('Are you sure to Active this Record ?');
+            }
+            if (ChkData.checked == false) {
+                flag = confirm('Are you sure to Inactive this Record ?');
+            }
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("EduMailMappingActive", "Master")',
+                    data: { "id": id, "checkeds": checkeds },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Record Update Successfully!!");
+                            setTimeout(function () { window.location; }, 300);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+            else {
+                if (ChkData.checked == false) {
+                    ChkData.checked = true;
+                }
+                else {
+                    ChkData.checked = false;
+                }
+            }
+        }
+    </script>
+}

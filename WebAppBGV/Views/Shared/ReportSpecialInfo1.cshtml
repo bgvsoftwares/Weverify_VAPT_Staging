@@ -1,0 +1,643 @@
+
+@model ViewModels.ReportQCViewModel.InterimReportGenerateViewModel
+@{
+    var list = Model.SpecialInfoModel.GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+    //if (Model.ClientRowID == 410)
+    //{
+    //    list = list.Where(T => T.SubcheckRowID != 416).ToList();
+    //}
+
+
+
+}
+
+
+@if (Model != null && Model.SpecialInfoModel != null && Model.SpecialInfoModel.Count > 0)
+{
+
+
+    if (Model.SpecialInfoModel != null)
+    {
+        int i = 0;
+        foreach (var a in list)
+        {
+            if(a.SubcheckRowID ==201 || a.SubcheckRowID == 205) 
+            { 
+            string DirectorName = "";
+            var Anticident = Model.SpecialInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+            var ReportComment = a.ReportComment;
+            if (Model.ClientRowID == 1671)
+            {
+                var antecedent = Anticident.FirstOrDefault(x => x.AntecedentRowID == "656");
+                if (antecedent != null)
+                {
+                    DirectorName = antecedent.DataEntryValue;
+                }
+            }
+
+            <page id="PrintSrc" size="A4">
+                <div style="page-break-after:always ;"></div>
+                <table cellspacing="0" cellpadding="0" align="center" style="border: 3px solid #999999; width: 100%;">
+                    <tr>
+                        <td valign="top">
+                            <table style="width:100%;" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td valign="top">
+                                        <table style="width:100%;" border="0" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td>
+                                                    <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                                        @if (Model.ClientRowID == 926 || Model.ClientRowID == 881 || Model.ClientRowID == 588 || Model.ClientRowID == 1509 || Model.ClientRowID == 1396 || Model.ClientRowID == 1379 || Model.ClientRowID == 1402 || Model.ClientRowID == 1460 || Model.ClientRowID == 1459 || Model.ClientRowID == 1507 || Model.ClientRowID == 1487 || Model.ClientRowID == 336 || Model.ClientRowID == 1381 || Model.ClientRowID == 939 || Model.ClientRowID == 1202 || Model.ClientRowID == 871 || Model.ClientRowID == 1480 || Model.ClientRowID == 943 || Model.ClientRowID == 1306 || Model.ClientRowID == 1391 || Model.ClientRowID == 1402 || Model.ClientRowID == 1509 || Model.ClientRowID == 1396 || Model.ClientRowID == 1379 || Model.ClientRowID == 1465 || Model.ClientRowID == 1565 || Model.ClientRowID == 754 || Model.ClientRowID == 1279 || Model.ClientRowID == 1572 || Model.ClientRowID == 259)
+                                                        {
+                                                            <tr>
+                                                                <td valign="top" style="width:100%; text-align:end;"><img src='@Url.Content("~/Content/images/walsons_Logo.png")' style="width:5rem; margin-top:10px; margin-right:10px;"></td>
+                                                            </tr>
+                                                        }
+                                                        else
+                                                        {
+                                                            <tr>
+                                                                <td valign="top" style="width:100%; text-align:end;"><img src='@Url.Content("~/Content/images/Securitas-logo.png")' style="width:5rem; margin-top:10px; margin-right:10px;"></td>
+                                                            </tr>
+                                                        }
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                @if (Model.ClientRowID == 679 && a.SubcheckRowID == 612)
+                                                {
+                                                    <td style="width:100%;"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;"><a name="@a.SubcheckRowID">UAN Validation  @a.CreationDate.ToString("MMMyy")</a></p></td>
+
+                                                }
+                                                else
+                                                {
+                                                    if (Model.ClientRowID == 559 && a.SubCheckName == "Sanction Screening")
+                                                    {
+                                                        <td style="width:100%;"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;"><a name="@a.SubcheckRowID">Sanction Checks ( USA, UK and European Countries)</a></p></td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td style="width:100%;"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;"><a name="@a.SubcheckRowID">@a.SubCheckName.TrimEnd(' ')</a></p></td>
+                                                    }
+                                                }
+                                            </tr>
+                                            <tr>
+                                                <td valign="top">&nbsp;</td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top" align="right">
+                                                    <table style="width:30%; margin-right:8px;" border="1" cellspacing="5" cellpadding="5">
+                                                        <tr>
+                                                            @if (Model.ClientRowID == 1671)
+                                                            {
+                                                                if (!string.IsNullOrEmpty(a.CheckColorName))
+                                                                {
+                                                                    if (a.CheckColorName.ToLower() == "green")
+                                                                    {
+                                                                        <td width="49%" style="color-adjust:exact;font-size:14px; background:@a.CheckColorCode;  font-weight:bold; padding:5px; text-align:center;">Verified</td>
+                                                                    }
+                                                                    else if (a.CheckColorName.ToLower() == "red")
+                                                                    {
+                                                                        <td width="49%" style="color-adjust:exact;background:@a.CheckColorCode;font-size:14px;  font-weight:bold; padding:5px; text-align:center;">Attention Required</td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td width="49%" style="color-adjust:exact;background:@a.CheckColorCode;font-size:14px;  font-weight:bold; padding:5px; text-align:center;">@a.CheckColorName</td>
+                                                                    }
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td bgcolor="#fff" style="font-size:14px;  font-weight:bold; padding:5px; text-align:center;"></td>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                if (!string.IsNullOrEmpty(a.CheckColorName))
+                                                                {
+                                                                    <td width="49%" style="color-adjust:exact;background:@a.CheckColorCode;font-size:14px;  font-weight:bold; padding:5px; text-align:center;">@a.CheckColorName</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td bgcolor="#fff" style="font-size:14px;  font-weight:bold; padding:5px; text-align:center;"></td>
+                                                                }
+                                                            }
+
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top" align="center">
+                                                    <table style="width:98%;" border="1" cellspacing="5" cellpadding="2">
+                                                        <tr>
+                                                            @if (Model.ClientRowID == 1063)
+                                                            {
+                                                                <td width="33%" style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Company Name</td>
+
+                                                            }
+                                                            else if (Model.ClientRowID == 1671)
+                                                            {
+                                                                <td width="33%" style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Name</td>
+
+                                                            }
+                                                            else
+                                                            {
+                                                                <td width="33%" style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Name of Candidate</td>
+
+                                                            }
+                                                            @if (Model.ClientRowID == 1671)
+                                                            {
+                                                                if ((a.SubcheckRowID >= 967 && a.SubcheckRowID <= 996) || (a.SubcheckRowID >= 946 && a.SubcheckRowID <= 956))
+                                                                {
+                                                                    <td style="font-size:10px; font-family:Calibri;padding-left:5px;">@DirectorName</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="font-size:10px; font-family:Calibri;padding-left:5px;">@Model.PersonalName</td>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="font-size:10px; font-family:Calibri;padding-left:5px;">@Model.PersonalName</td>
+                                                            }
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Securitas Reference ID </td>
+                                                            <td style="font-size:10px; font-family:Calibri; padding-left:5px;">@Model.CompanyRefNo</td>
+                                                        </tr>
+                                                        @if (Model.ClientRowID == 1441 && a.CheckType == "Add Check")
+                                                        {
+                                                            <tr>
+                                                                <td style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Check Date </td>
+                                                                <td style="font-size:10px; font-family:Calibri; padding-left:5px;">@a.CreationDate.ToString("dd-MM-yyyy")</td>
+                                                            </tr>
+                                                        }
+                                                        <tr>
+                                                            <td style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Report Comment </td>
+                                                            @if (a.CheckColorName.ToLower() == "insuff" || a.CheckColorName.ToLower() == "ytr on hold" || a.CheckColorName.ToLower() == "wip")
+                                                            {
+                                                                <td style="font-size:10px; font-family:Calibri; padding-left:5px;"></td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="font-size:10px; font-family:Calibri; padding-left:5px;">@Html.Raw(ReportComment)</td>
+                                                            }
+
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top" align="center">
+                                                    <table style="width:97%; margin-top:10px;" border="1" cellspacing="5" cellpadding="2" id="tblDemoSPL">
+                                                        <tr>
+                                                            <td width="33%" style="font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;text-align:center; font-size:14px;  font-weight:700;">Details</td>
+                                                            <td width="33%" style="font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;text-align:center; font-size:14px;  font-weight:700;">Information Provided</td>
+                                                            <td width="33%" style="font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;text-align:center; font-size:14px;  font-weight:700;">Information Verified</td>
+                                                        </tr>
+                                                        @if (Model.ClientRowID != 1063)
+                                                        {
+                                                            if (Model.ClientRowID == 1671 && (a.SubcheckRowID != 201 && a.SubcheckRowID != 207 && a.SubcheckRowID != 365 && a.SubcheckRowID != 517 && a.SubcheckRowID != 313 && a.SubcheckRowID != 997
+                                                                && a.SubcheckRowID != 998 && a.SubcheckRowID != 999 && a.SubcheckRowID != 1001 && a.SubcheckRowID != 1002 && a.SubcheckRowID != 1003 && a.SubcheckRowID != 1004 && a.SubcheckRowID != 1005))
+                                                            {
+                                                                if ((a.SubcheckRowID >= 967 && a.SubcheckRowID <= 996) || a.SubcheckRowID == 947 || (a.SubcheckRowID >= 946 && a.SubcheckRowID <= 956))
+                                                                {
+                                                                    <tr>
+                                                                        <td width="33%" style="font-size:10px; font-family:Calibri;">Father Name:</td>
+                                                                        <td width="33%" style="font-size:10px; font-family:Calibri;">@Model.FatherName</td>
+                                                                        @if (a.CheckColorName.ToLower() == "insuff" || a.CheckColorName.ToLower() == "ytr on hold" || a.CheckColorName.ToLower() == "wip")
+                                                                        {
+                                                                            <td width="33%" style="font-size:10px; font-family:Calibri;">
+                                                                            </td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td width="33%" style="font-size:10px; font-family:Calibri;">
+
+                                                                                @Model.FatherName
+                                                                            </td>
+                                                                        }
+                                                                    </tr>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <tr>
+                                                                        <td width="33%" style="font-size:10px; font-family:Calibri;">Candidate Name:</td>
+                                                                        <td width="33%" style="font-size:10px; font-family:Calibri;">@Model.PersonalName</td>
+                                                                        @if (a.CheckColorName.ToLower() == "insuff" || a.CheckColorName.ToLower() == "ytr on hold" || a.CheckColorName.ToLower() == "wip")
+                                                                        {
+                                                                            <td width="33%" style="font-size:10px; font-family:Calibri;">
+                                                                            </td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td width="33%" style="font-size:10px; font-family:Calibri;">
+
+                                                                                @Model.PersonalName
+                                                                            </td>
+                                                                        }
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td width="33%" style="font-size:10px; font-family:Calibri;">Father Name:</td>
+                                                                        <td width="33%" style="font-size:10px; font-family:Calibri;">@Model.FatherName</td>
+                                                                        @if (a.CheckColorName.ToLower() == "insuff" || a.CheckColorName.ToLower() == "ytr on hold" || a.CheckColorName.ToLower() == "wip")
+                                                                        {
+                                                                            <td width="33%" style="font-size:10px; font-family:Calibri;">
+                                                                            </td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td width="33%" style="font-size:10px; font-family:Calibri;">
+
+                                                                                @Model.FatherName
+                                                                            </td>
+                                                                        }
+                                                                    </tr>
+                                                                }
+
+                                                            }
+                                                            else if (Model.ClientRowID == 1671)
+                                                            {
+                                                                if (a.SubcheckRowID == 313)
+                                                                {
+                                                                    <tr>
+                                                                        <td width="33%" style="font-size:10px; font-family:Calibri;">Candidate Name:</td>
+                                                                        <td width="33%" style="font-size:10px; font-family:Calibri;">@Model.PersonalName</td>
+                                                                        @if (a.CheckColorName.ToLower() == "insuff" || a.CheckColorName.ToLower() == "ytr on hold" || a.CheckColorName.ToLower() == "wip")
+                                                                        {
+                                                                            <td width="33%" style="font-size:10px; font-family:Calibri;">
+                                                                            </td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td width="33%" style="font-size:10px; font-family:Calibri;">
+
+                                                                                @Model.PersonalName
+                                                                            </td>
+                                                                        }
+                                                                    </tr>
+                                                                }
+
+                                                            }
+                                                            else
+                                                            {
+                                                                if (Model.ClientRowID != 1671)
+                                                                {
+                                                                    <tr>
+                                                                        <td width="33%" style="font-size:10px; font-family:Calibri;">Candidate Name:</td>
+                                                                        <td width="33%" style="font-size:10px; font-family:Calibri;">@Model.PersonalName</td>
+                                                                        @if (a.CheckColorName.ToLower() == "insuff" || a.CheckColorName.ToLower() == "ytr on hold" || a.CheckColorName.ToLower() == "wip")
+                                                                        {
+                                                                            <td width="33%" style="font-size:10px; font-family:Calibri;">
+                                                                            </td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td width="33%" style="font-size:10px; font-family:Calibri;">
+
+                                                                                @Model.PersonalName
+                                                                            </td>
+                                                                        }
+                                                                    </tr>
+                                                                    if (Model.ClientRowID != 1428)
+                                                                    {
+                                                                        <tr>
+                                                                            <td width="33%" style="font-size:10px; font-family:Calibri;">Father Name:</td>
+                                                                            <td width="33%" style="font-size:10px; font-family:Calibri;">@Model.FatherName</td>
+                                                                            @if (a.CheckColorName.ToLower() == "insuff" || a.CheckColorName.ToLower() == "ytr on hold" || a.CheckColorName.ToLower() == "wip")
+                                                                            {
+                                                                                <td width="33%" style="font-size:10px; font-family:Calibri;">
+                                                                                </td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td width="33%" style="font-size:10px; font-family:Calibri;">
+
+                                                                                    @Model.FatherName
+                                                                                </td>
+                                                                            }
+                                                                        </tr>
+                                                                    }
+                                                                }
+
+                                                            }
+
+                                                        }
+
+
+                                                        @foreach (var item in Anticident)
+                                                        {
+                                                            <tr>
+                                                                @if (Model.ClientRowID == 1671 && a.SubcheckRowID == 1005 && item.AntecedentRowID == "365")
+                                                                {
+                                                                    <td width="33%" style="font-size:10px; font-family:Calibri;">Address:</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td width="33%" style="font-size:10px; font-family:Calibri;">@item.DisplayNameRep :</td>
+                                                                }
+                                                                <td width="33%" style="font-size:10px; font-family:Calibri;">@item.DataEntryValue</td>
+                                                                @if (a.CheckColorName.ToUpper() == "WIP" || a.CheckColorName.ToUpper() == "YTR ON HOLD" || a.CheckColorName.ToUpper() == "INSUFF")
+                                                                {
+                                                                    <td style="font-size:10px; font-family:Calibri;">
+                                                                    </td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td width="33%" style="font-size:10px; font-family:Calibri;">
+
+                                                                        @item.OpsValue.Replace("<p>", "").Replace("</p>", "")
+                                                                    </td>
+                                                                }
+
+                                                            </tr>
+                                                        }
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td align="left" valign="top">&nbsp;</td>
+                    </tr>
+                    <!--- Report Footer with Address Include -->
+                    <tr>
+                        <td>
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 40rem;">
+                                <tbody>
+                                    <tr>
+                                        <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                                            &nbsp;
+                                        </td>
+                                    </tr>
+                                    @if (Model.ClientRowID == 926 || Model.ClientRowID == 881 || Model.ClientRowID == 588 || Model.ClientRowID == 1509 || Model.ClientRowID == 1396 || Model.ClientRowID == 1379 || Model.ClientRowID == 1402 || Model.ClientRowID == 1460 || Model.ClientRowID == 1459 || Model.ClientRowID == 1507 || Model.ClientRowID == 1487 || Model.ClientRowID == 336 || Model.ClientRowID == 1381 || Model.ClientRowID == 939 || Model.ClientRowID == 1202 || Model.ClientRowID == 871 || Model.ClientRowID == 1480 || Model.ClientRowID == 943 || Model.ClientRowID == 1306 || Model.ClientRowID == 1391 || Model.ClientRowID == 1402 || Model.ClientRowID == 1509 || Model.ClientRowID == 1396 || Model.ClientRowID == 1379 || Model.ClientRowID == 1465 || Model.ClientRowID == 1565 || Model.ClientRowID == 754 || Model.ClientRowID == 1279 || Model.ClientRowID == 1572)
+                                    {
+                                        <tr>
+                                            <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                            <td width="1%">&nbsp;</td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                            <td width="1%">&nbsp;</td>
+
+                                            <td width="79%">
+                                                <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                                <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                                <p style="font-size:16px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                                <p style="font-size:16px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                            </td>
+
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </page>
+
+
+
+                if (Model.CandidateDocList != null)
+                {
+                    List<ViewModels.ReportQCViewModel.CandidateAllDocumentListViewModel> ll = new List<ViewModels.ReportQCViewModel.CandidateAllDocumentListViewModel>();
+                    if (Model.ClientRowID == 7 || Model.ClientRowID == 296 || Model.ClientRowID == 305 || Model.ClientRowID == 306 || Model.ClientRowID == 987 || Model.ClientRowID == 761 || Model.ClientRowID == 1590)
+                    {
+                        var validTypes = new[] { "world check report", "db report", "verification artifact" };
+
+                        if(a.SubcheckRowID == 201)
+                        {
+                            // ll = Model.CandidateDocList.Where(T => T.SubCheckRowID == a.SubcheckRowID && T.DocumentType.Trim() == "World Check Report").ToList();
+                            // var allowedTypes = new[] { "World Check Report", "Verification Artifact" };
+                            var allowedTypes = new[] { "world check report", "verification artifact", "db_artifact", "ofac_artifact", "db report", "ofac report" };
+
+                            ll = Model.CandidateDocList
+                    .Where(T => T.SubCheckRowID == a.SubcheckRowID
+                             && allowedTypes.Contains(T.DocumentType.ToLower().Trim()))
+                    .ToList();
+
+                        }
+                        else if(a.SubcheckRowID == 205)
+                        {
+                            //
+                            //ll = Model.CandidateDocList.Where(T => T.SubCheckRowID == a.SubcheckRowID && T.DocumentType.ToLower() == "verification artifact").ToList();
+                            var allowedTypes = new[] { "world check report", "verification artifact", "db_artifact", "ofac_artifact", "db report", "ofac report" };
+
+                            ll = Model.CandidateDocList
+                    .Where(T => T.SubCheckRowID == a.SubcheckRowID
+                             && allowedTypes.Contains(T.DocumentType.ToLower().Trim()))
+                    .ToList();
+
+                        }
+                        else
+                        {
+                            ll = Model.CandidateDocList.Where(T => T.SubCheckRowID == a.SubcheckRowID && T.DocumentType.ToLower() == "verification artifact").ToList();
+
+                        }
+                        //                     ll = Model.CandidateDocList
+                        //.Where(T => T.SubCheckRowID == a.SubcheckRowID &&
+                        //            validTypes.Contains(T.DocumentType.ToLower()))
+                        //.ToList();
+
+                        //var priorityList = new[] { "verification artifact", "db report", "world check report" };
+
+                        //var filteredDocs = Model.CandidateDocList
+                        //    .Where(T => T.SubCheckRowID == a.SubcheckRowID &&
+                        //                priorityList.Contains(T.DocumentType.ToLower()))
+                        //    .ToList();
+
+                        //var topPriority = filteredDocs
+                        //    .OrderBy(T => Array.IndexOf(priorityList, T.DocumentType.ToLower()))
+                        //    .Select(T => T.DocumentType.ToLower())
+                        //    .FirstOrDefault();
+
+                        // ll = filteredDocs
+                        //    .Where(T => T.DocumentType.ToLower() == topPriority)
+                        //    .ToList();
+
+                        //Model.CandidateDocList = ll;
+                    }
+
+                    foreach (var Doc in ll.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                    {
+                        if (Doc.SubCheckRowID == a.SubcheckRowID)
+                        {
+                            FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                            if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                            {
+                            <page id="PrintSrc" size="A4">
+                                <div style="page-break-after:always ;"></div>
+                                <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center; width:100%; height:65rem;">
+                                    <tr>
+                                        <td valign="top" colspan="2" align="center">
+                                            <table border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                                                <tr>
+                                                    <td valign="top">
+                                                        <table style="width:100%;" border="0" cellspacing="0" cellpadding="0">
+                                                            <tr>
+                                                                <td>
+                                                                    <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                                                        @if (Model.ClientRowID == 926 || Model.ClientRowID == 881 || Model.ClientRowID == 588 || Model.ClientRowID == 1509 || Model.ClientRowID == 1396 || Model.ClientRowID == 1379 || Model.ClientRowID == 1402 || Model.ClientRowID == 1460 || Model.ClientRowID == 1459 || Model.ClientRowID == 1507 || Model.ClientRowID == 1487 || Model.ClientRowID == 336 || Model.ClientRowID == 1381 || Model.ClientRowID == 939 || Model.ClientRowID == 1202 || Model.ClientRowID == 871 || Model.ClientRowID == 1480 || Model.ClientRowID == 943 || Model.ClientRowID == 1306 || Model.ClientRowID == 1391 || Model.ClientRowID == 1402 || Model.ClientRowID == 1509 || Model.ClientRowID == 1396 || Model.ClientRowID == 1379 || Model.ClientRowID == 1465 || Model.ClientRowID == 1565 || Model.ClientRowID == 754 || Model.ClientRowID == 1279 || Model.ClientRowID == 1572 || Model.ClientRowID == 259)
+                                                                        {
+                                                                            <tr>
+                                                                                <td valign="top" style="width:100%; text-align:end;"><img src='@Url.Content("~/Content/images/walsons_Logo.png")' style="width:5rem; margin-top:10px; margin-right:10px;"></td>
+                                                                            </tr>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <tr>
+                                                                                <td valign="top" style="width:100%; text-align:end;"><img src='@Url.Content("~/Content/images/Securitas-logo.png")' style="width:5rem; margin-top:10px; margin-right:10px;"></td>
+                                                                            </tr>
+                                                                        }
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                @if (Model.ClientRowID == 679 && a.SubcheckRowID == 612)
+                                                                {
+                                                                    <td style="width:100%;"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">UAN Validation  @a.CreationDate.ToString("MMMyy") (@Doc.DocumentType)</p></td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="width:100%;"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@a.SubCheckName (@Doc.DocumentType)</p></td>
+
+                                                                }
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td valign="top">
+                                                                    @{
+                                                                        FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                        System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                        if (image.Height > 600)
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" style="width: 100%;height:55rem;" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" style="width: 100%;height:55rem;" />
+                                                                        }
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" height="100">
+                                            <table border="0" cellspacing="0" cellpadding="0" style="width:100%;" id="tblDemo2">
+                                                <tr>
+                                                    <td colspan="3" style="border-top:3px solid #c0c0c0;">&nbsp;</td>
+                                                </tr>
+                                                @if (Model.ClientRowID == 926 || Model.ClientRowID == 881 || Model.ClientRowID == 588 || Model.ClientRowID == 1509 || Model.ClientRowID == 1396 || Model.ClientRowID == 1379 || Model.ClientRowID == 1402 || Model.ClientRowID == 1460 || Model.ClientRowID == 1459 || Model.ClientRowID == 1507 || Model.ClientRowID == 1487 || Model.ClientRowID == 336 || Model.ClientRowID == 1381 || Model.ClientRowID == 939 || Model.ClientRowID == 1202 || Model.ClientRowID == 871 || Model.ClientRowID == 1480 || Model.ClientRowID == 943 || Model.ClientRowID == 1306 || Model.ClientRowID == 1391 || Model.ClientRowID == 1402 || Model.ClientRowID == 1509 || Model.ClientRowID == 1396 || Model.ClientRowID == 1379 || Model.ClientRowID == 1465 || Model.ClientRowID == 1565 || Model.ClientRowID == 754 || Model.ClientRowID == 1279 || Model.ClientRowID == 1572)
+                                                {
+                                                    <tr>
+                                                        <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                                        <td width="1%">&nbsp;</td>
+                                                    </tr>
+                                                }
+                                                else
+                                                {
+                                                    <tr>
+                                                        <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                                        <td width="1%">&nbsp;</td>
+
+                                                        <td width="79%">
+                                                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                                            <p style="font-size:16px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                                        </td>
+
+                                                    </tr>
+                                                }
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </page>
+                        }
+                    }
+                }
+            }
+            i++;
+
+            if (Model.ClientRowID == 635)
+            {
+                if ((a.SubcheckRowID == 201 || a.SubcheckRowID == 227 || a.SubcheckRowID == 243 || a.SubcheckRowID == 244 || a.SubcheckRowID == 262 || a.SubcheckRowID == 286 || a.SubcheckRowID == 287 || a.SubcheckRowID == 314 || a.SubcheckRowID == 357 || a.SubcheckRowID == 358 || a.SubcheckRowID == 371 || a.SubcheckRowID == 372 || a.SubcheckRowID == 375 || a.SubcheckRowID == 390 || a.SubcheckRowID == 391 || a.SubcheckRowID == 392 || a.SubcheckRowID == 395 || a.SubcheckRowID == 396 || a.SubcheckRowID == 397 || a.SubcheckRowID == 398 || a.SubcheckRowID == 417 || a.SubcheckRowID == 431 || a.SubcheckRowID == 480) && Model.ReportPart != "CRC")
+                {
+                    <page id="PrintSrc" size="A4">
+                        <div style="page-break-after:always ;"></div>
+                        @Html.Partial("SpecialKeywordTechM")
+                    </page>
+                }
+            }
+            else
+            {
+
+                if (Model.ClientRowID == 1428)
+                {
+                    if ((a.SubcheckRowID == 201 || a.SubcheckRowID == 227 || a.SubcheckRowID == 243 || a.SubcheckRowID == 244 || a.SubcheckRowID == 262 || a.SubcheckRowID == 286 || a.SubcheckRowID == 287 || a.SubcheckRowID == 314 || a.SubcheckRowID == 357 || a.SubcheckRowID == 358 || a.SubcheckRowID == 371 || a.SubcheckRowID == 372 || a.SubcheckRowID == 375 || a.SubcheckRowID == 390 || a.SubcheckRowID == 391 || a.SubcheckRowID == 392 || a.SubcheckRowID == 395 || a.SubcheckRowID == 396 || a.SubcheckRowID == 397 || a.SubcheckRowID == 398 || a.SubcheckRowID == 417 || a.SubcheckRowID == 431 || a.SubcheckRowID == 480) && Model.ReportPart != "CRC")
+                    {
+
+                        <page id="PrintSrc" size="A4">
+                            <div style="page-break-after:always ;"></div>
+                            @Html.Partial("ReportSpecialGenpact_Europe")
+
+
+
+                        </page>
+                    }
+                }
+                else
+                {
+                    if ((a.SubcheckRowID == 201 || a.SubcheckRowID == 227 || a.SubcheckRowID == 243 || a.SubcheckRowID == 244 || a.SubcheckRowID == 262 || a.SubcheckRowID == 286 || a.SubcheckRowID == 287 || a.SubcheckRowID == 314 || a.SubcheckRowID == 357 || a.SubcheckRowID == 358 || a.SubcheckRowID == 371 || a.SubcheckRowID == 372 || a.SubcheckRowID == 375 || a.SubcheckRowID == 390 || a.SubcheckRowID == 391 || a.SubcheckRowID == 392 || a.SubcheckRowID == 395 || a.SubcheckRowID == 396 || a.SubcheckRowID == 397 || a.SubcheckRowID == 398 || a.SubcheckRowID == 417 || a.SubcheckRowID == 431 || a.SubcheckRowID == 480) && Model.ReportPart != "CRC")
+                    {
+
+                        <page id="PrintSrc" size="A4">
+                            <div style="page-break-after:always ;"></div>
+                            @Html.Partial("REportSpecialKeyword")
+
+
+
+                        </page>
+                    }
+                }
+
+
+
+                if ((a.SubcheckRowID == 200) && Model.ReportPart != "CRC")    // Indian Database Check
+                {
+
+                    <page id="PrintSrc" size="A4">
+                        <div style="page-break-after:always ;"></div>
+                        @Html.Partial("IndianDataBaseKeyword")
+
+                    </page>
+                }
+            }
+
+
+}
+
+        }
+    }
+
+}
+
+
+
+
+

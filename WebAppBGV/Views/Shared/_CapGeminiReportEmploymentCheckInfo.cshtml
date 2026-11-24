@@ -1,0 +1,1111 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    /**/
+
+    var list = Model.EmploymentInfoModel.GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+
+
+}
+
+@if (Model != null && Model.EmploymentInfoModel != null && Model.EmploymentInfoModel.Count > 0)
+{
+    if (Model.EmploymentInfoModel != null)
+    {
+        int i = 0;
+        foreach (var a in list)
+        {
+            var Anticident = Model.EmploymentInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+
+            var ReportComment = a.ReportComment;
+            <page id="PrintSrc" size="A4">
+                <table width="793" height="800" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999;page-break-before:always;font-family:Arial;font-size:13px;">
+                    <!--- Report Header Include -->
+
+                    <tr>
+
+                        <td>
+                            <table width="793" align="center" style="border-bottom:2px  #ccc;">
+                                <tr>
+                                    <td width="85%">
+                                        <table width="100%"></table>
+                                    </td>
+                                    <td width="15%" align="right" valign="top" style="padding-top:2%;"></td>
+                                </tr>
+                            </table>
+                            <p style="text-align:center;font-family:Arial; font-size:28px;"><strong>Walsons Services </strong></p>
+
+                            <table width="793" border="1" cellspacing="0" cellpadding="0" align="center" style=" text-align:center; font-family:Arial;font-size:13px;">
+                                <tbody>
+                                    <tr>
+                                        <td width="121" style="padding:10px!important;">
+                                            <p><strong>Vendor Ref Id</strong></p>
+                                        </td>
+                                        <td width="254" style="padding:10px!important;">
+                                            <p><strong>Candidate Name</strong></p>
+                                        </td>
+                                        <td width="128" style="padding:10px!important;">
+                                            <p><strong>Entity</strong></p>
+                                        </td>
+                                        @*<td width="141" style="padding:10px!important;">
+                                                <p><strong>Supplementary Report Date</strong></p>
+                                            </td>*@
+                                    </tr>
+                                    <tr>
+                                        <td width="121" style="padding:10px!important;">
+                                            <p>@Model.CompanyRefNo</p>
+                                        </td>
+                                        <td width="254" style="padding:10px!important;">
+                                            <p>@Model.PersonalName</p>
+                                        </td>
+                                        <td width="128" style="padding:10px!important;">
+                                            <p>@Model.BusinessName</p>
+                                        </td>
+                                        @*<td width="141" style="padding:10px!important;">
+                                                @if (Model.FinalReportDate != "NA")
+                                                {
+                                                    <p>@Model.FinalReportDate</p>
+                                                }
+                                                else
+                                                {
+                                                    <p></p>
+                                                }
+
+
+                                            </td>*@
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <table width="793" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;position: relative;
+    margin-left: 0;margin-right: 0; margin: auto;font-family:Arial;font-size:13px;">
+
+
+                                <tr>
+
+                                    <p style="text-align: center; text-decoration-line: underline;font-family:Arial;font-size:13px;">
+                                        <strong>@a.SubCheckName</strong>
+
+                                    </p>
+
+                                    <table width="793" border="1" style="border-collapse:collapse;position: relative;
+    margin-left: 0;margin-right: 0; margin: auto;font-family:Arial;font-size:13px;">
+                                        <tbody>
+                                            <tr>
+                                                <td width="152" style="padding:10px!important;">
+                                                    <p><strong>Details</strong></p>
+                                                </td>
+                                                <td width="176" style="padding:10px!important;">
+                                                    <p><strong>Information Provided</strong></p>
+                                                </td>
+                                                <td width="143" style="padding:10px!important;">
+                                                    <p><strong>Verification Remarks</strong></p>
+                                                </td>
+                                            </tr>
+
+                                </tr>
+                                @foreach (var item in Anticident)
+                                {
+                                    if (item.AntecedentRowID == "92")
+                                    {
+                                        <tr>
+                                            <td width="152" style="padding:10px!important;">
+                                                <p><strong>Name of the Company</strong></p>
+                                            </td>
+                                            <td width="176" style="padding:10px!important;">
+                                                <p>@item.DataEntryValue.Replace("_", "").Replace("Pvt", "Private").Replace("Ltd", "Limited").Replace("Pvt.", "Private").Replace("ltd", "Limited").ToString()</p>
+
+
+                                            </td>
+                                            <td width="143" style="padding:10px!important;">
+                                                @if (a.CheckStatusId == "11" || a.CheckStatusId == "22" || a.CheckStatusId == "73" || a.CheckStatusId == "13" || a.CheckStatusId == "20" || a.CheckStatusId == "21" || a.CheckStatusId == "25" || a.CheckStatusId == "24")
+                                                {
+                                                    <p></p>
+                                                }
+                                                @*else if (item.OpsValue != "")
+                                                    {
+                                                        <p>@item.OpsValue.Replace("_", "").Replace("Pvt", "Private").Replace("Ltd", "Limited").Replace("Pvt.", "Private").Replace("ltd", "Limited").ToString()</p>
+                                                    }*@
+                                                else if (item.OpsValue.ToLower() == item.DataEntryValue.ToLower())
+                                                {
+                                                    @*<p>@item.OpsValue.Replace("_", "")</p>*@
+                                                    <p>Yes</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>@item.OpsValue.Replace("_", "").Replace("Pvt", "Private").Replace("Ltd", "Limited").Replace("Pvt.", "Private").Replace("ltd", "Limited").ToString()</p>
+                                                }
+
+                                            </td>
+                                        </tr>
+                                    }
+
+                                    if (item.AntecedentRowID == "82")
+                                    {
+                                        <tr>
+                                            <td width="152" style="padding:10px!important;">
+                                                <p><strong>Address & Contact No</strong></p>
+                                            </td>
+                                            <td width="176" style="padding:10px!important;">
+                                                <p>@item.DataEntryValue.Replace("_", "").Replace("NA", "Not Provided")</p>
+                                            </td>
+                                            <td width="143" style="padding:10px!important;">
+                                                @if (a.CheckStatusId == "11" || a.CheckStatusId == "22" || a.CheckStatusId == "73" || a.CheckStatusId == "13" || a.CheckStatusId == "20" || a.CheckStatusId == "21" || a.CheckStatusId == "25" || a.CheckStatusId == "24")
+                                                {
+                                                    <p></p>
+                                                }
+                                                @*else if (item.OpsValue != "")
+                                                    {
+                                                        <p>@item.OpsValue.Replace("_", "")</p>
+                                                    }*@
+                                                else if (item.OpsValue.ToLower() == item.DataEntryValue.ToLower())
+                                                {
+                                                    @*<p>@item.OpsValue.Replace("_", "")</p>*@
+                                                    <p>Yes</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>@item.OpsValue.Replace("_", "")</p>
+                                                }
+
+                                            </td>
+                                        </tr>
+
+                                    }
+
+                                    if (item.AntecedentRowID == "91")
+                                    {
+                                        <tr>
+                                            <td width="152" style="padding:10px!important;">
+                                                <p><strong>Employee Code</strong></p>
+                                            </td>
+                                            <td width="176" style="padding:10px!important;">
+                                                <p>@item.DataEntryValue.Replace("_", "").Replace("NA", "Not Provided")</p>
+                                            </td>
+                                            <td width="143" style="padding:10px!important;">
+                                                @if (a.CheckStatusId == "11" || a.CheckStatusId == "22" || a.CheckStatusId == "73" || a.CheckStatusId == "13" || a.CheckStatusId == "20" || a.CheckStatusId == "21" || a.CheckStatusId == "25" || a.CheckStatusId == "24")
+                                                {
+                                                    <p></p>
+                                                }
+                                                @*else if (item.OpsValue != "")
+                                                    {
+                                                        <p>@item.OpsValue.Replace("_", "")</p>
+                                                    }*@
+                                                else if (item.OpsValue.ToLower().Trim() == item.DataEntryValue.ToLower().Trim())
+                                                {
+                                                    @*<p>@item.OpsValue.Replace("_", "")</p>*@
+                                                    <p>Yes</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>@item.OpsValue.Replace("_", "")</p>
+                                                }
+
+                                            </td>
+                                        </tr>
+
+                                    }
+
+                                    if (item.AntecedentRowID == "97")
+                                    {
+                                        <tr>
+                                            <td width="152" style="padding:10px!important;">
+                                                <p><strong>Period of Employment </strong></p>
+                                            </td>
+                                            <td width="176" style="padding:10px!important;">
+                                                <p>@item.DataEntryValue.Replace("_", "").Replace("NA", "Not Provided")</p>
+                                            </td>
+                                            <td width="143" style="padding:10px!important;">
+                                                @if (a.CheckStatusId == "11" || a.CheckStatusId == "22" || a.CheckStatusId == "73" || a.CheckStatusId == "13" || a.CheckStatusId == "20" || a.CheckStatusId == "21" || a.CheckStatusId == "25" || a.CheckStatusId == "24")
+                                                {
+                                                    <p></p>
+                                                }
+                                                @*else if (item.OpsValue != "")
+                                                    {
+                                                        <p>@item.OpsValue.Replace("_", "")</p>
+                                                    }*@
+                                                else if (item.OpsValue.ToLower().Trim() == item.DataEntryValue.ToLower().Trim())
+                                                {
+                                                    @*<p>@item.OpsValue.Replace("_", "")</p>*@
+                                                    <p>Yes</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>@item.OpsValue.Replace("_", "")</p>
+                                                }
+
+                                            </td>
+                                        </tr>
+
+                                    }
+
+                                    @*if (item.AntecedentRowID == "82")
+                                        {
+                                                                    <tr>
+                                                                        <td width="152" style="padding:10px!important;">
+                                                                            <p><strong>Address & Contact No </strong></p>
+                                                                        </td>
+                                                                        <td width="176" style="padding:10px!important;">
+                                                                            <p>@item.OpsValue.Replace("_", "")</p>
+                                                                        </td>
+                                                                        <td width="143" style="padding:10px!important;">
+                                                                            @if (item.CheckStatusId == "11")
+                                                {
+                                                                    <p></p>
+                                        }
+                                        else if (item.OpsValue != "")
+                                        {
+                                                                    <p>Yes</p>
+                                        }
+
+                                                                        </td>
+                                                                    </tr>
+
+                                        }*@
+
+                                    if (item.AntecedentRowID == "145")
+                                    {
+                                        <tr>
+                                            <td width="152" style="padding:10px!important;">
+                                                <p><strong>Eligibility for rehire </strong></p>
+                                            </td>
+                                            <td width="176" style="padding:10px!important;">
+                                                @if (!string.IsNullOrEmpty(item.DataEntryValue))
+                                                {
+                                                    <p>@item.DataEntryValue.Replace("_", "").Replace("NA", "Not Provided")</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>Not Provided</p>
+                                                }
+
+                                            </td>
+                                            <td width="143" style="padding:10px!important;">
+                                                @if (a.CheckStatusId == "11" || a.CheckStatusId == "22" || a.CheckStatusId == "73" || a.CheckStatusId == "13" || a.CheckStatusId == "20" || a.CheckStatusId == "21" || a.CheckStatusId == "25" || a.CheckStatusId == "24")
+                                                {
+                                                    <p></p>
+                                                }
+                                                @*else if (item.OpsValue != "")
+                                                    {
+                                                        <p>@item.OpsValue.Replace("_", "")</p>
+                                                    }*@
+                                                else if (item.OpsValue.ToLower().Trim() == item.DataEntryValue.ToLower().Trim())
+                                                {
+                                                    @*<p>@item.OpsValue.Replace("_", "")</p>*@
+                                                    <p>Yes</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>@item.OpsValue.Replace("_", "")</p>
+                                                }
+
+                                            </td>
+                                        </tr>
+
+                                    }
+
+
+                                    if (item.AntecedentRowID == "142")
+                                    {
+                                        <tr>
+                                            <td width="152" style="padding:10px!important;">
+                                                <p><strong>Permanent/Contractual</strong></p>
+                                            </td>
+                                            <td width="176" style="padding:10px!important;">
+                                                <p>@item.DataEntryValue.Replace("_", "").Replace("NA", "Not Provided")</p>
+                                            </td>
+                                            <td width="143" style="padding:10px!important;">
+                                                @if (a.CheckStatusId == "11" || a.CheckStatusId == "22" || a.CheckStatusId == "73" || a.CheckStatusId == "13" || a.CheckStatusId == "20" || a.CheckStatusId == "21" || a.CheckStatusId == "25" || a.CheckStatusId == "24")
+                                                {
+                                                    <p></p>
+                                                }
+                                                @*else if (item.OpsValue != "")
+                                                    {
+                                                        <p>@item.OpsValue.Replace("_", "")</p>
+                                                    }*@
+                                                else if (item.OpsValue.ToLower().Trim() == item.DataEntryValue.ToLower().Trim())
+                                                {
+                                                    @*<p>@item.OpsValue.Replace("_", "")</p>*@
+                                                    <p>Yes</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>@item.OpsValue.Replace("_", "")</p>
+                                                }
+
+                                            </td>
+                                        </tr>
+
+                                    }
+
+
+                                    if (item.AntecedentRowID == "219")
+                                    {
+                                        <tr>
+                                            <td width="152" style="padding:10px!important;">
+                                                <p><strong>Verified By</strong></p>
+                                            </td>
+                                            <td colspan="2" width="319" style="padding:10px!important;">
+                                                <p>@item.OpsValue</p>
+                                            </td>
+                                        </tr>
+
+                                    }
+                                    if (item.AntecedentRowID == "87")
+                                    {
+                                        <tr>
+                                            <td width="152" style="padding:10px!important;">
+                                                <p><strong>Designation & Department</strong></p>
+                                            </td>
+                                            <td width="176" style="padding:10px!important;">
+                                                @if (@item.DataEntryValue.ToUpper() == "NA")
+                                                {
+                                                    <p>@item.DataEntryValue.Replace("_", "").Replace("NA", "Not Provided")</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>@item.DataEntryValue.Replace("_", "")</p>
+                                                }
+
+                                            </td>
+                                            @*<td width="143" style="padding:10px!important;">
+                                                                                    @if (item.CheckStatusId == "11")
+                                                    {
+                                                                                <p></p>
+                                                }
+                                                else if (item.OpsValue != "")
+                                                {
+                                                                                <p>@item.OpsValue.Replace("_", "")</p>
+                                                }
+
+                                                                                </td>*@
+                                            <td width="143" style="padding:10px!important;">
+                                                @if (a.CheckStatusId == "11" || a.CheckStatusId == "22" || a.CheckStatusId == "73" || a.CheckStatusId == "13" || a.CheckStatusId == "20" || a.CheckStatusId == "21" || a.CheckStatusId == "25" || a.CheckStatusId == "24")
+                                                {
+                                                    <p></p>
+                                                }
+                                                @*else if (item.OpsValue != "")
+                                                    {
+                                                        <p>@item.OpsValue.Replace("_", "")</p>
+                                                    }*@
+                                                else if (item.OpsValue.ToLower().Trim() == item.DataEntryValue.ToLower().Trim())
+                                                {
+                                                    @*<p>@item.OpsValue.Replace("_", "")</p>*@
+                                                    <p>Yes</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>@item.OpsValue.Replace("_", "")</p>
+                                                }
+
+                                            </td>
+                                        </tr>
+
+                                    }
+
+                                    if (item.AntecedentRowID == "69")
+                                    {
+                                        <tr>
+                                            <td width="152" style="padding:10px!important;">
+                                                <p><strong>Period of Employment</strong></p>
+                                            </td>
+                                            <td width="176" style="padding:10px!important;">
+                                                <p>@item.DataEntryValue.Replace("_", "").Replace("NA", "Not Provided")</p>
+                                            </td>
+                                            <td width="143" style="padding:10px!important;">
+                                                @if (a.CheckStatusId == "11" || a.CheckStatusId == "22" || a.CheckStatusId == "73" || a.CheckStatusId == "13" || a.CheckStatusId == "20" || a.CheckStatusId == "21" || a.CheckStatusId == "25" || a.CheckStatusId == "24")
+                                                {
+                                                    <p></p>
+                                                }
+                                                else if (item.OpsValue != "")
+                                                {
+                                                    <p>@item.OpsValue.Replace("_", "")</p>
+                                                }
+
+                                            </td>
+                                        </tr>
+
+                                    }
+
+                                    if (item.AntecedentRowID == "85")
+                                    {
+                                        <tr>
+                                            <td width="152" style="padding:10px!important;">
+                                                <p><strong>Remuneration</strong></p>
+                                            </td>
+                                            <td width="176" style="padding:10px!important;">
+                                                <p>@item.DataEntryValue.Replace("_", "").Replace("NA", "Not Provided")</p>
+                                            </td>
+                                            <td width="143" style="padding:10px!important;">
+                                                @if (a.CheckStatusId == "11" || a.CheckStatusId == "22" || a.CheckStatusId == "73" || a.CheckStatusId == "13" || a.CheckStatusId == "20" || a.CheckStatusId == "21" || a.CheckStatusId == "25" || a.CheckStatusId == "24")
+                                                {
+                                                    <p></p>
+                                                }
+                                                else if (item.OpsValue != "")
+                                                {
+                                                    <p>@item.OpsValue.Replace("_", "")</p>
+                                                }
+
+                                            </td>
+                                        </tr>
+
+                                    }
+
+                                    if (item.AntecedentRowID == "95")
+                                    {
+                                        <tr>
+                                            <td width="152" style="padding:10px!important;">
+                                                <p><strong>Reporting Manager</strong></p>
+                                            </td>
+                                            <td width="176" style="padding:10px!important;">
+                                                <p>@item.DataEntryValue.Replace("_", "").Replace("NA", "Not Provided")</p>
+                                            </td>
+                                            <td width="143" style="padding:10px!important;">
+                                                @if (a.CheckStatusId == "11" || a.CheckStatusId == "22" || a.CheckStatusId == "73" || a.CheckStatusId == "13" || a.CheckStatusId == "20" || a.CheckStatusId == "21" || a.CheckStatusId == "25" || a.CheckStatusId == "24")
+                                                {
+                                                    <p></p>
+                                                }
+                                                else if (item.OpsValue != "")
+                                                {
+                                                    <p>@item.OpsValue</p>
+                                                }
+
+                                            </td>
+                                        </tr>
+
+                                    }
+
+                                    if (item.AntecedentRowID == "94")
+                                    {
+                                        <tr>
+                                            <td width="152" style="padding:10px!important;">
+                                                <p><strong>Reason for Leaving</strong></p>
+                                            </td>
+                                            <td width="176" style="padding:10px!important;">
+                                                <p>@item.DataEntryValue.Replace("_", "").Replace("NA", "Not Provided")</p>
+                                            </td>
+                                            <td width="143" style="padding:10px!important;">
+                                                @if (a.CheckStatusId == "11" || a.CheckStatusId == "22" || a.CheckStatusId == "73" || a.CheckStatusId == "13" || a.CheckStatusId == "20" || a.CheckStatusId == "21" || a.CheckStatusId == "25" || a.CheckStatusId == "24")
+                                                {
+                                                    <p></p>
+                                                }
+                                                else if (item.OpsValue != "")
+                                                {
+                                                    <p>@item.OpsValue</p>
+                                                }
+
+                                            </td>
+                                        </tr>
+
+                                    }
+
+                                    if (item.AntecedentRowID == "69")
+                                    {
+                                        <tr>
+                                            <td width="152" style="padding:10px!important;">
+                                                <p><strong>Eligible for Rehire</strong></p>
+                                            </td>
+                                            <td width="176" style="padding:10px!important;">
+                                                <p></p>
+                                            </td>
+                                            <td width="143" style="padding:10px!important;">
+                                                @if (a.CheckStatusId == "11" || a.CheckStatusId == "22" || a.CheckStatusId == "73" || a.CheckStatusId == "13" || a.CheckStatusId == "20" || a.CheckStatusId == "21" || a.CheckStatusId == "25" || a.CheckStatusId == "24")
+                                                {
+                                                    <p></p>
+                                                }
+                                                else if (item.OpsValue != "")
+                                                {
+                                                    <p>@item.OpsValue</p>
+                                                }
+
+                                            </td>
+                                        </tr>
+
+                                    }
+
+                                    if (item.AntecedentRowID == "80")
+                                    {
+                                        <tr>
+                                            <td width="152" style="padding:10px!important;">
+                                                <p><strong>Verified By</strong></p>
+                                            </td>
+                                            <td colspan="2" width="319">
+                                                <p>@item.OpsValue</p>
+                                            </td>
+                                        </tr>
+
+                                    }
+
+
+                                    if (item.AntecedentRowID == "153")
+                                    {
+                                        <tr>
+                                            <td width="152" style="padding:10px!important;">
+                                                <p><strong>Mode of Verification</strong></p>
+                                            </td>
+                                            <td colspan="2" width="319" style="padding:10px!important;">
+                                                <p>@item.OpsValue</p>
+                                            </td>
+                                        </tr>
+
+                                    }
+
+
+                                    if (item.AntecedentRowID == "220")
+                                    {
+                                        <tr>
+                                            <td width="152" style="padding:10px!important;">
+                                                <p><strong>Document Provided by Employee</strong></p>
+                                            </td>
+                                            <td colspan="2" width="319" style="padding:10px!important;">
+                                                <p>@item.OpsValue</p>
+                                            </td>
+                                        </tr>
+
+                                    }
+
+
+
+                                }
+
+
+                                <tr>
+                                    <td width="152" style="padding:10px!important;">
+                                        <p><strong>Additional Comments</strong></p>
+                                    </td>
+                                    <td colspan="2" width="319" style="padding:10px!important;">
+                                        <p>@Html.Raw(ReportComment)</p>
+                                    </td>
+                                </tr>
+
+
+                                <tr>
+                                    <td width="33%">
+                                        <p><strong>Artifacts Enclosed</strong></p>
+                                    </td>
+                                    <td colspan="2" width="382">
+
+                                        @if (Session["LA"] != null)
+                                        {
+
+                                            if (Session["LA"].ToString() == "Annexure1")
+                                            {
+                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure2</a>
+                                                Session["LA"] = "Annexure2";
+
+
+                                            }
+                                            else if (Session["LA"].ToString() == "Annexure2")
+                                            {
+                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure3</a>
+                                                Session["LA"] = "Annexure3";
+
+
+                                            }
+                                            else if (Session["LA"].ToString() == "Annexure3")
+                                            {
+                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure4</a>
+                                                Session["LA"] = "Annexure4";
+
+
+                                            }
+                                            else if (Session["LA"].ToString() == "Annexure4")
+                                            {
+                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure5</a>
+                                                Session["LA"] = "Annexure5";
+
+
+                                            }
+                                            else if (Session["LA"].ToString() == "Annexure5")
+                                            {
+                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure6</a>
+                                                Session["LA"] = "Annexure6";
+
+                                            }
+                                            else if (Session["LA"].ToString() == "Annexure6")
+                                            {
+                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure7</a>
+                                                Session["LA"] = "Annexure7";
+
+                                            }
+                                            else if (Session["LA"].ToString() == "Annexure7")
+                                            {
+                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure8</a>
+                                                Session["LA"] = "Annexure8";
+
+                                            }
+                                            else if (Session["LA"].ToString() == "Annexure8")
+                                            {
+                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure9</a>
+                                                Session["LA"] = "Annexure9";
+
+                                            }
+                                            else if (Session["LA"].ToString() == "Annexure9")
+                                            {
+                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure 10</a>
+                                                Session["LA"] = "Annexure10";
+
+                                            }
+                                            else if (Session["LA"].ToString() == "Annexure10")
+                                            {
+                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure11</a>
+                                                Session["LA"] = "Annexure11";
+
+                                            }
+                                        }
+
+                                    </td>
+                                </tr>
+
+
+
+
+
+
+
+                                @*<tr>
+                                        <td width="152">
+                                            <p><strong>Additional Comments</strong></p>
+                                        </td>
+                                        <td colspan="2" width="319">
+
+                                            @if (ProvidedInfo.CheckStatus == "Insuff")
+                                            {
+                                                <p></p>
+                                            }
+                                            @if (ReportCmt.Any())
+                                            {
+                                                var comm = ReportCmt.FirstOrDefault(T => T.AntecedentName == "EV_Others5");
+                                                if (comm != null)
+                                                {
+
+                                                    <p>@comm.Comment</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>@EducationVerInfo.EV_Others5</p>
+                                                }
+                                            }
+                                            else
+                                            {
+
+                                                <p>@EducationVerInfo.EV_Others5</p>
+                                            }
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="152">
+                                            <p><strong>Artifacts Enclosed</strong></p>
+                                        </td>
+                                        <td colspan="2" width="319" style="font-size:12px; font-family:Calibri; padding-left:5px;">
+                                            <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure1</a>
+                                            @if (a.SubcheckRowID != null)
+                                            {
+                                                Session["LA"] = "Annexure1";
+                                            }
+
+                                        </td>
+
+
+
+                                    </tr>*@
+
+                            </table>
+
+                            <table width="793" style="border-collapse:collapse;position: relative;
+    margin-left: 0;margin-right: 0; margin: auto;border-top:none;">
+                                <tr>
+                                    <td colspan="2"></td>
+                                </tr>
+                                <tr>
+
+                                    <td colspan="2">@Html.Partial("_ReportFooterAddress")</td>
+                                </tr>
+                            </table>
+                        </td>
+
+                    </tr>
+                </table>
+            </page>
+
+
+            if (Model.CandidateDocList != null)
+            {
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                {
+                    if (Doc.SubCheckRowID == a.SubcheckRowID)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                            <page id="PrintSrc" size="A4">
+                                <div style="page-break-after:always ;"></div>
+                                <p style="text-align:center;font-family:Arial; font-size:33px;"><strong>Walsons Services </strong></p>
+                                <table width="793" border="1" cellspacing="0" cellpadding="0" align="center" style=" text-align:center; font-family:Arial;font-size:13px; margin-top:10px!important;">
+                                    <tbody>
+                                        <tr>
+                                            <td width="121" style="padding:10px!important;">
+                                                <p><strong>Vendor Ref Id</strong></p>
+                                            </td>
+                                            <td width="254" style="padding:10px!important;">
+                                                <p><strong>Candidate Name</strong></p>
+                                            </td>
+                                            <td width="128" style="padding:10px!important;">
+                                                <p><strong>Entity</strong></p>
+                                            </td>
+                                            @*<td width="141" style="padding:10px!important;">
+                                                    <p><strong>Supplementary Report Date</strong></p>
+                                                </td>*@
+                                        </tr>
+                                        <tr>
+                                            <td width="121" style="padding:10px!important;">
+                                                <p>@Model.CompanyRefNo</p>
+                                            </td>
+                                            <td width="254" style="padding:10px!important;">
+                                                <p>@Model.PersonalName</p>
+                                            </td>
+                                            <td width="128" style="padding:10px!important;">
+                                                <p>@Model.BusinessName</p>
+                                            </td>
+                                            @*<td width="141" style="padding:10px!important;">
+                                                    @if (Model.FinalReportDate != "NA")
+                                                    {
+                                                        <p>@Model.FinalReportDate</p>
+                                                    }
+                                                    else
+                                                    {
+                                                        <p></p>
+                                                    }
+
+
+                                                </td>*@
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table width="793" cellspacing="0" height="1100" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center; height:800px;">
+                                    <!--- Report Header Include -->
+                                    @*@Html.Partial("_ReportHeader")*@
+                                    <!--- Report Header Include -->
+                                    <tr>
+                                        @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                        <td valign="top" colspan="2" align="center" valign="bottom">
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td valign="top">
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tr>
+                                                                <td style="font-size:10px; font-family:Calibri;">
+                                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                        <tr>
+                                                                            <td width="88%">
+                                                                                <p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;"> <br /> </p>
+                                                                                @if (a.SubcheckRowID == 376)
+                                                                                {
+                                                                                    if (Session["LA"] != null)
+                                                                                    {
+                                                                                        if (Session["LA"].ToString() == "Annexure1")
+                                                                                        {
+                                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure1</a></p>
+
+
+
+
+                                                                                        }
+                                                                                        else if (Session["LA"].ToString() == "Annexure2")
+                                                                                        {
+                                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure2</a></p>
+
+
+
+
+                                                                                        }
+                                                                                        else if (Session["LA"].ToString() == "Annexure3")
+                                                                                        {
+                                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure3</a></p>
+
+
+                                                                                        }
+                                                                                    }
+
+                                                                                    <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center">
+                                                                                        P Company Evidences along with supporting documents & form (@Doc.DocumentType)
+                                                                                    </p>
+                                                                                }
+                                                                                else if (a.SubcheckRowID == 377)
+                                                                                {
+                                                                                    if (Session["LA"] != null)
+                                                                                    {
+                                                                                        if (Session["LA"].ToString() == "Annexure1")
+                                                                                        {
+                                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure1</a></p>
+
+
+
+
+                                                                                        }
+                                                                                        else if (Session["LA"].ToString() == "Annexure2")
+                                                                                        {
+                                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure2</a></p>
+
+
+
+
+                                                                                        }
+                                                                                        else if (Session["LA"].ToString() == "Annexure3")
+                                                                                        {
+                                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure3</a></p>
+
+
+                                                                                        }
+                                                                                    }
+
+                                                                                    <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center">
+                                                                                        P-1 Company Evidences along with supporting documents & form (@Doc.DocumentType)
+                                                                                    </p>
+                                                                                }
+                                                                                else if (a.SubcheckRowID == 378)
+                                                                                {
+                                                                                    if (Session["LA"] != null)
+                                                                                    {
+                                                                                        if (Session["LA"].ToString() == "Annexure1")
+                                                                                        {
+                                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure1</a></p>
+
+
+
+
+                                                                                        }
+                                                                                        else if (Session["LA"].ToString() == "Annexure2")
+                                                                                        {
+                                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure2</a></p>
+
+
+
+
+                                                                                        }
+                                                                                        else if (Session["LA"].ToString() == "Annexure3")
+                                                                                        {
+                                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure3</a></p>
+
+
+                                                                                        }
+                                                                                        else if (Session["LA"].ToString() == "Annexure4")
+                                                                                        {
+                                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure4</a></p>
+
+
+                                                                                        }
+                                                                                        else if (Session["LA"].ToString() == "Annexure5")
+                                                                                        {
+                                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure5</a></p>
+
+
+                                                                                        }
+                                                                                        else if (Session["LA"].ToString() == "Annexure6")
+                                                                                        {
+                                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure6</a></p>
+
+
+                                                                                        }
+                                                                                    }
+
+                                                                                    <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center">
+                                                                                        P-2 Company Evidences along with supporting documents & form (@Doc.DocumentType)
+                                                                                    </p>
+                                                                                }
+                                                                                else if (a.SubcheckRowID == 379)
+                                                                                {
+                                                                                    if (Session["LA"] != null)
+                                                                                    {
+                                                                                        if (Session["LA"].ToString() == "Annexure1")
+                                                                                        {
+                                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure1</a></p>
+
+
+
+
+                                                                                        }
+                                                                                        else if (Session["LA"].ToString() == "Annexure2")
+                                                                                        {
+                                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure2</a></p>
+
+
+
+
+                                                                                        }
+                                                                                        else if (Session["LA"].ToString() == "Annexure3")
+                                                                                        {
+                                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure3</a></p>
+
+
+                                                                                        }
+                                                                                        else if (Session["LA"].ToString() == "Annexure4")
+                                                                                        {
+                                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure4</a></p>
+
+
+                                                                                        }
+                                                                                        else if (Session["LA"].ToString() == "Annexure5")
+                                                                                        {
+                                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure5</a></p>
+
+
+                                                                                        }
+                                                                                        else if (Session["LA"].ToString() == "Annexure6")
+                                                                                        {
+                                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure6</a></p>
+
+
+                                                                                        }
+                                                                                    }
+
+                                                                                    <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center">
+                                                                                        P-3 Company Evidences along with supporting documents & form (@Doc.DocumentType)
+                                                                                    </p>
+                                                                                }
+                                                                                else if (a.SubcheckRowID == 380)
+                                                                                {
+                                                                                    if (Session["LA"].ToString() == "Annexure1")
+                                                                                    {
+                                                                                        <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure1</a></p>
+
+
+
+
+                                                                                    }
+                                                                                    else if (Session["LA"].ToString() == "Annexure2")
+                                                                                    {
+                                                                                        <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure2</a></p>
+
+
+
+
+                                                                                    }
+                                                                                    else if (Session["LA"].ToString() == "Annexure3")
+                                                                                    {
+                                                                                        <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure3</a></p>
+
+
+                                                                                    }
+                                                                                    else if (Session["LA"].ToString() == "Annexure4")
+                                                                                    {
+                                                                                        <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure4</a></p>
+
+
+                                                                                    }
+                                                                                    else if (Session["LA"].ToString() == "Annexure5")
+                                                                                    {
+                                                                                        <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure5</a></p>
+
+
+                                                                                    }
+                                                                                    else if (Session["LA"].ToString() == "Annexure6")
+                                                                                    {
+                                                                                        <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure6</a></p>
+
+
+                                                                                    }
+                                                                                    <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center">
+                                                                                        P-4 Company Evidences along with supporting documents & form (@Doc.DocumentType)
+                                                                                    </p>
+                                                                                }
+                                                                                else if (a.SubcheckRowID == 381)
+                                                                                {
+                                                                                    if (Session["LA"].ToString() == "Annexure1")
+                                                                                    {
+                                                                                        <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure1</a></p>
+
+
+
+
+                                                                                    }
+                                                                                    else if (Session["LA"].ToString() == "Annexure2")
+                                                                                    {
+                                                                                        <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure2</a></p>
+
+
+
+
+                                                                                    }
+                                                                                    else if (Session["LA"].ToString() == "Annexure3")
+                                                                                    {
+                                                                                        <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure3</a></p>
+
+
+                                                                                    }
+                                                                                    else if (Session["LA"].ToString() == "Annexure4")
+                                                                                    {
+                                                                                        <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure4</a></p>
+
+
+                                                                                    }
+                                                                                    else if (Session["LA"].ToString() == "Annexure5")
+                                                                                    {
+                                                                                        <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure5</a></p>
+
+
+                                                                                    }
+                                                                                    else if (Session["LA"].ToString() == "Annexure6")
+                                                                                    {
+                                                                                        <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure6</a></p>
+
+
+                                                                                    }
+                                                                                    <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center">
+                                                                                        P-5 Company Evidences along with supporting documents & form
+                                                                                    </p>
+                                                                                }
+                                                                            </td>
+                                                                            @*<td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>*@
+                                                                        </tr>
+                                                                        <tr><td colspan="2">&nbsp;</td></tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td valign="top">&nbsp;</td>
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td>
+                                                                    @{
+                                                                        FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                        System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                        if (image.Height > 600)
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="400" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="400" />
+                                                                        }
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                                    </tr>
+                                    <!--- Report Footer with Address Include -->
+                                    @Html.Partial("_ReportFooterAddress")
+                                    <!--- Report Footer with Address Include -->
+                                    <!--- Report Footer Include -->
+                                    @*@Html.Partial("_ReportFooter")*@
+                                    <!--- Report Footer Include -->
+                                </table>
+                            </page>
+                        }
+                    }
+                }
+            }
+            i++;
+        }
+
+    }
+}

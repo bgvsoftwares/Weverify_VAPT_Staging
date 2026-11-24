@@ -1,0 +1,144 @@
+﻿
+@{
+    ViewBag.Title = "Manage Report Check Mapping";
+}
+
+@{
+    //@ViewBag.NavigationBtnAddNew
+    string faIconAddNew = string.Format("<i class='fa fa-plus-circle' aria-hidden='true'></i> Add Report Check Mapping");
+    string hyperLinkAddNew = Html.ActionLink("linkTitle", "AddReportCheckMapping", "Master", null, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnAddNew = new HtmlString(hyperLinkAddNew.ToString().Replace("linkTitle", faIconAddNew));
+
+    //@ViewBag.NavigationBtnExportExcel
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    string hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportReportCheckMapping", "Master", null, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftMaster") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                @using (Html.BeginForm("ManageReportCheckMapping", "Master", FormMethod.Get))
+                {
+                    <div class="form-horizontal ">
+                        <div class="form-group branch row search-frame">
+                            <label class="col-md-2 control-label">Select Client :</label>
+                            <div class="col-md-3">
+                                @Html.DropDownList("ClientRowID",
+                                     new SelectList(ViewBag.Client, "ClientRowID", "ClientName"),
+                                     "-- Select Client -- ",
+                                     new { @class = "form-control" })
+                            </div>
+                            <label class="col-md-2 control-label">Select Report Type :</label>
+                            <div class="col-md-3">
+                                @Html.DropDownList("ReportType", new List<SelectListItem> {
+                                     new SelectListItem { Text = "-- Select ReportType -- ", Value = "" },
+                                     new SelectListItem { Text = "IR", Value = "IR" },
+                                     new SelectListItem { Text = "FR",Value="FR"},
+                                 }, new { @class = "form-control" })
+                            </div>
+                            <div class="col-md-1">
+                                <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                            </div>
+                        </div>
+                    </div>                    
+                }
+            </div>            
+        </div>
+        @if (Model != null && Model.ReportCheckMapping != null)
+        {
+            <div class="row">
+                <div class="col-md-12 table table-striped">
+                    @{
+                        WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                        grid.Bind(Model.ReportCheckMapping, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                    }
+                    @grid.GetHtml(
+                            htmlAttributes: new { id = "grid", @class = "table" },
+                            headerStyle: "thead-inverse",
+                            rowStyle: "ordertxt",
+                            footerStyle: "custpaging",
+                            mode: WebGridPagerModes.All,
+                            columns: new[]
+                            {
+                            grid.Column(header: "S.No.", style:"td-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                            grid.Column(columnName: "ClientName", header: "Client Name", canSort: true, style:"td-3"),
+                            grid.Column(columnName: "ReportType", header: "Report Type", canSort: true, style:"td-3"),
+                            grid.Column(columnName: "AddressChk", header: "Add Check", canSort: true, style:"td-1"),
+                            grid.Column(columnName: "CriminalChk", header: "Cri Check", canSort: true, style:"td-1"),
+                            grid.Column(columnName: "EducationChk", header: "Edu Check", canSort: true, style:"td-1"),
+                            grid.Column(columnName: "EmploymentChk", header: "Emp Check", canSort: true, style:"td-1"),
+                            grid.Column(columnName: "IdentityChk", header: "Id Check", canSort: true, style:"td-1"),
+                            grid.Column(columnName: "ReferenceChk", header: "Ref Check", canSort: true, style:"td-1"),
+                            grid.Column(columnName: "SpecialChk", header: "Special Check", canSort: true, style:"td-1"),
+                            grid.Column(header : "Manage CaseFlow", format : (item) => {
+                                var link = Html.ActionLink("Manage", "ManageCaseFlowMappings", "Master", new { RCMRowID = item.ReportCheckMappingRowID }, null);
+                                return link;
+                            }, style:"edit td-2"),
+
+                            grid.Column(header : "Artifact Mapping", format : (item) => {
+                                var link = Html.ActionLink("Artifact", "ManageArtifactMapping", "Master", new { RCMRowID = item.ReportCheckMappingRowID }, null);
+                                return link;
+                            }, style:"edit td-2"),
+
+                            grid.Column(header : "Edit", format : (item) => {
+                                var link = Html.ActionLink("Edit", "EditReportCheckMapping", "Master", new { RCMRowID = item.ReportCheckMappingRowID }, null);
+                                return link;
+                            }, style:"edit td-1"),
+                        }
+                    )
+                    <div class="total-record">Total Records: @Model.TotalRecords</div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section Scripts{
+    <script type="text/javascript">
+        function adchange(ChkData) {            
+            var id = ChkData.id;
+            var checkeds = ChkData.checked;
+            var flag = "";
+            if (ChkData.checked == true) {
+                flag = confirm('Are you sure to Enable this Record ?');
+            }
+            if (ChkData.checked == false) {
+                flag = confirm('Are you sure to Disable this Record ?');
+            }
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("SubCheckFamilyActive", "Master")',
+                    data: { "id": id, "checkeds": checkeds },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Record Update Successfully!!");
+                            setTimeout(function () { window.location;}, 300);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+            else {
+                if (ChkData.checked == false) {
+                    ChkData.checked = true;
+                }
+                else {
+                    ChkData.checked = false;
+                }
+            }
+        }
+    </script>
+}

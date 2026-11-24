@@ -1,0 +1,136 @@
+﻿@model IEnumerable<ViewModels.ProvidedInfoViewModel.MISExport>
+
+@{
+    ViewBag.Title = "MISExportRWQC";
+    WebGrid grid = new WebGrid(Model, rowsPerPage: 500);
+}
+
+@{
+    //@ViewBag.NavigationBtnExportExcel
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excels");
+    string hyperLinkExportExcel = Html.ActionLink("linkTitle", "GetExportExcelRWQC", "ReportQC", null, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+}
+@section LeftNavigation{ @Html.Partial("_NavLeftProvidedInfo") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+@if (ViewBag.UnAllocated == null)
+{
+    ViewBag.UnAllocated = "";
+}
+@{
+    string Rejection = @ViewBag.Rejection.ToString();
+    string RevertReceived = @ViewBag.Re_Verification.ToString();
+    string Re_Verification = @ViewBag.Re_Verification.ToString();
+    string YTR = @ViewBag.YTR.ToString();
+    string TotalWIP = @ViewBag.Total_WIP.ToString();
+    string TodaysClosure = @ViewBag.Todays_Closure.ToString();
+    string AssignedToday = @ViewBag.Assigned_Today.ToString();
+    string Old_Assigned = @ViewBag.Old_Assigned.ToString();
+    string Interim_Report = @ViewBag.Interim_Report.ToString();
+}
+
+<div class="row">
+    <div class="col-md-12" style="margin-bottom:30px;">
+        @if (Session["Designation"].ToString() == "Manager Quality Check")
+        {
+            <table class="table js-serial">
+                <thead>
+                    <tr>
+                        <th style="text-align:left;">TM First Name</th>
+                        <th>Rejection</th>
+                        <th>Re_Verification</th>
+                        <th>YTR</th>
+                        <th>Total_WIP</th>
+                        <th>Todays_Closure</th>
+                        <th>Assigned_Today</th>
+                        <th>Old_Assigned</th>
+                        <th>Interim_Report</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td style="text-align:left;">@item.TMFirstName</td>
+                                <td>@item.Rejection</td>
+                                <td>@item.Re_Verification</td>
+                                <td>@item.YTR</td>
+                                <td>@item.Total_WIP</td>
+                                <td>@item.Todays_Closure</td>
+                                <td>@item.Assigned_Today</td>
+                                <td>@item.Old_Assigned</td>
+                                <td>@item.Interim_Report</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td style="font-weight:bold; text-align:left;">Total Count</td>
+                        <td class="font-weight:bold;">@Html.ActionLink(Rejection, "GetMISTATInfoRwqc", "ReportQC", routeValues: new { Type = "Rejection" }, htmlAttributes: null) </td>
+                        <td class="font-weight:bold;">@Html.ActionLink(Re_Verification, "GetMISTATInfoRwqc", "ReportQC", routeValues: new { Type = "Re_Verification" }, htmlAttributes: null) </td>
+                        <td class="font-weight:bold;">@Html.ActionLink(YTR, "GetMISTATInfoRwqc", "ReportQC", routeValues: new { Type = "YTR" }, htmlAttributes: null) </td>
+                        <td class="font-weight:bold;">@Html.ActionLink(TotalWIP, "GetMISTATInfoRwqc", "ReportQC", routeValues: new { Type = "Total_WIP" }, htmlAttributes: null) </td>
+                        <td class="font-weight:bold;">@Html.ActionLink(TodaysClosure, "GetMISTATInfoRwqc", "ReportQC", routeValues: new { Type = "Todays_Closure" }, htmlAttributes: null) </td>
+                        <td class="font-weight:bold;">@Html.ActionLink(AssignedToday, "GetMISTATInfoRwqc", "ReportQC", routeValues: new { Type = "Assigned_Today" }, htmlAttributes: null) </td>
+                        <td class="font-weight:bold;">@Html.ActionLink(Old_Assigned, "GetMISTATInfoRwqc", "ReportQC", routeValues: new { Type = "Old_Assigned" }, htmlAttributes: null) </td>
+                        <td class="font-weight:bold;">@Html.ActionLink(Interim_Report, "GetMISTATInfoRwqc", "ReportQC", routeValues: new { Type = "Interim_Report" }, htmlAttributes: null) </td>
+                    </tr>
+                </tfoot>
+            </table>
+        }
+
+        <div class="total-record">Total Records: @ViewBag.record</div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $(".iframeShow").colorbox({ iframe: true, width: "70%", height: "80%" });
+        });
+    </script>
+    <script>
+        function addRowCount(tableAttr) {
+            $(tableAttr).each(function () {
+                $('th:first-child, thead td:first-child', this).each(function () {
+                    var tag = $(this).prop('tagName');
+                    $(this).before('<' + tag + '>S.No</' + tag + '>');
+                });
+                $('td:first-child', this).each(function (i) {
+                    $(this).before('<td>' + (i + 1) + '</td>');
+                });
+            });
+        }
+
+        // Call the function with table attr on which you want automatic serial number
+        addRowCount('.js-serial');
+    </script>
+}
+<style>
+    table, tr, th, td {
+        text-align: center;
+    }
+
+    thead {
+        background-color: #9c9595;
+        color: #FFF;
+    }
+
+    th {
+        padding: 5px !important;
+    }
+</style>

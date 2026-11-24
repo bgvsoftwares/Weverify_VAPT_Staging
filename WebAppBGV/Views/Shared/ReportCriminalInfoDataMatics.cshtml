@@ -1,0 +1,263 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    var list = Model.CriminalInfoModel.GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+
+
+}
+
+
+@if (Model != null && Model.CriminalInfoModel != null && Model.CriminalInfoModel.Count > 0)
+{
+
+    if (Model.CriminalInfoModel != null)
+    {
+        int i = 0;
+        foreach (var a in list)
+        {
+            int page = Convert.ToInt32(Session["page"]);
+            Session["page"] = page + 1;
+            var Anticident = Model.CriminalInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+            var ReportComment = a.ReportComment;
+
+            <page id="PrintSrc" size="A4">
+                <div style="page-break-after:always ;"></div>
+                <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; height:72rem; width:100%;">
+                    <tr>
+                        <td valign="top">
+                            <table border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                                <tr>
+                                    <td valign="top">
+                                        <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                            <tr>
+                                                <td>
+                                                    <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                                        <tr>
+                                                            <td valign="top" style="width:100%; text-align:end;"><img src='@Url.Content("~/Content/images/Securitas-logo.png")' style="width:5rem; margin-top:10px; margin-right:10px;"></td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width:100%;"><p style="font-size:16px; color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;"><a name="@a.SubcheckRowID">@a.SubCheckName.TrimEnd(' ').Replace("Current", "")</a></p></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width:100%;">&nbsp;</td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top" align="right">
+                                                    <table border="1" cellspacing="5" cellpadding="5" style="width:30%; margin-right: 8px;">
+                                                        <tr>
+                                                            @if (!string.IsNullOrEmpty(a.CheckColorName))
+                                                            {
+                                                                <td width="49%" style="color-adjust:exact;background:@a.CheckColorCode;font-size:14px;  font-weight:bold; padding:5px; text-align:center;">@a.CheckColorName</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td bgcolor="#fff" style="font-size:14px;  font-weight:bold; padding:5px; text-align:center;"></td>
+                                                            }
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top" align="center">
+                                                    <table border="1" cellspacing="5" cellpadding="2" style="width:98%;">
+                                                        <tr>
+                                                            <td width="33%" style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Name of Candidate</td>
+                                                            <td style="font-size:10px; font-family:Calibri;padding-left:5px;">@Model.PersonalName</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Securitas Reference ID </td>
+                                                            <td style="font-size:10px; font-family:Calibri; padding-left:5px;">@Model.CompanyRefNo</td>
+                                                        </tr>
+                                                        @if (Model.ClientRowID == 1441 && a.CheckType == "Add Check")
+                                                        {
+                                                            <tr>
+                                                                <td style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Check Date </td>
+                                                                <td style="font-size:10px; font-family:Calibri; padding-left:5px;">@a.CreationDate.ToString("dd-MM-yyyy")</td>
+                                                            </tr>
+                                                        }
+                                                        <tr>
+                                                            <td style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Report Comment </td>
+                                                            <td style="font-size:10px; font-family:Calibri; padding-left:5px;">@Html.Raw(ReportComment)</td>
+                                                        </tr>
+
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td height="30">&nbsp;</td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top" align="center">
+                                                    <table border="1" cellspacing="5" cellpadding="2" style="width:98%;">
+                                                        <tr>
+                                                            <td width="33%" style="font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;text-align:center; font-size:14px;  font-weight:700;">Details</td>
+                                                            <td width="33%" style="font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;text-align:center; font-size:14px;  font-weight:700;">Information Provided</td>
+                                                            <td width="33%" style="font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;text-align:center; font-size:14px;  font-weight:700;">Information Verified</td>
+                                                        </tr>
+                                                        @foreach (var item in Anticident)
+                                                        {
+                                                            if (item.AntecedentRowID == "52")
+                                                            {
+                                                                <tr>
+                                                                    <td style="font-size:10px; font-family:Calibri; height:40px!important;">@item.DisplayNameRep :</td>
+                                                                    <td style="font-size:10px; font-family:Calibri;">@item.DataEntryValue</td>
+                                                                    <td style="font-size:10px; font-family:Calibri;">
+
+                                                                        @item.OpsValue
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                            else
+                                                            {
+                                                                <tr>
+                                                                    <td style="font-size:10px; font-family:Calibri;">@item.DisplayNameRep :</td>
+                                                                    <td style="font-size:10px; font-family:Calibri;">@item.DataEntryValue</td>
+                                                                    <td style="font-size:10px; font-family:Calibri;">
+                                                                        @item.OpsValue
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <!--- Report Footer with Address Include -->
+                    <tr>
+                        <td colspan="2" style="text-align:center">
+                            page:@Session["page"].ToString()
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" height="100">
+                           
+                            <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                <tr>
+                                    <td colspan="3" style="border-top:3px solid #c0c0c0;">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td valign="bottom" width="20%"><img src="~/Images/Walsons-Report-footer.png" style="width:7rem; margin-left: 15px; margin-bottom: 15px;"></td>
+                                    <td width="1%">&nbsp;</td>
+                                    <td width="79%">
+                                        <p style="font-size:16px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#000080; font-weight:500; text-align:center; margin:10px 0px 0px 0px;"><img src='@Url.Content("~/Images/StampSignatureUpdated.jpg")' width="60" height="60"></p>
+                                        <p style="font-size:16px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#000080; font-weight:700; text-align:center; margin:15px 0px 0px 0px;">SECURITAS INDIA</p>
+                                        <p style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp;&nbsp; Tel: + 91 124 4718888</p>
+                                        <p style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin: 0px 0px 5px 0px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a>&nbsp;<span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </page>
+
+            if (Model.CandidateDocList != null)
+            {
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                {
+                    if (Doc.SubCheckRowID == a.SubcheckRowID)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                             page = Convert.ToInt32(Session["page"]);
+                            Session["page"] = page + 1;
+                            <page id="PrintSrc" size="A4">
+                                <div style="page-break-after:always ;"></div>
+                                <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center; width:100%; height:65rem;">
+                                    <tr>
+                                        <td valign="top" colspan="2" align="center">
+                                            <table border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                                                <tr>
+                                                    <td valign="top">
+                                                        <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                                            <tr>
+                                                                <td>
+                                                                    <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                                                        <tr>
+                                                                            <td valign="top" style="width:100%; text-align:end;"><img src='@Url.Content("~/Content/images/Securitas-logo.png")' style="width:5rem; margin-top:10px; margin-right:10px;"></td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="width:100%;"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@a.SubCheckName.Replace("Current", "") </p></td>
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td valign="top">
+                                                                    @{
+                                                                        FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                        System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                        if (image.Height > 600)
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" style="width: 100%;height:55rem;" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" style="width: 100%;height:55rem;" />
+                                                                        }
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <!--- Report Footer with Address Include -->
+                                    <tr>
+                                        <td colspan="2" style="text-align:center">
+                                            page:@Session["page"].ToString()
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" height="100">
+                                           
+                                            <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                                <tr>
+                                                    <td colspan="3" style="border-top:3px solid #c0c0c0;">&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td valign="bottom" width="20%"><img src="~/Images/Walsons-Report-footer.png" style="width:7rem; margin-left: 15px; margin-bottom: 15px;"></td>
+                                                    <td width="1%">&nbsp;</td>
+                                                    <td width="79%">
+                                                        <p style="font-size:16px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#000080; font-weight:500; text-align:center; margin:10px 0px 0px 0px;"><img src='@Url.Content("~/Images/StampSignatureUpdated.jpg")' width="60" height="60"></p>
+                                                        <p style="font-size:16px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#000080; font-weight:700; text-align:center; margin:15px 0px 0px 0px;">SECURITAS INDIA</p>
+                                                        <p style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp;&nbsp; Tel: + 91 124 4718888</p>
+                                                        <p style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin: 0px 0px 5px 0px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a>&nbsp;<span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <!--- Report Footer with Address Include -->
+                                </table>
+                            </page>
+                        }
+                    }
+                }
+            }
+            i++;
+
+        }
+    }
+
+}
+
+
+
+
+

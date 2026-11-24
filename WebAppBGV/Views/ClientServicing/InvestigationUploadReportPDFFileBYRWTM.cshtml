@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BGV - @ViewBag.Title</title>
+    <link href='@Url.Content("~/Images/report.css")' rel="stylesheet" />
+</head>
+<body>
+   
+    <table width="100%" align="center" style="border: 4px solid #999999;margin-bottom: 10px;">
+      
+
+        <tr>
+            <td colspan="5">&nbsp;</td>
+        </tr>
+        @using (Html.BeginForm("UploadReportPDFFileBYRWTM", "ClientServicing", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+        <tr>
+            <td style="font-weight:bold;" align="center" width="20%">Report Type</td>
+            <td align="left" width="20%">
+                @Html.DropDownList("ddlReportType", new List<SelectListItem>
+{
+new SelectListItem() {Text = "--Select--", Value="--Select--"},
+
+new SelectListItem() {Text = "Final", Value="Final"},
+new SelectListItem() {Text = "Interim", Value="Interim"}
+
+}, new { @class = "form-control" })
+            </td>
+            <td style="font-weight:bold" align="center" width="20%">Color Code</td>
+            <td align="left" width="20%">
+                <div class="col-yt">
+                    @*@Html.DropDownList("ddlColor",
+                new SelectList(ViewBag.Color, "ColorId", "ColorName"),
+
+                                                  new { style = "width: 150px;" })*@
+                    @Html.DropDownList("ddlColor", new List<SelectListItem>
+{
+new SelectListItem() {Text = "--Select--", Value="--Select--"},
+new SelectListItem() {Text = "Red", Value="Red"},
+new SelectListItem() {Text = "Green", Value="Green"}
+
+}, new { @class = "form-control" })
+
+                </div>
+            </td>
+            <td align="left" width="20%"></td>
+        </tr>
+        <tr>
+            <td colspan="5">&nbsp;</td>
+        </tr>
+        <tr>
+            <td align="center" colspan="3">
+                <p style="margin-bottom:24px;">
+
+                    @Html.TextBox("file", "", new { type = "file", @class = "btn bun-bg btn-default",  @onchange = "return fileValidation(this)", @style = "padding: 5px 10px 5px 10px;font-weight: bold;" })
+                </p>
+            </td>
+            <td align="left" colspan="2">
+                <input id="pdfupload" type="submit" style="padding: 5px 10px 5px 10px;font-weight: bold;" class="btn bun-bg btn-default" value="Upload Final Report" disabled="disabled" />
+            </td>
+
+        </tr>
+
+        }
+
+    </table>
+    
+    
+   
+</body>
+</html>
+<script src='@Url.Content("~/Scripts/modernizr-2.8.3.js")'></script>
+<script src='@Url.Content("~/Scripts/jquery-3.7.1.min.js")'></script>
+
+<script language="javascript">
+    function fileValidation(fileInput) {
+        var e = document.getElementById("ddlReportType");
+        var status = e.options[e.selectedIndex].value;
+
+        var m = document.getElementById("ddlColor");
+        var color = m.options[m.selectedIndex].value;
+        if (status == '--Select--') {
+            alert('Please select report type');
+            fileInput.value = '';
+            return false;
+        }
+        else if (color == '0') {
+            alert('Please select color Code');
+            fileInput.value = '';
+            return false;
+        }
+        else {
+            //var fileInput = document.getElementById('file');
+            var filePath = fileInput.value;
+
+            //var status = $("#ddlReportType").value;
+           // if (!(/\.(gif|jpg|jpeg|tiff|png)$/i).test(fileName)) {  
+
+            var allowedExtensions = /(\.pdf|rar|zip|zipx)$/i;
+            if (!allowedExtensions.exec(filePath)) {
+                alert('Please upload file having extension .pdf,.rar,.zip,.zipx only.');
+                fileInput.value = '';
+                $("#pdfupload").prop("disabled", true)
+                return false;
+            } else {
+                $("#pdfupload").prop("disabled", false);
+                return true;
+            }
+        }
+
+    }
+
+    function fileValidation1(fileInput) {
+        //var fileInput = document.getElementById('file');
+        var filePath = fileInput.value;
+        var allowedExtensions = /(\.pdf)$/i;
+        if (!allowedExtensions.exec(filePath)) {
+            alert('Please upload file having extension .pdf only.');
+            fileInput.value = '';
+            $("#pdfConvertToWord").prop("disabled", true)
+            return false;
+        } else {
+            $("#pdfConvertToWord").prop("disabled", false);
+            return true;
+        }
+    }
+    function CallPrint(strid) {
+  var prtContent = document.getElementById(strid);
+        var WinPrint = window.open('', 'Report', 'left=0,top=0,width=800,height=600,toolbar=0,scrollbars=yes,status=0');
+        WinPrint.document.open();
+           WinPrint.document.write(
+               '<html>\n<head>' +
+            '<link href="/Images/report.css" rel="stylesheet" type="text/css" />' +
+            '\n</head>' +
+            '<body>' +
+            '<div> \n' + prtContent.innerHTML + ' \n</div> ' +
+            '</body>' +
+            '\n</html>'
+        );
+
+        WinPrint.document.close();
+        WinPrint.focus();
+        WinPrint.print();
+         //WinPrint.close();
+    }
+</script>

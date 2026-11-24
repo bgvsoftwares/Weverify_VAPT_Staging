@@ -1,0 +1,262 @@
+﻿@model ViewModels.ProvidedInfoViewModel.RiskMatrixModel
+<!DOCTYPE html>
+@using (Html.BeginForm("SubmitRiskMatrix", "ReportQC", FormMethod.Post, new { id = "riskForm" }))
+{
+    @Html.HiddenFor(m => m.PersonalRowId)
+    @Html.HiddenFor(m => m.ClientRowId)
+
+    <div class="risk-header" style="text-align:center; font-weight: bold; font-size: 20px;">Risk Matrix (Likelihood × Impact)</div>
+    <div>
+        @if (ViewBag.SuccessMsg != null)
+        {
+            <div class="successmsg">@ViewBag.SuccessMsg.ToString()</div>
+        }
+
+        @if (ViewBag.ErrorMsg != null)
+        {
+            <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+        }
+        <hr />
+    </div>
+
+    <table class="risk-table">
+        <tr>
+            <th>Risk Factor</th>
+            <th>Likelihood (1–5)</th>
+            <th>Impact (1–5)</th>
+            <th>Risk Score</th>
+            <th>Category</th>
+        </tr>
+
+        @for (int i = 0; i < Model.Items.Count; i++)
+        {
+            <tr>
+                <td>
+                    @{
+                        string riskFactor =
+                        i == 0 ? "Statutory Non-Compliance" :
+                        i == 1 ? "Regulatory Exposure" :
+                        i == 2 ? "Financial Weakness" :
+                        i == 3 ? "Promoter Reputation Risk" :
+                        i == 4 ? "Cross-Directorship Conflict" :
+                        i == 5 ? "Political Exposure" :
+                        i == 6 ? "Criminal Risk (Promoters)" :
+                                 "Operational Failure Risk";
+                    }
+
+                    @riskFactor
+
+                    @Html.HiddenFor(m => m.Items[i].RiskFactor, new { @Value = riskFactor })
+                </td>
+
+
+
+                <td>
+                    @Html.TextBoxFor(m => m.Items[i].Likelihood,
+                        new { @class = "form-control likelihood", style = "width:60px;" })
+                </td>
+
+                <td>
+                    @Html.TextBoxFor(m => m.Items[i].Impact,
+                        new { @class = "form-control impact", style = "width:60px;" })
+                </td>
+
+                <td>
+                    @Html.TextBoxFor(m => m.Items[i].RiskScore,
+                        new { @class = "form-control riskScore", style = "width:60px;", @readonly = "readonly" })
+                </td>
+
+                <td>
+                    @Html.TextBoxFor(m => m.Items[i].Category,
+                        new { @class = "form-control category", style = "width:90px;" })
+                </td>
+
+            </tr>
+        }
+    </table>
+
+    <div class="risk-header" style="text-align:center; font-weight: bold; font-size: 20px;">Risk Matrix Consolidated</div>
+    <hr />
+
+    <table class="risk-table">
+
+        @for (int i = 0; i < Model.ConsolodatedItems.Count; i++)
+        {
+            <tr>
+                <td style="width: 17%">
+                    @{
+                        string riskFactor =
+                        i == 0 ? "Statutory Compliance" :
+                        i == 1 ? "Regulatory Compliance" :
+                        i == 2 ? "Financial Compliance" :
+                                 "Stakeholder Compliance";
+                    }
+
+                    @riskFactor
+
+                    @Html.HiddenFor(m => m.ConsolodatedItems[i].Level, new { @Value = riskFactor })
+                </td>
+
+                <td style="width: 17%">
+                    @Html.TextBoxFor(m => m.ConsolodatedItems[i].Status,
+                        new { @class = "form-control likelihood", style = "width:100px;" })
+                </td>
+
+                <td>
+                    @Html.TextBoxFor(m => m.ConsolodatedItems[i].Remarks,
+                        new { @class = "form-control impact", style = "width:850px;" })
+                </td>
+
+            </tr>
+        }
+    </table>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <p class="risk-header" style="text-align:center; font-weight:bold; font-size:20px;">
+                    Recommendations :
+                </p>
+            </div>
+            <div class="col-md-8">
+                @Html.TextAreaFor(
+                    m => m.Recommendations1,
+                    new
+                    {
+                        @class = "form-control",
+                        rows = "4",
+                        style = "text-align:left;"
+                    })
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+
+}
+
+<script src="~/Scripts/jquery-3.7.1.min.js"></script>
+
+<script src="~/Scripts/tinymceNew.min.js"></script>
+
+<script src="~/Scripts/tinymce-jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        debugger
+        console.log("called");
+        $('textarea').tinymce({
+            height: 200,
+            plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+            ],
+            toolbar: 'undo redo | blocks | bold italic backcolor | ' +
+                'alignleft aligncenter alignright alignjustify | ' +
+                'bullist numlist outdent indent | removeformat | help'
+        });
+        // Prevent jQuery UI dialog from blocking focusin
+        $(document).on('focusin', function (e) {
+            if ($(e.target).closest(".tox-tinymce, .tox-tinymce-aux, .moxman-window, .tam-assetmanager-root").length) {
+                e.stopImmediatePropagation();
+            }
+        });
+    });
+</script>
+
+
+<style>
+    .risk-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+    }
+
+        .risk-table th {
+            background-color: #eee;
+            font-weight: bold;
+            text-align: left;
+            border: 1px solid #aaa;
+            padding: 6px 8px;
+        }
+
+        .risk-table td {
+            border: 1px solid #aaa;
+            padding: 6px 8px;
+            vertical-align: middle;
+        }
+
+    .form-control {
+        width: 60px;
+        padding: 4px;
+        text-align: left;
+    }
+</style>
+
+
+
+<script>
+    function updateRow(row) {
+        var likelihood = parseInt(row.querySelector(".likelihood").value) || 0;
+        var impact = parseInt(row.querySelector(".impact").value) || 0;
+
+        var score = likelihood * impact;
+        row.querySelector(".riskScore").value = score;
+    }
+
+    document.querySelectorAll("tr").forEach(function (row) {
+        let like = row.querySelector(".likelihood");
+        let imp = row.querySelector(".impact");
+
+        if (like && imp) {
+            like.addEventListener("input", function () {
+                updateRow(row);
+            });
+            imp.addEventListener("input", function () {
+                updateRow(row);
+            });
+        }
+    });
+</script>
+
+@*<script>
+        function updateRiskRow(row) {
+
+            let l = parseInt(row.querySelector(".likelihood").value) || 0;
+            let i = parseInt(row.querySelector(".impact").value) || 0;
+
+            let score = l * i;
+
+            // Set Risk Score
+            row.querySelector(".riskScore").value = score === 0 ? "" : score;
+
+            // CATEGORY SHOW ONLY WHEN SCORE > 0
+            if (score > 0) {
+
+                let category = "";
+
+                if (score <= 2)
+                    category = "Low";
+                else if (score <= 4)
+                    category = "Moderate";
+                else
+                    category = "High";
+
+                row.querySelector(".category").value = category;
+            }
+            else {
+                row.querySelector(".category").value = "";
+            }
+        }
+
+        document.querySelectorAll("tr").forEach(function (row) {
+            let like = row.querySelector(".likelihood");
+            let imp = row.querySelector(".impact");
+
+            if (like && imp) {
+                like.addEventListener("input", function () { updateRiskRow(row); });
+                imp.addEventListener("input", function () { updateRiskRow(row); });
+            }
+        });
+    </script>*@

@@ -1,0 +1,138 @@
+﻿<page id="PrintSrc" size="A4">
+    <div style="page-break-after:always ;"></div>
+    <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; width:100%!important; height:72rem!important;">
+        <tr>
+            <td valign="top">
+                <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                    <tr>
+                        <td>
+                            <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                <tr>
+                                    <td valign="top" style="width:100%; text-align:end;"><img src='@Url.Content("~/Content/images/Securitas-logo.png")' style="width:5rem; margin-top:10px; margin-right:10px;"></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:100%;"><p style="font-size:19px; color:#000080; text-align:center; font-weight:bold; text-decoration:underline; padding:10px 0px 10px 0px;">Background Verification Report – Executive Summary</p></td>
+                    </tr>
+                    <tr>
+                        <td valign="top" style="height:50rem;">
+                            <table border="1" cellpadding="2" cellspacing="5" style="width:100%;">
+                                @{
+                                    string checkName = string.Empty;
+                                    foreach (var item in Model.PersonalChecksBriefDetails)
+                                    {
+                                        if (checkName != item.CheckFName)
+                                        {
+                                            <tr>
+                                                <td colspan="4" bgcolor="#c0c0c0" style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact; background:#c0c0c0; padding:5px; text-align:center;"> <strong> @item.CheckFName</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="20%" style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact; background:#c0c0c0; padding-left:5px;"><strong>Type of Check</strong></td>
+                                                <td width="50%" style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact; background:#c0c0c0; text-align:center;"><strong>Brief Details</strong></td>
+                                                <td width="17%" style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact; background:#c0c0c0; text-align:center;"><strong>Status (Color)</strong></td>
+                                                <td width="17%" style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact; background:#c0c0c0; text-align:center;"><strong>Check Complete Date</strong></td>
+                                            </tr>
+                                            checkName = item.CheckFName;
+                                        }
+                                        <tr style=" font-size:12px; font-weight:bold; padding:5px;">
+                                            <td style="padding-left:5px;  font-size:10px; font-family:Calibri;">@item.SubCheckFName</td>
+                                            @if (Model.ClientRowID == 249 && item.subCheckId == 201 && Model.ProcessName == "Sutherland GDB Project")
+                                            {
+                                                <td align="center" style="font-size:10px; padding:0px; font-family:Calibri;">
+                                                    <ul style="margin:0; padding:0px !important; list-style:none; font-size:12px; font-family:Calibri;">
+                                                        <li style="border-bottom:1px solid #000;">Australia Department of Foreign Affairs and Trade</li>
+                                                        <li style="border-bottom:1px solid #000;">EU Consolidated List</li>
+                                                        <li style="border-bottom:1px solid #000;">FBI Most Wanted</li>
+                                                        <li style="border-bottom:1px solid #000;">FBI Most Wanted Terrorists</li>                                                        
+                                                        <li style="border-bottom:1px solid #000;">FBI Seeking Information</li>
+                                                        <li style="border-bottom:1px solid #000;">FBI Top Ten Most Wanted</li>
+                                                        <li style="border-bottom:1px solid #000;">Interpol Most Wanted</li>
+                                                        <li style="border-bottom:1px solid #000;">Monetary Authority of Singapore</li>
+                                                        <li style="border-bottom:1px solid #000;">OFAC SDN List</li>
+                                                        <li style="border-bottom:1px solid #000;">OFSI Consolidated List</li>
+                                                        <li style="border-bottom:1px solid #000;">Terrorist Exlusion List</li>
+                                                        <li style="border-bottom:1px solid #000;">UK FCA List</li>
+                                                        <li style="border-bottom:1px solid #000;">UK HM Treasury List</li>
+                                                        <li style="border-bottom:1px solid #000;">UN Consolidated List</li>
+                                                        <li style="border-bottom:1px solid #000;">Israel - Ministry of Finance</li>
+                                                        <li style="border-bottom:1px solid #000;">Israel - Ministry of Defence - Terrorism List</li>
+                                                        <li>Israel - National Bureau of Counter Terror Financing</li>
+                                                    </ul>
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td align="center" style="font-size:10px; font-family:Calibri;">@item.SubCheckDetail</td>
+                                            }
+
+                                            @if (@item.Status == "Not Applicable")
+                                            {
+                                                <td style="color-adjust:exact; font-size:10px; font-family:Calibri; background:@item.ColorCode;" align="center">Not Applicable</td>
+                                            }
+                                            else
+                                            {
+                                                <td style="color-adjust:exact;font-size:10px; font-family:Calibri; background:@item.ColorCode;" align="center">@item.ColorName</td>
+                                            }
+                                            <td style="padding-left:5px; font-size:10px; font-family:Calibri;">
+
+                                                @if (item.CheckCompleteDate != null && Model.ClientRowID == 1323)
+                                                {
+                                                    <p>@item.CheckCompleteDate.ToString("dd/MMM/yyyy")</p>
+                                                }
+                                                else if (item.CheckCompleteDate != null)
+                                                {
+
+                                                    <p>@item.CheckCompleteDate.ToString("dd/MM/yyyy")</p>
+                                                }
+                                                else
+                                                {
+                                                    <p></p>
+                                                }
+
+                                            </td>
+                                        </tr>
+                                    }
+                                    if (Model.ClientRowID == 576)
+                                    {
+                                        <tr>
+                                            <td height="30" colspan="3"><b> @Model.EmpNoteRemark </b></td>
+                                        </tr>
+                                        <tr>
+                                            <td height="30" colspan="3"><b> @Model.AddressNoteRemark </b></td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                        <tr>
+                            <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                                &nbsp;
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                            <td width="1%">&nbsp;</td>
+                            <td width="79%">
+                                <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                <p style="font-size:16px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                <p style="font-size:16px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</page>
+

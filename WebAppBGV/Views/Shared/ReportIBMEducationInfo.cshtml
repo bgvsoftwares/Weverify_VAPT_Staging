@@ -1,0 +1,228 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    var list = Model.EducationInfoModel.GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+
+
+}
+
+@if (Model != null && Model.EducationInfoModel != null && Model.EducationInfoModel.Count > 0)
+{
+    if (Model.EducationInfoModel != null)
+    {
+        int i = 0;
+        foreach (var a in list)
+        {
+            var Anticident = Model.EducationInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+            var ReportComment = a.ReportComment;
+            <page id="PrintSrc" size="A4">
+                <table style="width:100%; margin:auto; border:3px solid #ccc;page-break-after:always;">
+                    <tr valign="top">
+                        <td style="height:0px;">
+                            <table style="width:100%;">
+                                <tr valign="top">
+                                    <td style="text-align:left;height: 0px;">
+                                        <img src="~/Content/images/Securitas-logo.png" style="width:15%;padding-right: 15px; padding:10px;">
+                                    </td>
+                                    <td style="text-align:right;height: 0px;">
+                                        @if (Model.FinalColor.ToUpper() == "GREEN")
+                                        {
+                                            <img src="~/Images/IBMGreen.png" style="width:60%;padding:10px;">
+                                        }
+                                        else if (Model.FinalColor.ToUpper() == "YELLOW")
+                                        {
+                                            <img src="~/Images/IBMYellow.png" style="width:60%;padding:10px;">
+                                        }
+                                        else if (Model.FinalColor.ToUpper() == "RED")
+                                        {
+                                            <img src="~/Images/IBMRed.png" style="width:60%;padding:10px;">
+                                        }
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <td>
+                            <table style="width:100%;">
+                                <tr>
+                                    <td style="height: 5%; text-align: center; text-decoration: underline; font-weight: bolder;font-size: 16px; font-family: 'calibri';">EDUCATION SUMMARY</td>
+                                </tr>
+                                <tr valign="top">
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr valign="top">
+                                    <td style="height:58rem;">
+                                        <table style="border: none;border-collapse:collapse; margin: auto;width:95%;">
+                                            <tbody>
+                                                <tr>
+                                                    <td style="width:166.2pt;border:solid black 1.0pt;border-right:  none;background:silver;padding:2.75pt 2.75pt 2.75pt 2.75pt;">
+                                                        <p style='margin:0cm;font-size:12px;font-family:"calibri";text-align:center;'><strong><span style="font-size:12px; font-family: Calibri, sans-serif; color: black;">Particulars</span></strong></p>
+                                                    </td>
+                                                    <td style="width:166.2pt;border:solid black 1.0pt;border-right:  none;background:silver;padding:2.75pt 2.75pt 2.75pt 2.75pt;">
+                                                        <p style='margin:0cm;font-size:12px;font-family:"calibri";text-align:center;'><span style="font-family: Calibri, sans-serif;"><strong><span style="font-size:12px; color: black;">Details in application form</span></strong></span></p>
+                                                    </td>
+                                                    <td style="width:166.2pt;border:solid black 1.0pt;background:silver;padding:2.75pt 2.75pt 2.75pt 2.75pt;">
+                                                        <p style='margin:0cm;font-size:12px;font-family:"calibri";text-align:center;'><span style="font-family: Calibri, sans-serif;"><strong><span style="font-size:12px; color: black;">Remarks by Verifier</span></strong></span></p>
+                                                    </td>
+                                                </tr>
+
+                                                @if (a != null)
+                                                {
+
+                                                    foreach (var item in Anticident)
+                                                    {
+
+
+                                                        if ( item.AntecedentRowID == "281" || item.AntecedentRowID == "221" || item.AntecedentRowID == "280" || item.AntecedentRowID == "76" || item.AntecedentRowID == "298")
+                                                        {
+                                                            <tr>
+                                                                <td style="width:166.2pt;border-top:none;border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:none;padding:2.75pt 2.75pt 2.75pt 2.75pt; font-family:'calibri'; font-size:12px!important;">
+                                                                    @item.DisplayNameRep
+                                                                </td>
+                                                                <td colspan="2" style="border:solid black 1.0pt;border-top:none;padding:2.75pt 2.75pt 2.75pt 2.75pt; font-family:'calibri'!important; font-size:12px!important;">
+                                                                    @item.OpsValue
+                                                                </td>
+                                                            </tr>
+                                                        }
+
+                                                        else if (item.AntecedentRowID == "172")
+                                                        {
+                                                            <tr>
+                                                                <td style="width:166.2pt;border-top:none;border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:none;padding:2.75pt 2.75pt 2.75pt 2.75pt; font-family:'calibri'; font-size:12px!important;">
+                                                                    @item.DisplayNameRep
+                                                                </td>
+                                                                @try
+                                                                {
+                                                                <td colspan="2" style="border:solid black 1.0pt;border-top:none;padding:2.75pt 2.75pt 2.75pt 2.75pt; font-family:'calibri'!important; font-size:12px!important;">
+                                                                    @Convert.ToDateTime(item.OpsValue).ToString("dd-MMM-yyyy")
+                                                                </td>
+                                                                        }
+                                                                        catch
+                                                                        {
+                                                                    <td colspan="2" style="border:solid black 1.0pt;border-top:none;padding:2.75pt 2.75pt 2.75pt 2.75pt; font-family:'calibri'!important; font-size:12px!important;">
+                                                                        @item.OpsValue
+                                                                    </td>
+                                                                        }
+
+                                                                    
+                                                                </tr>
+                                                        }
+
+                                                        else if (item.AntecedentRowID == "424")
+                                                        {
+                                                            <tr>
+                                                                <td style="width:166.2pt;border-top:none;border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:none;padding:2.75pt 2.75pt 2.75pt 2.75pt;font-family:'Calibri'; font-size:12px!important;">
+                                                                    @item.DisplayNameRep
+                                                                </td>
+
+                                                                <td colspan="2" style="width:166.2pt;border:solid black 1.0pt;border-top:none;padding:2.75pt 2.75pt 2.75pt 2.75pt; font-family:Calibri!important; font-size:12px!important;">
+                                                                    @Html.Raw(ReportComment)
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                        else if (item.AntecedentRowID == "66")
+                                                        {
+                                                            <tr>
+                                                                <td style="width:166.2pt;border-top:none;border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:none;padding:2.75pt 2.75pt 2.75pt 2.75pt; font-size:12px!important;">
+                                                                    @item.DisplayNameRep
+                                                                </td>
+                                                                <td colspan="2" style="width:166.2pt;border:solid black 1.0pt;border-top:none;padding:2.75pt 2.75pt 2.75pt 2.75pt;font-family:'Calibri'; font-size:12px!important;">
+                                                                    @Html.Raw(item.OpsValue)
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                        else
+                                                        {
+                                                            <tr>
+                                                                <td style="width:166.2pt;border-top:none;border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:none;padding:2.75pt 2.75pt 2.75pt 2.75pt; font-family:'Calibri'sans-serif!important;font-size:12px!important;">
+                                                                    @item.DisplayNameRep
+                                                                </td>
+                                                                <td style="width:166.2pt;border-top:none;border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:none;padding:2.75pt 2.75pt 2.75pt 2.75pt; font-family:'Calibri'sans-serif!important;font-size:12px!important;text-align:center;">
+                                                                    @item.DataEntryValue
+                                                                </td>
+                                                                <td style="width:166.2pt;border:solid black 1.0pt;border-top:none;padding:2.75pt 2.75pt 2.75pt 2.75pt; font-family:'Calibri'sans-serif!important;font-size:12px!important;text-align:center!important;">
+                                                                    @item.OpsValue
+                                                                </td>
+                                                            </tr>
+                                                        }
+
+                                                    }
+
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </page>
+
+            if (Model.CandidateDocList != null)
+            {
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                {
+                    if (Doc.SubCheckRowID == a.SubcheckRowID)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                            <page id="PrintSrc" size="A4">
+                                <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center;width:100%; height:70rem; page-break-after:always!important;">
+                                    <tr>
+                                        <td valign="top" colspan="2" align="center">
+                                            <table border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                                                <tr>
+                                                    <td valign="top">
+                                                        <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                                            <tr>
+                                                                <td>
+                                                                    <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                                                        <tr>
+                                                                            <td valign="top" style="width:100%; text-align:start;"><img src='~/Content/Securitas_AB_logo.svg.png' style="width:11%;padding-right: 15px; padding:10px;"></td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="width:100%;"><p style="font-size:12px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@a.SubCheckName (@Doc.DocumentType)</p></td>
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td valign="top">
+                                                                    @{
+                                                                        FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                        System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                        if (image.Height > 600)
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" style="width: 100%!important; height:60rem!important;" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" style="width: 100%!important; height:60rem!important;" />
+                                                                        }
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </page>
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+}

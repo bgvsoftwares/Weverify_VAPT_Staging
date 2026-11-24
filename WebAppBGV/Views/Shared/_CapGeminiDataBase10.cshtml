@@ -1,0 +1,447 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    /**/
+
+    var list = Model.SpecialInfoModel.Where(T => T.SubcheckRowID == 391).GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+
+
+}
+
+@if (Model != null && Model.SpecialInfoModel != null && Model.SpecialInfoModel.Count > 0)
+{
+    if (Model.SpecialInfoModel != null)
+    {
+        int i = 0;
+        foreach (var a in list)
+        {
+            var Anticident = Model.SpecialInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+
+            var ReportComment = a.ReportComment;
+            <page id="PrintSrc" size="A4">
+                <div style="page-break-after:always ;"></div>
+
+                <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; width:100%; border-collapse:collapse;">
+                    <tr>
+                        <td valign="top" align="center" style="height:50rem;">
+                            <p style="text-align:center;font-family:Arial; font-size:33px;"><strong>Walsons Services </strong></p>
+
+                            <table border="1" cellpadding="0" cellspacing="0" align="center" style="text-align:center; width:100%; font-family:Arial;font-size:13px;">
+                                <tbody>
+                                    <tr>
+                                        <td width="121" style="padding:10px!important;">
+                                            <strong>Vendor Ref Id</strong>
+                                        </td>
+                                        <td width="254" style="padding:10px!important;">
+                                            <strong>Candidate Name</strong>
+                                        </td>
+                                        <td width="128" style="padding:10px!important;">
+                                            <strong>Entity</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="121" style="padding:10px!important;">
+                                            @Model.CompanyRefNo
+                                        </td>
+                                        <td width="254" style="padding:10px!important;">
+                                            @Model.PersonalName
+                                        </td>
+                                        <td width="128" style="padding:10px!important;">
+                                            @Model.BusinessName
+                                        </td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p>&nbsp;</p>
+                            <p style="text-align:center;font-family:Arial; font-size:13px; text-decoration:underline"><strong>DATABASE CHECK</strong></p>
+                            <p>&nbsp;</p>                            
+                            <table border="0" cellpadding="2" cellspacing="5" id="tblDemo" style="width:100%; font-family:Arial;font-size:13px;">
+                                <tr>
+                                    <td>
+                                        <table border="1" cellspacing="0" cellpadding="0" style="width:100%; font-family:Arial;font-size:13px;">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="152" style="padding:10px!important;">
+                                                        <strong>Details</strong>
+                                                    </td>
+                                                    <td width="176" style="padding:10px!important;">
+                                                        <strong>Information Provided</strong>
+                                                    </td>
+                                                    <td width="143" style="padding:10px!important;">
+                                                        <strong>Verification Remarks</strong>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="152" style="padding:10px!important;">
+                                                        <strong>Name of the candidate</strong>
+                                                    </td>
+                                                    <td width="176" style="padding:10px!important;">
+                                                        @Model.PersonalName
+                                                    </td>
+                                                    <td width="143" style="padding:10px!important;">
+
+                                                        Yes
+
+
+                                                    </td>
+                                                </tr>
+                                                @foreach (var item in Anticident)
+                                                {
+
+                                                    if (item.AntecedentRowID == "175")
+                                                    {
+                                                        <tr>
+                                                            <td width="152" style="padding:10px!important;">
+                                                                <strong>Verified Date</strong>
+                                                            </td>
+                                                            <td colspan="2" width="319" style="padding:10px!important;">
+                                                                @{
+                                                                    if (item.OpsValue != "")
+                                                                    {
+                                                                        try
+                                                                        {
+                                                                            DateTime Date = Convert.ToDateTime(item.OpsValue);
+                                                                            @Date.ToString("dd MMMM yyyy")
+                                                                        }
+                                                                        catch
+                                                                        {
+                                                                            <p>item.OpsValue</p>
+                                                                        }
+
+                                                                    }
+
+                                                                }
+
+                                                            </td>
+                                                        </tr>
+                                                    }                                                                                                                                                                                                   
+                                                                        
+
+                                                }
+                                                <tr>
+                                                    <td width="152" style="padding:10px!important;">
+                                                        <strong>Additional Comments</strong>
+                                                    </td>
+                                                    <td colspan="2" width="319" style="padding:10px!important;">
+                                                        @Html.Raw(ReportComment)
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="146" style="padding:10px!important;">
+                                                        <strong>Artifacts Enclosed</strong>
+                                                    </td>
+                                                    <td colspan="2" width="326">
+                                                        @*<p>@SpecialVerInfo.SC_Others5</p>*@
+                                                        @if (Session["LA"] != null)
+                                                        {
+
+                                                            if (Session["LA"].ToString() == "Annexure1")
+                                                            {
+                                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure2</a>
+                                                                Session["LA"] = "Annexure2";
+
+
+                                                            }
+                                                            else if (Session["LA"].ToString() == "Annexure2")
+                                                            {
+                                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure3</a>
+                                                                Session["LA"] = "Annexure3";
+
+
+                                                            }
+                                                            else if (Session["LA"].ToString() == "Annexure3")
+                                                            {
+                                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure4</a>
+                                                                Session["LA"] = "Annexure4";
+
+
+                                                            }
+                                                            else if (Session["LA"].ToString() == "Annexure4")
+                                                            {
+                                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure5</a>
+                                                                Session["LA"] = "Annexure5";
+
+
+                                                            }
+                                                            else if (Session["LA"].ToString() == "Annexure5")
+                                                            {
+                                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure6</a>
+                                                                Session["LA"] = "Annexure6";
+
+                                                            }
+                                                            else if (Session["LA"].ToString() == "Annexure6")
+                                                            {
+                                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure7</a>
+                                                                Session["LA"] = "Annexure7";
+
+                                                            }
+                                                            else if (Session["LA"].ToString() == "Annexure7")
+                                                            {
+                                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure8</a>
+                                                                Session["LA"] = "Annexure8";
+
+                                                            }
+                                                            else if (Session["LA"].ToString() == "Annexure8")
+                                                            {
+                                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure9</a>
+                                                                Session["LA"] = "Annexure9";
+
+                                                            }
+                                                            else if (Session["LA"].ToString() == "Annexure9")
+                                                            {
+                                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure 10</a>
+                                                                Session["LA"] = "Annexure10";
+
+                                                            }
+                                                            else if (Session["LA"].ToString() == "Annexure10")
+                                                            {
+                                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure11</a>
+                                                                Session["LA"] = "Annexure11";
+
+                                                            }
+                                                            else if (Session["LA"].ToString() == "Annexure11")
+                                                            {
+                                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure12</a>
+                                                                Session["LA"] = "Annexure12";
+
+                                                            }
+                                                            else if (Session["LA"].ToString() == "Annexure12")
+                                                            {
+                                                                <a href="#@a.SubcheckRowID" style="font-size:12px; font-family:Calibri; padding-left:5px;">Annexure13</a>
+                                                                Session["LA"] = "Annexure13";
+
+                                                            }
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                        <p>&nbsp;</p>
+                                        <p>&nbsp;</p>
+                                        <p>&nbsp;</p>
+
+                                    </td>
+
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <hr style="border:0; border-top:3px solid #c0c0c0; margin:10px 0;" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td valign="bottom" height="120">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td valign="top">&nbsp;</td>
+                                </tr>
+
+                                <tr>
+                                    <td width="20%"><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                    <td width="1%">&nbsp;</td>
+                                    <td width="79%">
+
+
+                                        <p style="font-size:16px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#000080; font-weight:500; text-align:center; margin:10px 0px 0px 0px;"><img src='@Url.Content("~/Images/StampSignatureUpdated.jpg")' width="60" height="60"></p>
+
+                                        <p style="font-size:16px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#000080; font-weight:700; text-align:center; margin:15px 0px 0px 0px;">SECURITAS INDIA</p>
+                                        <p style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp;&nbsp; Tel: + 91 124 4718888</p>
+                                        <p style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a>&nbsp;<span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+
+                    </tr>
+                </table>
+            </page>
+
+
+            if (Model.CandidateDocList != null)
+            {
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                {
+                    if (Doc.SubCheckRowID == a.SubcheckRowID)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                            <page id="PrintSrc" size="A4">
+                                <div style="page-break-after:always ;"></div>
+                                <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; width:100%; border-collapse:collapse;">
+                                    <tr>
+                                        <td valign="top" align="center" style="height:50rem;">
+                                            <p style="text-align:center;font-family:Arial; font-size:33px;"><strong>Walsons Services </strong></p>
+                                            <table border="1" cellpadding="0" cellspacing="0" align="center" style="text-align:center; width:100%; font-family:Arial;font-size:13px;">
+                                                <tbody>
+                                                    <tr>
+                                                        <td width="121" style="padding:10px!important;">
+                                                            <strong>Vendor Ref Id</strong>
+                                                        </td>
+                                                        <td width="254" style="padding:10px!important;">
+                                                            <strong>Candidate Name</strong>
+                                                        </td>
+                                                        <td width="128" style="padding:10px!important;">
+                                                            <strong>Entity</strong>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="121" style="padding:10px!important;">
+                                                            @Model.CompanyRefNo
+                                                        </td>
+                                                        <td width="254" style="padding:10px!important;">
+                                                            @Model.PersonalName
+                                                        </td>
+                                                        <td width="128" style="padding:10px!important;">
+                                                            @Model.BusinessName
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <table border="1" cellpadding="2" cellspacing="5" id="tblDemo" style="width:100%; font-family:Arial;font-size:13px;">
+                                                <tr>
+                                                    <td>
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tr>
+                                                                <td style="font-size:10px; font-family:Calibri;">
+                                                                    <p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;"><br /></p>
+                                                                    @if (Session["LA"] != null)
+                                                                    {
+                                                                        if (Session["LA"].ToString() == "Annexure1")
+                                                                        {
+                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure1 </a></p>
+
+
+
+
+                                                                        }
+                                                                        else if (Session["LA"].ToString() == "Annexure2")
+                                                                        {
+                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure2 </a></p>
+
+
+
+
+                                                                        }
+                                                                        else if (Session["LA"].ToString() == "Annexure3")
+                                                                        {
+                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure3 </a></p>
+
+
+                                                                        }
+
+                                                                        else if (Session["LA"].ToString() == "Annexure4")
+                                                                        {
+                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure4 </a></p>
+
+                                                                        }
+                                                                        else if (Session["LA"].ToString() == "Annexure5")
+                                                                        {
+                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure5 </a></p>
+
+                                                                        }
+                                                                        else if (Session["LA"].ToString() == "Annexure6")
+                                                                        {
+                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure6 </a></p>
+
+                                                                        }
+                                                                        else if (Session["LA"].ToString() == "Annexure7")
+                                                                        {
+                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure7 </a></p>
+
+                                                                        }
+                                                                        else if (Session["LA"].ToString() == "Annexure8")
+                                                                        {
+                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure8 </a></p>
+
+                                                                        }
+                                                                        else if (Session["LA"].ToString() == "Annexure9")
+                                                                        {
+                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure 9 </a></p>
+
+                                                                        }
+                                                                        else if (Session["LA"].ToString() == "Annexure10")
+                                                                        {
+                                                                            <p style="font-family:Arial;font-size:17px; text-decoration:underline; font-weight:bold;text-align:center"> <a name="@a.SubcheckRowID">Annexure 10 </a></p>
+
+                                                                        }
+                                                                    }
+
+                                                                </td>
+                                                            </tr>
+                                                            <tr><td colspan="2">&nbsp;</td></tr>
+                                                            <tr>
+                                                                <td valign="top">&nbsp;</td>
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td valign="top">
+                                                                    @{
+                                                                        FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                        System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                        if (image.Height > 600)
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                        }
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <hr style="border:0; border-top:3px solid #c0c0c0; margin:10px 0;" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td valign="bottom" height="120">
+                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                <tr>
+                                                    <td valign="top">&nbsp;</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td width="20%"><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                                    <td width="1%">&nbsp;</td>
+                                                    <td width="79%">
+
+
+                                                        <p style="font-size:16px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#000080; font-weight:500; text-align:center; margin:10px 0px 0px 0px;"><img src='@Url.Content("~/Images/StampSignatureUpdated.jpg")' width="60" height="60"></p>
+
+                                                        <p style="font-size:16px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#000080; font-weight:700; text-align:center; margin:15px 0px 0px 0px;">SECURITAS INDIA</p>
+                                                        <p style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp;&nbsp; Tel: + 91 124 4718888</p>
+                                                        <p style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a>&nbsp;<span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+
+                                    </tr>
+                                </table>
+                                
+                               
+                            </page>
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+}

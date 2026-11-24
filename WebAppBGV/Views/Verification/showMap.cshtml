@@ -1,0 +1,99 @@
+﻿
+@model ViewModels.VerificationViewModel.geoModel
+@{Layout = null; }
+
+
+@{
+    string PersonalRowID = "";
+    if (Request.QueryString["PersonalRowID"] != null)
+    {
+        PersonalRowID = @Request.QueryString["PersonalRowID"].ToString();
+    }
+}
+
+
+@using (Html.BeginForm("showMap", "Verification", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(model => model.PersonalRowID)
+
+    <div class="form-group branch">
+        @Html.EditorFor(model => model.address, new { htmlAttributes = new { @class = "form-control col-md-7 col-xs-12" } })
+
+        @Html.EditorFor(model => model.latitude , new { htmlAttributes = new { @class = "form-control col-md-7 col-xs-12" } })
+
+    </div>
+
+    <div class="form-group branch search-frame">
+        <div style="text-align:center;">
+            <input class="btn bun-bg btn-default" type="submit" id="btnSearch" value="Search" />
+
+
+        </div>
+    </div>
+}
+
+<br />
+<fieldset>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <div id="googleMap" style="height:400px;width:100%;"></div>
+    <script>
+        function myMap() {
+
+            latlngval = $("#latitude").val();
+            var b = latlngval.split(",");
+            var myCenter = new google.maps.LatLng(parseFloat(b[0]), parseFloat(b[1]));
+            var mapProp = { center: myCenter, zoom: 12, scrollwheel: false, draggable: true, mapTypeId: google.maps.MapTypeId.ROADMAP };
+            var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+            var marker = new google.maps.Marker({ position: myCenter });
+            marker.setMap(map);
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBN8bhP1xLDDRdFP9LPkKmkDj5zoeUr4IE&callback=myMap"></script>
+</fieldset>
+@*<footer>
+    <p style="background-color: Yellow; font-weight: bold; color:blue; text-align: center; font-style: oblique">@DateTime.Now.ToLocalTime()</p> @*Add Date Time*@
+@*</footer>*@*
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-3.7.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+
+        //alert('i');
+    });
+    $('#btnSearch').click(function () {
+
+        $("#latitude").val("0,0");
+        var add = $.trim($("[id*=address]").val());
+
+
+        var url = "/Verification/getlatlong?add=" + add;
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            type: 'GET',
+            async: false,
+            //data: { pass: pass },
+            success: function (result) {
+                $("#latitude").val((JSON.stringify(result.pass.Latitude)) + ',' + (JSON.stringify(result.pass.Longitude)));
+            },
+            error: function (result) {
+
+            }
+        });
+    })
+
+
+
+</script>
+
+
+

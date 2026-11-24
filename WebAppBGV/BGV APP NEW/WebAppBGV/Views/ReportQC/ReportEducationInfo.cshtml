@@ -1,0 +1,233 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    var list = Model.EducationInfoModel.GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+
+
+}
+
+
+@if (Model != null && Model.EducationInfoModel != null && Model.EducationInfoModel.Count > 0)
+{
+
+
+
+
+
+    if (Model.EducationInfoModel != null)
+    {
+        foreach (var a in list)
+        {
+
+
+            <page id="PrintSrc" size="A4">
+                <div style="page-break-after:always ;"></div>
+                <table width="793" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999;">
+                    <!--- Report Header Include -->
+                    @*@Html.Partial("_ReportHeader")*@
+                    <!--- Report Header Include -->
+                    <tr>
+                        <td width="2%" align="left" valign="bottom" @*style="border-left:2px solid #999999;"*@>&nbsp;</td>
+                        <td valign="top">
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td valign="top">
+                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td>
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr>
+                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;"><a name="@a.SubCheckName.TrimEnd(' ')">@a.SubCheckName.TrimEnd(' ')</a></p></td>
+                                                            <td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                                                        </tr>
+                                                        <tr><td colspan="2">&nbsp;</td></tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top" align="right"></td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top">&nbsp;</td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top" align="right">
+                                                    <table width="30%" border="1" cellspacing="5" cellpadding="5">
+                                                        <tr>
+                                                            @*<td width="50%" style="color-adjust:exact;background:#c0c0c0;font-size:14px;  font-weight:bold; padding:5px;">@ProvidedInfo.CheckStatus</td>*@
+                                                            @if (!string.IsNullOrEmpty(a.CheckColorName))
+                                                            {
+                                                                <td width="49%" style="color-adjust:exact;background:@a.CheckColorCode;font-size:14px;  font-weight:bold; padding:5px; text-align:center;">@a.CheckColorName</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td bgcolor="#fff" style="font-size:14px;  font-weight:bold; padding:5px; text-align:center;"></td>
+                                                            }
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td valign="top" align="center">
+                                                    <table width="100%" border="1" cellspacing="5" cellpadding="2">
+                                                        <tr>
+                                                            <td width="33%" style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Name of Candidate</td>
+                                                            <td style="font-size:10px; font-family:Calibri;padding-left:5px;">@Model.PersonalName</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Securitas Reference ID </td>
+                                                            <td style="font-size:10px; font-family:Calibri; padding-left:5px;">@Model.CompanyRefNo</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;padding-left:5px; font-weight:bold;">Unique ID</td>
+                                                            <td style="font-size:10px; font-family:Calibri; padding-left:5px;">@Model.ClientRefID</td>
+                                                        </tr>
+
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td height="30">&nbsp;</td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top" align="center">
+                                                    <table width="100%" border="1" cellspacing="5" cellpadding="2">
+                                                        <tr>
+                                                            <td width="33%" style="font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center; font-size:14px;  font-weight:700;">Details</td>
+                                                            <td width="33%" style="font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center; font-size:14px;  font-weight:700;">Information Provided</td>
+                                                            <td width="33%" style="font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center; font-size:14px;  font-weight:700;">Information Verified</td>
+                                                        </tr>
+
+
+
+                                                        @foreach (var item in Model.EmploymentInfoModel)
+                                                        {
+                                                            <tr>
+                                                                <td width="33%" style="font-size:10px; font-family:Calibri;">@item.DisplayNameDE :</td>
+                                                                <td width="33%" style="font-size:10px; font-family:Calibri;">@item.DataEntryValue</td>
+                                                                <td width="33%" style="font-size:10px; font-family:Calibri;">
+
+                                                                    @item.OpsValue
+                                                                </td>
+                                                            </tr>
+                                                        }
+
+
+
+
+
+
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td @*style="border-right:2px solid #999999;"*@ align="left" valign="top">&nbsp;</td>
+                    </tr>
+                    <!--- Report Footer with Address Include -->
+                    @Html.Partial("_ReportFooterAddress")
+
+                    <tr>
+                        <td colspan="3">
+                            <a href="#Background Verification Report - Executive Summary">Back</a>
+                        </td>
+                    </tr>
+
+                    <!--- Report Footer with Address Include -->
+                    <!--- Report Footer Include -->
+                    @*@Html.Partial("_ReportFooter")*@
+                    <!--- Report Footer Include -->
+                </table>
+
+            </page>
+
+            if (Model.CandidateDocList != null)
+            {
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                {
+                    if (Doc.SubCheckRowID == a.SubcheckRowID)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                            <page id="PrintSrc" size="A4">
+                                <div style="page-break-after:always ;"></div>
+                                <table width="793" cellspacing="0" height="1100" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center">
+                                    <!--- Report Header Include -->
+                                    @*@Html.Partial("_ReportHeader")*@
+                                    <!--- Report Header Include -->
+                                    <tr>
+                                        @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                        <td valign="top" colspan="2" align="center" valign="bottom">
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td valign="top">
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tr>
+                                                                <td style="font-size:10px; font-family:Calibri;">
+                                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                        <tr>
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@a.SubCheckName (@Doc.DocumentType)</p></td>
+                                                                            <td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                                                                        </tr>
+                                                                        <tr><td colspan="2">&nbsp;</td></tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td valign="top">&nbsp;</td>
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td valign="top">
+                                                                    @{
+                                                                        FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                        System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                        if (image.Height > 600)
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                        }
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                                    </tr>
+                                    <!--- Report Footer with Address Include -->
+                                    @Html.Partial("_ReportFooterAddress")
+                                    <!--- Report Footer with Address Include -->
+                                    <!--- Report Footer Include -->
+                                    @*@Html.Partial("_ReportFooter")*@
+                                    <!--- Report Footer Include -->
+                                </table>
+                            </page>
+                        }
+                    }
+                }
+            }
+
+
+        }
+    }
+
+}
+
+
+
+
+

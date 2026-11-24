@@ -1,0 +1,196 @@
+﻿
+@{
+    ViewBag.Title = "Push Status of Checks in client system";
+}
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Push Status of Checks in client system</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="card shadow mb-5 bg-body rounded pt-0 mt-4 rounded-0 w-75 m-auto">
+            <div class="card-body p-4">
+                @using (Html.BeginForm("CheckCaseDetails", "GetOldDoc", FormMethod.Post))
+                {
+                    @model BAL.Models.CheckCaseDetails
+                    <div class="row row-sm justify-content-center">
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">CompanyRef ID :</label>
+                        </div>
+                        <div class="col-md-4">
+                            @Html.Editor("CompanyRefNo", new { @class = "form-control" })
+                            @if (ViewBag.Error != null && ViewBag.Error == "Please fill mandatory fields")
+                            {
+                                <p class="text-danger p-2">@ViewBag.Error</p>
+                            }
+                            <br />
+                        </div>
+                    </div>
+                    <div class="row row-sm mt-4">
+                        <div class="col-md-12 text-center">
+                            <input type="submit" class="btn" value="Get Details" />
+                        </div>
+
+                    </div>
+                    if (ViewBag.Error != null && ViewBag.Error == "Please fill mandatory fields")
+                    {
+                    }
+                    else
+                    {
+                        if (ViewBag.Error != null)
+                        {
+                            <div class="row row-sm mt-3">
+                                <div class="col-md-12 text-center">
+                                    <label style="color:green;">@ViewBag.Error</label>
+                                </div>
+                            </div>
+
+                        }
+                    }
+                }
+            </div>
+        </div>
+
+        @if (Model != null)
+        {
+            <div class="row row-sm mt-4 p-3">
+                <div class="col-lg-12 col-xl-12 col-md-12 col-sm-12 mb-5 table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>SNo.</th>
+                                <th>Unique Reference ID</th>
+                                <th>Status</th>
+                                <th>Data Type</th>
+                                <th>Data Value</th>
+                                <th style="width:25%;">Remarks</th>
+                                <th>Date</th>
+                                <th>Created By</th>
+                                <th>Sub Check ID </th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-start tx-10">
+                            @{
+                                var Count = 0;
+                            }
+                            @if (Model.ShowallCheckCaseDetails != null)
+                            {
+                                foreach (var item in Model.ShowallCheckCaseDetails)
+                                {
+                                    <tr>
+                                        <td style="font-size:.80rem; color:#8D5FFF;">
+                                            @{Count = Count + 1;}
+                                            @Count
+                                        </td>
+                                        <td style="font-size:.80rem; color:#8D5FFF;">
+                                            @Html.DisplayFor(modelItem => item.UniqueReferenceID)
+                                        </td>
+                                        <td style="font-size:.80rem; color:#8D5FFF;">
+                                            @Html.DisplayFor(modelItem => item.Status)
+                                        </td>
+                                        <td style="font-size:.80rem; color:#8D5FFF;">
+                                            @Html.DisplayFor(modelItem => item.DataType)
+                                        </td>
+                                        <td style="font-size:.80rem; color:#8D5FFF;">
+                                            @Html.DisplayFor(modelItem => item.DataValue)
+                                        </td>
+                                        <td style="font-size:.80rem; color:#8D5FFF;">
+                                            @Html.DisplayFor(modelItem => item.Remarks)
+                                        </td>
+                                        <td style="font-size:.80rem; color:#8D5FFF;">
+                                            @Html.DisplayFor(modelItem => item.CreatedOn)
+                                        </td>
+                                        <td style="font-size:.80rem; color:#8D5FFF;">
+                                            @Html.DisplayFor(modelItem => item.CreatedBy)
+                                        </td>
+                                        <td style="font-size:.80rem; color:#8D5FFF;">
+                                            @Html.DisplayFor(modelItem => item.SubCheckRowID)
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+    <style>
+        body {
+            font-family: 'Securitas Pro';
+        }
+
+        .navbar-brand-img {
+            width: 95px;
+        }
+
+        .bg-light {
+            background: #031F30 !important;
+        }
+
+        .btn {
+            background: #8D5FFF;
+            border-radius: 0px;
+            border: 1px solid #8D5FFF;
+            color: #fff;
+            font-family: 'Securitas Pro';
+            font-size: 1rem;
+            transition: .3s ease-in-out;
+        }
+
+            .btn:hover {
+                background: #fff;
+                color: #031f30;
+                border: 1px solid #8D5FFF;
+            }
+
+        .card-header {
+            background: #031f30;
+            color: #FFF;
+        }
+
+        .text-box {
+            display: block;
+            width: 100%;
+            padding: .375rem .75rem;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #212529;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            border-radius: 0rem;
+            transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        }
+
+            .text-box:focus {
+                color: #212529;
+                background-color: #fff;
+                border-color: #86b7fe;
+                outline: 0;
+                box-shadow: 0 0 0 0.25rem rgb(13 110 253 / 25%);
+            }
+
+        .text-danger {
+            font-size: .80rem;
+        }
+
+        thead {
+            font-size: .90rem;
+            background: #031F30;
+            color: #FFF;
+        }
+    </style>
+</body>
+</html>
+

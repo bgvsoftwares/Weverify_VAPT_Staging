@@ -1,0 +1,316 @@
+﻿
+<style>
+    .padding-td > td {
+        height: 30px;
+        vertical-align: middle;
+        padding-left: 10px;
+    }
+
+    .sd tr > td {
+        border: 1px solid #000;
+        border-collapse: collapse !important;
+    }
+
+    .sd {
+        border-collapse: collapse !important;
+    }
+</style>
+@model ViewModels.ReportQCViewModel.InterimReportGenerateViewModel
+<page id="PrintSrc" size="A4">
+    <div style="page-break-before:avoid;page-break-inside:auto;page-break-after:auto"></div>
+    @if (Model != null && Model.AddressProvidedList != null && Model.AddressProvidedList.Count() > 0 && Model.AntecedentList != null && Model.AntecedentList.Count() > 0)
+    {
+        foreach (var ProvidedInfo in Model.AddressProvidedList)
+        {
+            var AddressVerInfo = Model.AddressVerifiedList.Where(ver => ver.AddressRowID == ProvidedInfo.AddressRowID).FirstOrDefault();
+            var antecentList = Model.AntecedentList.Where(a => a.CheckFamilyRowID == ProvidedInfo.CheckFamilyRowID && a.SubCheckRowID == ProvidedInfo.SubCheckRowID).ToList();
+
+            if (AddressVerInfo != null)
+            {
+                <tr>
+                    <td valign="top">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+
+                            <tr><td height="20">&nbsp;</td></tr>
+                            <tr>
+                                <td>
+                                    <table class="sd" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td height="20" colspan="4" align="center" style="font-size:25px; border:0; text-decoration: underline; font-family:Calibri; color-adjust:exact; color:darkblue"><strong>Employee BGV format</strong></td>
+                                        </tr>
+                                        <tr style="padding:20px;">
+                                            <td colspan="4" style="border:0;">
+                                                <p></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td height="20" colspan="4" align="center" style="font-size:22px; border:0; text-decoration: underline; font-family:Calibri; color-adjust:exact; color:darkblue"><strong>Residence verification</strong></td>
+                                        </tr>
+                                        <tr style="padding:50px;">
+                                            <td colspan="4" style="border:0;">
+                                                <p></p>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="padding-td">
+                                            <td style="padding-left:5px;font-weight:bold;  font-size:12px; font-family:Calibri; color-adjust:exact; color:darkblue;" width="30%">Name of the Applicant</td>
+                                            <td colspan="3" align="left" style="font-size:10px; font-family:Calibri;" height="30">@Model.PersonalName</td>
+                                        </tr>
+                                        <tr class="padding-td">
+                                            <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; color:darkblue;" width="30%">Father’s Name</td>
+                                            <td colspan="3" align="left" style="font-size:10px; font-family:Calibri;" height="30">@Model.FatherName</td>
+                                        </tr>
+                                        <tr class="padding-td">
+                                            <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; color:darkblue;" width="30%">
+                                                Designation applied for in IB
+                                            </td>
+                                            <td colspan="3" align="left" style="font-size:10px; font-family:Calibri;" height="30">@Model.Designation </td>
+                                        </tr>
+                                        <tr class="padding-td">
+                                            <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; color:darkblue;" width="30%">Location/City Name</td>
+                                            <td colspan="3" align="left" style="font-size:10px; font-family:Calibri;" height="30">@Model.TechLocation</td>
+                                        </tr>
+                                        <tr class="padding-td">
+                                            <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; color:darkblue;" width="30%">Securitas ID</td>
+                                            <td colspan="3" align="left" style="font-size:10px; font-family:Calibri;" height="30">@Model.CompanyRefNo</td>
+                                        </tr>
+
+                                        <tr class="padding-td">
+                                            <td colspan="4" style="border:0;height:30px; ">
+                                                <p></p>
+                                            </td>
+                                        </tr>
+                                        <tr class="padding-td">
+                                            <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; color:darkblue;" width="30%">Address Visited</td>
+                                            <td colspan="3" align="left" style="font-size:10px; font-family:Calibri;" height="30">@AddressVerInfo.AV_Add</td>
+                                        </tr>
+                                        <tr class="padding-td">
+                                            <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; color:darkblue;" width="30%">Name of Person Contacted</td>
+                                            <td colspan="3" align="left" style="font-size:10px; font-family:Calibri;" height="30">@AddressVerInfo.AV_Resp_Name</td>
+                                        </tr>
+
+                                        <tr class="padding-td">
+                                            <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; color:darkblue;" width="30%">
+                                                Relationship with
+                                                Candidate
+                                            </td>
+                                            <td colspan="3" align="left" style="font-size:10px; font-family:Calibri;" height="30">@AddressVerInfo.AV_Resp_Relation_With_Cand</td>
+                                        </tr>
+
+                                        <tr class="padding-td">
+                                            <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; color:darkblue;" width="30%">
+                                                Period of Stay
+                                            </td>
+                                            <td colspan="3" align="left" style="font-size:10px; font-family:Calibri;" height="30">@AddressVerInfo.AV_Dur_of_Stay</td>
+                                        </tr>
+
+                                        <tr class="padding-td">
+                                            <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; color:darkblue;" width="30%">
+                                                Residence Status
+                                            </td>
+                                            <td colspan="3" align="left" style="font-size:10px; font-family:Calibri;" height="30">@AddressVerInfo.AV_Add_Type</td>
+                                        </tr>
+
+
+                                        <tr class="padding-td">
+                                            <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; color:darkblue;" width="30%">
+                                                Land Mark
+                                            </td>
+                                            <td colspan="3" align="left" style="font-size:10px; font-family:Calibri;" height="30">@AddressVerInfo.AV_Landmark</td>
+                                        </tr>
+
+                                        <tr class="padding-td">
+                                            <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; color:darkblue;" width="30%">
+                                                Security Confirmation
+                                            </td>
+                                            <td colspan="3" align="left" style="font-size:10px; font-family:Calibri;" height="30">@AddressVerInfo.AV_OtherDetails11</td>
+                                        </tr>
+
+
+                                        <tr class="padding-td">
+                                            <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; color:darkblue;" width="30%">
+                                                Society Board
+                                            </td>
+                                            <td colspan="3" align="left" style="font-size:10px; font-family:Calibri;" height="30">@AddressVerInfo.AV_Applcnt_Demons_Unsual_Behv</td>
+                                        </tr>
+
+                                        <tr class="padding-td">
+                                            <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; color:darkblue;" width="30%">
+                                                Photo Graph (Yes/No)
+                                            </td>
+                                            <td colspan="3" align="left" style="font-size:10px; font-family:Calibri;" height="30">@AddressVerInfo.AV_House_Photo_taken</td>
+                                        </tr>
+
+                                        <tr class="padding-td">
+                                            <td height="20" colspan="4" align="left" style="font-size:18px; border:0;  font-family:Calibri; color-adjust:exact; ">
+                                                <b style="color:darkblue">Feedback about applicant & any other critical observation: -</b> @AddressVerInfo.ReportComment
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td colspan="4" style="border:0;height:30px; ">
+                                                <p></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td height="20" colspan="4" align="left" style="font-size:18px; border:0; font-weight:bold;  font-family:Calibri; color:darkblue; color-adjust:exact; ">Report Status:</td>
+                                        </tr>
+                                        @if (Model.FinalColor.ToLower() == "red")
+                                        {
+                                            <tr>
+                                                <td height="20" colspan="4" align="left" style="font-size:18px; border:0;  font-family:Calibri; color-adjust:exact; ">
+                                                    <img src="~/Images/IndiaBullsRed.JPG" />
+
+                                                </td>
+                                            </tr>
+
+                                        }
+                                        else if (Model.FinalColor.ToLower() == "orange")
+                                        {
+                                            <tr>
+                                                <td height="20" colspan="4" align="left" style="font-size:18px; border:0;  font-family:Calibri; color-adjust:exact; ">
+
+                                                    <img src="~/Images/IndiaBullsRed.JPG" />
+                                                </td>
+                                            </tr>
+                                        }
+                                        else if (Model.FinalColor.ToLower() == "green")
+                                        {
+                                            <tr>
+                                                <td height="20" colspan="4" align="left" style="font-size:18px; border:0;  font-family:Calibri; color-adjust:exact; ">
+
+                                                    <img src="~/Images/IndiaBullsGreen.JPG" />
+                                                </td>
+                                            </tr>
+                                        }
+
+                                        <tr>
+                                            <td style="border: 0px solid #000;width: 50%;">
+                                                <table width="100%">
+                                                    <tr class="padding-td">
+                                                        <td height="20" colspan="2" style="font-size:15px;  font-family:Calibri; color-adjust:exact; color:darkblue;padding:10px;" width="50%">
+                                                            Name of Agency
+                                                            Executive
+                                                        </td>
+                                                        <td width="50%">@AddressVerInfo.AV_OtherDetails15</td>
+                                                    </tr>
+                                                    <tr class="padding-td">
+                                                        <td height="20" colspan="2" style="font-size:15px;  font-family:Calibri; color-adjust:exact; color:darkblue;padding:10px;" width="50%">
+                                                            Agency Stamp
+                                                        </td>
+                                                        <td width="50%">NA</td>
+                                                    </tr>
+                                                    <tr class="padding-td">
+                                                        <td height="20" colspan="2" style="font-size:15px;  font-family:Calibri; color-adjust:exact; color:darkblue;padding:10px;" width="50%">
+                                                            Date
+                                                        </td>
+                                                        @if (AddressVerInfo.AV_Date_Verification != null)
+                                                        {
+                                                            <td width="50%">@AddressVerInfo.AV_Date_Verification.Value.ToString("dd/MMMM/yyyy")</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="50%"></td>
+                                                        }
+
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+
+
+
+
+
+
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height="20">&nbsp;</td>
+                            </tr>
+
+                        </table>
+                    </td>
+                </tr>
+            }
+
+
+            if (Model.CandidateDocList != null)
+            {
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == ProvidedInfo.SubCheckRowID))
+                {
+                    if (Doc.SubCheckRowID == ProvidedInfo.SubCheckRowID)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                <page id="PrintSrc" size="A4">
+                    <div></div>
+                    <table width="100%" cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999;page-break-before:always;page-break-inside:auto;page-break-after:auto;align-content:center">
+                        <!--- Report Header Include -->
+                        @*@Html.Partial("_ReportHeader")*@
+                        <!--- Report Header Include -->
+                        <tr>
+                            @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                            <td valign="top" colspan="2" align="center" valign="bottom">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td valign="top">
+                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                @*<tr>
+                                        <td>
+                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                <tr>
+                                                    <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@ProvidedInfo.SubCheckName (@Doc.DocumentType)</p></td>
+                                                    <td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                                                </tr>
+                                                <tr><td colspan="2">&nbsp;</td></tr>
+                                            </table>
+                                        </td>
+                                    </tr>*@
+                                                <tr>
+                                                    <td valign="top">&nbsp;</td>
+                                                </tr>
+                                                <tr style="text-align:center">
+                                                    <td valign="top">
+                                                        @{
+                                                            FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                            System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                            if (image.Height > 600)
+                                                            {
+                                                                <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="720" height="720" />
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="720" />
+                                                            }
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&nbsp;</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                        </tr>
+                        <!--- Report Footer Address Include -->
+                        @*@Html.Partial("_ReportFooterAddress")*@
+                        <!--- Report Footer Address Include -->
+                        <!--- Report Footer Include -->
+                        @*@Html.Partial("_ReportFooter")*@
+                        <!--- Report Footer Include -->
+                    </table>
+                </page>
+                        }
+                    }
+                }
+            }
+        }
+    }
+</page>

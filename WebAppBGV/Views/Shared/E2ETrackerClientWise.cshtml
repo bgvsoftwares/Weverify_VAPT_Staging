@@ -1,0 +1,122 @@
+﻿@{Layout = null; }
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/colorbox.css" rel="stylesheet" />
+<link href="~/Content/Site.css" rel="stylesheet" />
+
+@*<script src="~/Scripts/jquery-3.7.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/modernizr-2.8.3.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
+
+
+@{
+    ViewBag.Title = "Welcome To  E2E Tracker";
+    //Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitleWoutNav") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row"><div class="col-md-12">&nbsp;</div></div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-horizontal">
+            <div class="row">
+                <div class="col-md-12">
+
+
+
+                    <div class="form-group branch row search-frame">
+                        <label class="col-md-2 control-label">Case Created date From :</label>
+                        <div class="col-md-3">
+                            @Html.TextBox("CompletedFromDate", null, new { @class = "form-control", @id = "CompletedFromDate", @placeholder = "dd-MMM-yyyy", @autocomplete = "off" })
+                        </div>
+                        <label class="col-md-2 control-label">Case Created date To :</label>
+                        <div class="col-md-3">
+                            @Html.TextBox("CompletedToDate", null, new { @class = "form-control", @id = "CompletedToDate", @placeholder = "dd-MMM-yyyy", @autocomplete = "off" })
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="form-group branch row">
+                @Html.Label("Select Client", htmlAttributes: new { @class = "col-md-2 control-label required" })
+                <div class="col-md-8">
+                    @Html.DropDownList("ClientRowID",
+                new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                "-- Select Client -- ",
+                new { @class = "form-control", @id = "ClientRowID" })
+                </div>
+                </div>
+                <div class="row">
+                    @*@Html.ActionLink("Export to Excel", "ExportCaseStatus", "ClientServicing", new { @class = "btn bun-bg btn-default", id = "btnExportCaseStatus" })*@
+
+                    <div class="col-md-12 text-center">
+                        <input type="submit" id="btnE2EMIS" value="MIS" class="btn bun-bg btn-default" />
+                    </div>
+                   
+
+                </div>
+            @{
+                if (Request.QueryString["ClientRowID"] != null && Convert.ToInt16(Request.QueryString["ClientRowID"]) > 0)
+                {
+                    @Html.Hidden("hdnClientRowID", Request.QueryString["ClientRowID"])
+                    @Html.Hidden("ClientRowID", Request.QueryString["ClientRowID"])
+                }
+            }
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts{
+    @*<script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>*@
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('#ClientRowID').val($('#hdnClientRowID').val());
+
+            $('#CompletedToDate').datepicker({
+                dateFormat: "dd-M-yy",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedFromDate').datepicker({
+                dateFormat: "dd-M-yy",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+
+            $('#btnE2EMIS').click(function () {
+                var client = $('#ClientRowID').val();
+                var fromdate = $('#CompletedFromDate').val();
+                var Todate = $('#CompletedToDate').val();
+                if ($('#ClientRowID').val() != '') {
+
+
+                    window.location.href = "@Url.Action("E2ETrackerClientWise", "Verification")?ClientRowId="
+                        + client + "&fromdate=" + fromdate + " &Todate=" + Todate+"";
+
+                }
+
+            });
+        });
+
+
+    </script>
+}

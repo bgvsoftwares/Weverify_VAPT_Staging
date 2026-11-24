@@ -1,0 +1,695 @@
+﻿@model ViewModels.TempViewModel.ClientOnboadringviewModel
+@{
+    Layout = null;
+}
+
+
+<title>BGV Client - On Boarding Mail</title>
+<!-- Icons css -->
+<link href="~/assets/css/icons.css" rel="stylesheet">
+
+<!-- Bootstrap css -->
+<link href="~/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<!-- style css -->
+<link href="~/assets/css/style.css" rel="stylesheet">
+<link href="~/assets/css/style-dark.css" rel="stylesheet">
+<link href="~/assets/css/boxed.css" rel="stylesheet">
+<link href="~/assets/css/dark-boxed.css" rel="stylesheet">
+
+<!---Skinmodes css-->
+<link href="~/assets/css/skin-modes.css" rel="stylesheet" />
+<link href="~/Content/colorbox.css" rel="stylesheet" />
+<!-- Internal Data table css -->
+<link href="~/assets/plugins/datatable/datatables.min.css" rel="stylesheet" />
+<link href="~/assets/plugins/datatable/responsive.dataTables.min.css" rel="stylesheet">
+<link href="~/assets/plugins/datatable/responsive.bootstrap5.css" rel="stylesheet">
+<link href="~/assets/plugins/datatable/css/buttons.bootstrap5.min.css" rel="stylesheet">
+<link href="~/assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<link href="~/assets/plugins/datatable/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="~/assets/plugins/select2/css/select2.min.css" rel="stylesheet">
+<link href="~/assets/uikit/css/uikit.min.css" rel="stylesheet" />
+<!---Internal Fileupload css-->
+<script src="~/assets/plugins/jquery/jquery.min.js"></script>
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+
+@if (ViewBag.ErrorMsg != null && ViewBag.ErrorMsg != "")
+{
+    <script>
+        $(document).ready(function () {
+            Swal.fire({
+                icon: 'info',
+
+                //title: 'Mandatory Fields.',
+        text: '@ViewBag.ErrorMsg',
+        timer: 20000
+})
+        })
+    </script>
+}
+<div class="container-fluid m-0 p-0">
+    <nav class="navbar shadow mb-5" style="background: #031F30;">
+        @if (Model.LoginByMailID != "")
+        {
+            <a class="navbar-brand text-white d-flex align-items-center" href="#">
+                <i class="fa-solid fa-user" style="font-size: 20px; color: #031F30; background: #FFF; width: 35px; height: 35px; padding: 10px 5px; border-radius: 50%; margin-right: 10px; "></i>
+                @Model.LoginByMailID
+            </a>
+            <input type="hidden" value="@WebAppBGV.CommonMethods.clsCommonMethods.PEncrypt(Model.LoginByMailID)" id="PEncryptUserID" />
+        }
+        <img src="~/assets/Client_Page_images/Securitas_newlogo.png" style="width:100px;">
+    </nav>
+    <div class="row">
+        <div class="col-md-12 d-flex justify-content-center align-items-center">
+            <div class="card h-auto w-50 mt-4">
+                <div class="card-body p-0">
+                    <div class="container-fluid">
+                        @if (ViewBag.ErorrMsg != null)
+                        {
+                            <div class="row p-2">
+                                <div class="col-md-12" style="text-align:center;">
+                                    <span style="color:Red;font-weight:bold;font-size:1rem;">@ViewBag.ErorrMsg</span>
+                                </div>
+                            </div>
+                        }
+                        @using (Html.BeginForm("ClientOnboardingTemplateDetails", "Account", FormMethod.Get, new { enctype = "multipart/form-data" }))
+                        {
+                            <input type="hidden" id="ClientRowID" name="ClientRowID">
+                            <input type="hidden" value="" name="UserEmailID" id="UserEmailID" />
+                            <div class="row p-2">
+                                <div class="col-md-9">
+                                    <label class="form-label">Select Client Name</label>
+                                    <input list="brow" id="clientSearch" class="form-control">
+                                    <datalist id="brow">
+                                        @foreach (var a in ViewBag.ClientList)
+                                        {
+                                            <option value="@a.ClientName" data-id="@a.ClientRowID"></option>
+                                        }
+                                    </datalist>
+
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">&nbsp;</label>
+                                    <input type="submit" value="Search" class="submit-btn w-100" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    @if (Model.ClientRowID != 0)
+                    {
+                        <div class="container-fluid">
+                            @using (Html.BeginForm("ClientOnboardingTemplateDetails", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                            {
+                                <div class="row p-2">
+                                    <div class="col-md-6">
+                                        <label class="form-label">From EmailID</label>
+                                        <input type="text" value="" class="form-control" name="FromEmailID" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        @if (Model.ClientRowID != 0)
+                                        {
+                                            <input type="hidden" value="@Model.ClientRowID" name="ClientRowID" />
+                                            <input type="hidden" value="@WebAppBGV.CommonMethods.clsCommonMethods.PEncrypt(Model.LoginByMailID)" name="UserEmailID" />
+                                        }
+                                        <label class="form-label">Client EmailID</label>
+                                        <input type="text" value="" class="form-control" name="ToEmailID" required />
+                                    </div>
+                                </div>
+                                <div class="row justify-content-center p-2">
+                                    <div class="col-md-3">
+                                        <input type="submit" value="Send" class="submit-btn w-100" />
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12" style="overflow: scroll; height: 100vh;">
+            <div class="container d-flex justify-content-center align-items-center">
+                @if (Model != null)
+                {
+                    if (Model.ClientRowID != 0)
+                    {
+                            <table align="center" cellspacing="0" cellpadding="0"
+                                   style="width:25cm; border-collapse: collapse; background:#F9F9FE; margin-top:20px; box-shadow: 2px 7px 3px 0px #ccc!important; border: none !important;">
+                                <tr>
+                                    <td style="padding:0; border: none;">
+                                        @*{Domestic1} {Domestic2}*@
+                                        <img src="~/Images/ClientOnboardingImg/D1.png" width="100%" />
+                                        <img src="~/Images/ClientOnboardingImg/D2.png" width="100%" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:center;padding:0; border:none;">
+                                        <a href="https://bgv.securitas-india.com">
+                                            @*{Domestic3}*@
+                                            <img src="~/Images/ClientOnboardingImg/D3.png" width="100%" />
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:0; border: none;">
+                                        @*{Domestic4}*@
+                                        <img src="~/Images/ClientOnboardingImg/D4.png" width="100%" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 100%;">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td>
+                                                   &nbsp;
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top" style="padding-left: 25px; padding-right: 25px; width: 50%; text-align: left;">
+                                                @*{Domestic5}*@
+                                                <img src="~/Images/ClientOnboardingImg/D225.png" width="100%" />
+                                                </td>
+                                                <td style="width: 40%; vertical-align: top;">
+                                                    <table cellspacing="0" cellpadding="0" border="0">
+                                                        <tr>
+                                                            <td></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <h3 style="font-size: 20px; color: #aa1834; margin: 0px; padding-bottom: 5px; font-family: 'Securitas Pro';">
+                                                                    Primary
+                                                                    SPOC
+                                                                </h3>
+                                                                <p style="margin: 0; font-weight: 600; font-size: 16px; font-family: 'Securitas Pro'; ">
+                                                                    @Model.PrimarySPOCName |
+                                                                    @Model.PrimarySPOCDesignation
+                                                                </p>
+                                                                <p style="margin: 0; font-size: 16px; color: #031F30; font-family: 'Securitas Pro'; ">
+                                                                    @Model.PrimarySPOC
+                                                                </p>
+                                                                <p style="margin: 0; font-size: 16px; margin-bottom: 25px; font-family: 'Securitas Pro'; ">
+                                                                    @Model.PrimarySPOCMobileNo
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <h3 style="font-size: 20px; color: #8d5fff; margin: 0px; padding-bottom: 5px; font-family: 'Securitas Pro';">
+                                                                    First
+                                                                    Level Escaltion
+                                                                </h3>
+                                                                <p style="margin: 0; font-weight: 600; font-size: 16px;">
+                                                                    @Model.FirstLevelEscaltionName | @Model.FirstLevelEscaltionDesignation
+                                                                </p>
+                                                                <p style="margin: 0; font-size: 16px; color: #031F30; font-family: 'Securitas Pro'; ">
+                                                                    @Model.FirstLevelEscaltion
+                                                                </p>
+                                                                <p style="margin: 0; font-size: 16px; margin-bottom: 25px; font-family: 'Securitas Pro';">
+                                                                    @Model.FirstLevelEscaltionMobileNo
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <h3 style="font-size: 20px; color: #42638c; margin: 0px; padding-bottom: 5px; font-family: 'Securitas Pro';">
+                                                                    Second
+                                                                    Level Escaltion
+                                                                </h3>
+                                                                <p style="margin: 0; font-weight: 600; font-size: 16px; font-family: 'Securitas Pro'; ">
+                                                                    @Model.SecondLevelEscaltionName | @Model.SecondLevelEscaltionDesignation
+                                                                </p>
+                                                                <p style="margin: 0; font-size: 16px; color: #031F30;">
+                                                                    @Model.SecondLevelEscaltion
+                                                                </p>
+                                                                <p style="margin: 0; font-size: 16px; margin-bottom: 25px; font-family: 'Securitas Pro'; ">
+                                                                    @Model.SecondLevelEscaltionMobileNo
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <h3 style="font-size: 20px; color: #031f30; margin: 0px; padding-bottom: 5px; font-family: 'Securitas Pro';">
+                                                                    Third
+                                                                    Level Escaltion
+                                                                </h3>
+                                                                <p style="margin: 0; font-weight: 600; font-size: 16px; font-family: 'Securitas Pro'; ">
+                                                                    @Model.ThirdLevelEscaltionName | @Model.ThirdLevelEscaltionDesignation
+                                                                </p>
+                                                                <p style="margin: 0; font-size: 16px; color: #031F30; font-family: 'Securitas Pro'; ">
+                                                                    @Model.ThirdLevelEscaltion
+                                                                </p>
+                                                                <p style="margin: 0; font-size: 16px; font-family: 'Securitas Pro'; ">
+                                                                    @Model.ThirdLevelEscaltionMobileNo
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><p>&nbsp;</p></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding: 0;">
+                                        <p style="font-family:'Securitas Pro'; font-size: 19pt; text-align: center; font-weight: bold; color: #8D5FFF; margin: 10pt 0pt 2pt 0pt;">
+                                            Client Relationship Connect
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding: 0;">
+                                        <p style="font-family:'Securitas Pro';font-size:13pt; text-align: center; font-weight: bold; color:#031F30; margin:0;">
+                                            @Model.ClientRelationshipConnectName | @Model.ClientRelationshipConnectDesignation
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding: 0;">
+                                        <p style="font-family:'Securitas Pro';font-size:13pt; text-align: center; font-weight: lighter; color:#031F30; margin:0;">
+                                            <a href="mailto:madhalka.goswami@securitas-india.com"
+                                               style="color: #031F30; text-decoration: none;">@Model.ClientRelationshipConnect</a> |
+                                            @Model.ClientRelationshipConnectMobileNo
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding: 0;">
+                                        <p style="font-family:'Securitas Pro'; font-size: 19pt; text-align: center; font-weight: bold; color: #8D5FFF; margin:30px 0px 2px 0px;">
+                                            Sales Connect
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding: 0;">
+                                        <p style="font-family:'Securitas Pro';font-size:13pt; text-align: center; font-weight: bold; color:#031F30; margin:0;">
+                                            @Model.SalesConnectName | @Model.SalesConnectDesignation
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding: 0;">
+                                        <p style="font-family:'Securitas Pro';font-size:13pt; text-align: center; font-weight: lighter; color:#031F30; margin:0;">
+                                            <a href="mailto:namehere@securitas-india.com"
+                                               style="color: #031F30; text-decoration: none;">@Model.SalesConnect</a> |
+                                            @Model.SalesConnectMobileNo
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding:0;">
+                                        <p style="font-family:''Securitas Pro'';text-align: center; color: #031F30; font-weight: bold; font-size: 12pt; margin: 35px 0px 30px 0px; font-style: italic;">
+                                            We are dedicated to your success and will stay in touch periodically to gather<br> insights, as your
+                                            feedback is valuable to our continued growth.
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: center; border: none; padding:0;">
+                                        <img src="~/Images/ClientOnboardingImg/Walsonslogo(1).png" width="25%" />
+                                        @*{Walsonslogos}*@
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color: #031F30; width:100%; text-align: center; border: none; padding:0;">
+                                        <table cellspacing="0" cellpadding="0" style="width:100%; text-align: center; border: none; padding:0;">
+                                            <tr>
+                                                <td style="border: none; padding:0;">
+                                                    <p style="font-family:''Securitas Pro'';color:#FC273F; font-weight: bolder; font-size:18pt; margin-bottom:15px; margin-top:20px;">
+                                                        Making Workplaces Safer!
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border: none; padding:0;text-transform: capitalize;">
+                                                    <p style="font-family:''Securitas Pro'';color:#FFF; margin-bottom:0; margin-top:0; font-weight: bolder; font-size:12pt;">
+                                                        Leadership Due Diligence <span style="color:#FC273F;">&nbsp;|&nbsp;</span> Vendor Due
+                                                        Diligence <span style="color:#FC273F;">&nbsp;|&nbsp;</span> Investigations <span style="color:#FC273F;">&nbsp;|&nbsp;</span> Audits <span style="color:#FC273F;">&nbsp;|&nbsp;</span>
+                                                    </p>
+                                                    <p style="font-family:''Securitas Pro'';color:#FFF; margin-bottom:0; margin-top:0; font-weight: bolder; font-size:12pt;">
+                                                        KYC(Know Your Customer) <span style="color:#FC273F;">&nbsp;|&nbsp;</span> Substance
+                                                        Abuse <span style="color:#FC273F;">&nbsp;|&nbsp;</span> Facial Match <span style="color:#FC273F;">&nbsp;|&nbsp;</span>
+                                                    </p>
+                                                    <p style="font-family:''Securitas Pro'';color:#FFF; margin-bottom:0; margin-top:0; font-weight: bolder; font-size:12pt;">
+                                                        Anniversary Checks <span style="color:#FC273F;">&nbsp;|&nbsp;</span> Social Media <span style="color:#FC273F;">&nbsp;|&nbsp;</span> Advisory
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border: none; padding:0;">
+                                                    <p style="font-family:''Securitas Pro'';color:#DDD; margin:30px 0 0 0; font-weight: lighter; font-size:12pt;">
+                                                        To Know more about Securitas Contact Us at;
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border: none;">
+                                                    <a href="mailto:ev.screen@securitas-india.com">
+                                                        <img src="~/Images/ClientOnboardingImg/DFooterImg.png" width="45%"/>
+                                                        @*{DFooterImges}*@
+                                                        <!-- <img src="./New folder/DFooterImg.png" width="60%">  -->
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border: none;">
+                                                    <p style="font-family:''Securitas Pro'';color:#FFF; font-size:12pt; font-style: italic; margin:20px 0 0 0;">
+                                                        Disclaimer :
+                                                    </p>
+                                                    <p style="font-family:''Securitas Pro'';color: #CCC; font-weight: lighter; margin-top: 0; margin-bottom:15px; font-size:9pt; font-style: italic; line-height:normal; text-align: center;">
+                                                        Our background checks are conducted with meticulous adherence to local laws and
+                                                        compliance standards,<br> ensuring thorough and legally sound verification process
+                                                        worldwide.<sup style="color:#FFF;"><b>*</b></sup>
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            <!--<table width="680" align="center" cellspacing="0" cellpadding="0"
+                       style="width:680px; border-collapse: collapse; background:#FFF; margin-top:20px; box-shadow: 2px 7px 3px 0px #ccc!important; border: none !important;">
+                    <tr>
+                        <td style="padding:0px; border: none;">
+                            <img src="~/Images/ClientOnboardingImg/D1.png" style="width:100%;display: block;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:100%;">
+                            <table style="width: 100%; background-image: url( @ViewBag.bgpath ); background-size: cover; background-repeat: no-repeat;">
+                                <tr>
+                                    <td style="padding-top: 50px; padding-left: 35px;">
+                                        <p style="color: #031F30;font-size:26.4pt;font-weight: bolder;margin-bottom: 20px !important;">
+                                            Dear Corruen,
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-right: 145px; padding-left: 35px;">
+                                        <p style="color: #031F30;font-size:15.6pt;font-weight: bolder;margin:0px;">
+                                            Greetings from
+                                            Securitas! We're glad you are here!
+                                        </p>
+                                        <p style="color: #031F30;font-size:15.6pt;font-weight:lighter;margin:0px;">
+                                            We have prepared everything you need to begin your journey with us.
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p>&nbsp;</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-left: 35px;">
+                                        <img src="~/Images/ClientOnboardingImg/D2.png" width="600" style="width:600px;display: block;" alt="...">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-left: 35px; padding-top: 25px;">
+                                        <p style="color: #031F30;font-size:11.5pt;font-weight: bolder;margin:0px;">
+                                            You must have received the login credentials by now. To begin, click the link below;
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p>&nbsp;</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-left: 35px;">
+                                        <p style="color:#8D5FFF;font-size:26pt;font-weight: bolder;margin:0px;">
+                                            Communication Matrix:
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 600px; padding-left: 35px;" width="600">
+                                        <table>
+                                            <tr>
+                                                <td valign="top" style="width:400px;" width="400">
+                                                    <img src="~/Images/ClientOnboardingImg/D3.png" style="width:400px;display: block;"
+                                                         width="400">
+                                                </td>
+                                                <td width="200" style="width:200px; vertical-align: top; padding-top:30px;">
+                                                    <table cellspacing="0" cellpadding="0" border="0">
+                                                        <tr>
+                                                            <td>
+                                                                <h3 style="font-size: 18px; color: #aa1834; margin:0px; padding-bottom:5px;">
+                                                                    Primary
+                                                                    SPOC
+                                                                </h3>
+                                                                <p style="margin: 0; font-weight: 600;  font-size: 12px;">
+                                                                    @Model.PrimarySPOCName |
+                                                                    @Model.PrimarySPOCDesignation
+                                                                </p>
+                                                                <p style="margin: 0;  font-size: 12px;color:#031F30;">
+                                                                    @Model.PrimarySPOC
+                                                                </p>
+                                                                <p style="margin: 0;  font-size: 12px; margin-bottom: 25px;">
+                                                                    @Model.PrimarySPOCMobileNo
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <h3 style="font-size: 18px; color: #8d5fff; margin:0px; padding-bottom:5px;">
+                                                                    First
+                                                                    Level Escaltion
+                                                                </h3>
+                                                                <p style="margin: 0; font-weight: 600;  font-size: 12px;">
+                                                                    @Model.FirstLevelEscaltionName | @Model.FirstLevelEscaltionDesignation
+                                                                </p>
+                                                                <p style="margin: 0;  font-size: 12px;color:#031F30;">
+                                                                    @Model.FirstLevelEscaltion
+                                                                </p>
+                                                                <p style="margin: 0;  font-size: 12px; margin-bottom: 25px;">
+                                                                    @Model.FirstLevelEscaltionMobileNo
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <h3 style="font-size: 18px; color: #42638c; margin:0px; padding-bottom:5px;">
+                                                                    Second
+                                                                    Level Escaltion
+                                                                </h3>
+                                                                <p style="margin: 0; font-weight: 600;  font-size: 12px;">
+                                                                    @Model.SecondLevelEscaltionName | @Model.SecondLevelEscaltionDesignation
+                                                                </p>
+                                                                <p style="margin: 0;  font-size: 12px;color:#031F30;">
+                                                                    @Model.SecondLevelEscaltion
+                                                                </p>
+                                                                <p style="margin: 0;  font-size: 12px; margin-bottom: 25px;">
+                                                                    @Model.SecondLevelEscaltionMobileNo
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <h3 style="font-size: 18px; color: #031f30; margin:0px; padding-bottom:5px;">
+                                                                    Third
+                                                                    Level Escaltion
+                                                                </h3>
+                                                                <p style="margin: 0; font-weight: 600;  font-size: 12px;">
+                                                                    @Model.ThirdLevelEscaltionName | @Model.ThirdLevelEscaltionDesignation
+                                                                </p>
+                                                                <p style="margin: 0;  font-size: 12px;color:#031F30;">
+                                                                    @Model.ThirdLevelEscaltion
+                                                                </p>
+                                                                <p style="margin: 0;  font-size: 12px;">
+                                                                    @Model.ThirdLevelEscaltionMobileNo
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding: 0;">
+                                        <p style="font-family:'Securitas Pro'; font-size: 19pt; text-align: center; font-weight: bold; color: #8D5FFF; margin: 10pt 0pt 2pt 0pt;">
+                                            Client Relationship Connect
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding: 0;">
+                                        <p style="font-family:'Securitas Pro';font-size:13pt; text-align: center; font-weight: bold; color:#031F30; margin:0;">
+                                            @Model.ClientRelationshipConnectName | @Model.ClientRelationshipConnectDesignation
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding: 0;">
+                                        <p style="font-family:'Securitas Pro';font-size:13pt; text-align: center; font-weight: lighter; color:#031F30; margin:0;">
+                                            <a href="mailto:madhalka.goswami@securitas-india.com"
+                                               style="color: #031F30; text-decoration: none;">@Model.ClientRelationshipConnect</a> |
+                                            @Model.ClientRelationshipConnectMobileNo
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding: 0;">
+                                        <p style="font-family:'Securitas Pro'; font-size: 19pt; text-align: center; font-weight: bold; color: #8D5FFF; margin:30px 0px 2px 0px;">
+                                            Sales Connect
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding: 0;">
+                                        <p style="font-family:'Securitas Pro';font-size:13pt; text-align: center; font-weight: bold; color:#031F30; margin:0;">
+                                            @Model.SalesConnectName | @Model.SalesConnectDesignation
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding: 0;">
+                                        <p style="font-family:'Securitas Pro';font-size:13pt; text-align: center; font-weight: lighter; color:#031F30; margin:0;">
+                                            <a href="mailto:namehere@securitas-india.com"
+                                               style="color: #031F30; text-decoration: none;">@Model.SalesConnect</a> |
+                                            @Model.SalesConnectMobileNo
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding: 0;">
+                                        <p style="font-family:'Securitas Pro';text-align: center; color: #031F30; font-weight: bold; font-size: 12pt; margin: 35px 0px 30px 0px; font-style: italic;">
+                                            We are dedicated to your success and will stay in touch periodically to gather<br>
+                                            insights, as your
+                                            feedback is valuable to our continued growth.
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: center; border: none; padding:0;">
+                                        <img src="~/Images/ClientOnboardingImg/Walsonslogo.png" width="150" style="width:150px;">-->
+                            <!-- {Walsonslogos}  -->
+                            <!--</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td style="background-color: #031F30; width:100%; text-align: center; border: none; padding:0;">
+                        <table cellspacing="0" cellpadding="0" style="width:100%; text-align: center; border: none; padding:0;">
+                            <tr>
+                                <td style="border: none; padding:0;">
+                                    <p style="font-family:'Securitas Pro';color:#FC273F; font-weight: bolder; font-size:18pt; margin-bottom:15px; margin-top:20px;">
+                                        Making Workplaces Safer!
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: none; padding:0;text-transform: capitalize;">
+                                    <p style="font-family:'Securitas Pro';color:#FFF; margin-bottom:0; margin-top:0; font-weight: bolder; font-size:12pt;">
+                                        Leadership Due Diligence <span style="color:#FC273F;">&nbsp;|&nbsp;</span> Vendor Due
+                                        Diligence <span style="color:#FC273F;">&nbsp;|&nbsp;</span> Investigations <span style="color:#FC273F;">&nbsp;|&nbsp;</span> Audits <span style="color:#FC273F;">&nbsp;|&nbsp;</span>
+                                    </p>
+                                    <p style="font-family:'Securitas Pro';color:#FFF; margin-bottom:0; margin-top:0; font-weight: bolder; font-size:12pt;">
+                                        KYC(Know Your Customer) <span style="color:#FC273F;">&nbsp;|&nbsp;</span> Substance
+                                        Abuse <span style="color:#FC273F;">&nbsp;|&nbsp;</span> Facial Match <span style="color:#FC273F;">&nbsp;|&nbsp;</span>
+                                    </p>
+                                    <p style="font-family:'Securitas Pro';color:#FFF; margin-bottom:0; margin-top:0; font-weight: bolder; font-size:12pt;">
+                                        Anniversary Checks <span style="color:#FC273F;">&nbsp;|&nbsp;</span> Social Media <span style="color:#FC273F;">&nbsp;|&nbsp;</span> Advisory
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: none; padding:0;">
+                                    <p style="font-family:'Securitas Pro';color:#DDD; margin:30px 0 0 0; font-weight: lighter; font-size:12pt;">
+                                        To Know more about Securitas Contact Us at;
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: none;">
+                                    <a href="mailto:ev.screen@securitas-india.com">-->
+                            <!-- {DFooterImges} -->
+                            <!--<img src="~/Images/ClientOnboardingImg/DFooterImg.png" width="400" style="width:400px;">
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none;">
+                                        <p style="font-family:'Securitas Pro';color:#FFF; font-size:12pt; font-style: italic; margin:20px 0 0 0;">
+                                            Disclaimer :
+                                        </p>
+                                        <p style="font-family:'Securitas Pro';color: #CCC; font-weight: lighter; margin-top: 0; margin-bottom:15px; font-size:9pt; font-style: italic; line-height:normal; text-align: center;">
+                                            Our background checks are conducted with meticulous adherence to local laws and
+                                            compliance standards,<br> ensuring thorough and legally sound verification process
+                                            worldwide.<sup style="color:#FFF;"><b>*</b></sup>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>-->
+                            }
+                            else
+                            {
+                            <p style="font-size: 1.2rem; color: #8D5FFF;">Select Client To Check the Templates</p>
+                            }
+                            }
+                            else
+                            {
+                            <p style="font-size: 1.2rem; color: #8D5FFF;">Select Client To Check the Templates</p>
+                            }
+                </div>
+        </div>
+    </div>
+</div>
+<script src='@Url.Content("~/assets/plugins/bootstrap/js/bootstrap.bundle.min.js")'></script>
+<!-- End Page -->
+<!-- JQuery min js -->
+<!-- Bootstrap Bundle js -->
+<script src="~/assets/plugins/bootstrap/js/popper.min.js"></script>
+<script src="~/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).on("input", "#clientSearch", function () {
+        var inputValue = $(this).val();
+        var selectedOption = $("#brow option").filter(function () {
+            return $(this).val() === inputValue;
+        }).first();
+
+        if (selectedOption.length) {
+            $("#ClientRowID").val(selectedOption.data("id"));
+        } else {
+            $("#ClientRowID").val(""); // Clear if no match
+        }
+    });
+    $(document).ready(function () {
+        var ids = $("#PEncryptUserID").val();
+        $("#UserEmailID").val(ids);
+    });
+</script>

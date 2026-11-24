@@ -1,0 +1,212 @@
+﻿
+@{
+    ViewBag.Title = "Manager Case Allocation To TeamLeader";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "Verification", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+
+@{
+    
+        string tatdays1 = "";
+        string CheckStatus1 = "";
+        string AllocatedToTL1 = "";
+        string statusid = ViewBag.statusid;
+        if (Request.QueryString["tatdays"] != null)
+        {
+            tatdays1 = Request.QueryString["tatdays"].ToString();
+        }
+
+        if (Request.QueryString["AllocatedToTL"] != null)
+        {
+            AllocatedToTL1 = Request.QueryString["AllocatedToTL"].ToString();
+        }
+        if (Request.QueryString["CheckStatus"] != null)
+        {
+            CheckStatus1 = @Request.QueryString["CheckStatus"].ToString();
+        }
+        
+
+    }
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("ManagerAllocationToTeamLeader", "Verification", FormMethod.Get))
+                        {
+                        <div class="form-horizontal">                            
+                            <div class="form-group branch row search-frame">
+                                <label class="col-md-2 control-label">Select TeamLeader :</label>
+                                <div class="col-md-4">
+
+                                    @Html.DropDownList("AllocateTL",
+new SelectList(ViewBag.depTeamLeader, "TeamMemberRowID", "TeamMemberName"),
+"-- Select Member -- ",
+new { @class = "form-control" })
+                                </div>
+                                @Html.Hidden("VerificationIds", null)
+                                @Html.Hidden("statusid", statusid)
+
+                            </div>
+                            @if (ViewBag.depTM != null)
+    {
+                        <div class="form-group branch row search-frame">
+                            <label class="col-md-2 control-label">Select TeamMember :</label>
+                            <div class="col-md-4">
+                                @Html.DropDownList("AllocateTM",
+new SelectList(ViewBag.depTM, "TeamMemberRowID", "TeamMemberName"),
+"-- Select Member -- ",
+new { @class = "form-control" })
+                            </div>
+                           
+                            @Html.Hidden("VerificationIds", null)
+                            @Html.Hidden("OCVerIDs", null)
+                            @if (Request.QueryString["CheckStatus"] != null)
+    {
+                        @Html.Hidden("CheckStatus", Request.QueryString["CheckStatus"].ToString())
+}
+                        </div>
+}
+
+                            <div class="all-button-bg">
+                                <input class="btn bun-bg btn-default" type="submit" onclick="SearchFunction()" value="Search" />
+                                <input class="btn bun-bg btn-default" type="submit" id="btnAllocation" onclick="return validateForm()" value="Allocate" />
+                            </div>
+                        </div>
+                            if (Request.QueryString["CheckStatus"] != null)
+                            {
+                                @Html.Hidden("CheckStatus", Request.QueryString["CheckStatus"].ToString())
+                            }
+
+
+                        }
+                    </div>
+                </div>
+               
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "400px", height: "80%" });
+            $(".iframeUpdateStatus").colorbox({ iframe: true, width: "70%", height: "80%" });
+            // 1st replace first column header text with checkbox
+            $("#grid th").each(function () {
+                if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                    $(this).text('');
+                    $("<input/>", { type: "checkbox", id: "select_all", value: "" }).appendTo($(this));
+                    //$(this).append("<span>Select All</span>");
+                }
+            });
+
+            //2nd click event for header checkbox for select /deselect all
+            $('#select_all').change(function () {
+                $('input[class="verificationId"]').prop('checked', $(this).prop('checked'));
+                var VerificationIds = '';
+                $('input[class="verificationId"]').each(function (index, value) {
+                    if (this.checked) {
+                        var id = this.value.split('_');
+                        VerificationIds += id[0] + ',';
+                    }
+                });
+                //if (VerificationIds.length > 0 && OCVerIDs.length > 0) {
+                if (VerificationIds.length > 0) {
+                    VerificationIds = VerificationIds.substring(0, VerificationIds.length - 1);
+                } else {
+                    VerificationIds = '';
+                }
+                $('#VerificationIds').val(VerificationIds.trim());
+            });
+
+            $(function () {
+
+                //Bind State base on CountryRowID
+                $('#AllocateTL').change(function () {
+                    $.getJSON('/Verification/GetTMMemberForManager/' + $('#AllocateTL').val(), function (data) {
+                        var items = '<option value="">-- Select --</option>';
+                        $.each(data, function (i, Member) {
+                            items += "<option value='" + Member.Value + "'>" + Member.Text + "</option>";
+                        });
+                       
+                        $('#AllocateTM').html(items);
+                       
+
+                        //$('#AV_District').val('');
+                        //$('#AV_City').val('');
+                        //$('#AV_Pincode').val('');
+                    });
+                });
+
+             
+
+              
+
+
+
+
+               
+            });
+        });
+
+        function SearchFunction() {
+            $('#VerificationIds').val("");
+        }
+
+        //3rd click event for checkbox of each row
+        $(document).on('change', 'input[class="verificationId"]', function (e) {// on change of state
+            var VerificationIds = '';
+            $('input[class="verificationId"]').each(function (index, value) {
+                if (this.checked) {
+                    var id = this.value.split('_');
+                    VerificationIds += id[0] + ',';
+                }
+            });
+
+            if (false == $(this).prop("checked")) { //if this item is unchecked
+                $("#select_all").prop('checked', false); //change "select all" checked status to false
+            }
+            //check "select all" if all checkbox items are checked
+            if ($('.verificationId:checked').length == $('.verificationId').length) {
+                $("#select_all").prop('checked', true);
+            }
+
+            //if (VerificationIds.length > 0 && OCVerIDs.length > 0) {
+            if (VerificationIds.length > 0) {
+                VerificationIds = VerificationIds.substring(0, VerificationIds.length - 1);
+            } else {
+                VerificationIds = '';
+            }
+            $('#VerificationIds').val(VerificationIds.trim());
+        })
+
+        function validateForm() {
+            if ($("#AllocateTL").val() == 0) {
+                alert("Select Team Leader For Allocate.");
+                return false;
+            }
+
+            var count = 0;
+            $('input[class="verificationId"]').each(function (index, value) {
+                if (this.checked) { count += 1; }
+            });
+
+            if (count == 0) {
+                alert("Please select atleast one case.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+}

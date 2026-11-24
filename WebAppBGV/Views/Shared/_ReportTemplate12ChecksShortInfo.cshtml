@@ -1,0 +1,138 @@
+﻿<tr>
+    <td valign="top">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+
+                            @if (Session["Type"].ToString() == "ReprtToPDF")
+                            {
+                                <td width="94%"><p style="font-size:19px;  color:#000080; text-align:center; font-weight:bold; text-decoration:underline; padding:10px 0px 10px 0px;"><h1 style="font-size:19px;  color:#000080; text-align:center; font-weight:bold; text-decoration:underline; padding:10px 0px 10px 0px;"><a name="Background Verification Report - Executive Summary">Background Verification Report - Executive Summary</a></h1></p></td>
+                            }
+                            else
+                            {
+                                <td width="94%"><p style="font-size:15px;  color:#000080; text-align:center; font-weight:bold;  padding:10px 0px 10px 0px;">Executive Summary</p></td>
+                            }
+                            <td width="6%" align="right"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        @*<tr><td width="6%" align="right"><img src='@Url.Content("/Images/footer-logo.jpg")' width="100" height="60"></td></tr>*@
+                        <tr>
+                            <td>
+                                @*<table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td width="94%"><p style="font-size:19px;  color:#000080; text-align:center; font-weight:bold; text-decoration:underline; padding:10px 0px 10px 0px;">BACKGROUND  CHECK REPORT - SUMMARY</p></td>
+
+                                    </tr>
+                                </table>*@
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td valign="top">
+                                <table width="100%" border="1" cellpadding="2" cellspacing="5">
+                                    @{
+                                        string checkName = string.Empty;
+                                        @*<tr>
+                                            <td width="20%" style="font-size:12px; font-family:Calibri; color-adjust:exact;  padding-left:5px;"><strong>TYPE OF CHECK</strong></td>
+                                            <td width="50%" style="font-size:12px; font-family:Calibri; color-adjust:exact;; text-align:center;"><strong>VERIFICATION STATUS (VERIFIED / NOT APPLICABLE)</strong></td>
+                                            <td width="17%" style="font-size:12px; font-family:Calibri; color-adjust:exact;  text-align:center;"><strong>BGC STATUS</strong></td>
+                                        </tr>*@
+                                    int i = 0;
+                                    foreach (var item in Model.PersonalChecksBriefDetails)
+                                    {
+                                        if (checkName != item.CheckFName)
+                                        {
+
+                                            if (i > 0)
+                                            { 
+                                            <tr border="0">
+                                                <td colspan="3" border="0" style="padding:10px;border-right:hidden;border-left:hidden" ></td>
+                                            </tr>
+                                            }
+                                                <tr>
+
+                                                    <td colspan="3" bgcolor="#c0c0c0" style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0; padding:5px; text-align:left;"> <strong> @item.CheckFName</strong></td>
+                                                </tr>
+                                                checkName = item.CheckFName;
+                                            }
+                                                <tr style=" font-size:12px; font-weight:bold; padding:5px;">
+                                                    @if (@item.CheckFamilyRowID == 12)
+                                                    {
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri; width:50%">@item.SubCheckDetail</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;width:50%">@item.SubCheckFName</td>
+                                                    }
+                                                    @if (@item.CheckFamilyRowID == 2)
+                                                    {
+                                                        <td align="center" style="width:50%;color-adjust:exact;font-size:12px; font-family:Calibri; color:@item.ColorCode; color-adjust:exact; ">@item.checkStatus - Physical Visit  - @item.ModeofVerification- @item.ColorName.ToUpper()</td>
+                                                    }
+                                                    else if (@item.CheckFamilyRowID == 11)
+                                                    {
+                                                        <td align="center" style="width:50%;color-adjust:exact;font-size:12px; font-family:Calibri;color:@item.ColorCode; color-adjust:exact;">@item.checkStatus -  @item.ModeofVerification- @item.ColorName.ToUpper()</td>
+                                                    }
+                                                    else if (@item.CheckFamilyRowID == 12)
+                                                    {
+                                                        if (@item.ColorName.ToUpper() == "BLUE")
+                                                        {
+                                                            <td align="center" style="width:50%; color-adjust:exact;font-size:12px; font-family:Calibri;  color:@item.ColorCode; color-adjust:exact;">@item.Severity  @item.MCARegister -  @item.ColorName.ToUpper()</td>
+
+                                                        }
+                                                        else if (@item.ColorName.ToUpper() == "INSUFF")
+                                                        {
+                                                            <td align="center" style="width:50%; color-adjust:exact;font-size:12px; font-family:Calibri;  color:@item.ColorCode; color-adjust:exact;">@item.checkStatus - @item.ColorName.ToUpper()</td>
+
+                                                        }
+                                                        else
+                                                        {
+                                                            <td align="center" style="width:50%; color-adjust:exact;font-size:12px; font-family:Calibri;  color:@item.ColorCode; color-adjust:exact;">@item.checkStatus  @item.MCARegister -  @item.ModeofVerification- @item.ColorName.ToUpper()</td>
+
+                                                        }
+                                                    }
+                                                    @*@if (@item.Status == "Not Applicable")
+        {
+            <td style="color-adjust:exact; font-size:12px; font-family:Calibri; background:@item.ColorCode;" align="center">Not Applicable</td>
+        }
+        else
+        {
+            <td style="color-adjust:exact; font-size:12px; font-family:Calibri; background:@item.ColorCode;" align="center">@item.ColorName</td>
+        }
+                                                    *@
+                                                </tr>
+                                            i++;
+                                        }
+
+                                    }
+                                    
+
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td height="30">&nbsp;</td>
+            </tr>
+            @*<tr>
+                <td align="center">
+                    <img src='@Url.Content("~/Images/fivecolor.jpg")' />
+                </td>
+            </tr>*@
+        </table>
+    </td>
+</tr>
+

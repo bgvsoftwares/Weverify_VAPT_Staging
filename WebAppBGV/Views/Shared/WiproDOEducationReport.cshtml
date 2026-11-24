@@ -1,0 +1,665 @@
+﻿
+@model ViewModels.ReportQCViewModel.InterimReportGenerateViewModel
+
+@if (Model != null && Model.EducationProvidedList != null && Model.EducationProvidedList.Count() > 0 && Model.AntecedentList != null && Model.AntecedentList.Count() > 0)
+{
+    foreach (var ProvidedInfo in Model.EducationProvidedList)
+    {
+        var EducationVerInfo = Model.EducationVerifiedList.Where(ver => ver.EducationRowID == ProvidedInfo.EducationRowID).FirstOrDefault();
+        var antecentList = Model.AntecedentList.Where(a => a.CheckFamilyRowID == ProvidedInfo.CheckFamilyRowID && a.SubCheckRowID == ProvidedInfo.SubCheckRowID).ToList();
+        var ReportCmt = Model.CaseAntecedentComment.Where(a => a.PersonalRowID == ProvidedInfo.PersonalRowID && a.SubCheckFamilyID == ProvidedInfo.SubCheckRowID).ToList();
+
+        <page id="PrintSrc" size="A4">
+            <div style="page-break-after:always ;"></div>
+            <table width="793" height="1257" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999;border-collapse:collapse;">
+                <!--- Report Header Include -->
+                @*@Html.Partial("_ReportHeader")*@
+                <!--- Report Header Include -->
+                <tr>
+                    <td width="2%" align="left" valign="bottom" @*style="border-left:2px solid #999999;"*@>&nbsp;</td>
+                    <td valign="top">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+                            <tr>
+                                <td valign="top">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                        <tr>
+                                            <td>
+                                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                   
+                                                    <tr>
+                                                        <td width="94%" style="padding-top:4%"><p style="font-size:32px; color:black; text-decoration:underline; text-align:center; margin:0px 0px 0px 0px; font-weight:bold;"></p> </td>
+                                                        <td align="right"><img src='@Url.Content("~/Images/logo.jpg")' height="40" width="71" height="auto"></td>
+                                                        @*<td width="6%" align="right"><img src='@Url.Content("~/Images/logo.jpg")' width="45" height="auto"></td>*@
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td valign="top">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top" align="center">
+                                                <table width="100%" border="1" cellspacing="5" cellpadding="2" style="border-collapse:collapse;">
+                                                    @*<tr>
+                                                            <td width="33%" style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Name of Candidate</td>
+                                                            <td style="font-size:16px; font-family:Calibri;padding-left:5px;"><label for="">@ProvidedInfo.EV_Cand_Name</label></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Securitas Reference ID </td>
+                                                            <td style="font-size:16px; font-family:Calibri; padding-left:5px;"><label for="">@ProvidedInfo.EV_Sec_Ref_id</label></td>
+                                                        </tr>*@
+
+                                                    @*<tr>
+                                                            <td style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;padding-left:5px; font-weight:bold;">Report Comment</td>
+                                                            @if (EducationVerInfo != null && !string.IsNullOrEmpty(EducationVerInfo.ReportComment))
+                                                            {
+                                                                <td style="font-size:16px; font-family:Calibri; padding-left:5px;"><label for="">@EducationVerInfo.ReportComment</label></td>
+                                                            }
+                                                            else if (@ProvidedInfo.CheckStatus == "Not Applicable")
+                                                            {
+                                                                <td style="font-size:16px; font-family:Calibri; padding-left:5px;"><label for="">Not Applicable</label></td>
+
+
+                                                            }
+
+                                                            else
+                                                            {
+                                                                <td style="font-size:16px; font-family:Calibri; padding-left:5px;"><label for="">Work In Progress</label></td>
+                                                            }
+
+                                                        </tr>*@
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td height="30">&nbsp;</td>
+                                        </tr>
+
+                                        <tr>
+
+                                            <td style="font-weight:bold; font-size:20px;font-family:Calibri">Section @ProvidedInfo.AnnexureNo: Education Verification    </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-top:10px;" valign="top" align="center">
+                                                <table width="100%" border="1" cellspacing="5" cellpadding="2" style="border-collapse:collapse;border-collapse:collapse;font-family:Calibri;font-size:16px">
+                                                    @*<tr>
+            <td>Name of Candidate</td>
+            <td colspan="3">@ProvidedInfo.EV_Cand_Name</td>
+
+        </tr>*@
+                                                    <tr>
+                                                        <td width="25%">Name of College / Institute / School</td>
+                                                        <td width="25%">@ProvidedInfo.EV_Colg_Schl_Inst_Name</td>
+                                                        @if (EducationVerInfo.EV_Colg_Schl_Inst_Name != null)
+                                                        {
+                                                            <td width="25%">Verified</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="25%"></td>
+                                                        }
+                                                        @if (ReportCmt.Any())
+                                                        {
+                                                            var comm = ReportCmt.FirstOrDefault(T => T.AntecedentName == "EV_Colg_Schl_Inst_Name");
+                                                            if (comm != null)
+                                                            {
+                                                                <td width="25%">@comm.Comment</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td width="25%">NA</td>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="25%">NA</td>
+                                                        }
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="25%">University Name</td>
+                                                        <td width="25%">@ProvidedInfo.EV_Affl_University_Name</td>
+
+
+                                                        @if (EducationVerInfo.EV_Colg_Unvrsty_Affl != null)
+                                                        {
+                                                            <td width="25%">Verified</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="25%"></td>
+                                                        }
+
+                                                        @if (ReportCmt.Any())
+                                                        {
+                                                            var comm = ReportCmt.FirstOrDefault(T => T.AntecedentName == "EV_Affl_University_Name");
+                                                            if (comm != null)
+                                                            {
+                                                                <td width="25%">@comm.Comment</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td width="25%">NA</td>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="25%">NA</td>
+                                                        }
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td width="25%">Course / Degree Name</td>
+                                                        <td width="25%">@ProvidedInfo.EV_Degree_Name</td>
+                                                        @if (EducationVerInfo.EV_Degree_Name != null)
+                                                        {
+                                                            <td width="25%">Verified</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="25%"></td>
+                                                        }
+
+                                                        @if (ReportCmt.Any())
+                                                        {
+                                                            var comm = ReportCmt.FirstOrDefault(T => T.AntecedentName == "EV_Degree_Name");
+                                                            if (comm != null)
+                                                            {
+                                                                <td width="25%">@comm.Comment</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td width="25%">NA</td>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="25%">NA</td>
+                                                        }
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td width="25%">Specialization</td>
+                                                        <td width="25%">@ProvidedInfo.EV_Specialization</td>
+                                                        @if (EducationVerInfo.EV_Specialization != null)
+                                                        {
+                                                            <td width="25%">Verified</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="25%">NA</td>
+                                                        }
+
+                                                        @if (ReportCmt.Any())
+                                                        {
+                                                            var comm = ReportCmt.FirstOrDefault(T => T.AntecedentName == "EV_Specialization");
+                                                            if (comm != null)
+                                                            {
+                                                                <td width="25%">@comm.Comment</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td width="25%">NA</td>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="25%">NA</td>
+                                                        }
+
+
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td width="25%">Registration or Roll No</td>
+                                                        <td width="25%">@ProvidedInfo.EV_Enroll_RollNo</td>
+                                                        @if (EducationVerInfo.EV_Enroll_RollNo != null)
+                                                        {
+                                                            <td width="25%">Verified</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="25%"></td>
+                                                        }
+
+                                                        @if (ReportCmt.Any())
+                                                        {
+                                                            var comm = ReportCmt.FirstOrDefault(T => T.AntecedentName == "EV_Enroll_RollNo");
+                                                            if (comm != null)
+                                                            {
+                                                                <td width="25%">@comm.Comment</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td width="25%">NA</td>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="25%">NA</td>
+                                                        }
+                                                    </tr>
+
+                                                    @*<tr>
+            <td width="25%">Graduation Month</td>
+            <td width="25%">@ProvidedInfo.EV_Period_Course</td>
+            @if (EducationVerInfo.EV_Period_Course != null)
+            {
+                <td width="25%">Verified</td>
+            }
+            else
+            {
+                <td width="25%"></td>
+            }
+
+            @if (ReportCmt.Any())
+            {
+                var comm = ReportCmt.FirstOrDefault(T => T.AntecedentName == "EV_Period_Course");
+                if (comm != null)
+                {
+                    <td width="25%">@comm.Comment</td>
+                }
+                else
+                {
+                    <td width="25%">NA</td>
+                }
+            }
+            else
+            {
+                <td width="25%">NA</td>
+            }
+        </tr>*@
+
+                                                    <tr>
+                                                        <td width="25%">Year of Passing</td>
+                                                        <td width="25%">@EducationVerInfo.EV_Yr_Passing</td>
+                                                        @if (EducationVerInfo.EV_Yr_Passing != null)
+                                                        {
+                                                            <td width="25%">Verified</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="25%"></td>
+                                                        }
+
+                                                        @if (ReportCmt.Any())
+                                                        {
+                                                            var comm = ReportCmt.FirstOrDefault(T => T.AntecedentName == "EV_Yr_Passing");
+                                                            if (comm != null)
+                                                            {
+                                                                <td width="25%">@comm.Comment</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td width="25%">NA</td>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="25%">NA</td>
+                                                        }
+                                                    </tr>
+
+                                                    @*<tr>
+            <td width="25%">Actual Percentage</td>
+            <td width="25%">@ProvidedInfo.EV_Division_CGPA</td>
+            @if (EducationVerInfo.EV_Division_CGPA != null)
+            {
+                <td width="25%">Verified</td>
+            }
+            else
+            {
+                <td width="25%"></td>
+            }
+
+            @if (ReportCmt.Any())
+            {
+                var comm = ReportCmt.FirstOrDefault(T => T.AntecedentName == "EV_Division_CGPA");
+                if (comm != null)
+                {
+                    <td width="25%">@comm.Comment</td>
+                }
+                else
+                {
+                    <td width="25%">NA</td>
+                }
+            }
+            else
+            {
+                <td width="25%">NA</td>
+            }
+        </tr>*@
+
+                                                    <tr>
+                                                        <td width="25%">Type of Education</td>
+                                                        <td width="25%">@EducationVerInfo.EV_Others2 </td>
+                                                        @if (EducationVerInfo.EV_Others2 != null)
+                                                        {
+                                                            <td width="25%">Verified</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="25%"></td>
+                                                        }
+
+                                                        @if (ReportCmt.Any())
+                                                        {
+                                                            var comm = ReportCmt.FirstOrDefault(T => T.AntecedentName == "EV_Others2");
+                                                            if (comm != null)
+                                                            {
+                                                                <td width="25%">@comm.Comment</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td width="25%">NA</td>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <td width="25%">NA</td>
+                                                        }
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td width="25%">Is the education <br/> institute accredited</td>
+                                                        <td width="75%" colspan="3">@EducationVerInfo.EV_Affl_University_Name </td>
+
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td width="25%">Is the institute part of <br/> Wipro DNH List</td>
+                                                        <td width="75%" colspan="3">@EducationVerInfo.EV_Rslt_Obtain </td>
+
+                                                    </tr>
+
+
+
+
+
+                                                    @*<tr>
+            <td width="25%">City</td>
+            <td width="25%">@ProvidedInfo.city</td>
+            @if (EducationVerInfo.city != null)
+            {
+                <td width="25%">Verified</td>
+            }
+            else
+            {
+                <td width="25%"></td>
+            }
+
+            @if (ReportCmt.Any())
+            {
+                var comm = ReportCmt.FirstOrDefault(T => T.AntecedentName == "city");
+                if (comm != null)
+                {
+                    <td width="25%">@comm.Comment</td>
+                }
+                else
+                {
+                    <td width="25%">NA</td>
+                }
+            }
+            else
+            {
+                <td width="25%">NA</td>
+            }
+        </tr>
+
+        <tr>
+            <td width="25%">State</td>
+            <td width="25%">@ProvidedInfo.State</td>
+            @if (EducationVerInfo.State != null)
+            {
+                <td width="25%">Verified</td>
+            }
+            else
+            {
+                <td width="25%"></td>
+            }
+
+            @if (ReportCmt.Any())
+            {
+                var comm = ReportCmt.FirstOrDefault(T => T.AntecedentName == "State");
+                if (comm != null)
+                {
+                    <td width="25%">@comm.Comment</td>
+                }
+                else
+                {
+                    <td width="25%">NA</td>
+                }
+            }
+            else
+            {
+                <td width="25%">NA</td>
+            }
+        </tr>
+
+        <tr>
+            <td width="25%">Country</td>
+            <td width="25%">@ProvidedInfo.Country</td>
+            @if (EducationVerInfo.Country != null)
+            {
+                <td width="25%">Verified</td>
+            }
+            else
+            {
+                <td width="25%"></td>
+            }
+
+            @if (ReportCmt.Any())
+            {
+                var comm = ReportCmt.FirstOrDefault(T => T.AntecedentName == "Country");
+                if (comm != null)
+                {
+                    <td width="25%">@comm.Comment</td>
+                }
+                else
+                {
+                    <td width="25%">NA</td>
+                }
+            }
+            else
+            {
+                <td width="25%">NA</td>
+            }
+        </tr>*@
+
+                                                    <tr>
+                                                        <td width="25%">Mode of Verification</td>
+                                                        <td width="75%" colspan="3">@EducationVerInfo.EV_Mode_of_Verf </td>
+                                                        @*@if (EducationVerInfo.EV_Mode_of_Verf != null)
+            {
+                <td width="25%">Verified</td>
+            }
+            else
+            {
+                <td width="25%"></td>
+            }
+
+            @if (ReportCmt.Any())
+            {
+                var comm = ReportCmt.FirstOrDefault(T => T.AntecedentName == "EV_Mode_of_Verf");
+                if (comm != null)
+                {
+                    <td width="25%">@comm.Comment</td>
+                }
+                else
+                {
+                    <td width="25%">NA</td>
+                }
+            }
+            else
+            {
+                <td width="25%">NA</td>
+            }*@
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td width="25%">Date verified</td>
+                                                        
+                                                        @if (EducationVerInfo.EV_Date_Time_Verf != null)
+                                                        {
+                                                            <td colspan="3" width="75%">@EducationVerInfo.EV_Date_Time_Verf.Value.ToString("dd-MMM-yyyy")</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td colspan="3" width="75%"></td>
+                                                        }
+
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td width="25%">Verified By</td>
+                                                        <td width="25%" colspan="3">@EducationVerInfo.EV_Refre_Name_Dsg /  @EducationVerInfo.EV_Refre_Eid </td>
+                                                        
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td width="25%"> Additional Remarks</td>
+                                                        <td width="25%" colspan="3">
+                                                            @EducationVerInfo.ReportComment
+                                                        </td>
+                                                        @*@if (EducationVerInfo.EV_Other_Remarks != null)
+            {
+                <td width="25%">Verified</td>
+            }
+            else
+            {
+                <td width="25%"></td>
+            }*@
+
+                                                        @*@if (ReportCmt.Any())
+            {
+                var comm = ReportCmt.FirstOrDefault(T => T.AntecedentName == "EV_Other_Remarks");
+                if (comm != null)
+                {
+                    <td width="25%">@comm.Comment</td>
+                }
+                else
+                {
+                    <td width="25%">NA</td>
+                }
+            }
+            else
+            {
+                <td width="25%">NA</td>
+            }*@
+                                                    </tr>
+
+
+
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td @*style="border-right:2px solid #999999;"*@ align="left" valign="top" width="2%">&nbsp;</td>
+                </tr>
+                <!--- Report Footer with Address Include -->
+                @Html.Partial("_ReportFooterAddress")
+                <!--- Report Footer with Address Include -->
+                <!--- Report Footer Include -->
+                @*@Html.Partial("_ReportFooter")*@
+                <!--- Report Footer Include -->
+            </table>
+
+        </page>
+
+        if (Model.CandidateDocList != null)
+        {
+            int index = 0;
+            foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == ProvidedInfo.SubCheckRowID))
+            {
+                if (Doc.SubCheckRowID == ProvidedInfo.SubCheckRowID)
+                {
+                    FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                    if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                    {
+                        <page id="PrintSrc" size="A4">
+
+                            <div style="page-break-after:always ;"></div>
+                            <table width="793" height="1250" cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center;border-collapse:collapse;">
+                                <!--- Report Header Include -->
+                                @*@Html.Partial("_ReportHeader")*@
+                                <!--- Report Header Include -->
+                                <tr>
+                                    @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                    <td valign="top" colspan="2" align="center" valign="bottom">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+                                            <tr>
+                                                <td valign="top">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr>
+                                                            <td>
+                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                    <tr>
+                                                                        <td width="88%"><p style="font-size:32px; color:black; text-decoration:underline; text-align:center; margin:0px 0px 0px 0px; font-weight:bold;"></p> </td>
+                                                                        @*<td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@ProvidedInfo.SubCheckName (@Doc.DocumentType)</p></td>*@
+                                                                        @*<td width="6%" align="right"><img src='@Url.Content("~/Images/logo.jpg")' width="45" height="auto"></td>*@
+                                                                        <td align="right"><img src='@Url.Content("~/Images/logo.jpg")' height="40" width="71" height="auto"></td>
+                                                                    </tr>
+                                                                    <tr><td colspan="2">&nbsp;</td></tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+
+                                                            @if (index == 0)
+                                                            {
+                                                                var AnnexureNo = Convert.ToInt32(Session["Annexure"].ToString());
+                                                                <td style="padding-left:30px;font-weight:bold">Annexure @AnnexureNo   </td>
+                                                                Session["Annexure"] = AnnexureNo + 1;
+                                                            }
+                                                            else
+                                                            {
+                                                                <td></td>
+                                                            }
+                                                        </tr>
+
+                                                        <tr>
+
+                                                            <td style="padding-top:10px">  </td>
+                                                        </tr>
+                                                        <tr style="text-align:center">
+                                                            <td valign="top">
+                                                                @{
+                                                                    FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                    System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                    if (image.Height > 600)
+                                                                    {
+                                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                    }
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                                </tr>
+                                <!--- Report Footer with Address Include -->
+                                @Html.Partial("_ReportFooterAddress")
+                                <!--- Report Footer with Address Include -->
+                                <!--- Report Footer Include -->
+                                @*@Html.Partial("_ReportFooter")*@
+                                <!--- Report Footer Include -->
+                            </table>
+                        </page>
+                    }
+                }
+                index++;
+            }
+        }
+    }
+}

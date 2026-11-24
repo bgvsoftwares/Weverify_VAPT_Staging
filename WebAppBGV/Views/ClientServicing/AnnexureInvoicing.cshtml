@@ -1,0 +1,543 @@
+@*@model ViewModels.ClientViewModel.DashboardClientCandidateListViewModel*@
+@{
+    ViewBag.Title = "Annexure & Invoicing Tracking System";
+
+    string CaseStatus1 = "";
+    string ClientRowID1 = "";
+    if (Request.QueryString["CaseStatus"] != null)
+    {
+        CaseStatus1 = @Request.QueryString["CaseStatus"].ToString();
+    }
+    if (Request.QueryString["cr"] != null)
+    {
+        ClientRowID1 = @Request.QueryString["cr"].ToString();
+    }
+    string hyperLinkExportExcel = "";
+    string faIconExportExcel = "";
+    faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    if (Session["Designation"].ToString() == "Manager - Annexure and Invoicing")
+    {
+        hyperLinkExportExcel = Html.ActionLink("Excel", "ExportAnnexureInvoicing", "ClientServicing", new { ClientId = 0, CaseStatus = "", teamMemberRowID = 0, search = "", FromDate = "", ToDate = "" }, new { @class = "btn bun-bg btn-default edit-btn-button" }).ToString();
+    }
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("AnnexureInvoicing", "ClientServicing", FormMethod.Post))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch row search-frame">
+                                    <label class="control-label required">ClientName :</label>
+                                    <div class="col-md-1">
+                                        @Html.DropDownList("ClientRowID",
+                                         new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                                         "-- Select Client -- ",
+                                         new { @class = "form-control", @id = "ddlClientRowID" })                                        
+                                        <span class="text-danger" id="clientError"></span>
+                                    </div>
+                                    <label class="control-label required">AnnexureAmount :</label>
+                                    <div class="col-md-1">
+                                        @Html.TextBox("AnnexureAmount", null, new { @class = "form-control", @id = "AnnexureAmount" , type = "text", inputmode = "decimal", maxlength = "13" })
+                                        <span class="text-danger" id="amountError"></span>
+                                    </div>
+                                    <label class="control-label required">BillingWise (Month & Year) :</label>
+                                    @*<div class="col-md-1">
+                                            @Html.DropDownList("BillingType", new List<SelectListItem>
+                                                {
+                                                new SelectListItem{Text="Jan", Value="Jan"},
+                                                new SelectListItem{Text="Feb",Value="Feb"},
+                                                new SelectListItem{Text="Mar", Value="Mar"},
+                                                new SelectListItem{Text="Aprl",Value="Apr"},
+                                                new SelectListItem{Text="May", Value="May"},
+                                                new SelectListItem{Text="Jun",Value="Jun"},
+                                                new SelectListItem{Text="July", Value="July"},
+                                                new SelectListItem{Text="Aug",Value="Aug"},
+                                                new SelectListItem{Text="Sept",Value="Sept"},
+                                                new SelectListItem{Text="Oct", Value="Oct"},
+                                                new SelectListItem{Text="Nov",Value="Nov"},
+                                                new SelectListItem{Text="Dec",Value="Dec"}
+
+                                                }, "-- Select Client -- ", new { @class = "form-control", @id= "AnnexureSendDate" })
+                                        </div>*@
+                                    <div class="col-md-1">
+                                        @Html.TextBox("BillingWise", null, new { @class = "form-control", @id = "BillingWiseId", @placeholder = "yyyy-mm-dd" })
+                                        <span class="text-danger" id="billingError"></span>
+                                    </div>
+
+                                </div>
+                                @*<div class="form-group branch row search-frame">
+                                        <label class="col-md-2 control-label">Keyw]ord :</label>
+                                        <div class="col-md-3">
+                                            @Html.DropDownList("BillingType", new List<SelectListItem>
+                                                {
+                                                new SelectListItem{Text="Monthly", Value="Monthly"},
+                                                new SelectListItem{Text="Yearly",Value="Yearly"}
+                                                },"-- Select Client -- ",new { @class = "form-control" })
+                                        </div>
+                                    </div>*@
+                                <!--<div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Upload Annexure Invoice :</label>
+                                    <div class="col-md-3">-->
+                                @*@Html.LabelFor(model=>model.UploadDoc1, htmlAttributes: new { @class = "col-md-2 control-label" })*@
+                                <!--<input type="file" name="AttachedFile" id="AttachedFile" />
+                                    </div>
+                                </div>-->
+
+                                <div class="form-group branch row search-frame">
+                                    <div style="text-align:left;" class="col-md-12">
+                                        <input class="btn bun-bg btn-default edit-btn-button" type="submit" value="Submit" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @*<div class="row">
+                        <div class="col-md-12">
+                            @using (Html.BeginForm("AnnexureInvoicing", "ClientServicing", FormMethod.Get))
+                            {
+                                <div class="form-horizontal">
+
+                                    <div class="form-group branch row search-frame">
+                                        <label class="col-md-2 control-label">Keyword :</label>
+                                        <div class="col-md-3">
+                                            @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Client Name..." })
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group branch row search-frame">
+                                        <label class="col-md-2 control-label">From Date :</label>
+                                        <div class="col-md-3">
+                                            @Html.TextBox("FromDate", null, new { @class = "form-control", @id = "FromDate", @placeholder = "yyyy-mm-dd" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group branch row search-frame">
+                                        <label class="col-md-2 control-label">To Date :</label>
+                                        <div class="col-md-3">
+                                            @Html.TextBox("ToDate", null, new { @class = "form-control", @id = "ToDate", @placeholder = "yyyy-mm-dd" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group branch row search-frame">
+                                        @{
+                                            if (Request.QueryString["CaseStatus"] != null)
+                                            {
+                                                @Html.Hidden("CaseStatus", Request.QueryString["CaseStatus"].ToString())
+                                            }
+                                        }
+                                        <div style="text-align:center;" class="col-md-12">
+                                            <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>*@
+                @if (Model != null && Model.DashboardClientCandidates != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12 table">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.DashboardClientCandidates, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                     htmlAttributes: new { id = "grid", @class = "table table-striped table-bordered nowrap" },
+                                  headerStyle: "thead-inverse",
+                                  rowStyle: "ordertxt",
+                                  footerStyle: "custpaging",
+                                  mode: WebGridPagerModes.All,
+                                  columns: new[]
+                                  {
+                                         grid.Column(header: "No.",format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                         //grid.Column(columnName: "ClientRowID", header: "ClientRowID", canSort: false, style:"td-1"),
+                                         grid.Column(columnName: "SpocName", header: "SpocName", canSort: false, style:"td-1"),
+                                         grid.Column(columnName: "ClientCode", header: "ClientCode", canSort: false, style:"td-1"),
+                                         grid.Column(columnName: "ClientName", header: "ClientName", canSort: false, style:"td-1"),
+                                         //grid.Column(columnName: "BillingType", header: "Billing Type", canSort: false, style:"td-1"),
+                                         grid.Column(columnName: "BillingWise", header: "BillingWise (Month & Year)", canSort: false, style:"td-1"),
+                                        // grid.Column(header : "Upload Annexure Invoice", format : (item) => {
+                                        //string AnnexureUploadOptionFileName="Upload Annexure Invoice";
+                                        //var link = Html.ActionLink(AnnexureUploadOptionFileName, "AnnexureInvoicingUploadDetail", "ClientServicing", new { ClientRowID = 218 }, new { @class="edit" });
+                                        //return link;   }, style:"td-1"),
+
+                                        grid.Column("AnnexureInvoiceUpload", canSort: false, format: (item)=> {
+                                            int AnnexureInvoicingId=item.AnnexureInvoicingId;
+                                        var link=@Html.ActionLink("Upload", "AnnexureInvoicingUploadDetail", "ClientServicing", new { AnnexureInvoicingId= item.AnnexureInvoicingId , ClientRowID= item.ClientRowID ,AnnexureInvoicingType="AnnexureInvoicingUpload"  }, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" });
+                                        return link;}, style:"td-1" ),
+
+                                         //grid.Column(columnName: "AnnexureUploadOptionFileName", header: "AnnexureUploadFileName", canSort: false, style:"td-1"),
+
+                                         grid.Column(columnName: "AnnexureUploadOptionFileName",header: "AnnexureUploadedFile", canSort: false, format: item =>
+                                            {
+                                                if (!string.IsNullOrEmpty(item.AnnexureUploadOptionFileName))
+                                                {
+                                                    string path = System.Configuration.ConfigurationManager.AppSettings["AnnexureInvoicingDocuments"];
+                                                    return new HtmlString(string.Format("<a class='edit' href='{0}' target='_blank'>"+item.AnnexureUploadOptionFileName+"</a>", Url.Content(path + item.AnnexureUploadOptionFileName)));
+                                                }
+                                                return null;
+                                            }),
+
+                                grid.Column(columnName: "AnnexureSentDate", header: "AnnexureSentDate", canSort: false, style:"td-1"),
+                                         grid.Column(columnName: "AnnexureAmount", header: "AnnexureAmount", canSort: false, style:"td-1"),
+                                         //grid.Column(columnName: "ReminderSendOption", header: "ReminderSendOption", canSort: false, style:"td-1"),
+
+                                        grid.Column("ReminderSendOption", canSort: false, format: (item)=> {
+                                            string SendMailLink = string.Format("<a href=\"#\" AnnexureInvoicingId=\"Reminder_{0}\" class=\"Reminder\" >{1}</a>", item.AnnexureInvoicingId, "Reminder");
+                                            return new HtmlString(SendMailLink);
+                                        }, style:"Reminder td-1"),
+
+                                         grid.Column("AnnexureApprovedUpload", canSort: false, format: (item)=> {
+                                             int AnnexureInvoicingId=item.AnnexureInvoicingId;
+                                             var link=@Html.ActionLink("Upload", "AnnexureInvoicingUploadDetail", "ClientServicing", new { AnnexureInvoicingId= item.AnnexureInvoicingId , ClientRowID= item.ClientRowID ,AnnexureInvoicingType="ApprovedAnnexureInvoicingUpload"   }, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "AnnexureApprovedUploadId" });
+                                             return link;}, style:"td-1" ),
+
+                                         //grid.Column(columnName: "AnnexureApprovedUploadOption", header: "AnnexureApproved File Name", canSort: false, style:"td-1"),
+
+                                         grid.Column(columnName: "AnnexureApprovedUploadOption",header: "AnnexureApprovedUploadedFile", canSort: false ,format: item =>
+                                           {
+                                               if (!string.IsNullOrEmpty(item.AnnexureApprovedUploadOption))
+                                               {
+                                                   string path = System.Configuration.ConfigurationManager.AppSettings["AnnexureInvoicingDocuments"];
+                                                   return new HtmlString(string.Format("<a class='edit' href='{0}' target='_blank'>"+item.AnnexureApprovedUploadOption+"</a>", Url.Content(path + item.AnnexureApprovedUploadOption)));
+                                               }
+                                               return null;
+                                           }),
+
+                                         grid.Column(columnName: "AnnexureApprovedDate", header: "AnnexureApprovedDate", canSort: false, style:"td-1"),
+                                         grid.Column(columnName: "AnnexureApprovedAmount", header: "AnnexureApprovedAmount", canSort: false, style:"td-1"),
+                                         grid.Column(columnName: "InvoiceNo", header: "InvoiceNo", canSort: false, style:"td-1"),
+
+                                         grid.Column("InvoiceUpload", canSort: false, format: (item)=> {
+                                             int AnnexureInvoicingId=item.AnnexureInvoicingId;
+                                             var link=@Html.ActionLink("Upload", "AnnexureInvoicingUploadDetail", "ClientServicing", new { AnnexureInvoicingId= item.AnnexureInvoicingId , ClientRowID= item.ClientRowID ,AnnexureInvoicingType="InvoiceUpload"   }, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "InvoiceUploadID" });
+                                             return link;}, style:"td-1" ),
+                                         //grid.Column(columnName: "InvoiceUploadOptionFile", header: "Invoice Upload File", canSort: false, style:"td-1"),
+
+                                         grid.Column(columnName: "InvoiceUploadOptionFile",header: "InvoiceUploadFile",canSort: false ,format: item =>
+                                          {
+                                              if (!string.IsNullOrEmpty(item.InvoiceUploadOptionFile))
+                                              {
+                                                  string path = System.Configuration.ConfigurationManager.AppSettings["AnnexureInvoicingDocuments"];
+                                                  return new HtmlString(string.Format("<a class='edit' href='{0}' target='_blank'>"+item.InvoiceUploadOptionFile+"</a>", Url.Content(path + item.InvoiceUploadOptionFile)));
+                                              }
+                                              return null;
+                                          }),
+
+                                         grid.Column(columnName: "InvoiceSendDate", header: "InvoiceSendDate", canSort: false, style:"td-1"),
+                                         grid.Column(columnName: "InvoiceAmount", header: "InvoiceAmount", canSort: false, style:"td-1"),
+                                         grid.Column(columnName: "PaymentReceivedDate", header: "PaymentReceivedDate", canSort: false, style:"td-1"),
+                                         grid.Column(columnName: "PaymentReceivedAmount", header: "PaymentReceivedAmount", canSort: false, style:"td-1"),
+                                         grid.Column(columnName: "SettlementOption", header: "SettlementOption", canSort: false, style:"td-1"),
+                                         grid.Column(columnName: "Remarks", header: "Remarks", canSort: false, style:"td-1"),
+                                         grid.Column(header : "", format : (item) => {
+                                             var link = Html.ActionLink("Edit", "EditAnnexureInvoicing", "ClientServicing", new { AnnexureInvoicingId = item.AnnexureInvoicingId }, null);
+                                             return link;
+                                         }, style:"edit td-1"),
+                                         //grid.Column(null, canSort: false, format: (item)=> {
+                                         //    string DeleteLink = string.Format("<a href=\"#\" AnnexureInvoicingId=\"Delete_{0}\" class=\"delete\" >{1}</a>", item.AnnexureInvoicingId, "Delete");
+                                         //    return new HtmlString(DeleteLink);
+                                         //}, style:"delete td-1"),
+                                        grid.Column(null, canSort: false, format: (item)=> {
+                                            string SendMailLink = string.Format("<a href=\"#\" AnnexureInvoicingId=\"SendMail_{0}\" class=\"SendMail\" >{1}</a>", item.AnnexureInvoicingId, "SendMail");
+                                            return new HtmlString(SendMailLink);
+                                        }, style:"SendMail td-1"),
+                                      }
+                                  )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "60%", height: "80%" });
+            $(".iframeFundPendingApprove").colorbox({ iframe: true, width: "60%", height: "80%" });
+            $(".callbacks").colorbox({
+                onClosed: function () {
+                    window.location.reload(false);
+                }
+            });
+            $(".Remindermail").colorbox({ iframe: true, width: "40%", height: "50%" });
+            $('#FromDate').datepicker({
+                //dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                //showButtonPanel: true,
+                yearRange: "-66:+0",
+            });
+            $('#ToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#BillingWiseId').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+        });
+    </script>
+}
+<script>
+    $(document).ready(function () {
+        var table = $('#grid').DataTable({
+            responsive: true,
+        });
+        new $.fn.dataTable.FixedHeader(table);
+    });
+</script>
+@*<script>
+        function validateForm() {
+
+            if ($("#ddlClientRowID").val() == 0) {
+                alert("Select Client Name.");
+                return false;
+            }
+            if ($("#BillingWiseId").val() == "") {
+                alert("Enter Billing Wise.");
+                return false;
+            }
+            if ($("#AnnexureAmount").val() == "") {
+                alert("Enter Annexure Amount.");
+                return false;
+            }
+            return true;
+        }
+    </script>*@
+@*<script>
+    $(document).ready(function () {
+        var months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        $.each(months, function (index, month) {
+            $('#AnnexureSentDate').append($('<option>', {
+                value: index + 1, // Month values typically 1-12
+                text: month
+            }));
+        });
+
+        // Optionally set current month as selected
+        var currentMonth = new Date().getMonth() + 1; // getMonth() is 0-indexed
+        $('#AnnexureSentDate').val(currentMonth);
+    });
+</script>*@
+<style>
+    .total-record {
+        margin-bottom: 30px;
+        font-size: 1.4rem;
+    }
+
+    #select_all {
+        width: 30px !important;
+    }
+
+    .personalId {
+        width: 30px !important;
+    }
+
+    @@media screen and (max-width: 1450px) and (min-width: 600px) {
+        #grid {
+            font-size: .90rem;
+            width: 100%;
+        }
+
+        .table td, .table th {
+            padding: .60rem !important;
+        }
+
+        .thead-inverse {
+            font-size: .90rem !important;
+        }
+
+        .table, td, .edit {
+            font-size: .95rem !important;
+        }        
+    }
+    .edit-btn-button {
+        width: 150px;
+        padding: 0px !important;
+        height: 30px;
+        line-height: 29px !important;
+    }
+
+</style>
+<script type="text/javascript">
+    $(".delete").on("click", function () {
+        var str = $(this).attr("AnnexureInvoicingId").split("_");
+        id = str[1];
+        var flag = confirm('Do you want to Delete the Record ?');
+        if (id != "" && flag) {
+            $.ajax({
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("DeleteAnnexureInvoicing", "ClientServicing")',
+                data: { "id": id },
+                dataType: "json",
+                beforeSend: function () { },
+                success: function (data) {
+                    if (data.result == true) {
+                        alert("Record Deleted Successfully!!");
+                        setTimeout(function () { window.location.replace("AnnexureInvoicing"); }, 500);
+                    }
+                    else {
+                        setTimeout(function () { window.location.replace("AnnexureInvoicing"); }, 500);
+                    }
+                }
+            });
+        }
+    });
+</script>
+<script type="text/javascript">
+    $(".SendMail").on("click", function () {
+        var str = $(this).attr("AnnexureInvoicingId").split("_");
+        id = str[1];
+        var ReminderSendOption = 0;
+        var flag = confirm('Do you want to send mail ?');
+        if (id != "" && flag) {
+            $.ajax({
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SendMailAnnexureInvoicing", "ClientServicing")',
+                data: { "id": id, "ReminderSendOption": ReminderSendOption },
+                dataType: "json",
+                beforeSend: function () { },
+                success: function (data) {
+                    if (data.result == true) {
+                        alert("Mail has been sent Successfully!!");
+                        setTimeout(function () { window.location.replace("AnnexureInvoicing"); }, 500);
+                    }
+                    else {
+                        setTimeout(function () { window.location.replace("AnnexureInvoicing"); }, 500);
+                    }
+                }
+            });
+        }
+    });
+</script>
+<script>
+    document.getElementById("AnnexureAmount").addEventListener("input", function (e) {
+        let value = e.target.value;
+        if (!/^\d{0,8}(\.\d{0,4})?$/.test(value)) {
+            let match = value.match(/^(\d{0,8})(\.\d{0,4})?/);
+            if (match) {
+                e.target.value = match[0];
+            } else {
+                e.target.value = "";
+            }
+        }
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector("form");
+        const clientDropdown = document.getElementById("ddlClientRowID");
+        const annexureAmount = document.getElementById("AnnexureAmount");
+        const billingWise = document.getElementById("BillingWiseId");
+
+        const clientError = document.getElementById("clientError");
+        const amountError = document.getElementById("amountError");
+        const billingError = document.getElementById("billingError");
+
+        clientDropdown.addEventListener("change", function () {
+            if (clientDropdown.value && clientDropdown.value !== "-- Select Client --") {
+                clientError.textContent = "";
+            }
+        });
+
+        annexureAmount.addEventListener("input", function () {
+            if (annexureAmount.value.trim() && !isNaN(annexureAmount.value)) {
+                amountError.textContent = "";
+            }
+        });
+
+        billingWise.addEventListener("input", function () {
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+            if (billingWise.value.trim() && dateRegex.test(billingWise.value)) {
+                billingError.textContent = "";
+            }
+        });
+
+        form.addEventListener("submit", function (e) {
+            let isValid = true;
+
+            clientError.textContent = "";
+            amountError.textContent = "";
+            billingError.textContent = "";
+
+            if (!clientDropdown.value || clientDropdown.value === "-- Select Client --") {
+                clientError.textContent = "Client Name is required.";
+                isValid = false;
+            }
+
+            if (!annexureAmount.value.trim()) {
+                amountError.textContent = "Annexure Amount is required.";
+                isValid = false;
+            } else if (isNaN(annexureAmount.value)) {
+                amountError.textContent = "Must be a valid number.";
+                isValid = false;
+            }
+
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+            if (!billingWise.value.trim()) {
+                billingError.textContent = "Billing Wise date is required.";
+                isValid = false;
+            } else if (!dateRegex.test(billingWise.value)) {
+                billingError.textContent = "Use yyyy-mm-dd format.";
+                isValid = false;
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(".Reminder").on("click", function () {
+        var str = $(this).attr("AnnexureInvoicingId").split("_");
+        id = str[1];
+        var ReminderSendOption = 1;
+        var flag = confirm('Do you want to send Reminder Mail ?');
+        if (id != "" && flag) {
+            $.ajax({
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SendMailAnnexureInvoicing", "ClientServicing")',
+                data: { "id": id, "ReminderSendOption": ReminderSendOption },
+                dataType: "json",
+                beforeSend: function () { },
+                success: function (data) {
+                    if (data.result == true) {
+                        alert("Reminder Mail has been sent Successfully!!");
+                        setTimeout(function () { window.location.replace("AnnexureInvoicing"); }, 500);
+                    }
+                    else {
+                        setTimeout(function () { window.location.replace("AnnexureInvoicing"); }, 500);
+                    }
+                }
+            });
+        }
+    });
+</script>
+
+

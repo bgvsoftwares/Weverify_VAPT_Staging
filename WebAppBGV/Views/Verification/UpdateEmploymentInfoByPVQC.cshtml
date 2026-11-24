@@ -1,0 +1,568 @@
+﻿@model dynamic
+
+
+@{
+    string Designation = "";
+    if (Session["Designation"] != null)
+    {
+        Designation = Session["Designation"].ToString();
+    }
+
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+    string CheckStatusid = "";
+    string ReportComments = "";
+
+
+    PersonalRowid = @ViewBag.PersonalRowid;
+    SubCheckId = @ViewBag.SubCheckId;
+    clientRowId = @ViewBag.clientRowId;
+    CheckStatusid = @ViewBag.CheckStatusid;
+    string CDispositionName = ViewBag.CDispositionName;
+    ReportComments = ViewBag.ReportComments;
+
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftDataEntryProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <table class="main-tableframe personal-details-frame" border="0">
+        <tr>
+            <td>@Html.Partial("_PersonalDetails")</td>
+        </tr>
+        <tr>
+            <td>@Html.Partial("_CaseDocumentList")</td>
+        </tr>
+        <tr>
+            <td>@Html.Partial("_DocumentList")</td>
+        </tr>
+        <tr>
+            <td>@Html.Partial("MailList")</td>
+        </tr>
+
+
+
+    </table>
+    <div class="col-md-12">
+        @using (Html.BeginForm("UpdateEmploymentInfoByPVQC", "Verification", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+            @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+            <input id="SubCheckId" type="hidden" value=@SubCheckId>
+            @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+            <input id="clientRowId" type="hidden" value=@clientRowId>
+            @Html.Hidden("clientRowId", clientRowId.ToString())
+
+            <input id="CheckStatusid" type="hidden" value=@CheckStatusid>
+            @Html.Hidden("CheckStatusid", CheckStatusid.ToString())
+
+            <input id="hdnDispositionID" type="hidden" name="hdnDispositionID">
+            <input id="hdnSeverity" type="hidden" name="hdnSeverity">
+            <input id="ColorsName" type="hidden" name="ColorsName">
+            <input id="ReportComments" type="hidden" name="ReportComments">
+            
+
+            @Html.ValidationSummary()
+
+            foreach (var category in Model)
+            {
+                <div class="container">
+                    @{
+
+                        string[] nm = category.Key.Split('_');
+                        string[] temp = category.Value.Split('_');
+
+                        if (@nm[2] == "textbox")
+                        {
+
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7>*</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </div>
+                                    @if (nm[0].ToString() != "81")
+                                    {
+                                        <div class="col-md-4">
+                                            <p> @temp[0]</p>
+                                        </div>
+                                    }
+
+                                    @if (nm[0].ToString() == "81")
+                                    {
+                                        <div class="col-md-8">
+                                            @if (temp.Count() > 1)
+                                            {
+                                                <textarea name="81" id="81" rows="5" cols="8" maxlength="@nm[5]">@temp[1]</textarea>
+                                            }
+                                            else
+                                            {
+                                                <textarea name="81" id="81" rows="5" cols="8" maxlength="@nm[5]">@temp[0]</textarea>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-4">
+                                            @if (temp.Count() > 1)
+                                            {
+
+                                                <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@temp[1]' autocomplete="off" maxlength="@nm[5]">
+                                            }
+                                            else
+                                            {
+                                                <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@temp[0]' autocomplete="off" maxlength="@nm[5]">
+                                            }
+                                        </div>
+                                    }
+
+
+                                </div>
+                            </div>
+
+                        }
+                        if (@nm[2] == "dropdown")
+                        {
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-sm">
+                                        @if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+
+                                        @nm[1]
+                                    </div>
+                                    <div class="col-sm">
+                                        @if (temp.Count() > 1)
+                                        {
+                                            <p>@temp[0]</p>
+                                        }
+                                    </div>
+                                    <div class="col-sm">
+                                        @nm[4]
+                                        @{
+                                            int lastindex = nm.Length;
+                                            string[] nmOption = nm[lastindex - 1].Split(',');
+                                            string Fvalue = nm[lastindex - 2].ToString();
+                                        }
+                                        <select name=@nm[0] id='@nm[0]' autocomplete="off">
+                                            @for (int i = 0; i < nmOption.Length; i++)
+                                            {
+                                                if (@nmOption[i].Trim() == Fvalue)
+                                                {
+                                                    <option selected>@nmOption[i]</option>
+
+                                                }
+                                                else
+                                                {
+                                                    <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                                }
+
+                                            }
+                                        </select>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        }
+                        if (@nm[2] == "checkbox")
+                        {
+
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-sm">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7>*</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </div>
+
+                                    <div class="col-sm">
+                                        &nbsp;
+                                    </div>
+
+                                    <div class="col-sm">
+                                        <span>  @nm[4] </span>
+                                        @{
+                                            if (@nm[6] == "TRUE")
+                                            {
+                                                <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value="checked" checked>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value=@nm[0]>
+                                            }
+                                        }
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        }
+                        if (@nm[2] == "fileUpload")
+                        {
+
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-sm">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7>*</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </div>
+                                    <div class="col-sm">
+                                        &nbsp;
+                                    </div>
+                                    <div class="col-sm">
+                                        <span> @nm[4] </span>
+                                        <input type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                                    </div>
+                                </div>
+                            </div>
+
+                        }
+                    }
+
+                </div>
+
+            }
+            <div class="row">
+                <div class="col-sm-12 cytoscape-parent">
+                    <div class="w-400 h-400 d-inline-block" id="cytoscape-container"></div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4 form-group branch">
+                        @Html.Label("RejectionReason", htmlAttributes: new { @class = "col-md-4 control-label" })
+                    </div>
+                    <div class="col-md-8">
+                        @Html.TextArea("RejectionReason", new { @class = "form-control", @rows = "2" })
+                    </div>
+                </div>
+            </div>
+                       
+
+
+            <div class="row">
+
+
+                @if (Designation == "Team Member-PV-QC")
+                {                    
+
+                    <div class="col-md-4" style="margin-top:25px!important; text-align:right!important;">
+                        @Html.ActionLink("Back", "DepartmentTeamMemberQCChecks", "Verification", new { CheckStatusId = CheckStatusid }, new { @class = "btn btn-default VerEmailDetails" })
+                    </div>
+
+                   
+                    if (CheckStatusid == "34")
+                    {
+                        <div class="col-md-4" style="margin-top:25px!important;text-align:left!important;">
+                            <input class="btn bun-bg btn-default" onclick="return validateFormApprove()" type="submit" value="Approve" name="action" />
+                        </div>
+                        <div class="col-md-4" style="margin-top:25px!important;text-align:left!important;">
+                            <input class="btn bun-bg btn-default" onclick="return validateFormReject()" type="submit" value="Reject" name="action" />
+                        </div>
+
+
+                    }
+                }
+
+            </div>
+            <br />
+            <br />
+
+
+
+        }
+    </div>
+</div>
+
+<style>
+
+    .btn {
+        padding: 10px 40px 10px 40px !important;
+    }
+
+    input[type=text], textarea {
+        width: 100%;
+        padding: 22px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    select {
+        width: 100%;
+        padding: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    label {
+        padding: 12px 12px 12px 0;
+        display: inline-block;
+    }
+
+    input[type=submit] {
+        background-color: #04AA6D;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        float: right;
+    }
+
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+
+    .container {
+        border-radius: 5px;
+        /*background-color: #f2f2f2;*/
+        padding: 8px;
+        font-size: 1.2rem !important;
+    }
+
+    .col-25 {
+        float: left;
+        width: 25%;
+        margin-top: 6px;
+    }
+
+    .col-75 {
+        float: left;
+        width: 40%;
+        margin-top: 6px;
+        margin-left: 90px;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    .ui-widget.ui-widget-content {
+        width: 20%;
+    }
+
+    img {
+        width: 50px;
+        height: 25px;
+    }
+    /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+    @@media screen and (max-width: 600px) {
+        .col-25, .col-75, input[type=submit] {
+            width: 100%;
+            margin-top: 0;
+        }
+    }
+</style>
+
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    <script src="~/Scripts/tinymceNew.min.js"></script>
+    <script src="~/Scripts/tinymce-jquery.min.js"></script>
+
+    <script>
+        $('textarea').tinymce({
+            height: 200,
+            plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+            ],
+            toolbar: 'undo redo | blocks | bold italic backcolor | ' +
+                'alignleft aligncenter alignright alignjustify | ' +
+                'bullist numlist outdent indent | removeformat | help'
+        });
+        // Prevent jQuery UI dialog from blocking focusin
+        $(document).on('focusin', function (e) {
+            if ($(e.target).closest(".tox-tinymce, .tox-tinymce-aux, .moxman-window, .tam-assetmanager-root").length) {
+                e.stopImmediatePropagation();
+            }
+        });
+    </script>
+    <style>
+        .tox-tinymce {
+            margin-top: 10px !important;
+        }
+
+        .tox-editor-header {
+            box-shadow: none !important;
+            z-index: 0 !important;
+            border-bottom: 0.5px solid #000 !important;
+        }
+
+        .tox-statusbar__branding {
+            display: none !important;
+        }
+    </style>
+    <script>
+                $(document).ready(function () {
+                    $('#173').datepicker({
+                        dateFormat: "dd-M-yy",
+                        changeMonth: true,
+                        changeYear: true,
+                        showButtonPanel: true,
+                        yearRange: "-66:+0",
+                    });
+                    var dNow = new Date();
+                    var localdate = (dNow.getFullYear() + '-' + (dNow.getMonth() + 1) + '-' + dNow.getDate());
+                    $('#OrderDate').val(localdate);
+                    $('#goBack').click(function () {
+                        parent.history.back();
+                        return false;
+                    });
+                    $("#173").keypress(function (e) {
+                        return false;
+                    });
+                    $("#173").keydown(function (e) {
+                        return false;
+                    });
+
+            var dispid = '@ViewBag.CDispositionName';
+            var Severityid = '@ViewBag.Severityid';
+            var ColorName = '@ViewBag.ColorName';
+            var Remarks = '@ViewBag.ReportComments';
+
+
+
+            //alert(dispid);
+            $(".iframeUpdateStatus").colorbox({ iframe: true, width: "60%", height: "60%" });
+            $(".callbacks").colorbox({
+                onClosed: function () {                
+                    window.location.reload(false);
+                }
+            });
+
+            $(".iframeUpdateVerDoc").colorbox({ iframe: true, width: "60%", height: "60%" });
+            $(".callbacks").colorbox({
+                onClosed: function () {
+                    window.location.reload(true);
+                }
+            });
+
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+
+            //For Clouse details
+            $("#CDispositionRowId option:selected").each(function () {
+                var $this = $(this);
+
+
+
+                if ($this.length) {
+                    var selText = $this.text();
+                    var SelectDispositionID = $this.val();
+                    $('#hdnDispositionID').append(SelectDispositionID + ',');
+                    SelectDispositionID += $this.val() + ',';
+                  
+                    if ($('#CDispositionRowId').val() == '') {
+                        $('#CDispositionRowId').append(selText + '\n');
+                    }
+                    if (dispid!='')
+                    {
+                        $('#CDispositionRowId').val(dispid);
+                        $('#hdnDispositionID').val(dispid);
+                        $('#hdnSeverity').val(Severityid);
+                        $('#ColorsName').val(ColorName);
+                        $('#Remarks').val(Remarks);
+                    }
+                }
+            });
+
+            $("#CDispositionRowId").change(function () {
+
+                $('#selected').html(' ');             
+                var SelectDispositionID = '';
+                $("#CDispositionRowId option:selected").each(function () {
+                    var $this = $(this);
+                    if ($this.length) {
+                        var selText = $this.text();
+                        SelectDispositionID += $this.val() + ',';
+                        //console.log(selText);
+                        $('#selected').append(selText + '\n');
+                    }
+                });
+                if (SelectDispositionID.length > 0) {
+                    SelectDispositionID = SelectDispositionID.substring(0, SelectDispositionID.length - 1);
+                } else { SelectDispositionID = ''; }
+                $('#hdnDispositionID').val(SelectDispositionID);
+
+            });
+
+            $(function () {
+                $('#CDispositionRowId').change(function () {
+
+                    var url = "/Verification/GetSeverityColor?ClientRowId=" + $("#clientRowId").val() + "&Dispositions=" + $("#hdnDispositionID").val();
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        async: false,
+                        dataType: 'json',
+                        success: function (colors) {
+                            $('#Severity').val(colors.SeverityName);
+                            $('#ColorName').val(colors.ColorName);
+                            $('#ColorsName').val(colors.ColorName);
+                            $('#hdnSeverity').val(colors.SeverityRowId);
+
+                        }
+                    });
+                });
+            });
+        });
+
+        function validateFormApprove() {          
+            if ($('#ColorName').val() == '') {
+                alert("Please Select Disposition");
+                $('#ColorName').focus();
+
+                return false;
+            }
+        }
+        function validateFormReject() {
+
+            if ($('#RejectionReason').val() == '') {
+                alert("Please mention Reject reason!");
+                $('#RejectionReason').focus();
+                return false;
+            }
+
+            return true;
+        }
+
+    </script>
+
+}

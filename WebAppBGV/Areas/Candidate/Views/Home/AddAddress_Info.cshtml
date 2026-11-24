@@ -1,0 +1,951 @@
+﻿@using WebAppBGV.CommonMethods;
+@model dynamic
+@{
+    //ViewBag.Title = "Add Address Info (" + Session["LoginCandidateName"].ToString() + ")";
+    Layout = "~/Areas/Candidate/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "Home", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+    string msg = "";
+    if (Request.QueryString["ErrorMsg"] != null)
+    {
+        //hyperLink = Html.ActionLink("linkTitle", "AllocatedDataEntryJob", "ProvidedInfo", new { CaseStatus = Request.QueryString["Casestatus"].ToString() }, new { @class = "headerbacklink" }).ToString();
+        msg = Request.QueryString["ErrorMsg"].ToString();
+    }
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+
+    string countryid = "";
+    string StateId = "";
+    string CityId = "";
+
+
+    PersonalRowid = @ViewBag.PersonalRowid;
+
+    clientRowId = @ViewBag.clientRowId;
+
+    countryid = @ViewBag.countryid;
+    StateId = @ViewBag.stateId;
+    CityId = @ViewBag.Cityid;
+
+    string CountryName = "";
+    CountryName = @ViewBag.CountryName.Trim();
+
+    string StateName = "";
+    StateName = @ViewBag.StateName.Trim();
+
+    string CityName = "";
+    CityName = @ViewBag.CityName.Trim();
+    SubCheckId = @ViewBag.SubCheckId;
+
+    //SubCheckId = @ViewBag.SubCheckId;
+    clientRowId = Session["ClientRowID"].ToString();
+    int clientno = @ViewBag.clientno;
+    string SubCheckIdNew = clsCommonMethods.PDecrypt(SubCheckId).ToString();
+    bool NACheckStatus = ViewBag.NACheckStatus;
+
+}
+
+<div class="card" style="background:#009688!important;">
+    @section LeftNavigation{ @Html.Partial("_NavLeftCandidateCaseInfoProvided") }
+    @section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+    @*@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }*@
+    @section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+</div>
+
+
+@if (ViewBag.ErrorMsg != null)
+{
+    string err = @ViewBag.ErrorMsg.ToString();
+    string[] err2 = err.Split(',');
+    <script>
+        Swal.fire({
+            icon: 'info',
+            title: 'Mandatory Fields.',
+            html: '<div class="errormsg" style="text-align:left;"><ol type="1">@foreach(String item in err2){<li> @item</li> }</ol></div>'
+       })
+    </script>
+}
+@if (ViewBag.Success != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'success',
+            html:'<div class="errormsg">@ViewBag.Success.ToString()</div>',
+            showConfirmButton: false,
+            timer: 1500
+        })
+    </script>
+}
+<style>
+
+    input[type=text], textarea {
+        width: 30rem !important;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    select {
+        width: 30rem !important;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    label {
+        padding: 12px 12px 12px 0;
+        display: inline-block;
+    }
+
+    input[type=submit] {
+        background-color: #04AA6D;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        float: right;
+    }
+
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+
+    .container {
+        border-radius: 5px;
+        /*background-color: #f2f2f2;*/
+        padding: 8px;
+        font-size: 1.2rem !important;
+    }
+
+    .col-25 {
+        float: left;
+        width: 25%;
+        margin-top: 20px;
+    }
+
+    .col-75 {
+        float: left;
+        width: 75%;
+        margin-top: 8px;
+        /*padding-left: 80px !important;*/
+    }
+
+    /*#UplodVerificationDocs {
+        margin-right: 0px !important;
+        padding: 7% 7% 7% 7% !important;
+    }*/
+
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+    @@media screen and (max-width: 600px) {
+        .col-25, .col-75, input[type=submit] {
+            width: 100%;
+            margin-top: 0;
+        }
+    }
+</style>
+<div class="container" style="background:rgba(141, 195, 255, .1);width:auto!important;">
+    <div class="row">
+        <div class="col-md-12" style="padding-right:0px!important;">
+            <div>
+
+                @using (Html.BeginForm("AddAddress_Info", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+                    @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+                    <input id="SubCheckId" type="hidden" value=@SubCheckId>
+                    @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+                    <input id="clientRowId" type="hidden" value=@clientRowId>
+                    @Html.Hidden("clientRowId", clientRowId.ToString())
+
+
+                    <input id="Hfcountryid" type="hidden" value=@countryid>
+
+                    @Html.Hidden("Hfcountryid", countryid.ToString())
+
+                    <input id="HfStateId" type="hidden" value=@StateId>
+                    @Html.Hidden("HfStateId", StateId.ToString())
+
+                    <input id="HfCityId" type="hidden" value=@CityId>
+                    @Html.Hidden("HfCityId", CityId.ToString())
+                    <input id="latlng" name="latlng" type="hidden" value=''>
+
+
+                    @Html.ValidationSummary()
+                    <div id="NADiv" class='col-md-12' style="background-color:#3498db;height:30px;">
+                        <center style="margin-top:5px;">
+                            @if (clientRowId == "1188" && SubCheckIdNew == "13")
+                            {
+                                <label class="checkbox-inline" style="margin:-5px 20px 0 10px">
+                                    @Html.CheckBox("Notraised", NACheckStatus, new { onchange = "NotRaised(this)", style = "width:5rem!important;" })<b style="color:white">In case of same address as current,Please select check box & submit the application.</b>
+                                </label>
+                            }
+                            else
+                            {
+                                <label class="checkbox-inline" style="margin:-5px 20px 0 10px; display:none;">
+                                    @Html.CheckBox("Notraised", NACheckStatus, new { onchange = "NotRaised(this)" })<b style="color:white;">Not Applicable</b>
+                                </label>
+                            }
+
+                        </center>
+                    </div>
+                    foreach (var category in Model)
+                    {
+                        <div class="container">
+                            @{
+                                string[] nm = category.Key.Split('_');
+
+                                if (@nm[2] == "textbox")
+                                {
+                                    <div class="row">
+
+                                        <div class="col-25">
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <h7>*</h7>
+                                                }
+                                            }
+                                            @nm[1]
+                                        </div>
+                                        <div class="col-75">
+                                            <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                            @if (nm[0] == "504")
+                                            {
+                                                <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' readonly="readonly" maxlength="@nm[5]">
+                                            }
+                                            else
+                                            {
+                                                <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                            }
+
+                                        </div>
+
+
+                                    </div>
+                                }
+                                if (@nm[2] == "dropdown")
+                                {
+                                    <div class="row">
+
+                                        <div class="col-25">
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <h7>*</h7>
+                                                }
+                                            }
+                                            @nm[1]
+                                        </div>
+                                        <div class="col-75">
+                                            <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                            @{
+                                                string[] nmOption = nm[7].Split(',');
+                                            }
+                                            <select name=@nm[0] id=@nm[0]>
+                                                @for (int i = 0; i < nmOption.Length; i++)
+                                                {
+                                                    if (@nmOption[i].Trim() == @nm[6])
+                                                    {
+                                                        <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                                    }
+                                                    if (@nmOption[i].Trim() != @nm[6])
+                                                    {
+                                                        <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                                    }
+                                                }
+                                            </select>
+
+                                            @Html.Hidden("HfCountryName")
+                                            <input id="HfCountryName" type="hidden" value=@CountryName>
+
+                                            @Html.Hidden("HfStateName")
+                                            <input id="HfStateName" type="hidden" value=@StateName>
+
+                                            @Html.Hidden("HfCityName")
+                                            <input id="HfCityName" type="hidden" value=@CityName>
+
+                                        </div>
+
+                                    </div>
+
+                                }
+                                if (@nm[2] == "checkbox")
+                                {
+                                    <div class="row">
+                                        <div class="col-sm-4" style="padding-top:10px!important;">
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <h7>*</h7>
+                                                }
+                                            }
+                                            @nm[1]
+                                        </div>
+                                        <div class="col-sm-2" style="padding-top:10px!important; text-align:left;">
+
+                                            @{
+                                                if (@nm[6] == "TRUE")
+                                                {
+                                                    <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value="checked" checked>
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value=@nm[0]>
+                                                }
+                                            }
+
+                                        </div>
+                                        <div class="col-sm-4">
+                                            @nm[4]
+                                        </div>
+                                    </div>
+                                }
+                                if (@nm[2] == "fileUpload")
+                                {
+                                    <div class="row">
+                                        <div class="col-25">
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <h7>*</h7>
+                                                }
+                                            }
+                                            @nm[1]
+                                        </div>
+                                        <div class="col-75">
+                                            <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                            <input type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                                        </div>
+
+                                    </div>
+
+                                }
+                            }
+
+                        </div>
+
+                    }
+                    <div class="row">
+                        <div class="col-sm-12 cytoscape-parent">
+                            <div class="w-400 h-400 d-inline-block" id="cytoscape-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="container"></div>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div id="floating-panel">
+                                    <input id="btnSearch" type="button" style="width: 12.2rem!important;" value="Refresh" />
+                                </div>
+                                <div id="map_canvas" style="height:500px; margin-left:20px; border:2px solid #000;"></div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-5">
+                            <div class="col-md-6 text-end" style="text-align:center;">
+                                <input type="submit" value="Save" style="width:12.2rem!important; padding:10px 10px; border-radius:0rem; font-size:1.5rem!important;" id="btnSave" />
+                            </div>
+                            <div class="col-sm-6 text-start">
+                                @Html.ActionLink("Upload Document", "UploadCandidateDocumentUpdated", "Home", new { subCheckId = SubCheckId }, new { @class = "btn btn-primary", @id = "UplodVerificationDocs", @style = "width:16rem!important; padding:10px 10px; border-radius:0rem; font-size:1.5rem!important;" })
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+        </div>
+        <div class="col-md-6 mt-4" style="padding-left:0px!important;">
+
+
+        </div>
+    </div>
+
+    <div class="row">
+        @{
+            string[] NextPreviousButtonsURL = (string[])(Session["NextPreviousButtonsURL"]);
+            for (int I = 0; I < NextPreviousButtonsURL.Length; I++)
+            {
+                if (NextPreviousButtonsURL[I] != null)
+                {
+                    string[] Nenu1 = NextPreviousButtonsURL[I].Split('|');
+                    string NextURL = Nenu1[0];
+                    if (Nenu1[0] == "End")
+                    {
+                        NextURL = Nenu1[1];
+                    }
+                    if (SubCheckId == Nenu1[4].ToString())
+                    {
+                        if (Nenu1[2] != "Start")
+                        {
+                            <div class="col-sm-6">
+                                <a href="@Nenu1[1]" class="GFG btn btn-primar"><span>&laquo;&laquo; Previous</span></a>
+                            </div>
+                        }
+                        else if (Nenu1[2] == "Start")
+                        {
+                            <div class="col-sm-6">
+                                <a href="~/Candidate/Home/UpdateCandidateDetails/@PersonalRowid" class="GFG btn btn-primar"><span>&laquo;&laquo; Previous</span></a>
+                            </div>
+                        }
+
+                        if (Nenu1[3] != "End")
+                        {
+                            <div class="col-sm-6" style="text-align:end;">
+                                <a href="@NextURL" class="GFG btn btn-primar"><span>Next &raquo;&raquo;</span></a>
+                            </div>
+                        }
+                        else if (Nenu1[3] == "End")
+                        {
+                            <div class="col-sm-6" style="text-align:end;">
+                                <a href="~/Candidate/Home/FinalSubmit/@PersonalRowid" class="GFGSubmit btn btn-primar" style="padding: 5px 75px;"><span>Final Submission</span></a>
+                            </div>
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    @*<script src="~/Scripts/google_mapAPI.js"></script>*@
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArf0CUcQOyMq5hLv0DKXGzA8wIZA8Sgd4&callback=initMap"></script>
+    <script>
+        var map;
+        var markers = [];
+        function initMap(latlng = '28.51140252687881,77.08742339206746') {
+
+            if ($('#504').val().length > 2) {
+                latlng = $('#504').val();
+            }
+            var b = latlng.split(",");
+            var latitude = parseFloat(b[0]);
+            var longitude = parseFloat(b[1]);
+            var lat_lng = { lat: latitude, lng: longitude };
+            map = new google.maps.Map(document.getElementById('map_canvas'), {
+                zoom: 16,
+                center: lat_lng,
+                mapTypeId: google.maps.MapTypeId.TERRAIN
+            });
+            // This event listener will call addMarker() when the map is clicked.
+            map.addListener('click', function (event) {
+                deleteMarkers();
+                addMarker(event.latLng);
+                $('#latlng').val(event.latLng);
+                $('#504').val(event.latLng);
+            });
+            let infoWindow = new google.maps.InfoWindow({
+                content: "Click the map to get Lat/Lng!",
+                position: lat_lng,
+            });
+
+            infoWindow.open(map);
+
+            map.addListener("click", (mapsMouseEvent) => {
+                // Close the current InfoWindow.
+                infoWindow.close();
+
+                // Create a new InfoWindow.
+                infoWindow = new google.maps.InfoWindow({
+                    position: mapsMouseEvent.latLng,
+                });
+                infoWindow.setContent(
+                    JSON.stringify(mapsMouseEvent.latLng.toJSON(), null, 2)
+                );
+                infoWindow.open(map);
+            });
+            // Adds a marker at the center of the map.
+
+            if ($('#504').val() != '') {
+                var loc = $('#504').val();
+                var b = loc.split(",");
+                var lat = parseFloat(b[0]);
+                var long = parseFloat(b[1]);
+                var latlong = { lat: lat, lng: long };
+                addMarker(latlong);
+
+                infoWindow = new google.maps.InfoWindow({
+                    position: lat_lng,
+                });
+                infoWindow.setContent(
+                    JSON.stringify(lat_lng.toJSON(), null, 2)
+                );
+                infoWindow.open(map);
+            }
+
+        }
+
+        // Adds a marker to the map and push to the array.
+        function addMarker(location) {
+            var marker = new google.maps.Marker({
+                position: location,
+                map: map
+            });
+            markers.push(marker);
+        }
+
+        function setMapOnAll(map) {
+            for (let i = 0; i < markers.length; i++) {
+                markers[i].setMap(map);
+            }
+        }
+        function hideMarkers() {
+            setMapOnAll(null);
+        }
+        function deleteMarkers() {
+            hideMarkers();
+            markers = [];
+        }
+    </script>
+
+    <script>
+
+        $('#btnSearch').click(function () {
+            $('#504').val('');
+            var add = $.trim($("[id*=27]").val());
+            var url = "/Candidate/Home/getlatlong?add=" + add;
+            $.ajax({
+                url: url,
+                dataType: 'json',
+                type: 'GET',
+                async: false,
+                //data: { pass: pass },
+                success: function (result) {
+                    initMap((JSON.stringify(result.pass.Latitude)) + ',' + (JSON.stringify(result.pass.Longitude)));
+                },
+                error: function (result) {
+
+                }
+            });
+        });
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var CountryName = '@(ViewBag.CountryName)';
+            var StateName = '@(ViewBag.StateName)';
+            var CityName = '@(ViewBag.CityName)';
+
+            var Countryid = '@(ViewBag.countryid)';
+            var Stateid = '@(ViewBag.StateId)';
+            var Cityid = '@(ViewBag.CityId)';
+
+            if ($('#34').val() != null) {
+
+                $.getJSON('/Master/BindCountry/', function (data) {
+                    var items = '<option value="">-- Select Country --</option>';
+                    $.each(data, function (i, countries) {
+                        items += "<option value='" + countries.Value + "'>" + countries.Text + "</option>";
+                    });
+                    $('#34').html(items);
+                    $("#34 option").filter(function () {
+                        return this.text == CountryName;
+                    }).attr('selected', true);
+
+
+                });
+            }
+
+            if (StateName != null) {
+                $.getJSON('/Master/BindState/' + Countryid, function (data) {
+                    var items = '<option value="">-- Select State --</option>';
+                    $.each(data, function (i, States) {
+                        items += "<option value='" + States.Value + "'>" + States.Text + "</option>";
+                    });
+                    $('#44').html(items);
+                    $("#44 option").filter(function () {
+                        return this.text == StateName;
+                    }).attr('selected', true);
+
+                });
+            }
+
+            if (CityName != null) {
+                $.getJSON('/Master/BindDistrict/' + Stateid, function (data) {
+                    var items = '<option value="">-- Select District --</option>';
+                    $.each(data, function (i, Districts) {
+                        items += "<option value='" + Districts.Value + "'>" + Districts.Text + "</option>";
+                    });
+                    $('#32').html(items);
+                    $("#32 option").filter(function () {
+                        return this.text == CityName;
+                    }).attr('selected', true);
+
+                });
+            }
+
+
+        });
+
+        $(function () {
+
+            //Bind State base on CountryRowID
+            $('#34').change(function () {
+                $.getJSON('/Master/BindState/' + $('#34').val(), function (data) {
+                    var items = '<option value="">-- Select State --</option>';
+                    $.each(data, function (i, States) {
+                        items += "<option value='" + States.Value + "'>" + States.Text + "</option>";
+                    });
+                    $('#44').html(items);
+                    $('#HfCountryName').val($('#34 option:selected').html());
+                                    });
+            });
+
+            //Bind District base on StateRowID
+            $('#44').change(function () {
+                $.getJSON('/Master/BindDistrict/' + $('#44').val(), function (data) {
+                    var items = '<option value="">-- Select District --</option>';
+                    $.each(data, function (i, Districts) {
+                        items += "<option value='" + Districts.Value + "'>" + Districts.Text + "</option>";
+                    });
+                    $('#32').html(items);
+                    $('#HfStateName').val($('#44 option:selected').html());
+
+
+                });
+            });
+
+            $('#32').change(function () {
+
+                $('#HfCityName').val($('#32 option:selected').html());
+
+            });
+
+            $("#27").on("input", function () {
+                var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+                if ($(this).val().match(regexp)) {
+                    $(this).val($(this).val().replace(regexp, ''));
+                }
+            });
+
+        });
+
+
+    </script>
+    <script>
+        //validation for candidatename
+        document.getElementById('30').onkeypress = function (e) {
+            if (!(/[a-z ]/i.test(String.fromCharCode(e.keyCode)))) {
+                e.preventDefault();
+                return false;
+            }
+        }
+
+        $("#42").keypress(function (e) {
+            $("42").attr("min", "10");
+            var valueLength = this.value.length;
+            if (valueLength == 10) {
+                return false;
+            }
+            var kk = e.which;
+            if (kk < 48 || kk > 57)
+                e.preventDefault();
+        });
+
+        $("#131").keypress(function (e) {
+            $("131").attr("min", "10");
+            var valueLength = this.value.length;
+            if (valueLength == 10) {
+                return false;
+            }
+            var kk = e.which;
+            if (kk < 48 || kk > 57)
+                e.preventDefault();
+        });
+        $("#132").keypress(function (e) {
+            $("132").attr("min", "10");
+            var valueLength = this.value.length;
+            if (valueLength == 10) {
+                return false;
+            }
+            var kk = e.which;
+            if (kk < 48 || kk > 57)
+                e.preventDefault();
+        });
+
+
+    </script>
+
+    <script type="text/javascript">
+
+        function NotRaised(element) {
+
+            if ($('#Notraised').is(':checked')) {
+                $("#382").attr('checked', true);
+                $("#OrganizationName").val('Not Applicable');
+
+
+
+                $("#32").val('Not Applicable');
+                $("#34").val('0');
+                $("#135").val('Not Applicable');
+
+
+                $("#134").val('Not Applicable');
+                $("#133").val('Not Applicable');
+                $("#36").val('Not Applicable');
+                $("#132").val('Not Applicable');
+                $("#131").val('Not Applicable');
+                $("#40").val('Not Applicable');
+                $("#44").val('Not Applicable');
+
+                $("#42").val('Not Applicable');
+                $("#27").val('Not Applicable');
+                $("#30").val('Not Applicable');
+                $("#170").val('Not Applicable');
+                $("#26").val('Not Applicable');
+
+                $("#182").val('Not Applicable');
+                $("#181").val('Not Applicable');
+                $("#180").val('Not Applicable');
+
+
+
+                //$("#EV_Designation").val('Not Applicable');
+                //$("#EV_EmployeeTenure").val('Not Applicable');
+                //$("#EV_EmployeeCode").val('Not Applicable');
+                //$("#EV_leavingReason").val('Not Applicable');
+                //$('input[type=text]').attr("readonly", true);
+                //$('input[type=text], textarea').attr("readonly", true);
+                //$('input[type=text], select').attr("readonly", true);
+            }
+            else {
+                $("#382").attr('checked', false);
+
+                $("#32").val('');
+                $("#34").val('');
+                $("#135").val('');
+
+
+                $("#134").val('');
+                $("#133").val('');
+                $("#36").val('');
+                $("#132").val('');
+                $("#131").val('');
+                $("#40").val('');
+                $("#44").val('');
+
+                $("#42").val('');
+                $("#27").val('');
+                $("#30").val('');
+                $("#170").val('');
+                $("#26").val('');
+
+                $("#182").val('');
+                $("#181").val('');
+                $("#180").val('');
+            }
+
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            if ('@ViewBag.NACheckStatus' == 'True')
+            {
+                $("#OrganizationName").val('Not Applicable');
+
+                $("#32").val('Not Applicable');
+                $("#34").val('Not Applicable');
+                $("#135").val('Not Applicable');
+
+
+                $("#134").val('Not Applicable');
+                $("#133").val('Not Applicable');
+                $("#36").val('Not Applicable');
+                $("#132").val('Not Applicable');
+                $("#131").val('Not Applicable');
+                $("#40").val('Not Applicable');
+                $("#44").val('Not Applicable');
+
+                $("#42").val('Not Applicable');
+                $("#27").val('Not Applicable');
+                $("#30").val('Not Applicable');
+                $("#170").val('Not Applicable');
+                $("#26").val('Not Applicable');
+
+                $("#182").val('Not Applicable');
+                $("#181").val('Not Applicable');
+                $("#180").val('Not Applicable');
+            }
+
+            if (('@ViewBag.clientno' == '1188'))
+            {
+
+                $('#NADiv').show();
+            }
+            else {
+
+                $('#NADiv').hide();
+            }
+
+
+
+
+
+            $("#OrganizationName").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/Candidate/Home/getEmployerlist",
+                        type: "POST",
+                        dataType: "json",
+                        data: { Prefix: request.term },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return { label: item.CompanyName, value: item.CompanyRowID };
+                            }))
+                        }
+                    })
+                },
+                minLength: 3,
+                select: function (event, ui) {
+                    event.preventDefault();
+                },
+                focus: function (event, ui) {
+                    event.preventDefault();
+                    var OrgName = ui.item.label;
+                    $("#OrganizationName").val(OrgName);
+                    $("#OrganizationNameTemp").val(OrgName);
+                    $('#OrganizationId').val(ui.item.value);
+
+                }
+            });
+        })
+
+        $("#OrganizationName").blur(function () {
+            if ($("#OrganizationName").val().trim() != $("#OrganizationNameTemp").val().trim()) {
+                //alert($("#OrganizationName").val());
+                //alert($("#OrganizationNameTemp").val());
+                $("#OrganizationName").val("");
+                $('#Addressofthecompany').val("");
+                $('#OrganizationId').val("0");
+            }
+        });
+
+        $(function () {
+            $('#OrganizationName').change(function () {
+                var CurOrg = $("#OrganizationName").val();
+                var url = "/ProvidedInfo/EmploymentAddress/" + $("#OrganizationId").val();
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+                    success: function (Address) {
+                        $('#Addressofthecompany').val(Address);
+                    }
+                });
+            });
+        });
+
+    </script>
+
+    <style>
+        .GFG {
+            background-color: #11c9b7; /*#45a049;*/
+            border: 2px solid rgb(255 255 255 / 15%);
+            padding: 5px 10px;
+            color: #f8f9fa;
+            text-align: center;
+            display: inline-block;
+            font-size: 16px;
+            margin: 0px 0px;
+            cursor: pointer;
+            transition: all 0.5s;
+        }
+
+            .GFG span:focus {
+                content: '\00bb';
+                position: absolute;
+                opacity: 0;
+                top: 0;
+                right: -20px;
+                transition: 0.5s;
+            }
+
+            .GFG:hover {
+                background: #fc223d;
+                color: black;
+            }
+
+        #floating-panel {
+            position: absolute;
+            top: 12px;
+            left: 25%;
+            z-index: 5;
+            background-color: #fff;
+            border: 1px solid #999;
+            text-align: center;
+            font-family: "Roboto", "sans-serif";
+            line-height: 30px;
+        }
+    </style>
+    <style>
+        .GFGSubmit {
+            background-color: #11c9b7; /*#45a049;*/
+            border: 2px solid rgb(255 255 255 / 15%);
+            padding: 5px 10px;
+            color: #f8f9fa;
+            text-align: center;
+            display: inline-block;
+            font-size: 16px;
+            margin: 0px 0px;
+            cursor: pointer;
+            transition: all 0.5s;
+        }
+
+            .GFGSubmit span:focus {
+                content: '\00bb';
+                position: absolute;
+                opacity: 0;
+                top: 0;
+                right: -20px;
+                transition: 0.5s;
+            }
+
+            .GFGSubmit:hover {
+                background: #fc223d;
+                color: black;
+            }
+    </style>
+
+
+}
+
+
+
+

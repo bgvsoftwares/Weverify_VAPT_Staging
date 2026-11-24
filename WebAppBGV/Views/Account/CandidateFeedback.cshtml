@@ -1,0 +1,167 @@
+
+@{
+    ViewBag.Title = "Candidate Feedback";
+    Layout = null;
+
+    string ClientRowID = "";
+    string CandidateName = "";
+    string EmailID = "";
+
+    if (ClientRowID !=null)
+    {
+        ClientRowID = ViewBag.ClientRowID;
+    }
+    if (CandidateName != null)
+    {
+        CandidateName = ViewBag.CandidateName;
+    }
+    if (EmailID != null)
+    {
+        EmailID = ViewBag.EmailID;
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <title>Form Reviews</title>
+    <link rel="stylesheet" href="~/assets/css/feedbackstyle.css">
+    <style>
+        .btn {
+            display: none; /* Initially hide the button */
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <h3>Feedback</h3>
+        <div class="row" style="display:flex;justify-content:space-between;width:100%; margin:20px 0px;">
+            <div class="col-md-6" style="display:flex; align-items:center;">
+                <input type="checkbox" id="submitcheckbox" style="width: 17px;height: 17px;margin-right:10px;" onclick="toggleCheckbox('submit')" />
+                Give Feedback
+            </div>
+            <div class="col-md-6" style="display:flex; align-items:center;">
+                <input type="checkbox" id="skipcheckbox" style="width: 17px;height: 17px; margin-right:10px;" onclick="toggleCheckbox('skip')" />
+                Don't Want to Give Feedback
+            </div>
+        </div>
+        @using (Html.BeginForm("CandidateFeedback", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <input type="hidden" value="@CandidateName" name="CandidateName" id="CandidateName" />
+            <input type="hidden" value="@ClientRowID" name="ClientRowID" id="ClientRowID" />
+            <input type="hidden" value="@EmailID" name="EmailID" id="EmailID" />
+            <input type="hidden" value="0" name="ratingstar" id="ratingstar" />
+            <div class="rating">
+                <i class='bx bx-star star' style="--i: 0;"></i>
+                <i class='bx bx-star star' style="--i: 1;"></i>
+                <i class='bx bx-star star' style="--i: 2;"></i>
+                <i class='bx bx-star star' style="--i: 3;"></i>
+                <i class='bx bx-star star' style="--i: 4;"></i>
+            </div>
+
+            <div class='success-box'>
+                <div class="rating-text">
+                    <label for="">1.- Bad</label>
+                    <label for="">2.- Below average</label>
+                    <label for="">3.- Average</label>
+                    <label for="">4.- Good</label>
+                    <label for="">5.- Excellent</label>
+
+                </div>
+                <div class='clearfix'></div>
+
+                <div class='text-message'></div>
+                <div class='clearfix'></div>
+            </div>
+
+            <div class="suggation">
+                <label for="">Do you have any other suggestions for improvement</label>
+            </div>
+
+            <label for=""></label>
+            <textarea name="opinion" cols="30" rows="5" placeholder="Your opinion..."></textarea>
+            <div class="btn-group">
+                <input type="submit" class="btn submit" value="Submit" name="action" id="feedbackButton">
+                <input class="btn cancel" type="submit" value="Skip" name="action" id="skipButton">
+            </div>
+        }
+    </div>
+
+
+    <script src="~/assets/js/CandidateFeedback.js"></script>
+    <script>
+
+        function toggleCheckbox(type) {
+
+            const submitCheckbox = document.getElementById('submitcheckbox');
+
+            const skipCheckbox = document.getElementById('skipcheckbox');
+
+            const feedbackButton = document.getElementById('feedbackButton');
+
+            const skipButton = document.getElementById('skipButton');
+            if (type === 'submit') {
+
+                submitCheckbox.checked = true;
+
+                skipCheckbox.checked = false;
+
+                feedbackButton.style.display = 'block'; // Show feedback button
+
+                skipButton.style.display = 'none'; // Hide skip button
+
+            } else if (type === 'skip') {
+
+                skipCheckbox.checked = true;
+
+                submitCheckbox.checked = false;
+
+                skipButton.style.display = 'block'; // Show skip button
+
+                feedbackButton.style.display = 'none'; // Hide feedback button
+
+            }
+
+        }
+
+    </script>
+    <script>
+        let allStar = document.querySelectorAll('.rating .star');
+        let successBox = document.querySelector('.success-box');
+        let successMessage = document.querySelector('.success-box div.text-message');
+
+        const messages = [
+            'We will improve ourselves. You rated this 1 star: Bad or extremely unsatisfactory.',
+            'Thanks! You rated this 2 stars: Below average or needs improvement.',
+            'Thanks! You rated this 3 stars: Average or acceptable, with room for improvement.',
+            'Thanks! You rated this 4 stars: Good or satisfying overall.',
+            'Thanks! You rated this 5 stars: Exceptional, excellent, or highly recommended.'
+        ];
+
+        allStar.forEach((item, idx) => {
+            item.addEventListener('click', () => {
+                // Update active stars
+                allStar.forEach((star, i) => {
+                    star.classList.toggle('active', i <= idx);
+                    star.classList.replace(i <= idx ? 'bx-star' : 'bxs-star', i <= idx ? 'bxs-star' : 'bx-star');
+                });
+
+                console.log(idx + 1, 'star'); // Log rating value
+                document.getElementById("ratingstar").value = idx + 1;
+                // Display message after 1 second
+                setTimeout(() => responseMessage(messages[idx]), 1000);
+            });
+        });
+
+        function responseMessage(msg) {
+            successBox.style.display = 'block';
+            successMessage.innerHTML = `<span>${msg}</span>`;
+        }
+    </script>
+</body>
+</html>

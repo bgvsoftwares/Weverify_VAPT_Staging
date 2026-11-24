@@ -1,0 +1,246 @@
+﻿
+@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Check Details";
+
+    if (Request.QueryString["ClientRowID"] != null && Convert.ToInt16(Request.QueryString["ClientRowID"]) > 0)
+    {
+        @Html.Hidden("ClientRowID", Request.QueryString["ClientRowID"])
+
+        string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+        string hyperLink = Html.ActionLink("linkTitle", "Index", "ClientServicing", new { ClientRowID = Request.QueryString["ClientRowID"] }, new { @class = "headerbacklink" }).ToString();
+        ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    }
+    else
+    {
+        string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+        string hyperLink = Html.ActionLink("linkTitle", "Index", "ClientServicing", null, new { @class = "headerbacklink" }).ToString();
+        ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    }
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("ManageSpocReviewDashboardInfo", "ClientServicing", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch search-frame">
+                                    <label class="col-md-2 control-label">Keyword :</label>
+                                    <div class="col-md-8">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, Securitas Id..." })
+                                    </div>
+                                </div>
+                                <div class="form-group branch search-frame">
+                                    <label class="col-md-2 control-label">Recieving Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("RecievingDate", null, new { @class = "form-control", @id = "RecievingDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Completed Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("CompletedDate", null, new { @class = "form-control", @id = "CompletedDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch search-frame">
+                                    @{
+                                        if (Request.QueryString["CaseStatus"] != null)
+                                        {
+                                            @Html.Hidden("CaseStatus", Request.QueryString["CaseStatus"].ToString())
+                                        }
+                                    }
+                                    <div style="text-align:center;">
+                                        <input class="btn bun-bg btn-default" type="submit" value="Search" name="test"  />
+                                    </div>
+                                    <div>
+                                        <div style="text-align:center;">
+                                            @*<input class="btn bun-bg btn-default" type="submit" id="ExportExcel" value="Export To Excel" name="action" />*@
+                                            <input class="btn bun-bg btn-default" type="submit" id="ExportExcel" value="ExportToExcel" name="test" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                </div>
+                @if (Model != null && Model.DashboardClientCandidates != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.DashboardClientCandidates, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                                   htmlAttributes: new { id = "grid", @class = "table table-striped table-bordered nowrap" },
+                                                   headerStyle: "thead-inverse",
+                                                   rowStyle: "ordertxt",
+                                                   footerStyle: "custpaging",
+                                                   mode: WebGridPagerModes.All,
+                                                   columns: new[]
+                                                   {
+                                                    grid.Column(header: "No.", style:"td-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                                    grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"col-md-1"),
+
+                                                    grid.Column(header : "SecuritasID", format : (item) => {
+                                                    string CompanyRefNo=item.CompanyRefNo;
+
+                                                    if(item.CheckFamilyRowID ==2)
+                                                    {
+                                                    var link = Html.ActionLink(CompanyRefNo,"UpdateAddressVerInfoBySpoc", "ClientServicing", new { id=item.CandCheckRowID,PersonalRowID = item.PersonalRowID,CheckStatusId=item.CheckStatusId,subCheckId=item.SubCheckRowID,ClientRowId=item.ClientRowId, dispFor="TeamMember"  }, new { @class="edit" });
+                                                    return link;
+                                                    }
+                                                    if(item.CheckFamilyRowID ==11)
+                                                    {
+                                                    var link = Html.ActionLink(CompanyRefNo,"UpdateEducationVerInfoBySpoc", "ClientServicing", new {id=item.CandCheckRowID,PersonalRowID = item.PersonalRowID,CheckStatusId=item.CheckStatusId,subCheckId=item.SubCheckRowID,ClientRowId=item.ClientRowId, dispFor="TeamMember"  }, new { @class="edit" });
+                                                    return link;
+                                                    }
+                                                    if(item.CheckFamilyRowID ==12)
+                                                    {
+                                                    var link = Html.ActionLink(CompanyRefNo,"UpdateEmploymentVerInfoBySpoc", "ClientServicing", new { id=item.CandCheckRowID,PersonalRowID = item.PersonalRowID,CheckStatusId=item.CheckStatusId,subCheckId=item.SubCheckRowID,ClientRowId=item.ClientRowId, dispFor="TeamMember" }, new { @class="edit" });
+                                                    return link;
+                                                    }
+                                                    if(item.CheckFamilyRowID ==30)
+                                                    {
+                                                    var link = Html.ActionLink(CompanyRefNo,"UpdateReferenceVerInfoBySpoc", "ClientServicing", new {id=item.CandCheckRowID,PersonalRowID = item.PersonalRowID,CheckStatusId=item.CheckStatusId,subCheckId=item.SubCheckRowID,ClientRowId=item.ClientRowId, dispFor="TeamMember" }, new { @class="edit" });
+                                                    return link;
+                                                    }
+                                                    if(item.CheckFamilyRowID ==40)
+                                                    {
+                                                    var link = Html.ActionLink(CompanyRefNo,"UpdateSpecialCheckVerInfoBySpoc", "ClientServicing", new { id=item.CandCheckRowID,PersonalRowID = item.PersonalRowID,CheckStatusId=item.CheckStatusId,subCheckId=item.SubCheckRowID,ClientRowId=item.ClientRowId, dispFor="TeamMember"  }, new { @class="edit" });
+                                                    return link;
+                                                    }
+                                                    if(item.CheckFamilyRowID ==5)
+                                                    {
+                                                    var link = Html.ActionLink(CompanyRefNo,"UpdateCriminalVerInfoBySpoc", "ClientServicing", new { id=item.CandCheckRowID,PersonalRowID = item.PersonalRowID,CheckStatusId=item.CheckStatusId,subCheckId=item.SubCheckRowID,ClientRowId=item.ClientRowId, dispFor="TeamMember"  }, new { @class="edit" });
+                                                    return link;
+                                                    }
+                                                      if(item.CheckFamilyRowID ==26)
+                                                    {
+                                                    var link = Html.ActionLink(CompanyRefNo,"UpdateNationalCheckVerInfoBySpoc", "ClientServicing", new { id=item.CandCheckRowID,PersonalRowID = item.PersonalRowID,CheckStatusId=item.CheckStatusId,subCheckId=item.SubCheckRowID,ClientRowId=item.ClientRowId, dispFor="TeamMember"  }, new { @class="edit" });
+                                                    return link;
+                                                    }
+                                                    else
+                                                        {
+                                                            return CompanyRefNo;
+                                                        }
+
+                                                    }, style:"td-1"),
+                                                    grid.Column(columnName: "CheckUniqueID", header: "CheckUniqueID", canSort: false, style:"td-1"),
+                                                    grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-1"),
+                                                    grid.Column(columnName: "CandidateName", header: "Candidate Name", canSort: false, style:"td-1"),
+                                                    grid.Column(columnName: "CaseStatus", header: "Status", canSort: false, style:"td-1"),
+                                                    grid.Column(columnName: "Report_Type", header: "Report Type", canSort: false, style:"td-1"),
+
+                                                    grid.Column("Check Status", canSort: false, format: (item)=> {
+
+                                                    var link=@Html.ActionLink("Show", "ClientCheckStatus", "ClientServicing", new { CompanyRefNo=item.CompanyRefNo    }, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" });
+                                                    return link;
+
+
+                                                    }, style:"td-1" ),
+
+                                                    grid.Column(header : "Action", format : (item) => {
+                                                    var link = Html.ActionLink("History", "CaseActionHistories", "ReportQC", new { pid = item.PersonalRowID }, new { @class = "iframeActionHistories cboxElement" });
+                                                    return link;
+                                                    }, style:"edit td-1"),
+
+                                                     grid.Column(header : "documents", format : (item) => {
+                                                         var linkPerInfo = Html.ActionLink("Show", "UploadCandidateDoc", "ClientServicing", new { CompanyRefNo=item.CompanyRefNo }, new { @class = "iframeCheckList1 cboxElement" });
+                                                         return linkPerInfo;
+                                                     }, style:"td-1"),                                                                                                                                                                    }
+                                                                                                )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "60%", height: "80%" });
+            $(".iframeFundPendingApprove").colorbox({ iframe: true, width: "60%", height: "80%" });
+            $(".callbacks").colorbox({
+                onClosed: function () {
+                    window.location.reload(false);
+                }
+            });
+            $(".Remindermail").colorbox({ iframe: true, width: "40%", height: "50%" });
+            $('#RecievingDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                //showButtonPanel: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+        });
+    </script>
+}
+<script>
+    $(document).ready(function () {
+        var table = $('#grid').DataTable({
+            responsive: true,
+        });
+        new $.fn.dataTable.FixedHeader(table);
+    });
+</script>
+<style>
+    #ExportExcel {
+        margin: 1px 450px;
+    }
+
+    .total-record {
+        margin-bottom: 30px;
+        font-size: 1.4rem;
+    }
+
+    #select_all {
+        width: 30px !important;
+    }
+
+    .personalId {
+        width: 30px !important;
+    }
+
+    @@media screen and (max-width: 1450px) and (min-width: 600px) {
+        #grid {
+            font-size: .90rem;
+            width: 100%;
+        }
+
+        .table td, .table th {
+            padding: .60rem !important;
+        }
+
+        .thead-inverse {
+            font-size: .90rem !important;
+        }
+
+        .table, td, .edit {
+            font-size: .95rem !important;
+        }
+    }
+</style>
+
+
+
+

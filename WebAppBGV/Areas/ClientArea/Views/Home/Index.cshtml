@@ -1,0 +1,288 @@
+﻿@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Total WIP Cases";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+    var ClientRowId = "0";
+    var clid = "";
+    if (Request.QueryString["ClientRowID"] != null)
+    {
+        ClientRowId = Request.QueryString["ClientRowID"].ToString();
+
+    }
+    clid = Session["ClientRowID"].ToString();
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "DashboardClient", "Home", new { area = "ClientArea" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+
+@*@{
+        ////@ViewBag.NavigationBtnExportExcel
+        string faIconExportExcel = string.Format("Export Excel <i class='bx bx-export export_btn_icons' ></i>");
+        string hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportClientArea", "Home", new { ClientRowID = ClientRowId }, new { @class = "export_btn" }).ToString();
+        ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+
+    }*@
+<!--Internal Notify -->
+<link href="~/assets/plugins/notify/css/notifIt.css" rel="stylesheet" />
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="container-fluid ps-0 bg_gradient_CaseWise mt-2">
+    <div class="row row-sm">
+        @section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+    </div>
+    <div class="row row-sm ms-2">
+        @using (Html.BeginForm("Index", "Home", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row g-3 align-items-center">
+                <div class="col-md-2">
+                    <label for="inputPassword6" class="col-form-label pb-md-0">Keyword :</label>
+                </div>
+                <div class="col-lg-8 col-md-10">
+                    @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name,SecuritasID,Status...", @autocomplete = "off", @maxlength = "100" })
+                </div>
+                <div class="col-lg-2 col-md-4">
+                    @if (ViewBag.WIPStatusRights == true)
+                    {
+                        <a href="@Url.Action("ExportClientArea","Home", new {ClientRowID = ClientRowId})" , class="edit-export-btn" hidden>Export Excel <i class='bx bx-export export_btn_icons'></i>  </a>
+
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("ExportClientArea","Home", new {ClientRowID = ClientRowId})" , class="edit-export-btn">Export Excel <i class='bx bx-export export_btn_icons'></i>  </a>
+
+                    }
+                </div>
+            </div>
+            <div class="row g-3 align-items-center mt-2">
+                <div class="col-md-2">
+                    <label for="inputPassword6" class="col-form-label pb-md-0">From :</label>
+                </div>
+                <div class="col-md-3">
+                    @Html.TextBox("RecievingfromDate", null, new { @class = "form-control", @id = "RecievingToDate", @placeholder = "yyyy-mm-dd", @autocomplete = "off", @maxlength = "11", type = "date" })
+                </div>
+                <div class="col-md-2">
+                    <label for="inputPassword6" class="col-form-label pb-md-0">To :</label>
+                </div>
+                <div class="col-md-3">
+                    @Html.TextBox("RecievingToDate", null, new { @class = "form-control", @id = "RecievingFromDate", @placeholder = "yyyy-mm-dd", @autocomplete = "off", @maxlength = "11", type = "date" })
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-center justify-content-center mt-2 mb-2">
+                @Html.Hidden("CaseStatus", (string)ViewBag.CaseStatus)
+                @Html.Hidden("ClientUserRowId", (string)ViewBag.ClientUserRowId)
+                @Html.Hidden("ClientRowID", (string)ViewBag.ClientRowID)
+                @Html.Hidden("PersonalIds", null)
+                <div class="col-lg-2 col-md-3">
+                    <input class="search-btn" type="submit" onclick="return SearchFunction()" value="Search" id="btnSearch" />
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-xl-12 mb-5">
+        <span>@ViewBag.NavigationBtnExportExcel</span>
+        @if (Model != null && Model.PQPersonalInfo != null)
+        {
+            <table class="mb-0 table-responsive table-scroll js-serial items table" id="example1" style="border:none; cursor:all-scroll;white-space: nowrap;">
+                <thead>
+                    @if (clid == "576")
+                    {
+                        <tr>
+                            <th>Candidate Name</th>
+                            <th>Securitas ID</th>
+                            <th>Package</th>
+                            <th>Entity Name</th>
+                            <th>Status</th>
+                            <th>Created Date</th>
+                            <th>Email ID</th>
+                            <th>Mobile No</th>
+                            <th>Documents</th>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <th>Candidate Name</th>
+                            @if (clid == "869")
+                            {
+                                <th>EmployeID</th>
+                            }
+                            else
+                            {
+                                <th>ClientRefID</th>
+                            }
+                            <th>Entity Name</th>
+                            <th>Package</th>
+                            <th>Securitas ID</th>
+                            <th>Status</th>
+                            <th>Created Date</th>
+                            @if (clid != "1834")
+                            {
+                                <th>Documents ZIP</th>
+                                <th>Documents</th>
+                                <th>Candidate Details</th>
+                            }
+                        </tr>
+                    }
+                </thead>
+                <tbody class="tx-10 text-start">
+                    @foreach (var a in Model.PQPersonalInfo)
+                    {
+                        if (clid == "576")
+                        {
+                            <tr>
+                                <td>@a.Name</td>
+                                <td>
+                                    <a href='@Url.Action("CheckListForClientByPersonalID", "Home", new { PersonalId = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn_refno iframeCompanyRefNo" id="clip_@a.PersonalRowID">@a.CompanyRefNo</a><i class="las la-clipboard clipboard-icon" data-clipboard-target="#clip_@a.PersonalRowID" style="position:relative; top:5px!important; right:0px!important; padding:10px!important; border:none!important; line-height:0px!important; font-size:25px;"></i>
+                                </td>
+                                <td>@a.Package</td>
+                                <td>@a.Entity</td>
+                                <td>@a.CaseStatus</td>
+                                <td>@a.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                <td>@a.Emailid</td>
+                                <td>@a.MobileNo</td>
+                                <td>
+                                    <a href='@Url.Action("UploadCandidateDoc", "Home", new { area = "ClientArea", CompanyRefNo = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),SubCheckRowID=0,personalrowid=clsCommonMethods.PEncrypt(a.PersonalRowID.ToString())})' class="btn btn-outline-primary btn-block table_btn iframeWIPDOC">Documents</a>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>@a.Name</td>
+                                <td>@a.ClientRefID</td>
+                                <td>@a.EntityNamee</td>
+                                <td>@a.PackageNamee</td>
+                                <td>
+                                    <a href='@Url.Action("CheckListForClientByPersonalID", "Home", new { PersonalId = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn_refno iframeCompanyRefNo" id="clip_@a.PersonalRowID">@a.CompanyRefNo</a><i class="las la-clipboard clipboard-icon" data-clipboard-target="#clip_@a.PersonalRowID" style="position:relative; top:5px!important; right:0px!important; padding:10px!important; border:none!important; line-height:0px!important; font-size:25px;"></i>
+                                </td>
+                                <td>@a.CaseStatus</td>
+                                <td>@a.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    @if (ViewBag.WIPStatusRights == true || Convert.ToInt32(Session["ClientUserRowID"]) == 5342 || clid == "1834")
+                                    {
+                                        <a href='@Url.Action("GetAllCadndidateDocInZip", "Home", new { area = "ClientArea", CompanyRefNo = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),SubCheckRowID=0,personalrowid=clsCommonMethods.PEncrypt(a.PersonalRowID.ToString())})' class="btn btn-outline-primary btn-block table_btn" hidden>Download ZIP</a>
+
+                                    }
+                                    else
+                                    {
+                                        <a href='@Url.Action("GetAllCadndidateDocInZip", "Home", new { area = "ClientArea", CompanyRefNo = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),SubCheckRowID=0,personalrowid=clsCommonMethods.PEncrypt(a.PersonalRowID.ToString())})' class="btn btn-outline-primary btn-block table_btn">Download ZIP</a>
+
+                                    }
+                                </td>
+                                <td>
+                                    @if (ViewBag.WIPStatusRights == true || Convert.ToInt32(Session["ClientUserRowID"]) == 5342 || clid == "1834")
+                                    {
+                                        <a href='@Url.Action("UploadCandidateDoc", "Home", new { area = "ClientArea", CompanyRefNo = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),SubCheckRowID=0,personalrowid=clsCommonMethods.PEncrypt(a.PersonalRowID.ToString())})' class="btn btn-outline-primary btn-block table_btn iframeWIPDOC" hidden>Show</a>
+
+                                    }
+                                    else
+                                    {
+                                        <a href='@Url.Action("UploadCandidateDoc", "Home", new { area = "ClientArea", CompanyRefNo = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),SubCheckRowID=0,personalrowid=clsCommonMethods.PEncrypt(a.PersonalRowID.ToString())})' class="btn btn-outline-primary btn-block table_btn iframeWIPDOC">Show</a>
+
+                                    }
+                                </td>
+                                <td>
+                                    @if (ViewBag.WIPStatusRights == true || Convert.ToInt32(Session["ClientUserRowID"]) == 5342 || clid == "1834")
+                                    {
+                                        <a href='@Url.Action("PersonalInformation", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn" hidden>Download</a>
+
+                                    }
+                                    else
+                                    {
+                                        <a href='@Url.Action("PersonalInformation", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Download</a>
+
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+
+</div>
+
+
+<style>
+    .table tr td {
+        line-height: 2.757 !important;
+        text-align: left !important;
+    }
+    /*#example1_filter{
+        display:none!important;
+    }*/
+    .table_btn {
+        color: #8D5FFF !important;
+        transition: 0.3s ease-in-out !important;
+    }
+
+        .table_btn:hover {
+            background: #FFF !important;
+            background-color: rgb(255, 255, 255);
+            color: #fff !important;
+            border: 1px solid #031F30 !important;
+            background-color: #031F30 !important;
+        }
+
+    .search-btn {
+        background: #8D5FFF !important;
+        color: #FFF;
+        font-family: 'Securitas Pro';
+        font-size: .90rem !important;
+        border-radius: 0px;
+        display: inline-block;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: center;
+        text-decoration: none;
+        vertical-align: middle;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+        background-color: transparent;
+        border: 1px solid transparent;
+        padding: .35rem 1rem .35rem 1rem;
+        width: 100%;
+        transition: color .3s ease-in-out,background-color .3s ease-in-out,border-color .3s ease-in-out,box-shadow .3s ease-in-out;
+    }
+
+        .search-btn:hover {
+            background: #fff !important;
+            color: #031F30 !important;
+            border: 1px solid #8D5FFF;
+        }
+</style>
+@section Scripts
+{
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <!--Internal  Notify js -->
+    <script src="~/assets/plugins/notify/js/notifIt.js"></script>
+    <script src="~/assets/plugins/notify/js/notifit-custom.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeCompanyRefNo").colorbox({ iframe: true, width: "90%", height: "72%" });
+        });
+        $(document).ready(function () {
+            $(".iframeWIPDOC").colorbox({ iframe: true, width: "79%", height: "72%" });
+        });
+        $(document).ready(function () {
+            $(".iframeExportClientEmploymentDetails").colorbox({ iframe: true, width: "79%", height: "72%" });
+        });
+        $(document).ready(function () {
+            $(".iframeReject").colorbox({ iframe: true, width: "55%", height: "75%" });
+        });
+    </script>
+}
+
+
+
+

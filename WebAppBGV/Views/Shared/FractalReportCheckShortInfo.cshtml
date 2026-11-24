@@ -1,0 +1,186 @@
+﻿@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    //var list = Model.SpecialInfoModel.GroupBy(x => x.SubcheckRowID)
+    //                          .Select(g => g.First()).OrderBy(T => T.checkcompleteDate)
+    //.ToList();
+
+
+
+    var ll = Model.PersonalChecksBriefDetails.Where(T => T.subCheckId != 416 && T.subCheckId !=612 && T.subCheckId != 613);
+    var uan = Model.PersonalChecksBriefDetails.Where(T => T.subCheckId == 416 || T.subCheckId == 612 || T.subCheckId == 613).OrderBy(T => T.CheckCompleteDate).OrderBy(T => T.subCheckId)
+                             .ToList();
+
+
+
+
+}
+
+<page id="PrintSrc" size="A4">
+
+    <div style="page-break-after:always ;"></div>
+    <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; width:100%!important; height:72rem!important;">
+        <tr>
+            <td valign="top">
+                <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                    <tr>
+                        <td>
+                            <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                <tr>
+                                    <td valign="top" style="width:100%; text-align:end;"><img src='@Url.Content("~/Content/images/Securitas-logo.png")' style="width:5rem; margin-top:10px; margin-right:10px;"></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:100%;"><p style="font-size:19px; color:#000080; text-align:center; font-weight:bold; text-decoration:underline; padding:10px 0px 10px 0px;">Background Verification Report – Executive Summary</p></td>
+                    </tr>
+                    <tr>
+                        <td valign="top">
+                            <table border="1" cellpadding="2" cellspacing="5" style="width:100%;border-collapse:collapse;">
+                                @{
+                                    string checkName = string.Empty;
+
+
+
+
+                                    foreach (var item in ll)
+                                    {
+                                        if (checkName != item.CheckFName)
+                                        {
+                                            <tr>
+                                                <td colspan="5" bgcolor="#c0c0c0" style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact; background:#c0c0c0; padding:5px; text-align:center;"> <strong> @item.CheckFName</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="20%" style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact; background:#c0c0c0; padding-left:5px;"><strong>Type of Check</strong></td>
+                                                <td width="50%" style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact; background:#c0c0c0; text-align:center;"><strong>Brief Details</strong></td>
+
+                                                <td width="17%" style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact; background:#c0c0c0; text-align:center;"><strong>Check Initiate Date</strong></td>
+                                                <td width="17%" style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact; background:#c0c0c0; text-align:center;"><strong>Check Complete Date</strong></td>
+                                                <td width="17%" style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact; background:#c0c0c0; text-align:center;"><strong>Status (Color)</strong></td>
+                                            </tr>
+                                            checkName = item.CheckFName;
+                                        }
+                                        <tr style=" font-size:12px; font-weight:bold; padding:5px;">
+                                            @if (item.subCheckId == 483 && Model.ClientRowID == 679)
+                                            {
+                                                <td style="padding-left:5px; font-size:10px; font-family:Calibri;"> <a href="#@item.subCheckId"> UAN Validation -Jun’23</a> <a name="ExecutiveSummary"></a>  </td>
+                                            }
+                                            else
+                                            {
+                                                <td style="padding-left:5px; font-size:10px; font-family:Calibri;"> <a href="#@item.subCheckId"> @item.SubCheckFName</a> <a name="ExecutiveSummary"></a>  </td>
+                                            }
+
+                                            <td align="center" style="font-size:10px; font-family:Calibri;">@item.SubCheckDetail</td>
+
+
+                                            <td style="padding-left:5px; font-size:10px; font-family:Calibri;">
+                                                @if (item.CheckInitiateDate != null)
+                                                {
+
+                                                    <p>@item.CheckInitiateDate.Value.ToString("dd/MM/yyyy")</p>
+                                                }
+                                                else
+                                                {
+                                                    <p></p>
+                                                }
+
+
+                                            </td>
+                                            <td style="padding-left:5px; font-size:10px; font-family:Calibri;">
+
+                                                @if (item.CheckCompleteDate != null)
+                                                {
+
+                                                    <p>@item.CheckCompleteDate.Value.ToString("dd/MM/yyyy")</p>
+                                                }
+                                                else
+                                                {
+                                                    <p></p>
+                                                }
+                                            </td>
+                                            @if (@item.Status == "Not Applicable")
+                                            {
+                                                <td style="color-adjust:exact; font-size:10px; font-family:Calibri; background:@item.ColorCode;" align="center">Not Applicable</td>
+                                            }
+                                            else
+                                            {
+                                                <td style="color-adjust:exact; font-size:10px; font-family:Calibri; background:@item.ColorCode;" align="center">@item.ColorName</td>
+                                            }
+                                        </tr>
+                                    }
+
+                                    foreach (var item in uan)
+                                    {
+
+                                        <tr style=" font-size:12px; font-weight:bold; padding:5px;">
+                                            <td style="padding-left:5px; font-size:10px; font-family:Calibri;"> <a href="#@item.subCheckId"> @item.SubCheckFName</a> <a name="ExecutiveSummary"></a>  </td>
+                                            @*<td style="padding-left:5px; font-size:10px; font-family:Calibri;"> <a> @item.SubCheckFName</a></td>*@
+
+                                            <td align="center" style="font-size:10px; font-family:Calibri;">@item.SubCheckDetail</td>
+
+
+                                            <td style="padding-left:5px; font-size:10px; font-family:Calibri;">
+                                                @if (item.CheckInitiateDate != null)
+                                                {
+
+                                                    <p>@item.CheckInitiateDate.Value.ToString("dd/MM/yyyy")</p>
+                                                }
+                                                else
+                                                {
+                                                    <p></p>
+                                                }
+
+
+                                            </td>
+                                            <td style="padding-left:5px; font-size:10px; font-family:Calibri;">
+
+                                                @if (item.CheckCompleteDate != null)
+                                                {
+
+                                                    <p>@item.CheckCompleteDate.Value.ToString("dd/MM/yyyy")</p>
+                                                }
+                                                else
+                                                {
+                                                    <p></p>
+                                                }
+                                            </td>
+                                            @if (@item.Status == "Not Applicable")
+                                            {
+                                                <td style="color-adjust:exact; font-size:10px; font-family:Calibri; background:@item.ColorCode;" align="center">Not Applicable</td>
+                                            }
+                                            else
+                                            {
+                                                <td style="color-adjust:exact; font-size:10px; font-family:Calibri; background:@item.ColorCode;" align="center">@item.ColorName</td>
+                                            }
+                                        </tr>
+                                    }
+
+                                }
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" height="100">
+                <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                    <tr>
+                        <td colspan="3" style="border-top:3px solid #c0c0c0;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td valign="bottom" width="20%"><img src="~/Images/Walsons-Report-footer.png" style="width:7rem; margin-left: 15px; margin-bottom: 15px;"></td>
+                        <td width="1%">&nbsp;</td>
+                        <td width="79%">
+                            <p style="font-size:16px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#000080; font-weight:500; text-align:center; margin:10px 0px 0px 0px;"><img src='@Url.Content("~/Images/StampSignatureUpdated.jpg")' width="60" height="60"></p>
+                            <p style="font-size:16px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#000080; font-weight:700; text-align:center; margin:15px 0px 0px 0px;">SECURITAS INDIA</p>
+                            <p style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp;&nbsp; Tel: + 91 124 4718888</p>
+                            <p style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin: 0px 0px 5px 0px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a>&nbsp;<span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</page>
+

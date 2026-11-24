@@ -1,0 +1,193 @@
+﻿
+@{
+    ViewBag.Title = "Manage Special Check Insuff Cases";
+    if (@ViewBag.ClientRowID != null && @ViewBag.ClientRowID != 0)
+    {
+        string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+        string hyperLink = Html.ActionLink("linkTitle", "Index", "ClientServicing", new { ClientRowID = @ViewBag.ClientRowID }, new { @class = "headerbacklink" }).ToString();
+        ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    }
+    else
+    {
+        string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+        string hyperLink = Html.ActionLink("linkTitle", "Index", "ClientServicing", null, new { @class = "headerbacklink" }).ToString();
+        ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    }
+    var BackPageUrl = "ManageSpecialCheckInsuffForCSSpoc";
+}
+
+@*@section LeftNavigation{ @Html.Partial("_NavLeftClientServicingInsuff") }*@
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("ManageSpecialCheckInsuffForCSSpoc", "ClientServicing", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch row  search-frame">
+                                    <label class="col-md-2 control-label">Keyword :</label>
+                                    <div class="col-md-8">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, SecuritasID..." })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row  search-frame">
+                                    <label class="col-md-2 control-label">Recieving From Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("RecievingfromDate", null, new { @class = "form-control", @id = "RecievingToDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Recieving To Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("RecievingToDate", null, new { @class = "form-control", @id = "RecievingFromDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row  search-frame">
+                                    <label class="col-md-2 control-label">Completed From Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("CompletedFromDate", null, new { @class = "form-control", @id = "CompletedToDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Completed To Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("CompletedToDate", null, new { @class = "form-control", @id = "CompletedFromDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row  search-frame">
+                                    <div style="text-align:center;" class="col-md-12">
+                                        <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.PQAllInsuffSpecialCheckes != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12 table">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.PQAllInsuffSpecialCheckes, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                    htmlAttributes: new { id = "grid", @class = "table table-striped table-bordered nowrap" },
+                                    headerStyle: "thead-inverse",
+                                    rowStyle: "ordertxt",
+                                    footerStyle: "custpaging",
+                                    mode: WebGridPagerModes.All,
+                                    columns: new[]
+                                    {
+                                    grid.Column(header: "No.", style:"td-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                    grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-2"),
+                                    grid.Column(columnName: "CandidateName", header: "Candidate Name", canSort: false, style:"td-2"),
+                                    grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-2"),
+                                   grid.Column(header : "SecuritasID", format : (item) => {
+                                        string CompanyRefNo=item.CompanyRefNo;
+
+                                        if(CompanyRefNo !="")
+                                        {
+                                        var link = Html.ActionLink(CompanyRefNo,"ManageCandidateChecksForReportQCTM", "ReportQC", new { PersonalRowID = item.PersonalRowID, dispFor="TeamMember",BackPageUrl=BackPageUrl  }, new { @class="edit" });
+                                        return link;
+                                        }
+                                        else
+                                        return null;
+                                        }),
+                                    grid.Column(columnName: "CheckStatus", header: "Check Status", canSort: false, style:"td-2"),
+                                    grid.Column("CreatedDate", "CreatedDate", format: (item) => item.CreatedDate != DateTime.MinValue ? item.CreatedDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"td-1"),
+
+                                    grid.Column(header : "", format : (item) => {
+                                        var link = Html.ActionLink("Insuff Clear", "InsufficiencyCheckClearByCSSpoc", "ClientServicing", new { id = item.SpecialCheckRowId, ClientRowId = item.ClientRowID, ChFamilRowId = item.CheckFamilyRowID, subCheckId = item.SubCheckRowID, PersonalRowID = item.PersonalRowID, CompanyRefNo =item.CompanyRefNo, InfRemarks = item.Remarks}, null);
+                                        return link;
+                                    }, style:"edit td-1"),
+
+                                    }
+                             )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @*<script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+        <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>*@
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#RecievingToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#RecievingFromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedFromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+        });
+    </script>
+}
+<script>
+    $(document).ready(function () {
+        var table = $('#grid').DataTable({
+            responsive: true,
+        });
+        new $.fn.dataTable.FixedHeader(table);
+    });
+</script>
+<style>
+    .total-record {
+        margin-bottom: 30px;
+        font-size: 1.4rem;
+    }
+
+    #select_all {
+        width: 30px !important;
+    }
+
+    .personalId {
+        width: 30px !important;
+    }
+
+    @@media screen and (max-width: 1450px) and (min-width: 600px) {
+        #grid {
+            font-size: .90rem;
+            width: 100%;
+        }
+
+        .table td, .table th {
+            padding: .60rem !important;
+        }
+
+        .thead-inverse {
+            font-size: .90rem !important;
+        }
+
+        .table, td, .edit {
+            font-size: .95rem !important;
+        }
+    }
+</style>

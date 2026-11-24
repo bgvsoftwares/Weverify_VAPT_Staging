@@ -1,0 +1,104 @@
+﻿
+@model ViewModels.ProvidedInfoViewModel.UploadedCaseDocListForRWQCTMPagedModel
+@{Layout = null; }
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/colorbox.css" rel="stylesheet" />
+<link href="~/Content/Site.css" rel="stylesheet" />
+
+<script src="~/Scripts/jquery-3.7.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/modernizr-2.8.3.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("UpdateReportArtifactsCaseDocByRWQCTM", "ReportQC", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="form-horizontal">
+                <div class="form-group branch row">
+                    <div class='all-button-bg personal-details-head' style="font-size:18px;">Map Artifacts For Candidate (@Convert.ToString(Session["CandidateName"]))</div>
+                </div>
+                <div>
+                    @if (ViewBag.SuccessMsg != null)
+                    {
+                        <div class="successmsg">@ViewBag.SuccessMsg.ToString()</div>
+                    }
+
+                    @if (ViewBag.ErrorMsg != null)
+                    {
+                        <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+                    }
+                    <hr />
+                </div>
+
+                @if (Model.UploadedCaseDocForRQQCTM != null)
+                {
+                    <div class="form-group branch row">
+                            <label type='checkbox' class='col-md-3 branch rowname control-label'><strong>DocumentType</strong> </label>
+                            <label type='checkbox' class='col-md-2 branch rowname control-label'><strong>Map Artifact </strong></label>
+                            <label class='col-md-3 branch rowname control-label' style="text-align: center;"> <strong>Order Sequence </strong></label>
+                        </div>
+                    foreach (var item in Model.UploadedCaseDocForRQQCTM)
+                    {
+                        bool chkArt = item.RptArtiFacts == 1 ? true : false;
+
+                        <div class="form-group branch row">
+                                <label class='col-md-3 branch rowname control-label'>@item.DocumentType</label>
+                                <input type='checkbox' name='chkVDId_@item.CaseDocRowID' value="@item.CaseDocRowID" class='chkVDId col-md-3' checked="@chkArt" />
+                                <div class='col-md-3'>
+                                    <input type="text" id="txtRkSeq_@item.CaseDocRowID" name="txtRkSeq_@item.CaseDocRowID" value="@item.RptDisplayOrder" onkeypress="return isNumberKey(event,false)" class="form-control"/>
+                                </div>
+                            </div>
+                    }
+                }
+                <div class="form-group branch row">
+                    &nbsp;
+                </div>
+                @Html.HiddenFor(model => model.PersonalRowID)
+                @Html.HiddenFor(model => model.AllDocIds, new { @id = "hdnAllDocIds" })
+                <div class="all-button-bg">
+                    <input class="btn bun-bg btn-default" type="submit" value="Submit" />
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+<script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+<script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+<script>
+        $(document).ready(function () {
+            var chkVDId = '';
+            $('input.chkVDId:checkbox').each(function (index, value) {
+                if (this.checked) {
+                    chkVDId += this.value + ',';
+                }
+            });
+            if (chkVDId.length > 0) {
+                chkVDId = chkVDId.substring(0, chkVDId.length - 1);
+            } else {
+                chkVDId = '';
+            }
+            $('#hdnAllDocIds').val(chkVDId.trim());
+        });
+
+        $(document).on('change', 'input.chkVDId:checkbox', function (e) {// on change
+            var chkVDId = '';
+            $('input.chkVDId:checkbox').each(function (index, value) {
+                if (this.checked) {
+                    chkVDId += this.value + ',';
+                }
+            });
+            if (chkVDId.length > 0) {
+                chkVDId = chkVDId.substring(0, chkVDId.length - 1);
+            } else {
+                chkVDId = '';
+            }
+            $('#hdnAllDocIds').val(chkVDId.trim());
+        });
+
+</script>

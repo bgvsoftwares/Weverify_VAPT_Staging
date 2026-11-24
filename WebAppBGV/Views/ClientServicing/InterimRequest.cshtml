@@ -1,0 +1,54 @@
+﻿@{
+    ViewBag.Title = "Case Details";
+
+    if (Request.QueryString["ClientRowID"] != null && Convert.ToInt16(Request.QueryString["ClientRowID"]) > 0)
+    {
+        @Html.Hidden("ClientRowID", Request.QueryString["ClientRowID"])
+
+        string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+        string hyperLink = Html.ActionLink("linkTitle", "Index", "ClientServicing", new { ClientRowID = Request.QueryString["ClientRowID"] }, new { @class = "headerbacklink" }).ToString();
+        ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    }
+    else
+    {
+        string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+        string hyperLink = Html.ActionLink("linkTitle", "ClientServicingDashboardCaseInfo", "ClientServicing", new { ClientRowID = 0 }, new { @class = "headerbacklink" }).ToString();
+        ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    }
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("InterimRequest", "ClientServicing", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Keyword :</label>
+                                    <div class="col-md-8">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, Securitas Id..." })
+                                    </div>
+                                    </div>
+                                <div class="row">
+                                    <div style="text-align:center;" class="col-md-12">
+                                        <input class="btn bun-bg btn-default" type="submit" value="Save" />
+                                    </div>
+                                </div>
+                               
+                               
+                            </div>
+                        }
+                    </div>
+                </div>
+               
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,764 @@
+﻿
+@model dynamic
+@{    
+    Layout = "~/Areas/Candidate/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "Home", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+    string msg = "";
+    if (Request.QueryString["ErrorMsg"] != null)
+    {
+       msg = Request.QueryString["ErrorMsg"].ToString();
+    }
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+    var clid = "";
+    clid = Session["ClientRowID"].ToString();
+
+
+    PersonalRowid = @ViewBag.PersonalRowid;
+    SubCheckId = @ViewBag.SubCheckId;
+    clientRowId = @ViewBag.clientRowId;
+    int clientno = @ViewBag.clientno;
+    bool NACheckStatus = ViewBag.NACheckStatus;
+
+}
+
+<style>
+
+    input[type=text], textarea {
+        width: 100%;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    select {
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    label {
+        padding: 12px 12px 12px 0;
+        display: inline-block;
+    }
+
+    input[type=submit] {
+        background-color: #04AA6D;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        float: right;
+    }
+
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+
+    .container {
+        border-radius: 5px;        
+        font-size: 1.2rem !important;
+    }
+
+    .col-25 {
+        float: left;
+        width: 25%;
+        margin-top: 20px;
+    }
+
+    .col-75 {
+        float: left;
+        width: 75%;
+        margin-top: 6px;
+    }
+
+    #UplodVerificationDocs {
+        margin-right: 0px !important;
+        padding: 8% 7% 8% 7% !important;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    @@media screen and (max-width: 600px) {
+        .col-25, .col-75, input[type=submit] {
+            width: 100%;
+            margin-top: 0;
+        }
+    }
+</style>
+
+<div class="card shadow-sm  bg-white rounded">
+    @section LeftNavigation{ @Html.Partial("_NavLeftCandidateCaseInfoProvided") }
+    @section DisplayTitle{ @Html.Partial("_DisplayTitle") }   
+    @section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+</div>
+
+@if (ViewBag.ErrorMsg != null)
+{
+    string err = @ViewBag.ErrorMsg.ToString();
+    string[] err2 = err.Split(',');
+    <script>
+        Swal.fire({
+            icon: 'info',
+            title: 'Mandatory Fields.',
+            html: '<div class="errormsg" style="text-align:left;"><ol type="1">@foreach(String item in err2){<li> @item</li> }</ol></div>'
+       })
+    </script>
+}
+@if (ViewBag.Success != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'success',
+            html:'<div class="errormsg">@ViewBag.Success.ToString()</div>',
+            showConfirmButton: false,
+            timer: 1500
+        })
+    </script>
+}
+
+<div class="row" style="background:rgba(141, 195, 255, .1);width:auto!important;">
+    <div class="col-md-12 mt-4">
+        <div>
+            @using (Html.BeginForm("AddEmployment_Info", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+                @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+                <input id="SubCheckId" type="hidden" value=@SubCheckId>
+                @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+                <input id="clientRowId" type="hidden" value=@clientRowId>
+                @Html.Hidden("clientRowId", clientRowId.ToString())
+
+                <input type="hidden" id="OrganizationNameTemp" name="OrganizationNameTemp" value="@ViewBag.CompanyName" />
+
+                @Html.ValidationSummary()
+
+
+                <div id="NADiv" class='col-md-7' style="background-color:#3498db;height:30px;">
+                    <center style="margin-top:5px;">
+                        @if (clid == "974" || clid == "1089")
+                        {
+                            @Html.CheckBox("Notraised", NACheckStatus, new { onchange = "NotRaised(this)", @style = "display:none;" })
+                        }
+                        else
+                        {
+                            <label class="checkbox-inline" style="margin:-5px 20px 0 10px">
+                                @Html.CheckBox("Notraised", NACheckStatus, new { onchange = "NotRaised(this)" })<b style="color:white">Not Applicable</b>
+                            </label>
+                        }
+
+                    </center>
+                </div>
+
+                foreach (var category in Model)
+                {
+                    <div class="container">
+                        @{
+                            string[] nm = category.Key.Split('_');
+
+                            if (@nm[2] == "textbox")
+                            {
+                                if (@nm[0] == "92") //"Organisation Name"
+                                {
+
+                                    <div class="row">
+                                        <div class="col-25">
+                                            @*<p style="color:red;">@nm[4]</p>*@
+
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-25">
+                                            @if (nm[4].ToString() != "")
+                                            {
+                                                <br />
+
+                                            }
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <h7>*</h7>
+                                                }
+                                            }
+
+                                            Organization Name
+                                        </div>
+                                        <div class="col-75">
+                                            <span style="color:red; font-size:1rem;"> @nm[4] </span>
+                                            <input type="text" class="form-control" id="OrganizationName" name="OrganizationName" value='@category.Value' maxlength="@nm[5]" />
+                                            <input type="hidden" class="form-control" id="OrganizationId" name="OrganizationId" value=@ViewBag.OrgId />
+                                        </div>
+                                    </div>
+
+                                }
+                                else if (@nm[1] == "Address of the company")
+                                {
+                                    <div class="row">
+                                        <div class="col-25">
+                                            Address of the company
+                                        </div>
+                                        <div class="col-75">
+                                            <input type="text" id="Addressofthecompany" name="Addressofthecompany" value='@category.Value' class="form-control" maxlength="@nm[5]" />
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="row">
+                                        <div class="col-25">
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <h7>*</h7>
+                                                }
+                                            }
+                                            @nm[1]
+                                        </div>
+                                        <div class="col-75">
+                                            <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                            <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]" autocomplete="off">
+                                        </div>
+
+                                    </div>
+                                }
+                            }
+                            if (@nm[2] == "dropdown")
+                            {
+                                <div class="row">
+
+                                    <div class="col-25">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7>*</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </div>
+                                    <div class="col-75">
+                                        <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                        @{
+                                            string[] nmOption = nm[7].Split(',');
+                                        }
+                                        <select name=@nm[0] id=@nm[0] style="width: 30rem !important;">
+                                            @for (int i = 0; i < nmOption.Length; i++)
+                                            {
+                                                if (@nmOption[i].Trim() == @nm[6])
+                                                {
+                                                    <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                                }
+                                                if (@nmOption[i].Trim() != @nm[6])
+                                                {
+                                                    <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                                }
+                                            }
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+                            }
+                            if (@nm[2] == "checkbox")
+                            {
+                                <div class="row">
+                                    <div class="card" style="margin-top:10px!important;">
+                                        <div class="card-body" style="display:flex!important;">
+
+                                            <div class="col-sm-1">
+
+                                                @{
+                                                    if (@nm[6] == "TRUE")
+                                                    {
+                                                        <input type="checkbox" id=@nm[0] name=@nm[0] value="checked" checked style="width:5rem!important;">
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="checkbox" id=@nm[0] name=@nm[0] value=@nm[0] style="width:5rem!important;">
+                                                    }
+                                                }
+
+                                            </div>
+                                            <div class="col-sm-11">
+                                                @{
+                                                    if (@nm[3] == "mandatory")
+                                                    {
+                                                        <h7>*</h7>
+                                                    }
+                                                }
+                                                <spn style="color:red;">@nm[1]</spn>
+                                            </div>
+                                            <div class="col-25">
+                                                @nm[4]
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            if (@nm[2] == "fileUpload")
+                            {
+                                <div class="row">
+                                    <div class="col-25">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7>*</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </div>
+                                    <div class="col-75">
+                                        <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                        <input type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                                    </div>
+
+                                </div>
+
+                            }
+                        }
+
+                    </div>
+
+                }
+                <div class="row">
+                    <div class="col-sm-12 cytoscape-parent">
+                        <div class="w-400 h-400 d-inline-block" id="cytoscape-container"></div>
+                    </div>
+                </div>
+
+                <br />
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-3">
+
+                        </div>
+                        <div class="col-sm-2" style="text-align:center;">
+                            <input type="submit" value="Submit" style="width:12.2rem!important; padding:7% 0 7% 0; border-radius:.90rem; font-size:1.6rem!important;" id="btnSave" />
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.ActionLink("Upload Document", "UploadCandidateDocumentUpdated", "Home", new { subCheckId = SubCheckId }, new { @class = " btn btn-primary", @id = "UplodVerificationDocs" })
+                        </div>
+                        <div class="col-sm-2"></div>
+                    </div>
+                </div>
+            }
+            <div class="container">
+                <div class="row">
+                    @{
+                        string[] NextPreviousButtonsURL = (string[])(Session["NextPreviousButtonsURL"]);
+                        for (int I = 0; I < NextPreviousButtonsURL.Length; I++)
+                        {
+                            if (NextPreviousButtonsURL[I] != null)
+                            {
+                                string[] Nenu1 = NextPreviousButtonsURL[I].Split('|');
+                                string NextURL = Nenu1[0];
+                                if (Nenu1[0] == "End")
+                                {
+                                    NextURL = Nenu1[1];
+                                }
+                                if (SubCheckId == Nenu1[4].ToString())
+                                {
+                                    if (Nenu1[2] != "Start")
+                                    {
+                                        <div class="col-sm-3">
+                                            <a href="@Nenu1[1]" class="GFG btn btn-primar"><span>&laquo;&laquo; Previous</span></a>
+                                        </div>
+                                    }
+                                    else if (Nenu1[2] == "Start")
+                                    {
+                                        <div class="col-sm-3">
+                                            <a href="~/Candidate/Home/UpdateCandidateDetails/@PersonalRowid" class="GFG btn btn-primar"><span>&laquo;&laquo; Previous</span></a>
+                                        </div>
+                                    }
+
+                                    if (Nenu1[3] != "End")
+                                    {
+                                        <div class="col-sm-5">
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <a href="@NextURL" class="GFG btn btn-primar"><span>Next &raquo;&raquo;</span></a>
+                                        </div>
+                                    }
+                                    else if (Nenu1[3] == "End")
+                                    {
+
+                                        <div class="col-sm-4">
+                                            <a href="~/Candidate/Home/FinalSubmit/@PersonalRowid" class="GFGSubmit btn btn-primar" style="padding: 5px 75px;"><span>Final Submission</span></a>
+                                        </div>
+                                    }
+                                }
+                            }
+
+                        }
+
+                    }
+
+                </div>
+            </div>
+            <br />
+            <br />
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script type="text/javascript">
+
+        function NotRaised(element) {
+            if ($('#Notraised').is(':checked')) {
+                $("#382").attr('checked', true);
+                $("#OrganizationName").val('Not Applicable');
+                $("#141").val('Not Applicable');
+                $("#93").val('Not Applicable');
+                $("#143").val('Not Applicable');
+                $("#147").val('Not Applicable');
+                $("#95").val('Not Applicable');
+                $("#94").val('Not Applicable');
+                $("#87").val('Not Applicable');
+
+                $("#149").val('Not Applicable');
+                $("#150").val('Not Applicable');
+                $("#148").val('Not Applicable');
+                $("#96").val('Not Applicable');
+                $("#147").val('Not Applicable');
+
+                $("#91").val('Not Applicable');
+                $("#88").val('Not Applicable');
+                $("#89").val('Not Applicable');
+
+            }
+            else {
+                $("#382").attr('checked', false);
+                $("#OrganizationName").val('');
+                $("#141").val('');
+                $("#93").val('');
+                $("#143").val('');
+                $("#147").val('');
+                $("#95").val('');
+                $("#94").val('');
+                $("#87").val('');
+
+                $("#149").val('');
+                $("#150").val('');
+                $("#148").val('');
+                $("#96").val('');
+                $("#147").val('');
+
+                $("#91").val('');
+                $("#88").val('');
+                $("#89").val('');
+            }
+
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            if ('@ViewBag.NACheckStatus' == 'True')
+            {
+                $("#OrganizationName").val('Not Applicable');
+                $("#141").val('Not Applicable');
+                $("#93").val('Not Applicable');
+                $("#143").val('Not Applicable');
+                $("#147").val('Not Applicable');
+                $("#95").val('Not Applicable');
+                $("#94").val('Not Applicable');
+                $("#87").val('Not Applicable');
+
+                $("#149").val('Not Applicable');
+                $("#150").val('Not Applicable');
+                $("#148").val('Not Applicable');
+                $("#96").val('Not Applicable');
+                $("#147").val('Not Applicable');
+
+                $("#91").val('Not Applicable');
+                $("#88").val('Not Applicable');
+                $("#89").val('Not Applicable');
+            }
+          if (('@ViewBag.clientno' != '576') || ('@ViewBag.clientno' == '576' && '@ViewBag.SubCheckId'!='68')) {
+
+                $('#NADiv').show();
+            }
+            else {
+
+                $('#NADiv').hide();
+            }
+
+
+            $("#OrganizationName").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/Candidate/Home/getEmployerlist",
+                        type: "POST",
+                        dataType: "json",
+                        data: { Prefix: request.term },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return { label: item.CompanyName, value: item.CompanyRowID };
+                            }))
+                        }
+                    })
+                },
+                minLength: 3,
+                select: function (event, ui) {
+                    event.preventDefault();
+                },
+                focus: function (event, ui) {
+                    event.preventDefault();
+                    var OrgName = ui.item.label;
+                    $("#OrganizationName").val(OrgName);
+                    $("#OrganizationNameTemp").val(OrgName);
+                    $('#OrganizationId').val(ui.item.value);
+
+                }
+            });
+        })
+
+        $("#OrganizationName").blur(function () {
+            if ($("#OrganizationName").val().trim() != $("#OrganizationNameTemp").val().trim()) {
+                //alert($("#OrganizationName").val());
+                //alert($("#OrganizationNameTemp").val());
+                $("#OrganizationName").val("");
+                $('#Addressofthecompany').val("");
+                $('#OrganizationId').val("0");
+            }
+        });
+
+        $(function () {
+            $('#OrganizationName').change(function () {
+                var CurOrg = $("#OrganizationName").val();
+                var url = "/ProvidedInfo/EmploymentAddress/" + $("#OrganizationId").val();
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+                    success: function (Address) {
+                        $('#Addressofthecompany').val(Address);
+                    }
+                });
+            });
+        });
+
+    </script>
+    <script>
+        //validation for candidatename
+        document.getElementById('141').onkeypress = function (e) {
+            if (!(/[a-z ]/i.test(String.fromCharCode(e.keyCode)))) {
+                e.preventDefault();
+                return false;
+            }
+        }
+        document.getElementById('95').onkeypress = function (e) {
+            if (!(/[a-z ]/i.test(String.fromCharCode(e.keyCode)))) {
+                e.preventDefault();
+                return false;
+            }
+        }
+
+        document.getElementById('148').onkeypress = function (e) {
+            if (!(/[a-z ]/i.test(String.fromCharCode(e.keyCode)))) {
+                e.preventDefault();
+                return false;
+            }
+        }
+
+        //validation for candidatename
+
+
+        //validation for Mobile Number and Pincode
+
+
+        $("#147").keypress(function (e) {
+            $("150").attr("min", "10");
+            var valueLength = this.value.length;
+            if (valueLength == 10) {
+                return false;
+            }
+            var kk = e.which;
+            if (kk < 48 || kk > 57)
+                e.preventDefault();
+        });
+
+        $("#150").keypress(function (e) {
+            $("150").attr("min", "10");
+            var valueLength = this.value.length;
+            if (valueLength == 10) {
+                return false;
+            }
+            var kk = e.which;
+            if (kk < 48 || kk > 57)
+                e.preventDefault();
+        });
+        $("#132").keypress(function (e) {
+            $("132").attr("min", "10");
+            var valueLength = this.value.length;
+            if (valueLength == 10) {
+                return false;
+            }
+            var kk = e.which;
+            if (kk < 48 || kk > 57)
+                e.preventDefault();
+        });
+
+        $(document).ready(function () {
+            $('#88').datepicker({
+                dateFormat: "dd-mm-yy",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: '-65:+10',
+            });
+
+            $('#89').datepicker({
+                dateFormat: "dd-mm-yy",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: '-65:+10',
+            });
+        })
+
+        $('#89').bind('copy paste cut', function (e)
+        {
+            e.preventDefault();
+        });
+        $('#88').bind('copy paste cut', function (e) {
+            e.preventDefault();
+        });
+
+
+    </script>
+    <script>
+        $("#btnSave").click(function () {
+            var obj = $('form input[type="text"]').NormalizedString();
+            if (obj == false) {
+                return false;
+            }
+        });
+
+    </script>
+    <style>
+        .GFG {
+            background-color: #11c9b7; /*#45a049;*/
+            border: 2px solid rgb(255 255 255 / 15%);
+            padding: 5px 10px;
+            color: #f8f9fa;
+            text-align: center;
+            display: inline-block;
+            font-size: 16px;
+            margin: 0px 0px;
+            cursor: pointer;
+            transition: all 0.5s;
+        }
+
+            .GFG span:focus {
+                content: '\00bb';
+                position: absolute;
+                opacity: 0;
+                top: 0;
+                right: -20px;
+                transition: 0.5s;
+            }
+
+            .GFG:hover {
+                background: #fc223d;
+                color: black;
+            }
+    </style>
+    <style>
+        .GFGSubmit {
+            background-color: #11c9b7; /*#45a049;*/
+            border: 2px solid rgb(255 255 255 / 15%);
+            padding: 5px 10px;
+            color: #f8f9fa;
+            text-align: center;
+            display: inline-block;
+            font-size: 16px;
+            margin: 0px 0px;
+            cursor: pointer;
+            transition: all 0.5s;
+        }
+
+            .GFGSubmit span:focus {
+                content: '\00bb';
+                position: absolute;
+                opacity: 0;
+                top: 0;
+                right: -20px;
+                transition: 0.5s;
+            }
+
+            .GFGSubmit:hover {
+                background: #fc223d;
+                color: black;
+            }
+    </style>
+
+
+    <script>
+
+        $(document).ready(function () {
+
+            $('#142').on('change', function (e) {
+
+                if ($('#142').val() == 'Fulltime' && '@ViewBag.clientno' == '1190') {
+
+                    $("#143").val('Not Applicable');
+
+                }
+
+                else if ($('#142').val() == 'Part time' && '@ViewBag.clientno' == '1190') {
+
+                    $("#143").val('');
+
+                }
+
+                else if ($('#142').val() == 'Through Outsourcing Agency' && '@ViewBag.clientno' == '1190') {
+
+                    $("#143").val('');
+
+                }
+
+                else if ($('#142').val() == 'Not Applicable' && '@ViewBag.clientno' == '1190') {
+
+                    $("#143").val('Not Applicable');
+
+                }
+
+                else {
+
+                    $("#143").val('');
+
+                }
+
+            }).trigger('change');
+
+        });
+
+    </script>
+
+}
+
+
+
+

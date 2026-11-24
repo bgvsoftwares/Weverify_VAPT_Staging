@@ -1,0 +1,334 @@
+﻿@model ViewModels.ClientInfoListPagedModel
+@{
+    ViewBag.Title = "Invoice Payment Detail ";
+}
+
+
+
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("BillingPaymentDetail", "Billing", FormMethod.Get))
+                        {
+                        <div class="form-horizontal">
+                            <div class="form-group branch search-frame">
+                                <label class="col-md-2 control-label">Month :</label>
+                                <div class="col-md-2">
+                                    @Html.DropDownListFor(model => model.BillingPaymentDetail.Month, new List<SelectListItem>
+ { new SelectListItem{Text="January", Value="January"},
+ new SelectListItem{Text="February", Value="February"},
+ new SelectListItem{Text="March", Value="March"},
+ new SelectListItem{Text="April", Value="April"},
+  new SelectListItem{Text="May", Value="May"},
+   new SelectListItem{Text="June", Value="June"},
+    new SelectListItem{Text="July", Value="July"},
+     new SelectListItem{Text="August", Value="August"},
+      new SelectListItem{Text="September", Value="September"},
+      new SelectListItem{Text="October", Value="October"},
+      new SelectListItem{Text="November", Value="November"},
+      new SelectListItem{Text="December", Value="December"},
+                               },
+ "-- Select Month --",
+ new { @class = "form-control" })
+
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="col-md-2 control-label">year:</label>
+                                </div>
+                                <div class="col-md-2">
+                                    @Html.DropDownListFor(model => model.BillingPaymentDetail.Year, new List<SelectListItem>
+{ new SelectListItem{Text="2019", Value="2019"},
+new SelectListItem{Text="2020", Value="2020"},
+new SelectListItem{Text="2021", Value="2021"},
+new SelectListItem{Text="2022", Value="2022"}},
+"-- Select Year --",
+new { @class = "form-control" })
+                                </div>
+
+                            </div>
+
+                            <div class="form-group branch search-frame">
+
+                                <label class="col-md-2 control-label">Client Name :</label>
+                                <div class="col-md-5">
+                                    @*@Html.DropDownListFor(model => model.BillingPaymentDetail.ClientRowId,
+                new SelectList(ViewBag.clientList, "ClientId", "ClientName"),
+                "-- Select Client -- ",
+                new { @class = "form-control" })*@
+
+
+                                    @Html.DropDownListFor(model => model.BillingPaymentDetail.ClientRowId,
+                     new SelectList(ViewBag.clientList, "ClientId", "ClientName"),   "-- Select Client -- ",
+                     new { @class = "form-control", onchange = "document.forms[0].submit();"  })
+
+
+                                    @Html.ValidationMessageFor(model => model.BillingPaymentDetail.ClientRowId, "", new { @class = "text-danger" })
+
+                                </div>
+                            </div>
+
+
+                            @*<div class="form-group branch search-frame">
+
+            <label class="col-md-2 control-label">Annexure No :</label>
+            <div class="col-md-5">
+                @Html.TextBoxFor(m => m.BillingPaymentDetail.AnnexureNo, null, new { @class = "form-control" })
+
+            </div>
+        </div>*@
+                            <div class="form-group branch search-frame">
+
+                                <label class="col-md-2 control-label">Invoice No :</label>
+                                <div class="col-md-5">
+
+                                    @Html.DropDownListFor(model => model.BillingPaymentDetail.InvoiceNo,
+                     new SelectList(ViewBag.BillingClientInvoiceNo, "InvoiceId", "InvoiceNo"),   "-- Select Invoice -- ",
+                     new { @class = "form-control", onchange = "document.forms[0].submit();"  })
+                                    @*@Html.TextBoxFor(m => m.BillingPaymentDetail.InvoiceNo, null, new { @class = "form-control" })*@
+
+                                </div>
+                            </div>
+
+                            <div class="form-group branch search-frame">
+
+                                <label class="col-md-2 control-label">Invoice Amount :</label>
+                                <div class="col-md-5">
+                                    @*<label id="lblInvoiceAmount" value=@Model.BillingPaymentDetail.InvoiceAmount ></label>*@
+                                    @*<input type="text" value="@Model.BillingPaymentDetail.InvoiceAmount" />*@
+                                    @Html.DisplayFor(m => m.BillingPaymentDetail.InvoiceAmount, new { @class = "form-control" })
+                                    @Html.HiddenFor(m => m.BillingPaymentDetail.InvoiceAmount)
+                                </div>
+                            </div>
+
+
+                            <div class="form-group branch search-frame">
+
+                                <label class="col-md-2 control-label">GST Amount :</label>
+                                <div class="col-md-5">
+                                    @Html.DisplayFor(m => m.BillingPaymentDetail.GSTAmount, new { @class = "form-control" })
+                                    @Html.HiddenFor(m => m.BillingPaymentDetail.GSTAmount)
+                                    @*@Html.TextBoxFor(m => m.BillingPaymentDetail.GSTAmount, null, new { @class = "form-control" })*@
+                                </div>
+                            </div>
+
+
+                            <div class="form-group branch search-frame">
+
+                                <label class="col-md-2 control-label">TDS Amount :</label>
+                                <div class="col-md-5">
+                                    @Html.TextBoxFor(m => m.BillingPaymentDetail.TDSAmount, null, new { @class = "form-control" })
+
+                                </div>
+                            </div>
+
+
+
+                            <div class="form-group branch search-frame">
+
+                                <label class="col-md-2 control-label">Total amount :</label>
+                                <div class="col-md-5">
+                                    @Html.TextBoxFor(m => m.BillingPaymentDetail.TotalAmount, null, new { @class = "form-control" })
+
+                                </div>
+                            </div>
+                           
+                                <div class="all-button-bg">
+
+                                    @*<input class="btn bun-bg btn-default" type="submit" value="CheckDelete" name="CheckDel" onclick="DeleteCheck()" />*@
+                                    @*<input class="btn bun-bg btn-default" type="submit" value="CheckMove" name="MoveCheck" onclick="DeleteCheck()" />*@
+                                    <input class="btn bun-bg btn-default" id="Submit" type="submit" value="Submit" name="Command" />
+                                    @*<button type="button" class="btn bun-bg btn-default" onclick="location.href='@Url.Action("DeleteCheck", "ClientServicing")'">DeleteCheck</button>*@
+                                    @*<input class="btn btn=info" id="InvoiceUpdate" type="submit" name="Command" value="Invoice Update" />*@
+
+
+                                </div>
+                            
+
+                            </div>
+                        }
+                    </div>
+
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#BillingPaymentDetail_InvoiceAmount").on("input", function (evt) {
+                var self = $(this);
+                self.val(self.val().replace(/[^0-9\.]/g, ''));
+                if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
+
+            //$("#BillingPaymentDetail_InvoiceNo").on("input", function (evt) {
+            //    var self = $(this);
+            //    self.val(self.val().replace(/[^0-9\.]/g, ''));
+            //    if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+            //        evt.preventDefault();
+            //    }
+            //});
+
+            $("#BillingPaymentDetail_TotalAmount").on("input", function (evt) {
+                var self = $(this);
+                self.val(self.val().replace(/[^0-9\.]/g, ''));
+                if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
+
+            $("#BillingPaymentDetail_AnnexureNo").on("input", function (evt) {
+                var self = $(this);
+                self.val(self.val().replace(/[^\d].+/, ""));
+                if ((evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
+
+
+            $("#BillingPaymentDetail_GSTAmount").on("input", function (evt) {
+                var self = $(this);
+                self.val(self.val().replace(/[^0-9\.]/g, ''));
+                if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
+
+
+
+            $("#BillingPaymentDetail_TDSAmount").on("input", function (evt) {
+                var self = $(this);
+                self.val(self.val().replace(/[^0-9\.]/g, ''));
+                if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
+
+            //
+        });
+
+        $("#Submit").click(function () {
+            var month = $("#BillingPaymentDetail_Month");
+            var year = $("#BillingPaymentDetail_Year");
+            var ClientRowId = $("#BillingPaymentDetail_ClientRowId");
+            //var GST = $("#BillingPaymentDetail_GST");
+            var InvoiceNo = $("#BillingPaymentDetail_InvoiceNo");
+            
+            var InvoiceAmount = $("#BillingPaymentDetail_InvoiceAmount");
+            var TotalAmount = $("#BillingPaymentDetail_TotalAmount");
+            var GSTAmount = $("#BillingPaymentDetail_GSTAmount");
+            var TDSAmount = $("#BillingPaymentDetail_TDSAmount");
+
+            //
+            //alert(AnnexureNo);
+            if (month.val() == "") {
+
+                alert("Please select Month!");
+                $("#BillingPaymentDetail_Month").focus();
+                return false;
+            }
+
+            if (year.val() == "") {
+                alert("Please select year!");
+                $("#BillingPaymentDetail_Year").focus();
+                return false;
+            }
+
+            if (ClientRowId.val() == "") {
+                alert("Please select Client name!");
+                $("#BillingPaymentDetail_ClientRowId").focus();
+                return false;
+            }
+
+            if (InvoiceNo.val() == "") {
+                alert("Please fill Invoice No!");
+                $("#BillingPaymentDetail_InvoiceNo").focus();
+                return false;
+            }
+
+            if (InvoiceAmount.val() == "") {
+                alert("Please fill Invoice Amount!");
+                $("#BillingPaymentDetail_InvoiceAmount").focus();
+                return false;
+            }
+
+            if (TDSAmount.val() == "") {
+                alert("Please fill TDS Amount!");
+                $("#BillingPaymentDetail_TDSAmount").focus();
+                return false;
+            }
+
+            if (TotalAmount.val() == "") {
+                alert("Please fill Total Amount!");
+                $("#BillingPaymentDetail_TotalAmount").focus();
+                return false;
+            }
+
+
+            if (GSTAmount.val() == "") {
+                alert("Please fill GST Amount!");
+                $("#BillingPaymentDetail_GSTAmount").focus();
+                return false;
+            }
+
+            
+
+            //
+
+            
+
+            
+
+            //if (GST.val() == "") {
+            //    alert("Please select GST!");
+            //    return false;
+            //}
+
+            //
+            return true;
+        });
+    </script>
+    <script>
+        function myFunction() {
+            confirm("Do you want to delete!");
+        }
+        function myFunction1() {
+            var txt;
+            var r = confirm("Press a button!");
+            if (r == true) {
+                txt = "You pressed OK!";
+            } else {
+
+            }
+            document.getElementById("demo").innerHTML = txt;
+        }
+    </script>
+
+
+}
+
+
+

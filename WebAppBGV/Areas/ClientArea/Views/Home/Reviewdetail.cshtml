@@ -1,0 +1,748 @@
+﻿@model ViewModels.ClientViewModel.ClientDashBoardTableModel
+@{
+    int i = 0;
+    int j = 0;
+    int clid = ViewBag.clientrowid != null ? ViewBag.clientrowid : 0;
+}
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="flex-grow-1">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-filter"></i> Filter Dashboard</h5>
+                </div>
+
+
+                @if (clid == 987)
+                {
+                    <div style="min-width: 150px;">
+                        <select id="filterClientRowId" class="form-select">
+                            <option value="">All Clients</option>
+                            @if (ViewBag.ClientList != null)
+                            {
+                                foreach (var client in ViewBag.ClientList)
+                                {
+                                    <option value="@client.ClientRowID.ToString()" @(ViewBag.SelectedClient == client.ClientRowID.ToString() ? "selected" : "")>
+                                        @client.ClientName
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>
+                }
+
+
+
+
+                <!-- Month Dropdown -->
+                <div style="min-width: 150px;">
+                    <select id="filterMonth" class="form-select">
+                        <option value="All Months" @(ViewBag.SelectedMonth == "All Months" ? "selected" : "")>
+                            All Months
+                        </option>
+                        <option value="January" @(ViewBag.SelectedMonth == "January" ? "selected" : "")>January</option>
+                        <option value="February" @(ViewBag.SelectedMonth == "February" ? "selected" : "")>February</option>
+                        <option value="March" @(ViewBag.SelectedMonth == "March" ? "selected" : "")>March</option>
+                        <option value="April" @(ViewBag.SelectedMonth == "April" ? "selected" : "")>April</option>
+                        <option value="May" @(ViewBag.SelectedMonth == "May" ? "selected" : "")>May</option>
+                        <option value="June" @(ViewBag.SelectedMonth == "June" ? "selected" : "")>June</option>
+                        <option value="July" @(ViewBag.SelectedMonth == "July" ? "selected" : "")>July</option>
+                        <option value="August" @(ViewBag.SelectedMonth == "August" ? "selected" : "")>August</option>
+                        <option value="September" @(ViewBag.SelectedMonth == "September" ? "selected" : "")>September</option>
+                        <option value="October" @(ViewBag.SelectedMonth == "October" ? "selected" : "")>October</option>
+                        <option value="November" @(ViewBag.SelectedMonth == "November" ? "selected" : "")>November</option>
+                        <option value="December" @(ViewBag.SelectedMonth == "December" ? "selected" : "")>December</option>
+                    </select>
+                </div>
+
+                <!-- Year Dropdown -->
+                <div style="min-width: 120px;">
+                    <select id="filterYear" class="form-select">
+                        <option value="All Years" @(ViewBag.SelectedYear == "All Years" ? "selected" : "")>
+                            All Years
+                        </option>
+                        @for (int year = DateTime.Now.Year; year >= 2026; year--)
+                        {
+                            <option value="@year"
+                                    @(ViewBag.SelectedYear == year.ToString() ? "selected" : "")>
+                                @year
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <button type="button" class="btn btn-primary px-4" id="btnFilter">
+                    Apply Filter
+                </button>
+
+                @*<button class="btn btn-primary px-4" id="btnFilter">Apply Filter</button>*@
+                @*<a href="@Url.Action("YourActionName", "YourControllerName")" class="btn btn-outline-secondary">Reset</a>*@
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid py-4 bg-light">
+    <div class="row">
+
+        @if (Model.ClientDashBoardTable != null)
+        {
+            <div class="container-fluid ps-0 mt-3 pb-3" style="margin-bottom:2rem;">
+                <table class="table table-bordered  table-striped align-middle shadow-sm border border-dark">
+                    <thead class="table-secondary text-center border-dark" style="font-size:13px">
+                        <tr>
+                            <th class="border border-dark">Client Status</th>
+                            <th class="border border-dark">1-5 Days</th>
+                            <th class="border border-dark">6-10 Days</th>
+                            <th class="border border-dark">11-15 Days</th>
+                            <th class="border border-dark">16-20 Days</th>
+                            <th class="border border-dark">20+ Days</th>
+                            <th class="border border-dark">Grand Total</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="text-center">
+                        @foreach (var item1 in Model.ClientDashBoardTable)
+                        {
+
+                            <tr>
+                                <td class="border border-dark">@item1.ClientStatus</td>
+                                <td class="border border-dark" style="text-align: center !important;">@item1.fiveDays</td>
+                                <td class="border border-dark" style="text-align: center !important;">@item1.tenDays</td>
+                                <td class="border border-dark" style="text-align: center !important;">@item1.fifteenDays</td>
+                                <td class="border border-dark" style="text-align: center !important;">@item1.twentyDays</td>
+                                <td class="border border-dark" style="text-align: center !important;">@item1.twentyplusDays</td>                        
+                                <td class="border border-dark" style="text-align: center !important;">
+                                    @{
+                                        string caseStatus = "";
+                                        switch (item1.ClientStatus)
+                                        {
+                                            case "Completed":
+                                                caseStatus = "ReportReceivedCompleted";
+                                                break;
+
+                                            case "Interim Report":
+                                                caseStatus = "ReportReceivedInterim";
+                                                break;
+
+                                            case "Stop":
+                                                caseStatus = "Stop";
+                                                break;
+
+                                            case "WIP":
+                                                caseStatus = "WIP";
+                                                break;
+
+                                            case "YTR Pending (Interim)":
+                                                caseStatus = "YTR";
+                                                break;
+
+                                            case "1st Interim Report":
+                                                caseStatus = "InterimReportCRC";
+                                                break;
+
+                                            case "Grand Total":
+                                                caseStatus = "";
+                                                break;
+
+                                            default:
+                                                caseStatus = item1.ClientStatus;
+                                                break;
+                                        }
+                                    }
+
+                                    @if (string.IsNullOrEmpty(caseStatus))
+                                    {
+                                        @item1.Total
+                                    }
+
+                                    else if (caseStatus == "YTR")
+                                    {
+                                        <a target="_blank"
+                                           href="@Url.Action("ManageClientYTRCases","Home",
+            new
+            {
+                area = "ClientArea",
+                CheckStatus = "YTR",
+                   ClientRowId = (clid == 987 && ViewBag.SelectedClient != null && Convert.ToString(ViewBag.SelectedClient) != "") 
+           ? Convert.ToString(WebAppBGV.CommonMethods.clsCommonMethods.PEncrypt(ViewBag.SelectedClient)) 
+           : ""
+            })">
+                                            @item1.Total
+                                        </a>
+                                    }
+            else if (caseStatus == "WIP")
+                                    {
+                                        <a target="_blank"
+                                           href="@Url.Content("~/ClientArea")">
+                                            @item1.Total
+                                        </a>
+                                    }
+                                    else
+                                    {
+             <a target="_blank"
+             href="@Url.Action("GetClientCasesDashBoardInfo",
+            "Home",new{area = "ClientArea",CaseStatus = caseStatus,
+            
+              ClientRowId = (clid == 987 && ViewBag.SelectedClient != null && Convert.ToString(ViewBag.SelectedClient) != "") 
+                      ? Convert.ToString(WebAppBGV.CommonMethods.clsCommonMethods.PEncrypt(ViewBag.SelectedClient)) 
+                      : ""
+            
+            
+            })">
+             @item1.Total  </a>   }
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <div class="col-xl-8 col-lg-7 mb-4">
+            @if (Model.DashBoardColorCodeCount != null)
+            {
+                <div class="container-fluid ps-0 mt-1 pb-4" >
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table table-bordered bg-white table-striped align-middle shadow-sm border border-dark">
+                                <thead class="table-secondary text-center border-dark" style="font-size:13px">
+                                    <tr>
+                                        <th class="border border-dark">Sl.No.</th>
+                                        <th class="border border-dark">Colour</th>
+                                        <th class="border border-dark">Count</th>
+                                     </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    @foreach (var item3 in Model.DashBoardColorCodeCount)
+                                    {
+                                        <tr>
+                                            <td class="border border-dark" style="text-align: center !important;">@Convert.ToString(++j)</td>
+                                            <td class="border border-dark">@item3.CColorName</td>
+                                            @*<td class="border border-dark" style="text-align: center !important;">@item3.CCount</td>*@
+                                            <td class="border border-dark" style="text-align: center !important;">
+                                                <a target="_blank"
+                                                   href="@Url.Action("GetClientCasesDashBoardInfo",
+                         "Home",
+                         new
+                         {
+                             area = "ClientArea",
+                             CaseStatus = item3.CColorName == "Stop-No Color" ? "Stop" : "ReportReceivedCompleted",
+                             colorName  = item3.CColorName,
+                                ClientRowId = (clid == 987 && ViewBag.SelectedClient != null && Convert.ToString(ViewBag.SelectedClient) != "") 
+           ? Convert.ToString(WebAppBGV.CommonMethods.clsCommonMethods.PEncrypt(ViewBag.SelectedClient)) 
+           : ""
+ 
+            
+                         })">
+                                                    @item3.CCount
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                </div>
+
+            }
+        </div>
+
+        <div style="visibility:hidden;" class="col-xl-4 col-lg-7 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0 fw-bold text-dark">Final - Color Code Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <div id="color-code-chart"></div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-6 col-lg-7 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0 fw-bold text-dark">Open Case Status</h5>
+                </div>
+                <div class="card-body">
+                    <div id="panding-bar"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6 col-lg-7 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0 fw-bold text-dark">Action Completed</h5>
+                </div>
+                <div class="card-body">
+                    <div id="action-pending-bar"></div>
+                </div>
+            </div>
+        </div>
+        
+        
+
+        <div style="visibility:hidden;" class="col-xl-6 col-lg-5 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold text-dark">Distribution</h5>
+                    <button class="btn btn-sm btn-outline-primary" id="randomize">
+                        <i class="bi bi-shuffle"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="status-donut"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="visibility:hidden;" class="col-xl-6 col-lg-5 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0 fw-bold text-dark">Action Share</h5>
+                </div>
+                <div class="card-body">
+                    <div id="action-donut"></div>
+                </div>
+            </div>
+        </div>
+
+        @*<div class="col-8 bg-white ">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0 fw-bold text-dark">Check Family Distribution (%)</h5>
+                </div>
+                <div class="card-body">
+                    <div id="family-percentage-chart"></div>
+                </div>
+            </div>
+        </div>*@
+
+
+        @*@if (Model.DashBoardMonthCaseData != null)
+        {
+            <div class="container-fluid ps-0 mt-5 pb-5" style="margin-bottom:2rem;">
+                <table class="table table-bordered bg-white table-striped align-middle shadow-sm border border-dark">
+                    <thead class="table-secondary text-center border-dark" style="font-size:13px">
+                        <tr>
+                            <th class="border border-dark">No.</th>
+                            <th class="border border-dark">Month</th>
+                            <th class="border border-dark">Count</th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody class="text-center">
+                        @foreach (var item2 in Model.DashBoardMonthCaseData)
+                        {
+                            <tr>
+                                <td class="border border-dark">@Convert.ToString(++i)</td>
+                                <td class="border border-dark">@item2.monthname</td>
+                                <td class="border border-dark">@item2.mCount</td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }*@
+
+
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    // 1. DATA PARSING
+    var chartData = @Html.Raw(ViewBag.ChartData ?? "[]");
+    var rawFamilyData = @Html.Raw(ViewBag.ChartData1 ?? "[]");
+
+    // Mapping for first 4 charts
+    //const seriesValues = chartData.length >= 4 ? chartData.slice(0, 4).map(d => Number(d.Value)) : [30, 40, 35, 50];
+    //const actionValues = chartData.length >= 8 ? chartData.slice(4, 8).map(d => Number(d.Value)) : [20, 15, 25, 10];
+
+    const seriesValues = [
+        Number(chartData[0] ?.Value || 0),
+        Number(chartData[1] ?.Value || 0),
+        Number(chartData[2] ?.Value || 0),
+        Number(chartData[3] ?.Value || 0),
+        Number(chartData[6] ?.Value || 0)
+    ];
+    const actionValues = [
+        Number(chartData[4] ?.Value || 0),
+        Number(chartData[5] ?.Value || 0),
+        Number(chartData[7] ?.Value || 0)
+    ];
+
+    const statusLabels = ['Pending with Candidate', 'Case Approval Pending', 'WIP Status', 'Insufficiency', 'Fund Approval'];
+    const actionLabels = ['Final Report', 'Interim Report', 'YTR'];
+
+    // Mapping for Family Chart
+    const familyLabels = rawFamilyData.flatMap(item => item.ChartData1.map(d => d.CheckFamilyName));
+    const familyValues = rawFamilyData.flatMap(item => item.ChartData1.map(d => Number(d.CheckFamilyID) || 1));
+
+    // Calculate percentages
+    const total1 = seriesValues.reduce((a, b) => a + b, 0);
+    const total = actionValues.reduce((a, b) => a + b, 0);
+    const actionDataWithPercent = actionValues.map((val, i) => {
+        const percent = total ? ((val / total) * 100).toFixed(1) : 0;
+        return { x: actionLabels[i], y: val, dataLabels: `${val} (${percent}%)` };
+    });
+
+    // --- CHART 1: BAR ---
+    //var barOptions = {
+    //    series: [{ name: 'Total', data: seriesValues }],
+    //    chart: { type: 'bar', height: 350, toolbar: { show: false } },
+    //    grid: { show: false },
+    //    plotOptions: { bar: { borderRadius: 6, distributed: true, columnWidth: '45%' } },
+    //    xaxis: { categories: statusLabels },
+    //    colors: ['#008FFB', '#00E396', '#FEB019', '#FF4560'],
+    //    legend: { show: false }
+    //};
+    var barMax = Math.max(...seriesValues, 1);
+    var barYAxisMax = Math.ceil(barMax * 1.30);
+
+    var barOptions = {
+        series: [{ name: 'Total', data: seriesValues }],
+        chart: { type: 'bar', height: 350, toolbar: { show: false } },
+        grid: { show: false },
+        plotOptions: { bar: { borderRadius: 6, distributed: true, columnWidth: '45%', dataLabels: { position: 'top' } } },
+        //xaxis: { categories: statusLabels },
+        xaxis: {
+            categories: statusLabels,
+
+            labels: {
+                rotate: 0,
+                trim: false,
+                hideOverlappingLabels: false,
+
+                style: {
+                    fontSize: '12px',
+                    fontWeight: 400
+                },
+
+                formatter: function (value) {
+
+                    switch (value) {
+
+                        case 'Pending with Candidate':
+                            return ['Pending with', 'Candidate'];
+
+                        case 'Case Approval Pending':
+                            return ['Case Approval', 'Pending'];
+
+                        case 'WIP Status':
+                            return ['WIP', 'Status'];
+
+                        case 'Insufficiency':
+                            return ['Insufficiency'];
+
+                        case 'Fund Approval':
+                            return ['Fund', 'Approval'];
+
+                        default:
+                            return [value];
+                    }
+                }
+            }
+        },
+        yaxis: { min: 0, max: barYAxisMax },
+        colors: ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0'],
+        legend: { show: false },
+        //dataLabels: {
+        //    enabled: true,
+        //    useHTML: true, // Allow HTML for line breaks
+        //    formatter: function (val) {
+        //        const percent = total1 ? ((val / total1) * 100).toFixed(1) : 0;
+        //        return val + "(" + percent + "%)";
+        //    },
+        //    style: { fontSize: '12px', colors: ['#000'] },
+        //    offsetY: -10 // Adjust vertical position above bars
+        //}
+        dataLabels: {
+            enabled: true,
+            formatter: function (val) {
+                const percent = total1 ? ((val / total1) * 100).toFixed(1) : 0;
+                return [val, "(" + percent + "%)"];
+            },
+            offsetY: -50,
+            style: {
+                fontSize: '12px',
+                colors: ['#000']
+            },
+            //offsetY: -10
+        }
+    };
+
+
+    // --- CHART 2: DONUT ---
+    var donutOptions = {
+        series: seriesValues,
+        labels: statusLabels,
+        chart: { type: 'donut', height: 350 },
+        colors: ['#008FFB', '#00E396', '#FEB019', '#FF4560'],
+        legend: { position: 'bottom' }
+    };
+
+    // --- CHART 3: ACTION BAR ---
+    //var actionOptions = {
+    //    series: [{ name: 'Pending', data: actionValues }],
+    //    chart: { type: 'bar', height: 350, toolbar: { show: false } },
+    //    grid: { show: false },
+    //    plotOptions: { bar: { borderRadius: 4, distributed: true, columnWidth: '45%' } },
+    //    xaxis: { categories: actionLabels },
+    //    colors: ['#775DD0', '#FF4560', '#FEB019', '#00E396'],
+    //    legend: { show: false }
+    //};
+
+    var actionMax = Math.max(...actionValues, 1);
+    var actionYAxisMax = Math.ceil(actionMax * 1.30);
+
+    var actionOptions = {
+        series: [{
+            name: 'Pending',
+            data: actionValues // you can also use actionDataWithPercent.map(d => d.y) if needed
+        }],
+        chart: { type: 'bar', height: 350, toolbar: { show: false } },
+        grid: { show: false },
+        plotOptions: {
+            bar: { borderRadius: 4, distributed: true, columnWidth: '45%', dataLabels: { position: 'top' } }
+        },
+        xaxis: { categories: actionLabels },
+        yaxis: { min: 0, max: actionYAxisMax },
+        colors: ['#775DD0', '#FF4560', '#FEB019'],
+        legend: { show: false },
+        //dataLabels: {
+        //    enabled: true,
+        //    formatter: function (val, opts) {
+        //        const percent = total ? ((val / total) * 100).toFixed(1) : 0;
+        //        return val + "\n(" + percent + "%)";
+        //    },
+        //    style: { fontSize: '12px', colors: ['#000'] },
+        //    offsetY: -10,
+        //}
+        dataLabels: {
+            enabled: true,
+            formatter: function (val) {
+                const percent = total ? ((val / total) * 100).toFixed(1) : 0;
+                return [val, "(" + percent + "%)"];
+            },
+            offsetY: -50,
+            style: {
+                fontSize: '12px',
+                colors: ['#000']
+            },
+            //offsetY: -10
+        }
+    };
+
+    // --- CHART 4: ACTION DONUT ---
+    var actionDonutOptions = {
+        series: actionValues,
+        labels: actionLabels,
+        chart: { type: 'donut', height: 350 },
+        colors: ['#775DD0', '#FF4560', '#FEB019', '#00E396'],
+        legend: { position: 'bottom' }
+    };
+
+    // --- CHART 5: FAMILY PERCENTAGE BAR ---
+    var familyPercentageOptions = {
+        series: [{ name: 'Percentage', data: familyValues }],
+        chart: { type: 'bar', height: 400, toolbar: { show: false } },
+        plotOptions: {
+            bar: {
+                borderRadius: 4,
+                dataLabels: { position: 'top' },
+            }
+        },
+        dataLabels: {
+            enabled: true,
+            formatter: function (val, opts) {
+                // Calculate percentage relative to the total of this dataset
+                let total = opts.w.globals.series[0].reduce((a, b) => a + b, 0);
+                return ((val / total) * 100).toFixed(1) + "%";
+            },
+            offsetY: -20,
+            style: { fontSize: '12px', colors: ["#304758"] }
+        },
+        xaxis: {
+            categories: familyLabels,
+            position: 'bottom',
+            labels: { rotate: -45, style: { fontSize: '10px' } }
+        },
+        yaxis: { title: { text: 'Volume' } },
+        title: {
+            text: 'Volume by Family',
+            align: 'center',
+            style: { color: '#444' }
+        }
+    };
+
+    // --- RENDER ---
+    var barChart = new ApexCharts(document.querySelector("#panding-bar"), barOptions);
+    //var donutChart = new ApexCharts(document.querySelector("#status-donut"), donutOptions);
+    var actionChart = new ApexCharts(document.querySelector("#action-pending-bar"), actionOptions);    
+    //var actionDonutChart = new ApexCharts(document.querySelector("#action-donut"), actionDonutOptions);
+    var familyChart = new ApexCharts(document.querySelector("#family-percentage-chart"), familyPercentageOptions);
+
+    barChart.render();
+    //donutChart.render();
+    actionChart.render();
+    //actionDonutChart.render();
+    familyChart.render();
+
+    // RANDOMIZE
+    document.querySelector("#randomize").addEventListener("click", function() {
+        const rand = (n) => Array.from({length: n}, () => Math.floor(Math.random() * 50) + 10);
+
+        const sData = rand(4);
+        barChart.updateSeries([{ data: sData }]);
+        donutChart.updateSeries(sData);
+
+        const aData = rand(4);
+        actionChart.updateSeries([{ data: aData }]);
+        actionDonutChart.updateSeries(aData);
+
+        familyChart.updateSeries([{ data: rand(familyLabels.length) }]);
+    });
+</script>
+
+
+<script>
+
+    // --- 1. DATA PARSING FOR COLOR CHART ---
+// We map the C# Model data directly into JavaScript arrays
+// 1. Get the data from the model
+var colorLabels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.DashBoardColorCodeCount.Select(x => x.CColorName)));
+var colorCounts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.DashBoardColorCodeCount.Select(x => x.CCount)));
+
+// 2. Define a helper function to map names to actual Hex codes
+function getHexColor(colorName) {
+    const name = colorName.toLowerCase().trim();
+    switch (name) {
+        case 'red': return '#dc3545';
+        case 'green': return '#28a745';
+        case 'yellow': return '#ffc107';
+        case 'blue': return '#007bff';
+        case 'amber': return '#FFBF00';
+        case 'orange': return '#fd7e14';
+        case 'grey': case 'gray': return '#6c757d';
+        case 'white': return '##FFFFFF';
+        default: return '#008FFB'; // Default Apex Blue if name doesn't match
+    }
+}
+
+// 3. Generate the colors array based on the labels we actually have
+var chartColors = colorLabels.map(label => getHexColor(label));
+
+var colorChartOptions = {
+    series: colorCounts,
+    labels: colorLabels,
+    chart: {
+        type: 'pie',
+        height: 100
+    },
+    // Apply the mapped hex codes here
+    colors: chartColors,
+    legend: {
+        position: 'bottom'
+    },
+    // Ensure the tooltip and data labels look clean
+    dataLabels: {
+        enabled: true,
+        formatter: function (val, opts) {
+            return opts.w.globals.series[opts.seriesIndex];
+        }
+    }
+};
+
+// --- 3. RENDER ---
+var colorChart = new ApexCharts(document.querySelector("#color-code-chart"), colorChartOptions);
+colorChart.render();
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // 1. Get current values from URL to keep dropdowns in sync
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentMonth = urlParams.get('month');
+        const currentYear = urlParams.get('year');
+
+        if (currentMonth) document.getElementById('filterMonth').value = currentMonth;
+        if (currentYear) document.getElementById('filterYear').value = currentYear;
+
+        //// 2. Handle Filter Button Click
+        //document.getElementById('btnFilter').addEventListener('click', function () {
+        //    const month = document.getElementById('filterMonth').value;
+        //    const year = document.getElementById('filterYear').value;
+
+        //    // Construct the URL with parameters
+        //    let url = window.location.pathname + '?';
+        //    if (month) url += 'month=' + month + '&';
+        //    if (year) url += 'year=' + year;
+
+        //    // Redirect to reload the page with new SP parameters
+        //    window.location.href = url;
+        //});
+    });
+</script>
+
+<script>
+    document.getElementById("btnFilter").addEventListener("click", function () {
+
+        var monthDropdown = document.getElementById("filterMonth");
+        var yearDropdown = document.getElementById("filterYear");
+
+        var ClientDropDown = document.getElementById("filterClientRowId");
+
+        var selectedMonth = monthDropdown.options[monthDropdown.selectedIndex].value;
+        var selectedYear = yearDropdown.options[yearDropdown.selectedIndex].value;
+        var selectedClient = ClientDropDown.options[ClientDropDown.selectedIndex].value;
+
+        console.log(selectedMonth);
+        console.log(selectedYear);
+
+        if (selectedMonth == "") {
+            selectedMonth = "All Months";
+        }
+
+        if (selectedYear == "") {
+            selectedYear = "All Years";
+        }
+
+        // if (selectedClient == "") {
+        //     selectedClient = clid;
+        // }
+
+        //alert(document.getElementById("filterMonth").value);
+        //alert(document.getElementById("filterYear").value);
+
+        window.location.href =
+            '@Url.Action("Reviewdetail", "Home")'
+            + '?strYear=' + encodeURIComponent(selectedYear)
+            + '&strMonth=' + encodeURIComponent(selectedMonth)
+            + '&strclid=' + encodeURIComponent(selectedClient);
+
+    });
+
+</script>
+
+
+
+<style>
+    #example1_length, #example1_filter {
+        display: none;
+    }
+</style>

@@ -1,0 +1,81 @@
+﻿<tr>
+    <td valign="top">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td colspan="2" align="right"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                        </tr>
+                        <tr>
+                            @if (@Model.ReportTypeBYSystum == "Final")
+                            {
+                                <td width="94%"><p style="font-size:19px;  color:#000080; text-align:center; font-weight:bold; text-decoration:underline; padding:10px 0px 10px 0px;">Report Type Supplementary - Background Verification Report – Executive Summary</p></td>
+                            }
+                           
+                            @if (Model.Report_Type != "1" && Model.ReportTypeBYSystum != "Final" )
+                            {
+                                <td width="94%"><p style="font-size:19px;  color:#000080; text-align:center; font-weight:bold; text-decoration:underline; padding:10px 0px 10px 0px;">Report Type final - Background Verification Report – Executive Summary</p></td>
+                            }
+
+                            @if (Model.Report_Type == "1")
+                            {
+                                <td width="94%"><p style="font-size:19px;  color:#000080; text-align:center; font-weight:bold; text-decoration:underline; padding:10px 0px 10px 0px;">Report Type Interim - Background Verification Report – Executive Summary</p></td>
+                            }
+
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    <table width="100%" border="1" cellpadding="4" cellspacing="1" style="border:groove; border-color:gainsboro; border-spacing:4px; font-size:10px; font-weight:bold">
+                        @{
+                            string checkName = string.Empty;
+                            foreach (var item in Model.PersonalChecksBriefDetails)
+                            {
+                                if (checkName != item.CheckFName)
+                                {
+                                    <tr>
+                                        <td colspan="4" bgcolor="#c0c0c0" style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0; padding:5px; text-align:center;"> <strong> @item.CheckFName</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td width="20%" style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0; padding-left:5px;"><strong>Type of Check</strong></td>
+                                        <td width="50%" style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0; text-align:center;"><strong>Brief Details</strong></td>
+                                        <td width="17%" style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0; text-align:center;"><strong>Status (Color)</strong></td>
+                                    </tr>
+                                    checkName = item.CheckFName;
+                                }
+                                <tr style=" font-size:12px; font-weight:bold; padding:5px;">
+                                    <td style="padding-left:5px; font-size:10px; font-family:Calibri;">@item.SubCheckFName</td>
+                                    @if (item.subCheckId == 210 || item.subCheckId == 225 || item.subCheckId == 31 || item.subCheckId == 32 || item.subCheckId == 33 || item.subCheckId == 23 || item.subCheckId == 24 || item.subCheckId == 25 || item.subCheckId == 26 || item.subCheckId == 27 || item.subCheckId == 30)
+                                    {
+                                        <td align="center" style="font-size:10px; font-family:Calibri;">@item.CRV_Period_Of_Stay</td>
+                                    }
+                                    else
+                                    {
+                                        <td align="center" style="font-size:10px; font-family:Calibri;">@item.SubCheckDetail</td>
+                                    }
+
+                                    @if (@item.Status == "Not Applicable")
+                                    {
+                                        <td style="color-adjust:exact; font-size:10px; font-family:Calibri; background:@item.ColorCode;" align="center">Not Applicable</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="color-adjust:exact; font-size:10px; font-family:Calibri; background:@item.ColorCode;" align="center">@item.ColorName</td>
+                                    }
+                                    @*<td style="color-adjust:exact; font-size:10px; font-family:Calibri; background:@item.ColorCode;" align="center">@item.ColorName</td>*@
+                                </tr>
+                            }
+                        }
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+

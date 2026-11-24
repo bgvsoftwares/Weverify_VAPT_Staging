@@ -1,0 +1,266 @@
+﻿@model ViewModels.ClientViewModel.GetDynamicReport
+@{
+    ViewBag.Title = "Reverification";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "DashboardClient", "Home", new { area = "ClientArea" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+ @section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="container-fluid form_container">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 ps-2 pt-4">
+            @*@if (ViewBag.SuccessMsg != null)
+            {
+                <div class="successmsg" style="text-align:center" id="divsucc">@ViewBag.SuccessMsg.ToString()</div>
+            }
+
+            @if (ViewBag.ErrorMsg != null)
+            {
+                <div class="errormsg" style="text-align:center">@ViewBag.ErrorMsg.ToString()</div>
+            }*@
+                <div class="col-lg-12 col-md-12 ps-5">
+                    @using (Html.BeginForm("GetCandidateDetail", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                    <div class="row row-xs align-items-center mg-b-20">
+                        <div class="col-md-2">
+                            <label class="form-label mg-b-0 fw-bolder">
+                                CompanyRefNo :
+                            </label>
+                        </div>
+                        <div class="col-md-7 mg-t-5 mg-md-t-0">
+                            @Html.TextBoxFor(model => model.SecuritasID, null, new { @class = "form-control", placeholder = "Ex Enter CompanyRefNo..." })
+
+                            @Html.HiddenFor(model => model.PersonalRowID, new { @id = "HfPersonalRowID" })
+                        </div>
+                        <div class="col-md-2 mg-t-5 mg-md-t-0">
+                            <input class="btn bun-bg btn-default ManageClientCompany" type="submit" name="Command" value="Search" id="Search" />
+                        </div>
+                        <div class="col-md-1 mg-t-5 mg-md-t-0">
+                            @if (Model.PersonalRowID != 0)
+                            {
+                                @Html.ActionLink("Report", "ReportInterim", "Home", new { id = Model.PersonalRowID, ReportPart = "OFAC", Report_Type = "0" }, new { @target = "_blank" })
+                            }
+                        </div>
+                    </div>
+                        <div class="row row-xs align-items-center mg-b-20">
+                            <div class="col-md-2">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    Father Name :
+                                </label>
+                            </div>
+                            <div class="col-md-7 mg-t-5 mg-md-t-0">
+                                @Html.TextBoxFor(model => model.FatherName, null, new { @class = "form-control", @id = "TextBoxMode", placeholder = "Ex Enter  Father Name..." })
+                            </div>
+                        </div>
+                        <div class="row row-xs align-items-center mg-b-20">
+                            <div class="col-md-2">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    DOB :
+                                </label>
+                            </div>
+                            <div class="col-md-7 mg-t-5 mg-md-t-0">
+                                @Html.TextBoxFor(model => model.DOB, null, new { @class = "form-control", @id = "TextBoxMode", placeholder = "Ex 10-10-2023" })
+                            </div>
+                        </div>
+                        <div class="row row-xs align-items-center mg-b-20">
+                            <div class="col-md-2">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    Verified On :
+                                </label>
+                            </div>
+                            <div class="col-md-7 mg-t-5 mg-md-t-0">
+                                @Html.TextBoxFor(model => model.VerifiedOn, null, new { @class = "form-control", @id = "TextBoxMode", placeholder = "Ex Enter  Verified On..." })
+                            </div>
+                        </div>
+                        <div class="row row-xs align-items-center mg-b-20">
+                            <div class="col-md-2">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    Verified By :
+                                </label>
+                            </div>
+                            <div class="col-md-7 mg-t-5 mg-md-t-0">
+                                @Html.TextBoxFor(model => model.VerifiedBy, null, new { @class = "form-control", @id = "TextBoxMode", placeholder = "Ex Enter  Verified By..." })
+                            </div>
+                        </div>
+                        <div class="row row-xs align-items-center mg-b-20">
+                            <div class="col-md-2">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    Unique Id :
+                                </label>
+                            </div>
+                            <div class="col-md-7 mg-t-5 mg-md-t-0">
+                                @Html.TextBoxFor(model => model.UniqueId, null, new { @class = "form-control", @id = "TextBoxMode", placeholder = "Ex Enter  Unique Id..." })
+                            </div>
+                        </div>
+                        <div class="row row-xs align-items-center mg-b-20">
+                            <div class="col-md-2">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    Report Comment :
+                                </label>
+                            </div>
+                            <div class="col-md-7 mg-t-5 mg-md-t-0">
+                                @Html.TextAreaFor(model => model.ReportComment, new { @class = "form-control", @id = "TextBoxMode", placeholder = "Comment..." })
+                            </div>
+                        </div>
+                        <div class="row row-xs align-items-center mg-b-20">
+                            <div class="col-md-2">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    OFAC Report :
+                                </label>
+                            </div>
+                            <div class="col-md-7 mg-t-5 mg-md-t-0">
+                                @Html.TextBoxFor(model => model.OFACDoc, new { @id = "UploadAddressDoc", @accept = "image/gif, image/jpeg, image/png, image/jpg", type = "file", @class= "dropify" })
+
+                            </div>
+                        </div>
+                        <div class="row row-xs align-items-center mg-b-20">
+                            <div class="col-md-2">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    TGS Export Report :
+                                </label>
+                            </div>
+                            <div class="col-md-7 mg-t-5 mg-md-t-0">
+                                @Html.TextBoxFor(model => model.TGSExportDoc, new { @id = "UploadAddressDoc", @accept = "image/gif, image/jpeg, image/png, image/jpg", type = "file", @Class= "dropify" })
+                            </div>
+                        </div>
+                        <div class="row row-xs align-items-center mg-b-20">
+                            <div class="col-md-2">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    ID Report :
+                                </label>
+                            </div>
+                            <div class="col-md-7 mg-t-5 mg-md-t-0">
+                                @Html.TextBoxFor(model => model.IDReportDoc, new { @id = "UploadAddressDoc", @accept = "image/gif, image/jpeg, image/png, image/jpg", type = "file", @Class = "dropify" })
+                            </div>
+                        </div>
+                        <div class="row row-xs align-items-center mg-b-20">
+                            <div class="col-md-2">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    Keyword Report :
+                                </label>
+                            </div>
+                            <div class="col-md-7 mg-t-5 mg-md-t-0">
+                                @Html.TextBoxFor(model => model.OFACKeywordDoc, new { @id = "UploadAddressDoc", @accept = "image/gif, image/jpeg, image/png, image/jpg", type = "file", @Class = "dropify" })
+                            </div>
+                        </div>
+                        <div class="row row-xs align-items-center mt-4 justify-content-center m-2 mb-5">
+                            <div class="col-md-2">
+                                <input class="submit-btn btn-block rounded-0" type="submit" onclick="return validateForm()" name="Command" value="SUBMIT" id="btnMoveCheck" />
+                            </div>
+                        </div>
+                    }
+                </div>
+        </div>
+                    </div>
+                </div>
+        @section Scripts{
+            <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+            <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+            <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+
+            <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+            <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+            <link href="~/Content/colorbox.css" rel="stylesheet" />
+            <script src="~/Scripts/jquery.colorbox-min.js"></script>
+            <script>
+                $(document).ready(function () {
+                    $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+                    $("#ddlCheckStatus").hide();
+                    $("#ddlCheckDetail").hide();
+
+
+                    //$("#Approval").hide();
+
+                    //$('#btnMoveCheck').prop('disabled', false);
+                    $("#ddlBillable").change(function () {
+
+                        var status = $("#ddlBillable").val();
+                        var RefNo = $("#SecuritasID").val();
+                        //var obj = {};
+                        //obj.Billable = status;
+                        //obj.companyRefNo = RefNo;
+                        //alert(status);
+                        $.ajax({
+                            url: "/ClientServicing/BillableStatus",
+                            //data: JSON.stringify(obj),
+                            data: { Billable: status, companyRefNo: RefNo },
+                            dataType: 'json',
+                            //url: 'ClientServicing/BillableStatus?clientRowId=' + clientRowId,
+                            method: "GET",
+                            success: function (data) {
+                                //alert(data.PersonalRowId);
+                                $('#HfPersonalRowID').val(data.PersonalRowId);
+                                $('#HfClientRowId').val(data.ClientRowId);
+                                if (data.billingstatus != '') {
+                                    //$('#btnMoveCheck').prop('disabled', true);
+                                    var txt;
+                                    var r = confirm(data.billingstatus);
+                                    if (r == true) {
+                                        //$('#btnMoveCheck').prop('disabled', true);
+                                        // $("#Approval").show();
+                                        txt = "You pressed OK!";
+                                        $('#HfapproveStatus').val(true);
+
+                                    } else {
+                                        //$('#btnMoveCheck').prop('disabled', false);
+                                        //$("#Approval").hide();
+                                        $('#HfapproveStatus').val(false);
+                                        $('#ddlBillable').prop('selectedIndex', 0);
+                                        txt = "You pressed Cancel!";
+                                    }
+                                }
+                                else {
+                                    //$('#btnMoveCheck').prop('disabled', false);
+                                    // $("#Approval").hide();
+                                }
+
+
+
+                            },
+                            error: function (data) {
+                                console.log(data);
+                            }
+                        })
+                    });
+
+                    $('#Search').click(function () {
+                        $('#ddlAction').prop('selectedIndex', 0);
+                        $('#ddlBillable').prop('selectedIndex', 0);
+
+                    });
+
+
+                    $(function () {
+                        $("#ddlAction").change(function () {
+                            var check = $("#ddlAction").val();
+                            //alert(check);
+                            if (check == 'Add Check') {
+
+                                $("#ddlCheckStatus").show();
+                                $("#ddlCheckDetail").hide();
+                            }
+                            else {
+                                $("#ddlCheckDetail").show();
+                                $("#ddlCheckStatus").hide();
+                            }
+
+
+
+                        });
+                    });
+                });
+            </script>
+
+
+
+        }
+
+
+

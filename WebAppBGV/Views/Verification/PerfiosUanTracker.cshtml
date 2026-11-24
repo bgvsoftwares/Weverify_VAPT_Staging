@@ -1,0 +1,128 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "Perfios Uan Tracker";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "Verification", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("PerfiosUanTracker", "Verification", FormMethod.Post))
+                        {
+                        <div class="form-horizontal">
+                            <div class="form-group branch row search-frame">
+                                <label class="col-md-2 control-label">companyRefNo :</label>
+                                <div class="col-md-3">
+                                    <input type="text" id='companyRefNo' name='companyRefNo' class="form-control" placeholder="Company Ref No" Value="@ViewBag.companyRefNo" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="form-group branch row search-frame">
+                                <label class="col-md-2 control-label">Candidate Status :</label>
+                                <div class="col-md-3">
+                                    <select class="form-control" name="CandidateStatus" id="CandidateStatus">
+                                        <option value="">Please candidate status</option>
+                                        <option value="1">Done</option>
+                                        <option value="0">Pending</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="all-button-bg">
+                                <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                            </div>
+                            <br />
+                            <div class="row row-sm mt-3" style="justify-content: center;">
+                                <h4 class="card-title text-center fw-bold" style="color:#8D5FFF;">@ViewBag.msg</h4>
+                            </div>
+                        </div>
+                            if (Model != null && Model.DigiLockerDataDetails != null)
+                            {
+                                <div class="row">
+                                    <div class="col-md-12 table">
+                                        @{
+
+                                            WebGrid grid = new WebGrid(ajaxUpdateContainerId: "grid");
+                                            grid.Bind(Model.DigiLockerDataDetails, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                                        }
+                                        @{
+                                            @grid.GetHtml(
+                                                 htmlAttributes: new { id = "grid", @class = "table" },
+                                                 headerStyle: "thead-inverse",
+                                                 rowStyle: "ordertxt",
+                                                 footerStyle: "custpaging",
+                                                 mode: WebGridPagerModes.All,
+                                                 columns: new[]
+                                                 {
+                                                            grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                                            grid.Column(columnName: "CompanyRefNo", header: "CompanyRefNo", canSort: false, style:"td-1"),
+                                                            grid.Column(columnName: "CandidateName", header: "Candidate Name", canSort: false, style:"td-1"),
+                                                            grid.Column(columnName: "CandidateStatus", header: "Candidate Status", canSort: false, style:"td-1"),
+                                                            grid.Column(columnName: "Createddate", header: "Date", canSort: false, style:"td-1"),
+                                                            grid.Column("Personalrowid", "Action", format: @<text>@Html.ActionLink("Action", "GetPerfiosUanDocumentlist", "Verification", new { PersonalRowID = item.Personalrowid }, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "Personalrowid" })</text>),
+
+                                                                                                                                                                                                                                                                                                                             }
+                                                                                                                                                                                                                                                                                                                       )
+                                        }
+
+                                        <div class="total-record">Total Records: @Model.TotalRecords</div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script>
+
+        $(document).ready(function () {
+            //alert('Hi1');
+            $(".iframeUpdateStatus").colorbox({ iframe: true, width: "60%", height: "60%" });
+            //$(".callbacks").colorbox({
+            //    //onOpen: function () { alert('onOpen: colorbox is about to open'); },
+            //    //onLoad: function () { alert('onLoad: colorbox has started to load the targeted content'); },
+            //    //onComplete: function () { alert('onComplete: colorbox has displayed the loaded content'); },
+            //    //onCleanup: function () { alert('onCleanup: colorbox has begun the close process'); },
+            //    onClosed: function () {
+            //        //alert('onClosed: colorbox has completely closed');
+            //        window.location.reload(false);
+            //    }
+            //});
+
+            //$(".iframeUpdateVerDoc").colorbox({ iframe: true, width: "60%", height: "60%" });
+            //$(".callbacks").colorbox({
+            //    onClosed: function () {
+            //        window.location.reload(true);
+            //    }
+            //});
+
+            //$(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+
+            //$(".iframeEmailStatus").colorbox({ iframe: true, width: "80%", height: "90%" });
+            //alert('Hi');
+            
+
+        });
+    </script>
+}

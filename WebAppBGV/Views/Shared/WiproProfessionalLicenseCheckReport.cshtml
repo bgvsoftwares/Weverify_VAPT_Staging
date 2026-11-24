@@ -1,0 +1,196 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    /**/
+
+    /**/
+
+    var list = Model.SpecialInfoModel.Where(T => T.SubcheckRowID == 233).GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+
+
+}
+
+@if (Model != null && Model.SpecialInfoModel != null && Model.SpecialInfoModel.Count > 0)
+{
+    if (Model.SpecialInfoModel != null)
+    {
+        int i = 0;
+        foreach (var a in list)
+        {
+            var Anticident = Model.SpecialInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+
+            var ReportComment = list[i].ReportComment;
+
+
+            <page id="PrintSrc" size="A4">
+                <div style="page-break-after:always ;"></div>
+
+                <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; width:100%; border-collapse:collapse;">
+                    <tr>
+                        <td valign="top" align="center" style="height:60rem;">
+                            <table border="0" cellpadding="2" cellspacing="5" id="tblDemo" style="border-collapse:collapse; width: 100%;">
+                                <tr>
+                                    <td width="94%" style="padding-top:4%"><p style="font-size:32px; color:black; text-decoration:underline; text-align:center; margin:0px 0px 0px 0px; font-weight:bold;"></p> </td>
+                                    <td width="6%" align="right"><img src='@Url.Content("~/Images/logo.jpg")' width="45" height="auto"></td>
+                                </tr>
+                                <tr>
+                                    <td valign="top">&nbsp;</td>
+                                </tr>
+
+                                <tr>
+                                    <td height="30">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight:bolder; font-size:12pt;font-family:'Calibri',sans-serif;">Professional License Check</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-top:10px;" valign="top" align="center">
+                                        <table width="100%" border="1" cellspacing="5" cellpadding="2" style="border-collapse:collapse;border-collapse:collapse;font-family:Calibri;font-size:17px">
+
+                                            @foreach (var item in Anticident)
+                                            {
+
+                                                <tr>
+                                                    <td>@item.DisplayNameRep</td>
+                                                    @if (item.AntecedentRowID == "153" || item.AntecedentRowID == "173" || item.AntecedentRowID == "151" || item.AntecedentRowID == "81" || item.AntecedentRowID == "146" || item.AntecedentRowID == "152" || item.AntecedentRowID == "145")
+                                                    {
+                                                        <td style="font-size:10pt;font-family:'Calibri',sans-serif;">@item.OpsValue</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td style="font-size:10pt;font-family:'Calibri',sans-serif;">@item.DataEntryValue</td>
+                                                    }
+
+                                                    @if (item.OpsValue != null)
+                                                    {
+                                                        <td width="25%" style="font-size:10pt;font-family:'Calibri',sans-serif;">Verified</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td width="25%" style="font-size:10pt;font-family:'Calibri',sans-serif;"></td>
+                                                    }
+                                                </tr>
+
+                                            }
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <!--- Report Footer with Address Include -->
+                    <tr>
+                        <td valign="bottom">
+                            <table border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                                <tbody>
+                                    <tr>
+                                        <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                                            &nbsp;
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                        <td width="1%">&nbsp;</td>
+                                        <td width="79%">
+                                            <p style="font-size: 16px!important; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                            <p style="font-size: 16px!important; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                            <p style="font-size: 15px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                            <p style="font-size: 15px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <!--- Report Footer with Address Include -->
+                </table>
+
+            </page>
+
+            if (Model.CandidateDocList != null)
+            {
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                {
+                    if (Doc.SubCheckRowID == a.SubcheckRowID)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                            <page id="PrintSrc" size="A4">
+                                <div style="page-break-after:always ;"></div>
+
+                                <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; width:100%; border-collapse:collapse;">
+                                    <tr>
+                                        <td valign="top" align="center" style="height:60rem;">
+                                            <table width="100%" border="0" cellpadding="2" cellspacing="5" id="tblDemo">
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tr>
+                                                                <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@a.SubCheckName (@Doc.DocumentType)</p></td>
+                                                                <td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                                                            </tr>
+                                                            <tr><td colspan="2">&nbsp;</td></tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td valign="top">&nbsp;</td>
+                                                </tr>
+                                                <tr style="text-align:center">
+                                                    <td valign="top">
+                                                        @{
+                                                            FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                            System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                            if (image.Height > 600)
+                                                            {
+                                                                <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                            }
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <!--- Report Footer with Address Include -->
+                                    <tr>
+                                        <td valign="bottom">
+                                            <table border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                                                            &nbsp;
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                                        <td width="1%">&nbsp;</td>
+                                                        <td width="79%">
+                                                            <p style="font-size: 16px!important; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                                            <p style="font-size: 16px!important; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                                            <p style="font-size: 15px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                                            <p style="font-size: 15px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <!--- Report Footer with Address Include -->
+                                </table>
+                            </page>
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

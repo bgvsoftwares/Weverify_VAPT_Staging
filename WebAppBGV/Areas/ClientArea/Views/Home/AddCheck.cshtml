@@ -1,0 +1,104 @@
+﻿
+@{
+    ViewBag.Title = "Add Check";
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="container-fluid form_container">
+    @using (Html.BeginForm("AddCheck", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div class="row row-xs align-items-center mg-b-20 mt-0">
+            <div class="col-md-3">
+                <label class="control-label required form-label mg-b-0 fw-bolder">CompanyRefNo :</label>
+            </div>
+            <div class="col-md-7 mg-t-5 mg-md-t-0">
+                @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex Enter CompanyRefNo..." })
+            </div>
+        </div>
+        <div class="row row-xs align-items-center mg-b-20 mt-0">
+            <div class="col-md-3">
+                <label class="control-label required form-label mg-b-0 fw-bolder">Check to be added :</label>
+            </div>
+            <div class="col-md-7 mg-t-5 mg-md-t-0">
+                @if (ViewBag.chek != null)
+                {
+
+                    @Html.DropDownList("ddlColor",
+           new SelectList(ViewBag.chek, "ClientCheckRowID", "SubCheckName"),
+
+                    new { @class = "form-control" })
+                }
+            </div>
+        </div>
+        <div class="row row-xs align-items-center mg-b-20 mt-0">
+
+            @if (ViewBag.ClientId == 679)
+            {
+                <div class="col-md-3">
+                    <label class="control-label required form-label mg-b-0 fw-bolder">Upload Document *</label>
+                </div>
+                <div class="col-md-7 mg-t-5 mg-md-t-0">
+                    @Html.TextBox("File", "", new { type = "File", @class = "dropify" })
+                </div>
+            }
+
+
+        </div>
+
+        <div class="row row-xs align-items-center justify-content-center m-3">
+            <div class="col-md-2">
+                <input class="submit-btn btn-block rounded-0" type="submit" value="Search" />
+            </div>
+            <div class="col-md-2 d-flex">
+                <i class="fa fa-edit me-1" style="position: absolute;
+  color: #FFF;
+  top: 16px;
+  left: 35px;
+  font-size: 12px;"></i>
+                <input class="ManageClientCompany m-1" type="submit" name="SaveWork" id="FinishWork" value="Add" />
+            </div>
+        </div>
+    }
+
+    <table class="table mb-0 js-serial table-striped m-auto" style="border:none; cursor:grab;">
+        <thead>
+            <tr>
+                <th class="top-head">Candidate Name</th>
+                <th class="top-head">Mobile</th>
+                <th class="top-head">Email ID</th>
+                <th class="top-head">Creation Date</th>
+                <th class="top-head">Creation Date</th>
+                <th class="top-head">Creation Date</th>
+                <th class="top-head">Creation Date</th>
+            </tr>
+        </thead>
+        @if (Model != null && Model.ClientServiceChecks != null)
+        {
+            <tbody class="text-start tx-12">
+                @foreach (var a in Model.ClientServiceChecks)
+                {
+                    <tr>
+                        <td class="name">@a.SecuritasID</td>
+                        <td class="name">@a.CheckName</td>
+                        <td class="name">@a.CheckStatus</td>
+                        <td class="name">@a.OrderDate</td>
+                        <td class="name">@a.OutDate</td>
+                        <td class="name">@a.ColorName</td>
+                        <td class="name">@a.Name</td>
+                    </tr>
+                }
+            </tbody>
+        }
+    </table>
+</div>
+        @section Scripts{
+            <script>
+                $(document).ready(function () {
+                    $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+                });
+            </script>
+        }
+
+
+

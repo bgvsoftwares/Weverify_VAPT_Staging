@@ -1,0 +1,211 @@
+
+@{
+    ViewBag.Title = "Manage RWQC AutoAllocation User";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+}
+@{
+  
+}
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("GetRWQCTrackerUserDetails", "ReportQC", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Client Name :</label>
+                                    <div class="col-md-4">
+                                        @Html.DropDownList("ClientRowID",
+     new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+     "-- Select Client -- ",
+     new { @class = "form-control" })
+                                    </div>
+                                    <label class="col-md-2 control-label">RW Team Member Name :</label>
+                                    <div class="col-md-4">
+                                        @Html.DropDownList("Search", (IEnumerable<SelectListItem>)ViewBag.TeamMembers, "Select a Team Member", new { @class = "form-control" })
+
+                                    </div>
+                                </div>
+                                <center><input class="btn bun-bg btn-default" type="submit" onclick="SearchFunction()" value="Search" /></center>
+
+                            </div>
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.RwqcTrackerUserDatas != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12 table">
+                            @{
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.RwqcTrackerUserDatas, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                    htmlAttributes: new { id = "grid", @class = "table table-striped table-bordered nowrap" },
+                                    headerStyle: "thead-inverse",
+                                    rowStyle: "ordertxt",
+                                    footerStyle: "custpaging",
+                                    mode: WebGridPagerModes.All,
+                                    columns: new[]
+                                    {
+
+grid.Column(header: "No.", style:"td-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-1"),
+grid.Column(columnName: "RWQC_Teammember", header: "RWQC Team Team Member", canSort: false, style:"td-1"),
+grid.Column(columnName: "Allocation_Percentage", header: "Allocation Percentage", canSort: false, style:"td-1"),
+grid.Column(columnName: "Total_Allocation", header: "Total Allocation", canSort: false, style:"td-1"),
+grid.Column(columnName: "Total_Active_Allocation", header: "Total Active Allocation", canSort: false, style:"td-1"),
+grid.Column(columnName: "Enable", header: "Enable", canSort: false, style:"td-1"),
+grid.Column(header: "Actions", format: item =>
+    Html.Raw("<a href='" + Url.Action("EditRWQCUser", "ReportQC", new { id = item.Id }) + "' class='btn btn-primary'>Edit</a>"),
+    canSort: false, style: "td-1"),
+grid.Column(header: "Actions", format: item =>
+    Html.Raw("<a href='" + Url.Action("UpdateTMStatus", "ReportQC", new { TeamMemberid = item.RwteamMember , Action1 = "Present" }) + "' class='btn btn-primary'>Present</a>"),
+    canSort: false, style: "td-1"),
+grid.Column(header: "Actions", format: item =>
+    Html.Raw("<a href='" + Url.Action("UpdateTMStatus", "ReportQC", new { TeamMemberid = item.RwteamMember, Action1 = "Absent"  }) + "' class='btn btn-primary'>Absent</a>"),
+    canSort: false, style: "td-1")
+
+
+
+}
+)
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                            <br />
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts{
+  
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+            $(".iframeUpdateStatus").colorbox({ iframe: true, width: "80%", height: "65%" });
+            $("#grid th").each(function () {
+                if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                    $(this).text('');
+                    $("<input/>", { type: "checkbox", id: "select_all", value: "" }).appendTo($(this));
+                    //$(this).append("<span>Select All</span>");
+                }
+            });
+
+            //2nd click event for header checkbox for select /deselect all
+            $('#select_all').change(function () {
+                $('input[class="personalId"]').prop('checked', $(this).prop('checked'));
+                var personalIds = '';
+                $('input[class="personalId"]').each(function (index, value) {
+                    if (this.checked) { personalIds += this.value + ','; }
+                });
+                if (personalIds.length > 0) {
+                    personalIds = personalIds.substring(0, personalIds.length - 1);
+                } else { personalIds = ''; }
+                $('#PersonalIds').val(personalIds.trim());
+            });
+        });
+
+        function SearchFunction() {
+            $('#VerificationIds').val("");
+        }
+
+        function SearchFunction() {
+            $('#PersonalIds').val("");
+        }
+
+        //3rd click event for checkbox of each row
+        $(document).on('change', 'input[class="personalId"]', function (e) {// on change of state
+            var personalIds = '';
+            $('input[class="personalId"]').each(function (index, value) {
+                if (this.checked) { personalIds += this.value + ','; }
+            });
+
+            if (false == $(this).prop("checked")) { //if this item is unchecked
+                $("#select_all").prop('checked', false); //change "select all" checked status to false
+            }
+            //check "select all" if all checkbox items are checked
+            if ($('.personalId:checked').length == $('.personalId').length) {
+                $("#select_all").prop('checked', true);
+            }
+
+            if (personalIds.length > 0) {
+                personalIds = personalIds.substring(0, personalIds.length - 1);
+            } else { personalIds = ''; }
+            $('#PersonalIds').val(personalIds.trim());
+        })
+
+        function validateForm() {
+            if ($("#AllocateTL").val() == 0) {
+                alert("Select Team Leader For Allocate.");
+                return false;
+            }
+
+            var count = 0;
+            $('input[class="personalId"]').each(function (index, value) {
+                if (this.checked) { count += 1; }
+            });
+
+            if (count == 0) {
+                alert("Please select atleast one case.");
+                return false;
+            }
+            return true;
+        }
+
+
+     
+});
+    </script>
+}
+<script>
+    $(document).ready(function () {
+        var table = $('#grid').DataTable({
+            responsive: true,
+        });
+
+        new $.fn.dataTable.FixedHeader(table);
+    });
+</script>
+<style>
+    #select_all {
+        width: 30px !important;
+    }
+
+    .personalId {
+        width: 30px !important;
+    }
+
+    @@media screen and (max-width: 1450px) and (min-width: 600px) {
+        #grid {
+            font-size: .90rem;
+            width: 100%;
+        }
+
+        .table td, .table th {
+            padding: .60rem !important;
+        }
+
+        .thead-inverse {
+            font-size: .90rem !important;
+        }
+
+        .table, td, .edit {
+            font-size: .95rem !important;
+        }
+    }
+</style>
+
+

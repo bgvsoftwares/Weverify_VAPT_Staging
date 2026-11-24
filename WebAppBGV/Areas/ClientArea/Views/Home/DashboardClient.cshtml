@@ -1,0 +1,82 @@
+﻿
+@{
+    ViewBag.Title = "Welcome To " + ViewBag.Dashboard;
+    Layout = "~/Areas/ClientArea/Views/Shared/_LayoutWoutNav.cshtml";
+    <script src="~/assets/plugins/jquery/jquery.min.js"></script>
+}
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+@if (Convert.ToString(Session["UType"]) == "2")
+{
+    @*<div class="container-fluid ps-0" style="background:#D7D8D659;">
+        <div class="row" id="dvPartialView">*@
+Html.RenderAction("CandidateSearch", "Home", new { UType = "2" });
+        @*</div>
+    </div>*@
+}
+else
+{
+    <div class="container-fluid ps-0" style="background:#D7D8D659;">
+        @{
+            if (Enumerable.Count(ViewBag.ClientList) > 0)
+            //if (ViewBag.ClientList != null && ViewBag.ClientList.count() > 0)
+            {
+                <div class="row row-xs align-items-center mg-b-10">
+                    <div class="col-md-2">
+                        @Html.Label("Select Client", htmlAttributes: new { @class = "control-label required form-label mg-b-0 fw-bolder p-3" })
+                    </div>
+                    <div class="col-md-8 mg-t-5 mg-md-t-0">
+                        @if (Request.QueryString["ClientRowID"] != null && Convert.ToInt16(Request.QueryString["ClientRowID"]) > 0)
+                        {
+                            @Html.Hidden("hdnClientRowID", Request.QueryString["ClientRowID"])
+                            @Html.Hidden("ClientRowID", Request.QueryString["ClientRowID"])
+                        }
+                        @Html.DropDownList("ClientRowID", new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                          "-- Select Client -- ",
+                          new { @class = "form-control", @id = "ClientRowID" })
+
+                        @{
+                            if (Request.QueryString["ClientRowID"] != null && Convert.ToInt16(Request.QueryString["ClientRowID"]) > 0)
+                            {
+                                @Html.Hidden("hdnClientRowID", Request.QueryString["ClientRowID"])
+                                @Html.Hidden("ClientRowID", Request.QueryString["ClientRowID"])
+                            }
+                        }
+                    </div>
+                </div>
+            }
+
+            if (ViewBag.ClientCasesDashboard != null && Enumerable.Count(ViewBag.ClientList) > 0)
+            {
+                ViewModels.ClientViewModel.ClientDashboardViewModel item = ViewBag.ClientCasesDashboard;
+            }
+        }
+    </div>
+    <div class="row" id="dvPartialView">
+        @{Html.RenderAction("RefreshDashboardDetails", "Home"); }
+    </div>
+}
+
+
+
+
+
+@section Scripts{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('#ClientRowID').val($('#hdnClientRowID').val());
+        });
+        $(function () {
+            $('#ClientRowID').change(function () {
+                var url = "/ClientArea/Home/RefreshDashboardDetails?" + $.param({ objval: $("#ClientRowID").val() });
+                //@Html.Raw(@Url.Action("RefreshDashboardDetails", "Home", new { ClientRowID = 2}));
+                $("#hdnClientRowID").val($("#ClientRowID").val());
+                var notifications = $("#dvPartialView");
+                notifications.load(url);
+                //notifications.dialog("open");
+
+            });
+        });
+    </script>
+}
+

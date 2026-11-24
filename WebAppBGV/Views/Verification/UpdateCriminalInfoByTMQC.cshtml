@@ -1,0 +1,825 @@
+﻿@model dynamic
+
+@{
+    string Designation = "";
+    ViewBag.Title = "Update Criminal Info By TMQC";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    if (Session["Designation"] != null)
+    {
+        Designation = Session["Designation"].ToString();
+        if (Designation == "Team Member-PV-QC")
+        {
+            string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+            string hyperLink = Html.ActionLink("linkTitle", "CriminalManagerPVAllocated", "PVerification", null, new { @class = "headerbacklink" }).ToString();
+            ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+        }
+        else
+        {
+            string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+            string hyperLink = Html.ActionLink("linkTitle", "DepartmentTeamMemberQCChecks", "Verification", null, new { @class = "headerbacklink" }).ToString();
+            ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+        }
+    }
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+    string CheckStatusid = "";
+    string CandidateName = "";
+    string CompanyRefNo = "";
+    string SubReferenceID = "";
+
+
+    PersonalRowid = @ViewBag.PersonalRowid;
+    SubCheckId = @ViewBag.SubCheckId;
+    clientRowId = @ViewBag.clientRowId;
+    CheckStatusid = @ViewBag.CheckStatusid;
+    string CDispositionName = ViewBag.CDispositionName;
+    string ReportComments = ViewBag.ReportComments;
+    CandidateName = ViewBag.CandidateName;
+    CompanyRefNo = ViewBag.CompanyRefNo;
+    SubReferenceID = ViewBag.SubReferenceID;
+}
+
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<style>
+    .container {
+        font-family: italic !important;
+        font-size: 1.3rem !important;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="main-tableframe personal-details-frame" border="0">
+            <tr>
+                <td>@Html.Partial("_PersonalDetails")</td>
+            </tr>
+            <tr>
+                <td>@Html.Partial("_CaseDocumentList")</td>
+            </tr>
+            <tr>
+                <td>@Html.Partial("_DocumentList")</td>
+            </tr>
+            <tr>
+                <td>@Html.Partial("MailList")</td>
+            </tr>
+        </table>
+        @if (ViewBag.SpocActionRemark != null)
+        {
+            <table class="main-tableframe personal-details-frame" border="0">
+                <tr>
+                    <td colspan="2">
+                        <div class="col-12 personal-details-head"><i class="fa fa-file-text-o" aria-hidden="true"></i>  Spoc Remark :</div>
+                    </td>
+                </tr>
+                <tr>
+                    @foreach (var item in ViewBag.SpocActionRemark)
+                    {
+                        if (item.PriorityType == "High")
+                        {
+                            <td style="font-weight: bold; background-color: #ff0000; color: white; width: 5%; ">High</td>
+                            <td style="width:95%;">
+                                <p style="font-size: medium; background-color:azure;"> @item.SpocRemark </p>
+                            </td>
+                        }
+                        else
+                        {
+                            <td style="font-weight: bold; background-color: #02fd58; width: 5%; ">Low</td>
+                            <td style="width:95%;">
+                                <p style="font-size: medium; background-color: azure; "> @item.SpocRemark </p>
+                            </td>
+                        }
+                    }
+                </tr>
+            </table>
+        }
+        <div class="container">
+            @using (Html.BeginForm("UpdateCriminalInfoByTMQC", "Verification", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+                @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+                <input id="SubCheckId" type="hidden" value=@SubCheckId>
+                @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+                <input id="clientRowId" type="hidden" value=@clientRowId>
+                @Html.Hidden("clientRowId", clientRowId.ToString())
+
+                <input id="CheckStatusid" type="hidden" value=@CheckStatusid>
+                @Html.Hidden("CheckStatusid", CheckStatusid.ToString())
+
+                <input id="CandidateName" type="hidden" value=@CandidateName>
+                @Html.Hidden("CandidateName", CandidateName.ToString())
+
+                <input id="CompanyRefNo" type="hidden" value=@CompanyRefNo>
+                @Html.Hidden("CompanyRefNo", CompanyRefNo.ToString())
+
+
+                <input id="SubReferenceID" type="hidden" value=@SubReferenceID>
+                @Html.Hidden("SubReferenceID", SubReferenceID.ToString())
+
+                <input id="hdnDispositionID" type="hidden" name="hdnDispositionID">
+                <input id="hdnSeverity" type="hidden" name="hdnSeverity">
+                <input id="ColorsName" type="hidden" name="ColorsName">
+
+
+
+                @Html.ValidationSummary()
+
+                foreach (var category in Model)
+                {
+                    <div class="row" style="margin-bottom:10px!important;">
+                        @{
+                            string[] nm = category.Key.Split('_');
+                            string[] temp = category.Value.Split('_');
+
+                            if (@nm[2] == "textbox")
+                            {
+
+                                <div class="col-md-4">
+                                    @{
+                                        if (nm[4] != "")
+                                        {
+                                            <p style="margin-top:30px!important;">
+                                                @if (@nm[3] == "mandatory")
+                                                {
+                                                    <span style="color:red!important;">*</span>
+                                                }
+                                                else
+                                                {
+                                                    <span style="color:red!important;">&nbsp;</span>
+                                                }
+                                                @nm[1]
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p>
+                                                @if (@nm[3] == "mandatory")
+                                                {
+                                                    <span style="color:red!important;">*</span>
+                                                }
+                                                else
+                                                {
+                                                    <span style="color:red!important;">&nbsp;</span>
+                                                }
+                                                @nm[1]
+                                            </p>
+                                        }
+                                    }
+                                </div>
+                                if (@nm[0] != "51")
+                                {
+                                    if (nm[4] != "")
+                                    {
+                                        <div class="col-md-4">
+                                            <p style="margin-top: 30px;">@temp[0]</p>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-4">
+                                            <p>@temp[0]</p>
+                                        </div>
+                                    }
+                                }
+
+                                if (nm[0].ToString() == "51")
+                                {
+                                    <div class="col-md-8">
+                                        @if (temp.Count() > 1)
+                                        {
+                                            <div class="row">
+                                                <div class="col-md-12 ">
+                                                    <div class="d-flex gap-4">
+                                                        <textarea name="51" id="51" rows="5" cols="8" maxlength="@nm[5]">@temp[1]</textarea>
+                                                        @if (temp.Count() > 1)
+                                                        {
+                                                            if (@temp[0] == @temp[1])
+                                                            {
+                                                                <i class="fa fa-check-circle" style="font-size: 20px; color: green; margin-left: 3px;"></i>
+                                                            }
+                                                            else
+                                                            {
+                                                                <i style="font-size:20px;color:green; margin-left:19px;"></i>
+                                                            }
+
+                                                        }
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        @if (nm[4] != "")
+                                        {
+                                            <p style="color:red">@nm[4]</p>
+                                        }
+
+                                        @if (temp.Count() > 1)
+                                        {
+                                            <div class="row">
+                                                <div class="col-md-12 ">
+                                                    <div class="d-flex gap-4">
+                                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@temp[1]' autocomplete="off" maxlength="@nm[5]" data-ref="@temp[0]" oninput="checkMatch(this)">
+                                                        @if (temp.Count() > 1)
+                                                        {
+                                                            if (@temp[0] == @temp[1])
+                                                            {
+                                                                <i id="iconx-@nm[0]" class="fa fa-times-circle" style="display:none; font-size:20px;color:red;"></i>
+                                                                <i id="icon-@nm[0]" class="fa fa-check-circle" style="font-size:20px;color:green;margin-left:3px;"></i>
+                                                                @*<p id="mes" style="color: forestgreen; font-weight: bolder;">Matched</p>*@
+                                                            }
+                                                            else
+                                                            {
+                                                                @*<i style="font-size:20px;color:green; margin-left:19px;"></i>*@
+                                                                <i id="icon-@nm[0]" class="fa fa-check-circle" style="display:none; font-size:20px;color:green;margin-left:3px;"></i>
+                                                                <i id="iconx-@nm[0]" class="fa fa-times-circle" style="font-size:20px;color:red; "></i>
+                                                            }
+                                                        }
+
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="row">
+                                                <div class="col-md-12 ">
+                                                    <div class="d-flex gap-4">
+                                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@temp[0]' autocomplete="off" maxlength="@nm[5]" data-ref="@temp[0]" oninput="checkMatch(this)">
+                                                        @if (temp.Count() > 1)
+                                                        {
+                                                            if (@temp[0] == @temp[1])
+                                                            {
+                                                                <i id="iconx-@nm[0]" class="fa fa-times-circle" style="display:none; font-size:20px;color:red;"></i>
+                                                                <i id="icon-@nm[0]" class="fa fa-check-circle" style="font-size:20px;color:green;margin-left:3px;"></i>
+                                                                @*<p id="mes" style="color: forestgreen; font-weight: bolder;">Matched</p>*@
+                                                            }
+                                                            else
+                                                            {
+                                                                @*<i style="font-size:20px;color:green; margin-left:19px;"></i>*@
+                                                                <i id="icon-@nm[0]" class="fa fa-check-circle" style="display:none; font-size:20px;color:green;margin-left:3px;"></i>
+                                                                <i id="iconx-@nm[0]" class="fa fa-times-circle" style="font-size:20px;color:red; "></i>
+                                                            }
+                                                        }
+
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+
+
+
+                            }
+                            if (@nm[2] == "dropdown")
+                            {
+                                <div class="col-md-4" style="padding-top:10px!important;">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-md-4">
+                                    @if (temp.Count() > 1)
+                                    {
+                                        <p>@temp[0]</p>
+                                    }
+                                </div>
+                                <div class="col-md-4">
+
+                                    @{
+                                        int lastindex = nm.Length;
+                                        string[] nmOption = nm[lastindex - 1].Split(',');
+                                        string Fvalue = nm[lastindex - 2].ToString();
+                                    }
+                                    @if (@nm[0] == "592")
+                                    {
+                                        <input type="text" class="form-control" value="@temp[0]" readonly />
+                                    }
+                                    else
+                                    {
+                                        <div class="row">
+                                            <div class="col-md-12 ">
+                                                <div class="d-flex gap-4">
+                                                    <select name=@nm[0] id='@nm[0]' autocomplete="off" class="form-control" style="width:30rem!important;" data-ref="@temp[0]" onchange="checkMatch(this)">
+                                                        @for (int i = 0; i < nmOption.Length; i++)
+                                                        {
+                                                            if (@nmOption[i].Trim() == Fvalue)
+                                                            {
+                                                                <option selected>@nmOption[i]</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                                            }
+
+                                                        }
+                                                    </select>
+
+                                                    @if (@temp[0] == Fvalue)
+                                                    {
+                                                        @*<i class="fa fa-check-circle" style="font-size:20px;color:green; margin-left:3px;"></i>*@
+                                                        <i id="iconx-@nm[0]" class="fa fa-times-circle" style="display:none; font-size:20px;color:red;"></i>
+                                                        <i id="icon-@nm[0]" class="fa fa-check-circle" style="font-size:20px;color:green;margin-left:3px;"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        @*<i style="font-size:20px;color:green; margin-left:19px;"></i>*@
+                                                        <i id="icon-@nm[0]" class="fa fa-check-circle" style="display:none; font-size:20px;color:green;margin-left:3px;"></i>
+                                                        <i id="iconx-@nm[0]" class="fa fa-times-circle" style="font-size:20px;color:red; "></i>
+                                                    }
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    }
+                                </div>
+
+                            }
+                            if (@nm[2] == "checkbox")
+                            {
+
+                                <div class="col-md-4" style="padding-top:10px!important;">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-md-2" style="padding-top:10px!important; text-align:left;">
+
+                                    @{
+                                        if (@nm[6] == "TRUE")
+                                        {
+                                            <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value="checked" checked>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value=@nm[0]>
+                                        }
+                                    }
+
+                                </div>
+                                <div class="col-md-4">
+                                    @nm[4]
+                                </div>
+
+                            }
+                            if (@nm[2] == "fileUpload")
+                            {
+                                <div class="col-md-4">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                                </div>
+                                <div class="col-md-4">
+                                    @nm[4]
+                                </div>
+
+
+                            }
+                        }
+
+                    </div>
+
+                }
+                <div class="row">
+                    <div class="col-sm-12 cytoscape-parent">
+                        <div class="w-400 h-400 d-inline-block" id="cytoscape-container"></div>
+                    </div>
+                </div>
+
+
+
+                <div class="container">
+
+                    @if (Designation != "Team Member-PV-QC")
+                    {
+                        <div class="row">
+                            <div class="col-md-4">
+                                Report Comment :
+                            </div>
+                            <div class="col-md-8">
+                                <textarea name="Remarks" id="Remarks" rows="5" cols="8">@Html.Raw(@ReportComments)</textarea>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col-md-2">
+                                Select Disposition :
+                            </div>
+                            <div class="col-md-2">
+                                @Html.DropDownList("CDispositionRowId", new SelectList(ViewBag.Disposition, "DispositionRowId", "Disposition"), "-- Select -- ", new { @class = "form-control" })
+                            </div>
+                            <div class="col-md-1">
+                                Severity :
+                            </div>
+                            <div class="col-md-3">
+                                @Html.Editor("Severity", new { htmlAttributes = new { @class = "form-control", @disabled = "disabled", @style = "width: 24rem !important;" } })
+                            </div>
+                            <div class="col-md-1">
+                                Color :
+                            </div>
+                            <div class="col-md-3">
+                                @Html.Editor("ColorName", new { htmlAttributes = new { @class = "form-control", @disabled = "disabled", @name = "ColorName", @style = "width: 24rem !important;" } })
+                            </div>
+                        </div>
+
+                    }
+
+                    <div class="row" style="margin-top:10px;margin-bottom:20px">
+
+                        @if (Designation == "Team Member-Cri-QC" || Designation == "Team Member-Rpt-QC")
+                        {
+                            @Html.ActionLink("Back", "DepartmentTeamMemberQCChecks", "Verification", new { CheckStatusId = CheckStatusid }, new { @class = "btn btn-default VerEmailDetails" })
+                            if (CheckStatusid == "70" || CheckStatusid == "71" || CheckStatusid == "24" || CheckStatusid == "25" || CheckStatusid == "53" || CheckStatusid == "74" || CheckStatusid == "58")
+                            {
+                                <input class="btn bun-bg btn-default" onclick="return validateFormApprove()" type="submit" value="Approve" name="action" />
+                                <input class="btn bun-bg btn-default" onclick="return validateFormReject()" type="submit" value="Rejected" name="action" style="margin-left:10px;" />
+                            }
+                        }
+
+                    </div>
+                </div>
+
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    <script src="~/Scripts/tinymceNew.min.js"></script>
+    <script src="~/Scripts/tinymce-jquery.min.js"></script>
+
+    <script>
+        $('textarea').tinymce({
+            height: 200,
+            plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+            ],
+            toolbar: 'undo redo | blocks | bold italic backcolor | ' +
+                'alignleft aligncenter alignright alignjustify | ' +
+                'bullist numlist outdent indent | removeformat | help'
+        });
+        // Prevent jQuery UI dialog from blocking focusin
+        $(document).on('focusin', function (e) {
+            if ($(e.target).closest(".tox-tinymce, .tox-tinymce-aux, .moxman-window, .tam-assetmanager-root").length) {
+                e.stopImmediatePropagation();
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+               var dispid = '@ViewBag.CDispositionName';
+            var Severityid = '@ViewBag.Severityid';
+            var ColorName = '@ViewBag.ColorName';
+            var Remarks = '@ViewBag.ReportComments';
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+
+            //For Clouse details
+            $("#CDispositionRowId option:selected").each(function () {
+                var $this = $(this);
+                //alert(dispid);
+                //alert(Severityid);
+
+                if ($this.length) {
+                    var selText = $this.text();
+                    var SelectDispositionID = $this.val();
+                    $('#hdnDispositionID').append(SelectDispositionID + ',');
+                    SelectDispositionID += $this.val() + ',';
+                    //console.log(selText);
+                    if ($('#CDispositionRowId').val() == '') {
+                        $('#CDispositionRowId').append(selText + '\n');
+                    }
+
+                    //$("#CDispositionRowId option").filter(function () {
+                    //    return this.text == dispid;
+                    //}).attr('selected', true);
+                    if (dispid != '') {
+                        $('#CDispositionRowId').val(dispid);
+                        $('#hdnDispositionID').val(dispid);
+                        $('#hdnSeverity').val(Severityid);
+                        $('#ColorsName').val(ColorName);
+                        $('#Remarks').val(Remarks);
+
+
+
+
+
+                    }
+
+
+                    //alert('1');
+                    //alert($('#hdnDispositionID').val());
+                }
+            });
+
+            $("#CDispositionRowId").change(function () {
+                $('#selected').html(' ');
+                //alert('hdnDispositionID Change');
+                var SelectDispositionID = '';
+                $("#CDispositionRowId option:selected").each(function () {
+                    var $this = $(this);
+                    if ($this.length) {
+                        var selText = $this.text();
+                        SelectDispositionID += $this.val() + ',';
+                        //console.log(selText);
+                        $('#selected').append(selText + '\n');
+                    }
+                });
+                if (SelectDispositionID.length > 0) {
+                    SelectDispositionID = SelectDispositionID.substring(0, SelectDispositionID.length - 1);
+                } else { SelectDispositionID = ''; }
+                $('#hdnDispositionID').val(SelectDispositionID);
+
+            });
+
+            $(function () {
+                $('#CDispositionRowId').change(function () {
+                    //alert('3');
+                    var url = "/Verification/GetSeverityColor?ClientRowId=" + $("#clientRowId").val() + "&Dispositions=" + $("#hdnDispositionID").val();
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        async: false,
+                        dataType: 'json',
+                        success: function (colors) {
+                            $('#Severity').val(colors.SeverityName);
+                            $('#ColorName').val(colors.ColorName);
+                            $('#ColorsName').val(colors.ColorName);
+                            $('#hdnSeverity').val(colors.SeverityRowId);
+
+                        }
+                    });
+                });
+            });
+
+
+        });
+
+
+
+        function validateFormApprove() {
+            if ($('#ColorName').val() == '') {
+                alert("Please Select Disposition");
+                $('#ColorName').focus();
+                return false;
+            }
+            else {
+                //event.preventDefault();
+                //// Turn off the "Save" button and change text
+                //$(ctl).prop("disabled", true).val(msg);
+                //// Gray out background on page
+                //$("body").addClass("submit-progress-bg");
+                //// Wrap in setTimeout so the UI can update the spinners
+                //$(".submit-progress").removeClass("hidden");
+                ////submit the form.
+                //setTimeout(function () {
+                //    $("form").submit();
+                //}, 1);
+                return true;
+            }
+        }
+        function validateFormReject() {
+            if ($('#CloserViewModel_ActionHistory').val() == '') {
+                alert("Please mention the reason!");
+                $('#CloserViewModel_ActionHistory').focus();
+                return false;
+            }
+            else {
+                $('#CheckStatus').val('Rejected');
+                //event.preventDefault();
+                //// Turn off the "Save" button and change text
+                //$(ctl).prop("disabled", true).val(msg);
+                //// Gray out background on page
+                //$("body").addClass("submit-progress-bg");
+                //// Wrap in setTimeout so the UI can update the spinners
+                //$(".submit-progress").removeClass("hidden");
+                ////submit the form.
+                //setTimeout(function () {
+                //    $("form").submit();
+                //}, 1);
+                return true;
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input[type=datetime]').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: "-66:+10",
+                //onClose: function (dateText, inst) {
+                //    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
+                //}
+            });
+        });
+    </script>
+    <script>
+        function checkMatch(inputEl) {
+            debugger;
+            const refValue = inputEl.getAttribute("data-ref").trim();
+            const inputValue = inputEl.value.trim();
+
+            const checkIcon = document.getElementById("icon-" + inputEl.id);
+            const crossIcon = document.getElementById("iconx-" + inputEl.id);
+
+
+            if (!checkIcon || !crossIcon) return;
+
+
+            if (inputValue === refValue) {
+                checkIcon.style.display = "inline-block";
+                crossIcon.style.display = "none";
+            } else {
+                checkIcon.style.display = "none";
+                crossIcon.style.display = "inline-block";
+            }
+        }
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const inputs = document.querySelectorAll(".match-input");
+            inputs.forEach(el => checkMatch(el));
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var cli = $("#clientRowId").val();
+            $('#171').datepicker({
+                dateFormat: "dd-M-yy",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: "-66:+0",
+            });
+            if (cli === "1680") {
+                $("#645").attr("placeholder", "DD-MM-YYYY");
+                $("#645").datepicker({
+                    dateFormat: 'MM-yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: 'c-100:c+100',
+                    startDate: new Date(),
+                    maxDate: 0,
+                    autoclose: true,
+                    onSelect: function () {
+                        updateDurationStay();
+                    }
+                });
+                $("#646").attr("placeholder", "DD-MM-YYYY");
+                $("#646").datepicker({
+                    dateFormat: 'MM-yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: 'c-100:c+100',
+                    startDate: new Date(),
+                    maxDate: 0,
+                    autoclose: true,
+                    onSelect: function () {
+                        updateDurationStay();
+                    }
+                });
+
+                function updateDurationStay() {
+                    var fromVal = $("#645").val();
+                    var toVal = $("#646").val();
+
+                    if (fromVal && toVal) {
+                        $("#60").val(fromVal + " to " + toVal);
+                    }
+                }
+            }
+
+            if (cli == 446) {
+                $("#60").attr("placeholder", "DD-MM-YYYY");
+                $("#60").datepicker({
+                    dateFormat: 'dd-MM-yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: 'c-100:c+100',
+                    startDate: new Date(),
+                    maxDate: 0,
+                    autoclose: true
+                });
+            }
+            var dNow = new Date();
+            var localdate = (dNow.getFullYear() + '-' + (dNow.getMonth() + 1) + '-' + dNow.getDate());
+            $('#OrderDate').val(localdate);
+            $('#goBack').click(function () {
+                parent.history.back();
+                return false;
+            });
+        });
+
+        //$('#172').bind('copy paste cut', function (e) {
+        //    e.preventDefault();
+        //    alert('cut,copy & paste options are disabled !!');
+        //});
+        var cli1 = $("#clientRowId").val();
+        $("#171").keypress(function (e) {
+            return false;
+        });
+        $("#171").keydown(function (e) {
+            return false;
+        });
+    </script>
+}
+
+<style>
+    .tox-tinymce {
+        margin-top: 10px !important;
+    }
+
+    .tox-editor-header {
+        box-shadow: none !important;
+        z-index: 0 !important;
+        border-bottom: 0.5px solid #000 !important;
+    }
+
+    .tox-statusbar__branding {
+        display: none !important;
+    }
+
+    .ui-widget.ui-widget-content {
+        width: 20%;
+    }
+
+    img {
+        width: 50px;
+        height: 25px;
+    }
+
+    .submit-progress-bg {
+        background-color: lightgray;
+        opacity: .5;
+    }
+
+    .submit-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 1;
+        margin: auto;
+        color: white;
+        border-radius: 0.4em;
+        box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+        -webkit-box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+        .submit-progress i {
+            margin-right: 0.5em;
+            color: black
+        }
+
+    .hidden {
+        display: none;
+    }
+
+    .fa-2x {
+        font-size: 4em;
+    }
+</style>

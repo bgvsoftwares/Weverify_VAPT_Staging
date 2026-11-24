@@ -1,0 +1,915 @@
+﻿@model dynamic
+
+
+@{
+    ViewBag.Title = "Add Special Info (" + Convert.ToString(Session["CandidateName"]) + ")";
+
+
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+    string CheckStatuss = "";
+    string checkStatusid = "";
+    string CandCheckRowid = "";
+    string Package = "";
+
+
+    PersonalRowid = @ViewBag.PersonalRowid;
+    SubCheckId = @ViewBag.SubCheckId;
+    clientRowId = @ViewBag.clientRowId;
+    CheckStatuss = @ViewBag.CheckStatus;
+    checkStatusid = @ViewBag.checkStatusid;
+    CandCheckRowid = @ViewBag.CandCheckRowID;
+    string ReportComments = Convert.ToString(ViewBag.ReportComments);
+
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftDataEntryProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <table class="main-tableframe personal-details-frame" border="0">
+        <tr>
+            <td>@Html.Partial("_PersonalDetails")</td>
+        </tr>
+        <tr>
+            <td>@Html.Partial("_CaseDocumentList")</td>
+        </tr>
+        <tr>
+            <td>@Html.Partial("_DocumentList")</td>
+
+        </tr>
+
+    </table>
+    @if (ViewBag.SpocActionRemark != null)
+    {
+        <table class="main-tableframe personal-details-frame" border="0">
+            <tr>
+                <td>
+                    <div class=" col-12 personal-details-head"><i class="fa fa-file-text-o" aria-hidden="true"></i>  Spoc Remark :</div>
+                </td>
+            </tr>
+            <tr>
+                @foreach (var item in ViewBag.SpocActionRemark)
+                {
+                    if (item.PriorityType == "High")
+                    {
+                        <td style="font-weight: bold; background-color: #ff0000; width: 5%; ">High</td>
+                        <td style="width:95%;">
+                            <p style="font-size: medium; background-color:azure;"> @item.SpocRemark </p>
+                        </td>
+                    }
+                    else
+                    {
+                        <td style="font-weight: bold; background-color: #02fd58; width: 5%; ">Low</td>
+                        <td style="width:95%;">
+                            <p style="font-size: medium; background-color: azure; "> @item.SpocRemark </p>
+                        </td>
+                    }
+                }
+            </tr>
+        </table>
+    }
+    @if (clientRowId == "1470" && ViewBag.PersonalBind.PackageCheckDetails != null)
+    {
+        Package = ViewBag.PersonalBind.PackageCheckDetails.ToString().Replace("Package-", "");
+    }
+    @*@if (clientRowId == "1470" && Package == "CAPCO_Package BNP Paribas (3EDU_6EMP_ID_IDB_GDB_1CER_ DIN_6CRC_UAN_1FPA_1CV)")
+    {
+        <div style="text-align: center;">
+            <a href='@Url.Action("AddCVValidation", "Verification", new { PersonalRowID = PersonalRowid, ClientRowId = clientRowId, SubCheckRowID = SubCheckId})' class="btn bun-bg btn-default iframeCompanyRefNo" style="padding: 5px 10px 5px 10px; font-weight: bold;" id="clip">Add CV Validation</a>
+        </div>
+
+    }*@
+
+<div class="container">
+    @if (ViewBag.ErrorMsg != null)
+    {
+        <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+    }
+    @if (ViewBag.Success != null)
+    {
+        <div class="errormsg">@ViewBag.Success.ToString()</div>
+    }
+    @using (Html.BeginForm("AddSpecialCheckInfoByTeamMember", "Verification", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+        @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+        <input id="SubCheckId" type="hidden" value=@SubCheckId>
+        @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+        <input id="ClientRowID" type="hidden" value=@clientRowId>
+        @Html.Hidden("ClientRowID", clientRowId.ToString())
+
+        <input id="ColorsName" type="hidden" name="ColorsName">
+
+        <input id="checkStatusid" type="hidden" value=@checkStatusid>
+        @Html.Hidden("checkStatusid", checkStatusid.ToString())
+
+        <input id="CheckStatuss" type="hidden" value=@CheckStatuss>
+        @Html.Hidden("CheckStatuss", CheckStatuss.ToString())
+
+        <input id="package" type="hidden" value=@Package>
+        @Html.Hidden("package", Package.ToString())
+
+        @Html.ValidationSummary()
+
+        foreach (var category in Model)
+        {
+            <div class="row" style="margin-bottom:.15rem!important; ">
+                @{
+                    string[] nm = category.Key.Split('_');
+                    string[] temp = category.Value.Split('_');
+
+                    if (@nm[2] == "textbox")
+                    {
+                        <div class="col-md-4 class_anti">
+                            @{
+                                if (nm[4] != "")
+                                {
+                                    <p style="margin-top:30px!important;">
+                                        @if (@nm[3] == "mandatory")
+                                        {
+                                            <span style="color:red!important;">*</span>
+                                        }
+                                        else
+                                        {
+                                            <span style="color:red!important;">&nbsp;</span>
+                                        }
+
+
+                                        @nm[1]
+                                    </p>
+                                }
+                                else
+                                {
+                                    <p>
+                                        @if (@nm[3] == "mandatory")
+                                        {
+                                            <span style="color:red!important;">*</span>
+                                        }
+                                        else
+                                        {
+                                            <span style="color:red!important;">&nbsp;</span>
+                                        }
+
+
+                                        @nm[1]
+                                    </p>
+                                }
+                            }
+                        </div>
+
+                        if (@nm[0] != "114")
+                        {
+                            if (nm[4] != "")
+                            {
+                                <div class="col-md-4">
+                                    <p style="margin-top: 30px;">@temp[0]</p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-md-4">
+                                    <p>@temp[0]</p>
+                                </div>
+                            }
+                        }
+
+                        if (temp.Count() > 1 && @temp[1] != "")
+                        {
+
+                            if (@nm[0] == "114")
+                            {
+                                <div class="col-md-8">
+                                    <textarea name="114" id="114">@temp[1]</textarea>
+                                </div>
+
+                            }
+                            else
+                            {
+                                <div class="col-md-4">
+                                    @if (nm[4] != "")
+                                    {
+                                        <p style="color:red">@nm[4]</p>
+                                    }
+                                    <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@temp[1]' autocomplete="off" maxlength="@nm[5]">
+                                </div>
+                            }
+
+                        }
+                        else
+                        {
+                            if (@nm[0] == "114")
+                            {
+                                <div class="col-md-8">
+                                    <textarea name="114" id="114"> @temp[0] </textarea>
+                                </div>
+                            }
+                            else
+                            {
+
+                                <div class="col-md-4">
+                                    @if (nm[4] != "")
+                                    {
+                                        <p style="color:red">@nm[4]</p>
+                                    }
+                                    <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@temp[0]' autocomplete="off" maxlength="@nm[5]">
+                                </div>
+
+                            }
+
+                        }
+
+                    }
+                    if (@nm[2] == "dropdown")
+                    {
+
+                        <div class="col-md-4" style="padding-top:10px!important;">
+                            @{
+                                if (@nm[3] == "mandatory")
+                                {
+                                    <h7>*</h7>
+                                }
+                            }
+                            @nm[1]
+                        </div>
+                        <div class="col-md-4">
+                            @if (temp.Count() > 1)
+                            {
+                                <p>@temp[0]</p>
+                            }
+                        </div>
+                        <div class="col-md-4">
+                            @nm[4]
+                            @{
+                                int lastindex = nm.Length;
+                                string[] nmOption = nm[lastindex - 1].Split(',');
+                                string Fvalue = nm[lastindex - 2].ToString();
+                                if (Fvalue == "")
+                                {
+                                    Fvalue = nm[lastindex - 3].ToString();
+                                }
+                            }
+                            <select name=@nm[0] id='@nm[0]' autocomplete="off" class="form-control">
+                                @for (int i = 0; i < nmOption.Length; i++)
+                                {
+                                    if (@nmOption[i].Trim() == Fvalue)
+                                    {
+                                        <option selected>@nmOption[i]</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                    }
+
+                                }
+                            </select>
+
+                        </div>
+
+
+                    }
+                    if (@nm[2] == "checkbox")
+                    {
+                        <div class="row">
+                            <div class="col-sm-4" style="padding-top:10px!important;">
+                                @{
+                                    if (@nm[3] == "mandatory")
+                                    {
+                                        <h7>*</h7>
+                                    }
+                                }
+                                @nm[1]
+                            </div>
+                            <div class="col-sm-2" style="padding-top:10px!important; text-align:left;">
+
+                                @{
+                                    if (@nm[6] == "TRUE")
+                                    {
+                                        <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value="checked" checked>
+
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value=@nm[0]>
+
+                                    }
+                                }
+
+                            </div>
+                            <div class="col-sm-4">
+                                @nm[4]
+                            </div>
+                        </div>
+                    }
+                    if (@nm[2] == "fileUpload")
+                    {
+                        <div class="row">
+                            <div class="col-sm-4">
+                                @{
+                                    if (@nm[3] == "mandatory")
+                                    {
+                                        <h7>*</h7>
+                                    }
+                                }
+                                @nm[1]
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+
+                            </div>
+                            <div class="col-sm-4">
+                                @nm[4]
+                            </div>
+                        </div>
+
+                    }
+                }
+
+            </div>
+
+        }
+        <div class="row">
+            <div class="col-sm-12 cytoscape-parent">
+                <div class="w-400 h-400 d-inline-block" id="cytoscape-container"></div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-1">
+                Severity :
+            </div>
+            <div class="col-md-3">
+
+                @Html.DropDownList("Severity",
+                 new SelectList(ViewBag.SeverityGrids, "SeverityGridRowId", "SeverityGridName"),
+                 "-- Select -- ",
+                 new { @class = "form-control" })
+
+            </div>
+            <div class="col-md-1">
+                Color :
+            </div>
+            <div class="col-md-3">
+                @Html.Editor("ColorName", new { htmlAttributes = new { @class = "form-control", @disabled = "disabled", @name = "ColorName" } })
+                @*@Html.Hidden("ColorName", new { @id = "hdnColorName" })*@
+
+            </div>
+            <div class="col-md-1">
+                Check Status :
+            </div>
+            <div class="col-md-3">
+                @Html.DropDownList("CheckStatus", new List<SelectListItem>
+                { new SelectListItem{Text="Completed", Value="Completed"},
+                new SelectListItem{Text="Review Requested", Value="Review Requested"},
+                }, "-- Select --", new { @class = "form-control" })
+
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-4" style="margin-top: 104px;">
+                Action Remarks :
+            </div>
+            <div class="col-md-8">
+                <textarea name="Remarks" id="Remarks" rows="5" cols="8">@ReportComments</textarea>
+            </div>
+
+        </div>
+
+        if (clientRowId == "1470" && Package == "CAPCO_Package BNP Paribas (3EDU_6EMP_ID_IDB_GDB_1CER_ DIN_6CRC_UAN_1FPA_1CV)")
+        {
+            <div class="row mt-3">
+                <div class="col-md-12">
+
+                    <h4 style="text-align:center; background:#11c9b7; color:white; padding:10px;">
+                        CV Validation
+                    </h4>
+
+                    @Html.Action(
+                        "GetCVValidationPartial",
+                        "Verification",
+                        new
+                        {
+                            PersonalRowID = PersonalRowid,
+                            ClientRowId = clientRowId,
+                            SubCheckRowID = SubCheckId
+                        })
+
+                </div>
+            </div>
+        }
+
+        if (checkStatusid.ToString() == "115")
+        {
+            <div class="row">
+                <div class="container " style=" border: 1px solid #dbdcdd; padding: 10px 6px; ">
+                    <div class="row">
+                        @Html.ActionLink("Click to Open World Check Result", "WorldCheckReportResult", "Verification", new { PersonalRowId = PersonalRowid, SubCheckRowId = SubCheckId }, new { @style = "font-size: 15px;", @target = "_blank" })
+
+                    </div>
+                    <div class="row ">
+                        <div class="col-md-6 pl-0 ">
+                            <label>World Check Results IDs</label>
+
+                            @Html.DropDownList("ResultIds", new SelectList(ViewBag.WorldCheckResultIds, "ResultIds", "referenceId"), "-- Select -- ", new { @class = "form-control" })
+                        </div>
+
+                        <div class="col-md-6 pr-0">
+
+                            <label>Statuses</label>
+                            <select class="form-control mb-3" id="StatusesId">
+                                <option value="">-- Select --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 pl-0">
+                            <label>Reasons</label>
+
+                            <select class="form-control mb-3" id="ReasonsId">
+                                <option value="">-- Select --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 pr-0">
+                            <label>Risks</label>
+
+                            <select class="form-control mb-3" id="risksId">
+                                <option value="">-- Select --</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="row pl-0">
+                        <div class="col-md-4 pl-0 ">
+                            <label>Report Status</label>
+
+                            <select class="form-control mb-3" id="ReportStatusID">
+                                <option value="0">-- Select --</option>
+                                <option value="NoMatchFound">No Match Found</option>
+                                <option value="MatchFound">Match Found</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8 pl-0 ">
+                            <label>World Check Resolution Comment</label>
+
+                            <input class="form-control w-100" type="text" name="WorkdCaseRemark" Id="WorkdCaseRemark" value="" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6  p-0 d-flex justify-content-between align-items-end   ">
+                            <div class="">
+                                <input class="btn btn-default  mt-2" type="button" name="Verified World Check Result" Id="btnWorldCheck" value="Verified World Check Result" />
+                            </div>
+                            <div class="">
+                                <input class="btn btn-default  mt-2" data-toggle="modal" data-target="#exampleModalCenter" type="button" name="Verified All Results" Id="btnVerifiedAllResults" value="Verified All Results" />
+                            </div>
+                            <div class="">
+                                <input class="btn btn-default  mt-2" data-toggle="modal" data-target="#exampleModalCenter" type="button" name="Get World Check Report" Id="btnGetWorldCheckReport" value="Get World Check Report" />
+                            </div>
+
+                            <!-- Button trigger modal -->
+                            <!-- Modal -->
+                            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content" style=" background-color: transparent !important;">
+
+                                        <div class="modal-body">
+                                            <div class="d-flex justify-content-center">
+                                                <div class="spinner-border" role="status">
+                                                    <span class="sr-only">Loading...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="overlay1" class="overlay1">
+                                <!-- Pop-up content -->
+                                <div class="popup">
+                                    <div class="d-flex justify-content-center">
+                                        <div class="spinner-border" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="row" style="margin-top :25px;margin-bottom:30px;">
+            <div class="col-md-3 ">
+                @Html.ActionLink("Back", "ManageTeamMemberChecks", "Verification", new { PersonalRowID = PersonalRowid, SubcheckRowID = SubCheckId, CheckStatusId = checkStatusid, ClientRowID = clientRowId, CheckStatus = CheckStatuss, Aging = "" }, new { @class = "btn btn-default" })
+            </div>
+            <div class="col-md-3 ">
+                @Html.ActionLink("Attachment", "UplodSpecialCheckVerDocs", "Verification", new { scid = SubCheckId, pe = PersonalRowid }, new { @class = "iframeUpdateVerDoc cboxElement callbacks btn btn-default", @id = "UplodVerificationDocs" })
+            </div>
+            <div class="col-md-3 ">
+                @Html.ActionLink("Capture Action", "CaptureActionHistoryByVerTM", "Verification", new { CandCheckRowid = CandCheckRowid, cid = clientRowId, scid = SubCheckId, pe = PersonalRowid }, new { @class = "iframeUpdateStatus cboxElement callbacks btn btn-default", @id = "VerificationActionHistostry" })
+            </div>
+            <div class="col-md-2">
+                <input type="submit" value="Submit" onclick="return validateForm()" style="width:15rem!important; padding:2% 0 2% 0; border-radius:.90rem; font-size:1.6rem!important;" />
+            </div>
+        </div>
+    }
+
+</div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+}
+<script src="~/Scripts/tinymceNew.min.js"></script>
+<script src="~/Scripts/tinymce-jquery.min.js"></script>
+<style>
+    .modal-content {
+        border: none !important;
+    }
+
+    .modal-dialog-centered::before {
+        display: none !important;
+    }
+
+    .spinner-border {
+        width: 12rem !important;
+        height: 12rem !important;
+        border: .25em solid rgb(251 252 255) !important;
+        border-right-color: transparent !important;
+    }
+
+    .modal-header {
+        border-bottom: unset !important;
+    }
+
+    .modal-content {
+        background-color: none !important;
+    }
+
+
+    /* Overlay style */
+    .overlay1 {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+    }
+
+    /* Pop-up style */
+    .popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: unset;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Close button */
+    .close-btn {
+        background: red;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
+<script>
+    const openPopup = document.getElementById('btnWorldCheck');
+    const closePopup = document.getElementById('closePopup');
+    const overlay = document.getElementById('overlay1');
+
+    // Open pop-up
+    openPopup.addEventListener('click', () => {
+        overlay.style.display = 'block';
+    });
+
+    // Close pop-up when close button is clicked
+    closePopup.addEventListener('click', () => {
+        overlay.style.display = 'none';
+    });
+
+    // Prevent pop-up from closing when clicking on the overlay
+    overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) {
+            // Do nothing
+        }
+    });
+</script>
+<script>
+    $('#btnWorldCheck').click(function () {
+        var ResultId = $("#ResultIds").val();
+        var StatusesId = $("#StatusesId").val();
+        var ReasonsId = $("#ReasonsId").val();
+        var risksId = $("#risksId").val();
+        var Rmk = $("#WorkdCaseRemark").val();
+        var Pid = $("#PersonalRowid").val();
+        var Sid = $("#SubCheckId").val();
+        if ($("ResultIds").val() != '' && $("StatusesId").val() != '' && $("ReasonsId").val() != '' && $("risksId").val()!='' && $("WorkdCaseRemark").val()!='' )
+        $.ajax({
+            url: "@Url.Action("VerificationWorldCheckResults", "Verification")",
+            data: { Pid: Pid, Sid: Sid ,ResultId: ResultId, StatusesId: StatusesId, ReasonsId: ReasonsId, risksId: risksId, Remark: Rmk },
+            dataType: "json",
+            type: "GET",
+            error: function () {
+                alert(" An error occurred.");
+                document.getElementById('overlay1').style.display = 'none';
+            },
+            success: function (data) {
+                if (data) {
+                    getWorldCheckResultIds();
+                    alert("Status Update Successfully");
+                    document.getElementById('overlay1').style.display = 'none';
+                }
+                else {
+                    document.getElementById('overlay1').style.display = 'none';
+                    alert("Try Again");
+                }
+            }
+        });
+
+    });
+
+     $('#btnVerifiedAllResults').click(function () {
+     var StatusesId = $("#StatusesId").val();
+     var ReasonsId = $("#ReasonsId").val();
+     var risksId = $("#risksId").val();
+     var Rmk = $("#WorkdCaseRemark").val();
+     var Pid = $("#PersonalRowid").val();
+     var SId = $("#SubCheckId").val();
+     if ($("StatusesId").val() != '' && $("ReasonsId").val() != '' && $("risksId").val() != '' && $("WorkdCaseRemark").val() != '')
+         $.ajax({
+             url: "@Url.Action("VerificationWorldCheckALLResults", "Verification")",
+             data: { Pid: Pid, StatusesId: StatusesId, ReasonsId: ReasonsId, risksId: risksId, Remark: Rmk, SId:SId },
+             dataType: "json",
+             type: "GET",
+             error: function () {
+                 alert(" An error occurred.");
+                 document.getElementById('overlay1').style.display = 'none';
+             },
+             success: function (data) {
+                 if (data) {
+                     getWorldCheckResultIds();
+                     alert("Status Update Successfully");
+                     document.getElementById('overlay1').style.display = 'none';
+                 }
+                 else {
+                     document.getElementById('overlay1').style.display = 'none';
+                     alert("Try Again");
+                 }
+             }
+         });
+
+ });
+
+
+
+    $('#btnGetWorldCheckReport').click(function () {
+        var SId = $("#SubCheckId").val();
+        var Pid = $("#PersonalRowid").val();
+        var rStatus = $("#ReportStatusID").val();
+        if ($("ReportStatusID").val() != '0') {
+            $.ajax({
+                url: "@Url.Action("GetAPIWorldCheckReport", "Verification")",
+                data: { Pid: Pid, SId: SId, rStatus: rStatus },
+                dataType: "json",
+                type: "GET",
+                error: function () {
+                    alert("Report Not upload Please try again");
+                    document.getElementById('overlay1').style.display = 'none';
+                },
+                success: function (data) {
+                    if (data) {
+                        alert("Report Upload Successfully");
+                        document.getElementById('overlay1').style.display = 'none';
+                        location.reload();
+
+                    }
+                    else {
+                        document.getElementById('overlay1').style.display = 'none';
+                        window.location.href = '@Url.Action("ManageTeamMemberChecks", "Verification", new { CheckStatus = "TMReview", version = "New" })';
+                    }
+                }
+            });
+        }
+        else {
+            alert("Please select Report Status");
+        }
+
+
+    });
+
+    function getWorldCheckResultIds() {
+        var url = "/Verification/GetWorldCheckResultId?PersonalRowID=" + + $("#PersonalRowid").val() + "&subCheckId=" + $("#SubCheckId").val();
+        $.ajax({
+            url: url,
+            type: 'GET',
+            async: false,
+            dataType: 'json',
+            success: function (data) {
+                var items = '<option >-- Select --</option>';
+                $.each(data, function (i, ResultIds) {
+                    items += "<option value='" + ResultIds.ResultIds + "'>" + ResultIds.referenceId + "</option>";
+                });
+                $('#ResultIds').html(items);
+            }
+        });
+    }
+
+
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $.getJSON('/Verification/GetWorldCheckStatus', function (data) {
+            var items = '<option >-- Select Statuses --</option>';
+            $.each(data, function (i, Status) {
+                items += "<option value='" + Status.StatusId + "'>" + Status.StatusName + "</option>";
+            });
+            $('#StatusesId').html(items);
+        });
+    });
+    //Bind District base on StateRowID
+    $('#StatusesId').change(function () {
+        $.getJSON('/Verification/getWorldCheckreasons/' + $('#StatusesId').val(), function (data) {
+            var items = '<option >-- Select Reasons --</option>';
+            $.each(data, function (i, Reasons) {
+                items += "<option value='" + Reasons.reasonsId + "'>" + Reasons.reasonsName + "</option>";
+            });
+            $('#ReasonsId').html(items);
+        });
+    });
+
+    //Bind Client Abbrivation SubGroup ClientAbbID
+    $('#ReasonsId').change(function () {
+        $.getJSON('/Verification/getWorldCheckRisks/' + $('#ReasonsId').val(), function (data) {
+            var items = '<option>-- Select Risks --</option>';
+            $.each(data, function (i, Risk) {
+                items += "<option value='" + Risk.risksId + "'>" + Risk.risksName + "</option>";
+            });
+            $('#risksId').html(items);
+        });
+    });
+</script>
+<script>
+    $('textarea').tinymce({
+        height: 200,
+        plugins: [
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'anchor', 'searchreplace', 'visualblocks', 'fullscreen',
+            'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+        ],
+        toolbar: 'undo redo | blocks | bold italic backcolor | ' +
+            'alignleft aligncenter alignright alignjustify | ' +
+            'bullist numlist outdent indent | removeformat | help'
+    });
+    // Prevent jQuery UI dialog from blocking focusin
+    $(document).on('focusin', function (e) {
+        if ($(e.target).closest(".tox-tinymce, .tox-tinymce-aux, .moxman-window, .tam-assetmanager-root").length) {
+            e.stopImmediatePropagation();
+        }
+    });
+</script>
+
+<style>
+    .tox-tinymce {
+        margin-top: 10px !important;
+    }
+
+    .tox-editor-header {
+        box-shadow: none !important;
+        z-index: 0 !important;
+        border-bottom: 0.5px solid #000 !important;
+    }
+
+    .tox-statusbar__branding {
+        display: none !important;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Button Enable
+        $(".iframeUpdateStatus").colorbox({ iframe: true, width: "60%", height: "60%" });
+        $(".callbacks").colorbox({
+            onClosed: function () {
+                window.location.reload(false);
+            }
+        });
+
+        $(".iframeUpdateVerDoc").colorbox({ iframe: true, width: "60%", height: "75%" });
+        $(".callbacks").colorbox({
+            onClosed: function () {
+                window.location.reload(true);
+            }
+        });
+
+        $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+
+        $(".iframeEmailStatus").colorbox({ iframe: true, width: "80%", height: "90%" });
+
+
+
+        $('#Severity').change(function () {
+            var url = "/Verification/GetColorBySeverity?ClientRowId=" + + $("#ClientRowID").val() + "&SeverityRowId=" + $("#Severity").val();
+            $.ajax({
+                url: url,
+                type: 'GET',
+                async: false,
+                dataType: 'json',
+                success: function (colors) {
+                    $('#ColorName').val(colors);
+                    //$("#hdnColorName").val(colors);
+                    $("#ColorsName").val(colors);
+                    $("#ColorsName").text = colors;
+                }
+            });
+        });
+    });
+
+
+    //function validateFormApprove() {
+    //    $('#hdApproveStatus').val('Approve');
+    //}
+
+    //function validateFormReject() {
+
+    //    $('#hdApproveStatus').val('Rejected');
+
+    //}
+</script>
+<script>
+    function validateForm() {
+        var ColorNameForShortRemarks = $('#ColorName').val()
+        if (ColorNameForShortRemarks == "Green") {
+            var Remarks = $('#Remarks').val();
+            $('#627').val(Remarks);
+        }
+        else {
+            if ($('#627').val() == '') {
+                alert("Please Fill Short Remarks For non green");
+                $('#627').focus();
+                return false;
+            }
+        }
+    }
+</script>
+<style>
+    img {
+        width: 50px;
+        height: 25px;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#175').datepicker({
+            dateFormat: "dd-M-yy",
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            yearRange: "-66:+0",
+        });
+        var dNow = new Date();
+        var localdate = (dNow.getFullYear() + '-' + (dNow.getMonth() + 1) + '-' + dNow.getDate());
+        $('#OrderDate').val(localdate);
+        $('#goBack').click(function () {
+            parent.history.back();
+            return false;
+        });
+    });
+    //$('#172').bind('copy paste cut', function (e) {
+    //    e.preventDefault();
+    //    alert('cut,copy & paste options are disabled !!');
+    //});
+    $("#175").keypress(function (e) {
+        return false;
+    });
+    $("#175").keydown(function (e) {
+        return false;
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".iframeCompanyRefNo").colorbox({ iframe: true, width: "90%", height: "72%" });
+    });
+</script>

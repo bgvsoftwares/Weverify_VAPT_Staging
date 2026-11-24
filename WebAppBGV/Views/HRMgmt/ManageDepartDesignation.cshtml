@@ -1,0 +1,239 @@
+﻿@{
+    ViewBag.Title = "Manage Department And Designation For " + Session["TMName"].ToString();
+}
+@{
+    //@ViewBag.NavigationBtnBack
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManageTeamMembers", "HRMgmt", null, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnBack = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+    //@ViewBag.NavigationBtnAddNew
+    string faIconAddNew = string.Format("<i class='fa fa-plus-circle' aria-hidden='true'></i> Add Department With Designation");
+    string hyperLinkAddNew = Html.ActionLink("linkTitle", "AddTeamDepartDesignation", "HRMgmt", new { id = Request.QueryString["tmid"] }, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnAddNew = new HtmlString(hyperLinkAddNew.ToString().Replace("linkTitle", faIconAddNew));
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftHRMgmt") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+@Html.AntiForgeryToken()
+<div class="row">
+    <div class="col-md-12">
+
+        <div class="row">
+            <div class="col-md-10">
+                @using (Html.BeginForm("ManageDepartDesignation", "HRMgmt", FormMethod.Get))
+                {
+                    <div class="form-horizontal">
+                        <div class="form-group branch row search-frame">
+                            <label class="col-md-3 control-label">Enter Team Member :</label>
+                            <div class="col-md-5">
+                                @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Department, Designation Name..." })
+                            </div>
+                            <div class="col-md-2">
+                                <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (Model != null && Model.TeamDepartmentList != null)
+        {
+            <div class="row">
+                <div class="col-md-12 table">
+                    @{
+
+                        WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                        grid.Bind(Model.TeamDepartmentList, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                    }
+                    @grid.GetHtml(
+                                    htmlAttributes: new { id = "grid", @class = "table" },
+                                    headerStyle: "thead-inverse",
+                                    rowStyle: "ordertxt",
+                                    footerStyle: "custpaging",
+                                    mode: WebGridPagerModes.All,
+                                    columns: new[]
+                                    {
+                                    grid.Column(header: "No.", style:"col-md-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                    grid.Column(columnName: "DepartmentName", header: "Department", canSort: false, style:"td-2"),
+                                    grid.Column(columnName: "DesignationName", header: "Designation", canSort: false, style:"td-2"),
+
+                                    grid.Column(header : "Reporting Team Members", format : (item) => {
+                                        var link = Html.ActionLink("Manage", "ManageReportedTeamMembers", "HRMgmt", new { tdid = item.TeamDepartmentRowID }, null);
+                                        return link;
+                                    }, style:"edit td-2"),
+
+                                    //grid.Column("Map With All Client", canSort: false, format: (item)=> {
+                                    //    string DeleteLink = string.Format("<a href=\"#\" id=\"MapClient_{0}\" class=\"MapClient\" >{1}</a>", item.TeamDepartmentRowID, "Map");
+                                    //    return new HtmlString(DeleteLink);
+                                    //}, style:"delete td-2"),
+                                    grid.Column("Map Selected Client", canSort: false, format: (item)=> {
+                                        string link = string.Format("<a href=\"#\" id=\"MapSelected_{0}\" class=\"MapSelectedClient\">Map</a>", item.TeamDepartmentRowID);
+                                        return new HtmlString(link);
+                                    }, style:"delete td-2"),
+                                    grid.Column("", canSort: false, format: (item)=> {
+                                        string DeleteLink = string.Format("<a href=\"#\" id=\"Delete_{0}\" class=\"delete\" >{1}</a>", item.TeamDepartmentRowID, "Delete");
+                                        return new HtmlString(DeleteLink);
+                                    }, style:"delete td-1"),
+                                }
+                            )
+                    <div class="total-record">Total Records: @Model.TotalRecords</div>
+                </div>
+            </div>
+        }
+    </div>
+    <div id="selectedClientPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
+        <div style="background:#fff; width:700px; max-height:500px; margin:80px auto; padding:20px; border-radius:4px; overflow-y:auto;">
+            <h4>Select Clients</h4>
+            <input type="text" id="selectedClientSearch" class="form-control" placeholder="Search Client" style="margin-bottom:10px;" />
+            <label><input type="checkbox" id="selectedClientSelectAll" /> Select All Clients</label>
+            <hr />
+            <div id="selectedClientList" style="max-height:250px; overflow-y:auto;"></div>
+            <hr />
+            <button type="button" id="saveSelectedClients" class="btn bun-bg btn-default">Map Selected Clients</button>
+            <button type="button" id="closeSelectedClientPopup" class="btn btn-default">Close</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+
+    <script type="text/javascript">
+
+         $(".MapClient").on("click", function () {
+            var str = $(this).attr("id").split("_");
+            id = str[1];
+
+            var flag = confirm('Do you want to map with all client?');
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("MapTeamDepartmentWithAllClients", "HRMgmt")',
+                    data: { "id": id },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Map With All Client Successfully!!");
+                            setTimeout(function () { window.location.reload("ManageDepartDesignation?tmid="+ @Request.QueryString["tmid"].ToString()); }, 200);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+        });
+
+        $(".delete").on("click", function () {
+            var str = $(this).attr("id").split("_");
+            id = str[1];
+
+            var flag = confirm('Do you want to Delete the Record ?');
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("DeleteTeamDepartAndDesignationById", "HRMgmt")',
+                    data: { "id": id },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Record Deleted Successfully!!");
+                            setTimeout(function () { window.location.reload("ManageDepartDesignation?tmid="+ @Request.QueryString["tmid"].ToString()); }, 200);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+        });
+
+        var selectedMappingTDID = 0;
+
+$(document).on("click", ".MapSelectedClient", function (e) {
+    e.preventDefault();
+    selectedMappingTDID = $(this).attr("id").split("_")[1];
+
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("GetClientsForSelectedMapping", "HRMgmt")',
+        data: { tdid: selectedMappingTDID },
+        dataType: "json",
+        success: function (data) {
+            $("#selectedClientList").html("");
+            $.each(data, function (i, client) {
+                $("#selectedClientList").append(
+                    '<div class="selected-client-row">' +
+                        '<label>' +
+                        '<input type="checkbox" class="selectedClientCheck" value="' + client.ClientRowID + '" ' +
+                        (client.IsMapped ? 'checked' : '') + ' /> ' +
+                        client.ClientName +
+                        '</label>' +
+                    '</div>'
+                );
+            });
+            $("#selectedClientPopup").show();
+        },
+        error: function () {
+            alert("Unable to load client list.");
+        }
+    });
+});
+
+$(document).on("change", "#selectedClientSelectAll", function () {
+    $(".selectedClientCheck").prop("checked", $(this).prop("checked"));
+});
+
+$(document).on("keyup", "#selectedClientSearch", function () {
+    var value = $(this).val().toLowerCase();
+    $(".selected-client-row").each(function () {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+    });
+});
+
+$(document).on("click", "#saveSelectedClients", function () {
+    var clientIds = [];
+    $(".selectedClientCheck:checked").each(function () {
+        clientIds.push($(this).val());
+    });
+
+    if (clientIds.length == 0) {
+        alert("Please select at least one client.");
+        return;
+    }
+
+    $.ajax({
+        type: "POST",
+        url: '@Url.Action("SaveSelectedClientMapping", "HRMgmt")',
+        data: {
+            tdid: selectedMappingTDID,
+            clientIds: clientIds.join(","),
+            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+        },
+        success: function (data) {
+            if (data.result) {
+                alert("Selected clients mapped successfully.");
+                $("#selectedClientPopup").hide();
+            } else {
+                alert("There is some error.");
+            }
+        }
+    });
+});
+
+$(document).on("click", "#closeSelectedClientPopup", function () {
+    $("#selectedClientPopup").hide();
+});
+    </script>
+}
+

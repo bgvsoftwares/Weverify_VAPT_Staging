@@ -1,0 +1,284 @@
+﻿@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Manage Candidate";
+    var ClientRowId = "0";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+
+    ClientRowId = Session["ClientRowID"].ToString();
+}
+
+
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="container-fluid ps-0">
+    <div class="row row-sm mt-2">
+        @section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+    </div>
+    <div class="row row-sm ms-2">
+        <div class="col-xl-12 mb-5">
+            <div class="">
+                @using (Html.BeginForm("ManageClientCandidate", "ClientCandidate", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Hidden("PersonalIds", null)
+
+                    // if(ClientRowId != "679")
+                    //{
+                    <input class="btn bun-bg btn-default export_btn" style="margin-left:5rem;" type="submit" id="btnSendMail" onclick="return validateForm()" value="Send Mail" />
+                    //}
+
+                    <input class="btn bun-bg btn-default export_btn" type="submit" id="btnSendExcel" name="export" onclick="return validateForm()" value="Excel" />
+                }
+            </div>
+            @if (Model != null && Model.TempPQPersonalInfo != null)
+            {
+                <table class="mb-0 client--table-responsive js-serial items table" id="example1" style="border:none; cursor:grab;">
+                    <thead>
+                        @if (ClientRowId == "576")
+                        {
+                            <tr>
+                                <th><input type='checkbox' value="{checkall}" id="select_all" /></th>
+                                <th>Candidate Name</th>
+                                <th>Candidate Email</th>
+                                <th>Entity Name</th>
+                                <th>Package</th>
+                                <th>Created Date</th>
+                                <th>Sent mail Status</th>
+                                <th>Change Password</th>
+                                <th>Action</th>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <th><input type='checkbox' value="{checkall}" id="select_all" style="margin-left:19px!important;" /></th>
+                                <th>Candidate Name</th>
+                                <th>Candidate Email</th>
+                                <th>Entity Name</th>
+                                <th>Package</th>
+                                <th>Created Date</th>
+                                <th>Sent mail Status</th>
+                                @if (ClientRowId == "778")
+                                {
+                                    <th>Upload Doc</th>
+                                }
+                                else
+                                {
+                                    <th>Change Password</th>
+                                }
+                                <th>Action</th>
+                            </tr>
+                        }
+
+                    </thead>
+                    <tbody class="tx-10 text-start">
+                        @foreach (var a in Model.TempPQPersonalInfo)
+                        {
+                            if (ClientRowId == "576")
+                            {
+                                <tr>
+                                    <td>
+                                        @if (a.SendMailStatus == 1)
+                                        {
+                                            <input type='checkbox' value='@a.PersonalRowID' disabled='true' />
+                                        }
+                                        else
+                                        {
+
+                                            <input type='checkbox' value='@a.PersonalRowID' name='personalId' class='personalId' />
+
+                                        }
+                                    </td>
+                                    <td>@a.Name</td>
+                                    <td>@a.CandidateCode</td>
+                                    <td>@a.Entityname</td>
+                                    <td>@a.PackageName</td>
+                                    <td>@a.CreatedDate</td>
+                                    <td>
+                                        @if (a.SendMailStatus == 1)
+                                        {
+                                            <span>YES</span>
+                                        }
+                                        else
+                                        {
+                                            <span>No</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("ChangeCandidatePassword", "ClientCandidate", new { pid = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) }, null)">Change Password</a>
+                                    </td>
+                                    @if (a.ClientRowID == 778)
+                                    {
+                                        <td>
+                                            <a href="@Url.Action("UploadHindCandidatedoc", "ClientCandidate", new { pid = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) }, null)">Upload Doc</a>
+                                        </td>
+                                    }
+                                    else
+                                    {
+
+                                    }
+
+                                    <td>
+                                        @if (a.SendMailStatus == 0)
+                                        {
+                                            <button class="btn btn-danger delete-button" data-id="@a.PersonalRowID.ToString()">Delete</button>
+                                        }
+                                    </td>
+
+                                </tr>
+                            }
+
+                            else
+                            {
+                                <tr>
+                                    <td>
+                                        @if (a.SendMailStatus == 1)
+                                        {
+                                            <input type='checkbox' value='@a.PersonalRowID' disabled='true' />
+                                        }
+                                        else
+                                        {
+                                            <input type='checkbox' value='@a.PersonalRowID' name='personalId' class='personalId' />
+                                        }
+                                    </td>
+                                    <td>@a.Name</td>
+                                    <td>@a.CandidateCode</td>
+                                    <td>@a.Entityname</td>
+                                    <td>@a.PackageName</td>
+                                    <td>@a.CreatedDate</td>
+                                    <td>
+                                        @if (a.SendMailStatus == 1)
+                                        {
+                                            <span>YES</span>
+                                        }
+                                        else
+                                        {
+                                            <span>No</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("ChangeCandidatePassword", "ClientCandidate", new { pid = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) }, null)">Change Password</a>
+                                    </td>
+                                    @if (a.ClientRowID == 778)
+                                    {
+                                        <td>
+                                            <a href="@Url.Action("UploadHindCandidatedoc", "ClientCandidate", new { pid = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) }, null)">Upload Doc</a>
+                                        </td>
+                                    }
+                                    else
+                                    {
+
+                                    }
+                                   
+                                <td>
+                                    @if (a.SendMailStatus == 0)
+                                    {
+                                        <button class="btn btn-danger delete-button" data-id="@a.PersonalRowID.ToString()">Delete</button>
+                                    }
+                                </td>
+                                    
+                                </tr>
+                            }
+
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script type="text/javascript">
+         $(document).ready(function () {
+             $('#manage_Id').val('@Model.ItemSearch.Search');
+         });
+        $(document).on('click', '.delete-button', function () {
+        var id = $(this).data('id');
+
+            if (confirm("Are you sure you want to delete this record?")) {
+                debugger;
+            $.ajax({
+                url: '@Url.Action("ManageClientCandidateDelete", "ClientCandidate")',
+                type: 'POST',
+                data: { id: id },
+                success: function (result) {
+                    //alert("Record deleted successfully.");
+                    location.reload(); // Refresh page or rebind data
+                },
+                error: function () {
+                    alert("Error deleting record.");
+                }
+            });
+        }
+    });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //    // 1st replace first column header text with checkbox
+            $("#example1 th").each(function () {
+                if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                    $(this).text('');
+                    $("<input/>", { type: "checkbox", id: "select_all", value: "" }).appendTo($(this));
+                    //$(this).append("<span>Select All</span>");
+                }
+            });
+
+            //2nd click event for header checkbox for select /deselect all
+            $('#select_all').change(function () {
+                $('input[class="personalId"]').prop('checked', $(this).prop('checked'));
+                var personalIds = '';
+                $('input[class="personalId"]').each(function (index, value) {
+                    if (this.checked) { personalIds += this.value + ','; }
+                });
+                if (personalIds.length > 0) {
+                    personalIds = personalIds.substring(0, personalIds.length - 1);
+                } else { personalIds = ''; }
+                $('#PersonalIds').val(personalIds.trim());
+            });
+        });
+        //3rd click event for checkbox of each row
+        $(document).on('change', 'input[class="personalId"]', function (e) {// on change of state
+            var personalIds = '';
+            $('input[class="personalId"]').each(function (index, value) {
+                if (this.checked) { personalIds += this.value + ','; }
+            });
+
+            if (false == $(this).prop("checked")) { //if this item is unchecked
+                $("#select_all").prop('checked', false); //change "select all" checked status to false
+            }
+            //check "select all" if all checkbox items are checked
+            if ($('.personalId:checked').length == $('.personalId').length) {
+                $("#select_all").prop('checked', true);
+            }
+
+            if (personalIds.length > 0) {
+                personalIds = personalIds.substring(0, personalIds.length - 1);
+            } else { personalIds = ''; }
+            $('#PersonalIds').val(personalIds.trim());
+        });
+
+        // 4th click event for SQL Validation on Submit
+        $('#btnsubmit').click(function () {
+
+            var obj = $('form input[type="text"]').NormalizedString();
+            if (obj == false) {
+                return false;
+            }
+
+
+        });
+
+        $("#manage_Id").SearchString();
+    </script>
+}
+
+
+<style>
+    div#example1_wrapper .row .col-sm-12 {
+        overflow: scroll;
+    }
+</style>

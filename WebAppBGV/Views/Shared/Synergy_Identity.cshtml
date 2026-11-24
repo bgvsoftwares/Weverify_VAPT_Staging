@@ -1,0 +1,240 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    var list = Model.NationalInfoModel.Where(T => T.Status == 1).GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+}
+
+
+@if (Model != null && Model.NationalInfoModel != null && Model.NationalInfoModel.Count > 0)
+{
+    if (Model.NationalInfoModel != null)
+    {
+        int i = 0;
+        int j = 0;
+        int annuxureno = Convert.ToInt32(Session["AnnexureNo"]);
+        int k = Convert.ToInt32(annuxureno);
+        foreach (var a in list)
+        {
+            var Anticident = Model.NationalInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+            var identyType = Model.NationalInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID && T.AntecedentRowID == "154").FirstOrDefault().OpsValue;
+            var ReportComment = a.ReportComment;
+            if (j == 0)
+            {
+                annuxureno = k + 1;
+            }
+            else
+            {
+                annuxureno = annuxureno + 1;
+            }
+            j = 2;
+            var doc = Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID);
+
+            if (doc.Count() > 0)
+            {
+                Session["AnnexureNo"] = annuxureno.ToString();
+            }
+            if (a.SubcheckRowID==136 && a.AntecedentRowID== "154")
+            {
+                identyType = a.OpsValue;
+            }
+
+<div style="page-break-after:always;"></div>
+<table style="border:3px solid #000; margin:auto; width:793px;">
+    <tr>
+        <td>
+            <table style="width: 97%;">
+                <tr>
+                    <td colspan="2" style="width: 40pt;" valign="top"></td>
+                    <td colspan="2" style="width: 40pt; text-align: right;" valign="top">
+                        @*<img src='@Url.Content("~/Images/logo.jpg")' width="60" height="40">*@
+                        <img src="https://bgv.securitas-india.com/Images/logo.jpg" alt="" width="60" height="40" />
+
+                    </td>
+                </tr>
+            </table>
+            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;margin-bottom:8.0pt;text-align:center;line-height:107%;'><strong><span style='font-size:15px;line-height:107%;font-family:"Arial",sans-serif;'><a name="@a.SubcheckRowID"> ID Investigation(@identyType)</a>  </span></strong></p>
+            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;'></p>
+
+            <table style="border:1px solid #000;  border-collapse: collapse; width: 90%; margin: auto;">
+                <tbody>
+                    <tr>
+                        <td colspan="2" style="border:1px solid #000; text-align: center; background-color: rgb(204, 204, 204); font-size: 13px; font-weight: bold; font-family: 'Arial',sans-serif"> Details as per Subject’s Application Form</td>
+                        <td style="border:1px solid #000; text-align: center; background-color: rgb(204, 204, 204); font-size: 13px; font-weight: bold; font-family: 'Arial',sans-serif">Verification Remarks</td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Candidate Name</td>
+                        <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">@Model.PersonalName</td>
+                        <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif; width: 10rem;">
+                            Verified
+                        </td>
+                    </tr>
+
+                    @foreach (var item in Anticident)
+                    {
+
+                        if (item.AntecedentRowID == "100" || item.AntecedentRowID == "326" || item.AntecedentRowID == "327" || item.AntecedentRowID == "104" || item.AntecedentRowID == "154")
+                        {
+                            if (item.AntecedentRowID == "154")
+                            {
+
+                            }
+                            else if (item.AntecedentRowID == "104")
+                            {
+                                <tr>
+                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif"> @item.DisplayNameRep </td>
+
+
+
+
+
+                                    <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">@identyType. @item.DataEntryValue </td>
+
+                                    @if (item.OpsValue != "" && (a.CheckStatusId == "24" || a.CheckStatusId == "36" || a.CheckStatusId == "37"))
+                                    {
+                                        if (item.OpsValue.ToUpper() == item.DataEntryValue.ToUpper())
+                                        {
+                                            <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">Verified</td>
+                                        }
+                                        else
+                                        {
+                                            <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">@item.OpsValue</td>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">-</td>
+                                    }
+                                    @*<td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif; width: 10rem;">
+                            Verified
+                        </td>*@
+                                </tr>
+                            }
+                            else if (item.AntecedentRowID == "326" || item.AntecedentRowID == "327")
+                            {
+                                <tr>
+                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif"> @item.DisplayNameRep </td>
+
+
+
+
+
+                                    <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> Not Provided </td>
+
+
+                                    <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif; width: 10rem;">
+                                        Not Disclosed
+                                    </td>
+
+
+
+
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif"> @item.DisplayNameRep </td>
+
+
+                                    <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> @item.OpsValue </td>
+
+
+                                    <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif; width: 10rem;">
+                                        Verified
+                                    </td>
+
+
+                                </tr>
+                            }
+
+                        }
+                        else
+                        {
+
+                            if (item.AntecedentRowID == "328" || item.AntecedentRowID == "329" || item.AntecedentRowID == "330")
+                            {
+                                <tr>
+                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">@item.DisplayNameRep</td>
+                                    <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">Online verification</td>
+
+                                </tr>
+                            }
+
+                            else if (item.AntecedentRowID == "332")
+                            {
+                                <tr>
+                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">@item.DisplayNameRep</td>
+                                    <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">-</td>
+
+                                </tr>
+                            }
+
+
+                            else
+                            {
+                                <tr>
+                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif"> @item.DisplayNameRep </td>
+                                    <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> @item.OpsValue </td>
+
+
+
+                                </tr>
+                            }
+
+                        }
+
+
+                    }
+                   
+                    <tr>
+                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Remarks</td>
+                        @*<td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">See Attachment @annuxureno</td>*@
+                        <td colspan="2" style="border:1px solid #000;  text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">
+                            @Html.Raw(ReportComment)<br />
+                            @*<a href="#@annuxureno"> See Attachment @annuxureno</a>*@
+                            @if (doc.Count() > 0)
+                            {
+                                <a href="#@annuxureno"> See Attachment @annuxureno</a>
+                            }
+                        </td>
+
+
+                    </tr>
+                  
+                    <tr>
+                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Remarks</td>
+                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> Provided ID number found to be genuine </td>
+                    </tr>
+
+
+
+                </tbody>
+            </table>
+            <p><br></p>
+            <table style="width:97%; margin:auto; border-top:2px solid #000;">
+                <tr>
+                    <td colspan="2" style="width: 40pt;" valign="bottom">
+                        @*<img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50">*@
+                        <img src="https://bgv.securitas-india.com/Images/footer-logo.jpg" alt="" width="120" height="50" />
+                    </td>
+                    <td colspan="2" style="width: 488.35pt; padding: 0cm;">
+                        <p><br></p>
+                        <p style='margin-top:.5pt;margin-bottom:.0001pt; font-size:15px;font-family:"Calibri",sans-serif;text-align:center;line-height:83%;'><span style="font-size:15px;line-height:83%;color:blue; font-weight: bold;">SECURITAS INDIA<span style='font-size:10px;line-height:83%;font-family:"Arial MT",sans-serif;color:blue;'></span></p>
+                        <p style='margin-top:.5pt;margin-bottom:.0001pt; font-size:12px;font-family:"Calibri",sans-serif;text-align:center;'><span style="font-size:13px;color:#010202;">496, Udyog Vihar, Phase-3, Gurgaon-122016 Tel: +91 1244718888<br></span><a href="http://www.securitas.in/"><span style='font-size:10px;font-family:"Arial MT",sans-serif;color:blue;'>www.securitas.in</span></a><span style="font-size:15px;color:blue; margin-left: 60px;">&nbsp;</span><a href="http://www.walsons.com/"><span style='font-size:10px;font-family:"Arial MT",sans-serif;color:blue;'>www.walsons.com</span></a></p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+
+
+        }
+        i++;
+    }
+}
+

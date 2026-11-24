@@ -1,0 +1,93 @@
+﻿@model ViewModels.ClientViewModel.ReportUploadOnOldPortal
+@{
+    ViewBag.Title = "Report Upload On Old Portal";
+}
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="container" style="margin-top:30px;">
+    <div class="Row">
+        @using (Html.BeginForm("ReportUploadOnOldPortal", "ClientServicing", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.ClientRowId, new { @id = "ClientRowId" })
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3">Company Ref No</div>
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.CompanyRefNo, new { htmlAttributes = new { @placeholder = "Comapny Ref No", required = "required", @class = "form-control ", @autocomplete = "off" } })
+                    </div>
+                    <div class="col-md-3">Report Status</div>
+                    <div class="col-md-3">
+
+                        @Html.DropDownListFor(model => model.ReportStatus, new List<SelectListItem>(){
+                                      new SelectListItem{Text="-- Select --", Value="-- Select --", Selected = true},
+                                      new SelectListItem{Text="Interim", Value="Interim"},
+                                      new SelectListItem{Text="Final", Value="Final"}
+                                  }, new { @class = "form-control", @id= "ReportStatus" })
+
+                    </div>
+                </div>
+            </div>
+            <div class="container" style="margin-top:10px">
+                <div class="row">
+                    <div class="col-md-3">Color Code</div>
+                    <div class="col-md-3">
+                        @Html.DropDownListFor(model => model.ColorName, new SelectList(ViewBag.Color, "ColorId", "ColorName"), "-- Select Color -- ", new { @class = "form-control ColorId" })
+
+                    </div>
+                    <div class="col-md-3">Status Update Yes\No</div>
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.StatusYesNo, new { htmlAttributes = new { @class = "form-control " } })
+                    </div>
+                </div>
+            </div>
+
+            <div class="container" style="margin-top:10px">
+                <div class="row">
+                    <div class="col-md-3">Select Report</div>
+                    <div class="col-md-5">
+                        @Html.TextBoxFor(model => model.ObjOldReport, new { @id = "objReport", type = "file" })
+                    </div>
+
+                </div>
+            </div>
+            <div class="container" style="margin-top:30px;">
+                <div class="row">
+                    <button type="submit" id="btnSubmit" class="btn mx-auto mb-4" style="display:block; background-color:#11c9b7;color:white">Report Upload</button>
+                </div>
+            </div>
+
+        }
+    </div>
+</div>
+
+<script>
+
+    $('#CompanyRefNo').change(function () {
+        var CompRefNo = $("#CompanyRefNo").val()
+        $('.ColorId').empty();
+   $.ajax({
+            url: "@Url.Action("ColorNameList", "ClientServicing")",
+       data: { CompanyRefNo: CompRefNo},
+            dataType: "json",
+            type: "GET",
+            error: function () {
+                alert(" An error occurred.");
+            },
+            success: function (data) {
+                var optionhtml1 = '<option value="' +
+                    0 + '">' + "--Select Color--" + '</option>';
+                $(".ColorId").append(optionhtml1);
+
+                $.each(data, function (i) {
+                    var optionhtml = '<option value="' +
+                data[i].Value + '">' +data[i].Text + '</option>';
+                    $(".ColorId").append(optionhtml);
+                });
+
+            }
+        });
+
+    });
+</script>

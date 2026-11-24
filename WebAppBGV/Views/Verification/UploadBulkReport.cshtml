@@ -1,0 +1,74 @@
+﻿
+@model dynamic
+@{
+    ViewBag.Title = "Upload Bulk Report";
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("UploadBulkReport", "Verification", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div> @ViewBag.errormsg</div>
+            <div class="container">
+                <div class="row" style="padding-top:15px;">
+                    <div class=" col-md-3">Company Ref No </div>
+                    <div class=" col-md-6"><textarea id="CompanyRefNoList" name="CompanyRefNoList" rows="26" style="width: 100%;"></textarea></div>                    
+                </div>
+            </div>
+            <div class="container">
+                <div class="row" style="margin-top:20px;margin-left:35%; text-align:center">
+                    <input class="btn bun-bg btn-default" type="submit" id="Generate Report" name="action" value="Generate Report" />
+                </div>
+            </div>
+
+            <div class="container" style="background: #fffdfd; margin-top:30px">
+                <table border="1" style="border-collapse: collapse; width: 100%;">
+                    <thead style=" padding: 10px; font-weight: bolder;background: #031F30;color:white;">
+                        <tr>
+                            <th>Company Ref No</th>
+                            <th>Candidate Name</th>
+                            <th>File Name</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.PersonalDocDetails != null)
+                        {
+                            foreach (var item in ViewBag.PersonalDocDetails)
+                            {
+                                <tr>
+                                    <td>@item.CompanyRefNo</td>
+                                    <td>@item.CandidateFullName</td>
+                                    <td>@item.FileName</td>
+                                    <td>@item.Remarks</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+
+
+            </div>
+
+        }
+    </div>
+</div>
+<style>
+
+
+    select {
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+    }
+
+        select:focus {
+            outline: none;
+        }
+</style>
+
+

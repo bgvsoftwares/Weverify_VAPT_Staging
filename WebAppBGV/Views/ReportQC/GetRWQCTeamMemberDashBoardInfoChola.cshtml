@@ -1,0 +1,351 @@
+﻿@{
+    ViewBag.Title = "Manage Candidate List For Report QC Team Member";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "ReportQC", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+@{
+    string tatHours1 = "";
+    string CaseStatus1 = "";
+    string AllocatedToTL1 = "";
+    string version = "";
+    if (Request.QueryString["tatHours"] != null)
+    {
+        tatHours1 = Request.QueryString["tatHours"].ToString();
+    }
+    if (Request.QueryString["AllocatedToTL"] != null)
+    {
+        AllocatedToTL1 = Request.QueryString["AllocatedToTL"].ToString();
+    }
+    if (Request.QueryString["CaseStatus"] != null)
+    {
+        CaseStatus1 = @Request.QueryString["CaseStatus"].ToString();
+    }
+    version = ViewBag.version;
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    string hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportAddressMge", "ReportQC", new { CaseStatus = CaseStatus1, tatHours = tatHours1 }, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+}
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@*@section LeftNavigation{ @Html.Partial("_NavLeftReportQC") }*@
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("GetRWQCTeamMemberDashBoardInfoChola", "ReportQC", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Client Name :</label>
+                                    <div class="col-md-8">
+                                        @Html.DropDownList("ClientRowID",
+new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+"-- Select Client -- ",
+new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Keyword :</label>
+                                    <div class="col-md-8">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, Securitas Id...", @autocomplete = "off" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Recieving Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("RecievingDate", null, new { @class = "form-control", @id = "RecievingDate", @placeholder = "dd-MMM-yyyy", @autocomplete = "off" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Completed Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("CompletedDate", null, new { @class = "form-control", @id = "CompletedDate", @placeholder = "dd-MMM-yyyy", @autocomplete = "off" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+
+                                    @{
+                                        if (Request.QueryString["CaseStatus"] != null)
+                                        {
+                                            @Html.Hidden("CaseStatus", Request.QueryString["CaseStatus"].ToString())
+                                        }
+
+
+                                    }
+
+                                    <div style="text-align:center;" class="col-md-12">
+                                        <input class="btn bun-bg btn-default" type="submit" onclick="SearchFunction()" value="Search" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.DashboardDetailsRWQC != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12 table">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.DashboardDetailsRWQC, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                              htmlAttributes: new { id = "grid", @class = "table" },
+                                              headerStyle: "thead-inverse",
+                                              rowStyle: "ordertxt",
+                                              footerStyle: "custpaging",
+                                              mode: WebGridPagerModes.All,
+                                              columns: new[]
+                                              {
+                                                            grid.Column(header: "No.", style:"td-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                                            //grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"col-md-3"),
+                                                            grid.Column(header : "Client Name", format : (item) => {
+                                        string ClientName=item.ClientName;
+                                       if (item.ClientRowID==317 || item.ClientRowID==327 )
+                                         {
+                                             //   var link = Html.ActionLink(ClientName, "ReportInterimWipro", "ReportQC", new { id = item.PersonalRowID,Report_Type=item.Report_Type,ReportStatus="BGV2" }, new { @target="_blank", @class="edit" });
+                                             //return link;
+                                             return ClientName;
+                                      }
+                                      else
+                                      {
+                                          return ClientName;
+                                      }
+                                        //return "";
+                                    }, style:"td-1"),
+
+                                                           grid.Column(header : "Securitas ID", format : (item) => {
+                                                                string CompanyRefNo=item.CompanyRefNo;
+                                                                        var link = Html.ActionLink(CompanyRefNo, "ManageCandidateChecksForReportQCTM", "ReportQC", new { PersonalRowID = item.PersonalRowID, dispFor="TeamMember"  }, new { @class="edit" });
+                                                                     return link;
+                                                            }, style:"td-1"),
+                                                                 grid.Column(header : "Interim", format : (item) => {
+                                        if (item.InterimReport==1)
+                                         {
+                                            var link = Html.ActionLink("Report","ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,ClientRowId=item.ClientRowid,Report_Type=item.Report_Type,ReportStatus=CaseStatus1 }, new { @target="_blank", @class="edit" });
+                                            var link1 = Html.ActionLink("Report YTR","ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,ClientRowId=item.ClientRowid,Report_Type=item.Report_Type,ReportStatus=CaseStatus1, ModuleType = "YTR"}, new { @target="_blank", @class="edit"  });
+
+                                            var AutoUploadReportLink = Html.ActionLink(
+                                                "Auto_Upload_Interim",
+                                                "AutoGenerateReportSingle",
+                                                "ReportQC",
+                                                new { companyRefNo = item.CompanyRefNo, RptGenerateType="Interim" }, new { @class="edit"  }
+                                            );
+
+                                            return new HtmlString(link.ToString() + " | " + link1.ToString() + "<br/><br/> " + AutoUploadReportLink.ToString());
+                                          }
+                                     return "";
+                                    }, style:"td-1"),
+                                                                                                     grid.Column(header : "Manual Report Upload", format : (item) =>
+                                    {
+                                        string dropdownHtml = "";
+                                        string dropdownColorHtml = "";
+                                        string fileInputHtml = "";
+                                        string buttonHtml = "";
+                                        if (item.ClientRowID == 268)
+                                        {
+                                            var statusOptions = new List<SelectListItem>
+{
+                                        new SelectListItem { Text = "--Please select report type--", Value = "" },
+                                        new SelectListItem { Text = "IR Report", Value = "Interim" },
+                                              new SelectListItem { Text = "FR Report", Value = "Final" },
+                                              new SelectListItem { Text = "YTR Report", Value = "YTR Report" },
+                                              new SelectListItem { Text = "SR Report", Value = "SR Report" }
+};
+                                            var statusColor = new List<SelectListItem>
+{
+                                    new SelectListItem { Text = "--Please select color code type--", Value = "" },
+                                    new SelectListItem { Text = "Red", Value = "Red" },
+                                          new SelectListItem { Text = "No Color", Value = "No Color" },
+                                          new SelectListItem { Text = "Orange", Value = "Orange" },
+                                          new SelectListItem { Text = "Green", Value = "Green" }
+};
+
+                                            dropdownHtml = "<select style=\"margin-top: 8px; width: 232px; height: 30px;\"  name='status_" + item.PersonalRowID + "' Id='status_" + item.PersonalRowID + "'>";
+
+                                            dropdownHtml += string.Join("", statusOptions.Select(opt =>
+                                                                                 string.Format("<option value='{0}'>{1}</option>",
+                                                                                     opt.Value, opt.Text)
+                                                                             ));
+
+                                            dropdownHtml += "</select>";
+                                            dropdownColorHtml = "<select style=\"margin-top: 8px; width: 232px; height: 30px;\"  name='ColorCode_" + item.PersonalRowID + "' Id='ColorCode_" + item.PersonalRowID + "'>";
+
+                                            dropdownColorHtml += string.Join("", statusColor.Select(opt =>
+                                                                                 string.Format("<option value='{0}'>{1}</option>",
+                                                                                     opt.Value, opt.Text)
+                                                                             ));
+
+                                            dropdownColorHtml += "</select>";
+
+                                            fileInputHtml = "<input style=\"margin-top: 8px; width: 232px; height: 30px;\"  type='file' name='file_" + item.PersonalRowID + "' Id='file_" + item.PersonalRowID + "' />";
+                                            buttonHtml = "<button style=\"margin-top: 8px; width: 132px; height: 30px;background: #11c9b7;\"  onclick=\"UploadReport(" + item.PersonalRowID + "," + item.ClientRowID + ")\">Upload</button>";
+
+                                        }
+                                        return new HtmlString(dropdownHtml + "<br/> " + dropdownColorHtml + "<br/> " + fileInputHtml + "<br/> " + buttonHtml);
+                                    }),
+
+                                                            grid.Column(columnName: "CandidateName", header: "Candidate Name", canSort: false, style:"td-1"),
+                                                            grid.Column("CreatedDate", "Created-Date", format: (item) => item.CreatedDate != DateTime.MinValue ? item.CreatedDate.ToString("dd-MMM-yyyy") : "", canSort: false,style:"td-1"),
+                                                            grid.Column(columnName: "CaseStatus", header: "Status", canSort: false, style:"td-1"),
+                                                            grid.Column(header : "Action", format : (item) =>
+                                                            {
+                                                                var link = Html.ActionLink("History", "CaseActionHistories", "ReportQC", new { pid = item.PersonalRowID }, new { @class = "iframeActionHistories cboxElement" });
+                                                                return link;
+                                                            }, style:"edit td-1"),
+
+                                        grid.Column(header : "SOW ADD", format : (item) => {
+                                        if (item.ClientRowId==317 || item.ClientRowId==327)
+                                         {
+
+                                              var link=@Html.ActionLink("SOW Add", "AddPenaltyamount", "ReportQC", new { PersonalRowID=item.PersonalRowID,ClientRowId=item.ClientRowId  },  new { @class = "Remindermail  callbacks"});
+                                            return link;
+                                          }
+                                     return "";
+                                    }, style:"td-1"),
+                                                                                                                                                                                                                                                            grid.Column(header : "Map", format : (item) => {
+                                                                                                                                                    var link = Html.ActionLink("Artifacts", "UpdateReportArtifactsCaseDocByRWQCTM", "ReportQC", new { Pid = item.PersonalRowID}, new { @class="edit iframeRptArtifactCaseDoc cboxElement" });
+                                                                                                                                                    return link;
+}),
+                                          grid.Column(header : "Report Edit", format : (item) => {
+
+                                                var link = Html.ActionLink("Edit/Update", "UpdateAllChecksDetails", "ReportQC", new { id = item.PersonalRowID,CaseStatus = CaseStatus1,version=version}, new { @class="edit" });
+                                            return link;
+
+                                    }),
+                             grid.Column(header : "Scop Edit", format : (item) => {
+
+                                                var link = Html.ActionLink("Update", "UpdateScopOfVerificationDetails", "ReportQC", new { id = item.PersonalRowID,CaseStatus = CaseStatus1,version=version}, new { @class="edit" });
+                                            return link;
+
+                                    })
+
+
+
+                                              }
+                                       )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @*<script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+        <link href="~/Content/colorbox.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery.colorbox-min.js"></script>*@
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+            $(".iframeRptArtifactCaseDoc").colorbox({ iframe: true, width: "80%", height: "65%" });
+            $(".Remindermail").colorbox({ iframe: true, width: "40%", height: "50%" });
+            $("#grid th").each(function () {
+                if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                    $(this).text('');
+                    $("<input/>", { type: "checkbox", id: "select_all", value: "" }).appendTo($(this));
+                    //$(this).append("<span>Select All</span>");
+                }
+            });
+
+            $('#RecievingDate').datepicker({
+                dateFormat: "dd-M-yy",
+                changeMonth: true,
+                changeYear: true,
+                //showButtonPanel: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedDate').datepicker({
+                dateFormat: "dd-M-yy",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+        });
+    </script>
+
+    <script>
+    function UploadReport(pid, Cid) {
+        debugger;
+        var Status = $('#status_' + pid).val();
+        var ColorCode = $('#ColorCode_' + pid).val();
+        var file = $('#file_' + pid).val();
+        if (Status == "")
+        {
+            alert("Please select report type")
+            return false;
+        }
+        if (ColorCode == "") {
+            alert("Please select color code type")
+            return false;
+        }
+        if (file == "") {
+            alert("Please update report file")
+            return false;
+        }
+
+        //$("body").addClass("submit-progress-bg");
+        //// Wrap in setTimeout so the UI can update the spinners
+        //$(".submit-progress").removeClass("hidden");
+        ////submit the form.
+        //setTimeout(function () {
+        //    $("form").submit();
+        //}, 1);
+        var formData = new FormData();
+        formData.append("Fid", $('#file_' + pid)[0].files[0]);
+        formData.append("Ccode", $('#ColorCode_' + pid).val());
+        formData.append("Rid", $('#status_' + pid).val());
+        formData.append("Pid", pid);
+        formData.append("Cid", Cid);
+        $(".submit-progress").css("display", "flex");
+            $.ajax({
+                url: '@Url.Action("UploadReport", "ReportQC")',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success == true) {
+                        $(".submit-progress").css("display", "none");
+                        Swal.fire({
+                            title: "Success",
+                            text: "Report Uploaded Successfully",
+                            icon: "success"
+                        });
+                        location.reload();
+                    }
+                    else {
+                        $(".submit-progress").css("display", "none");
+                        Swal.fire({
+                            title: "Failed",
+                            text: response.message,
+                            icon: "failed"
+                        });
+                    }
+
+                },
+                error: function (xhr, status, error) {
+
+                    alert('Error uploading file: ' + error);
+                }
+            });
+    }
+
+    </script>
+
+}
+
+
+

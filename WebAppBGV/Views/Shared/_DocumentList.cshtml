@@ -1,0 +1,210 @@
+﻿@{
+    string Clientrowid = Convert.ToString(ViewData["clientRowId"]);
+}
+
+@if (ViewBag.GetDocumentList != null && ViewBag.GetDocumentList.Count > 0)
+{
+    <table width="100%" id="displaydoc">
+
+
+        <tr>
+            <td width="25%">
+                <div class="personal-details-head"><i class="fa fa-file-text-o" aria-hidden="true"></i> Document List :</div>
+                @*@if ((Session["ClientRowID"] == "317" || Session["ClientRowID"] == "327") || (ViewBag.clientRowId == "317" || ViewBag.clientRowId == "327"))
+                    {
+                        <button type="button" id="btnDownloadZipCheck" class="btn btn-default">
+                            Download Zip
+                        </button>
+
+                    }*@
+            </td>
+            <td width="25%">
+                <div class="personal-details-head">
+                    <i class="fa fa-file-text-o" aria-hidden="true"></i>
+
+                    @for (int i = 0; i < ViewBag.GetDocumentList.Count; i++)
+                    {
+                        var item = ViewBag.GetDocumentList[i];
+                        if (i == 0)
+                        {
+                            @Html.ActionLink(
+                                    "Artifacts",
+                                    "UpdateReportArtifactsDocByRWQCTM",
+                                    "ReportQC",
+                                    new { Pid = item.PersonalRowID, SubCheckId = item.SubCheckRowID, checkstatusid = "0" },
+                                    new { @class = "edit iframeRptArtifactDoc cboxElement", style = "font-weight: bold; font-size:medium; color: #FFFFFF;" }
+                                    )
+                        }
+                    }
+
+                    
+
+                </div>
+            </td>
+            <td width="25%">
+                <div class="personal-details-head">
+                    <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                        @for (int i = 0; i < ViewBag.GetDocumentList.Count; i++)
+                        {
+                            var item = ViewBag.GetDocumentList[i];
+                            if (i == 0)
+                            {
+                                @Html.ActionLink(
+                                        "Case_Report",
+                                        "ReportMain",
+                                        "ReportQC",
+                                        new { PersonalRowID = item.PersonalRowID, Report_Type = "", CaseStatus = "", ClientRowId = item.ClientRowId, ReportStatus = "Final" },
+                                        new { @target = "_blank", @class = "edit", style = "font-weight: bold; font-size:medium; color: #FFFFFF;" }
+                                        )
+                            }
+                        }
+                    
+                </div>
+            </td>
+            <td>
+                <div class="personal-details-head">
+                    <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                        @for (int i = 0; i < ViewBag.GetDocumentList.Count; i++)
+                        {
+                            var item = ViewBag.GetDocumentList[i];
+                            if (i == 0)
+                            {
+                                @Html.ActionLink(
+                                        "Check_Report",
+                                        "ReportMain",
+                                        "ReportQC",
+                                        new { PersonalRowID = item.PersonalRowID, Report_Type = "CheckWise", CaseStatus = "", ClientRowId = item.ClientRowId, SubCheckRowID = item.SubCheckRowID, IsCheckWiseReport = 1, CheckFamilyRowID = item.CheckFamilyRowID },
+                                        new { @target = "_blank", @class = "edit", style = "font-weight: bold; font-size:medium; color: #FFFFFF;" }
+                                        )
+                            }
+                        }
+                    
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" height="2"></td>
+        </tr>
+        <tr>
+            <td colspan="4" valign="top">
+                @if ((Session["ClientRowID"] == "317" || Session["ClientRowID"] == "327") || (Clientrowid == "317" || Clientrowid == "327"))
+                {
+                    <button type="button" id="btnDownloadZipCheck" class="btn btn-default">
+                        Download Zip
+                    </button>
+
+                }
+                <table class="table">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th class="top-head">Document Type</th>
+                            <th class="top-head">File Name</th>
+                            <th class="top-head">Upload From</th>
+                            <th class="top-head">Remarks</th>
+                            <th class="top-head">Upload Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in ViewBag.GetDocumentList)
+                        {
+                            <tr>
+                                <td class="name">@item.DocumentType</td>
+                                <td class="filename">
+                                    @if (Session["VendorRowID"] != null)
+                                    {
+                                        <table>
+                                            <tr>
+                                                <td style="font-size:xx-small"> <a href="@Url.Action("GetSubNotMatchMail", "Home", new { ImageName = item.FileName })">@item.FileName</a></td>
+                                                @if (item.GeoCo != "")
+                                                {
+                                                    <td style="font-size:xx-small">(  @item.GeoCo )</td>
+
+                                                }
+
+                                            </tr>
+                                        </table>
+
+
+                                    }
+                                    else
+                                    {
+                                        if (@item.SubCheckRowID == 0)
+                                        {
+                                            <a target="_blank" href='@Url.Content("~" + @item.FilePath)'>LOA Document </a>
+                                        }
+                                        else
+                                        {
+                                            if (item.DocumentType == "Insuff Document by API" || item.DocumentType == "Check wise Document by API")
+                                            {
+                                                <a target="_blank" href='@Url.Content("https://api.weverifyglobal.com/CaseDocsFromAPI?fileName=" + @item.FileName)'>@item.FileName</a>
+                                            }
+                                            else if (item.DocumentType == "OFAC_Artifact" && !item.FileName.Contains(".jpg") && !item.FileName.Contains(".JPG") && !item.FileName.Contains(".pdf"))
+                                            {
+                                                <a target="_blank" href='@Url.Content("~/Documents/CandidateDocuments/ProvidedDocuments/" + @item.FileName +".jpg")'>@item.FileName</a>
+
+                                            }
+                                            else
+                                            {
+                                                <a target="_blank" href='@Url.Content("~/Documents/CandidateDocuments/ProvidedDocuments/" + @item.FileName)'>@item.FileName</a>
+                                            }
+                                        }
+
+                                    }
+
+                                    <a href="@Url.Action("delete", "Home", new { personalRowId = @item.PersonalRowID, subCheckId = @item.SubCheckRowID,doctype=@item.DocumentType,fileName=@item.FileName,verifiedUploadRowID=@item.VerifiedUploadRowID,gtr=HttpContext.Current.Request.Url.ToString().ToLower()  })" onclick="return confirm('Are you sure you want to delete doc?')"><img id="btndelete" src='@Url.Content("~/Images/Delete-Icon-PNG-Graphic-Cave.png")' style="width:50px; height:30px;" /></a>
+
+                                </td>
+                                <td class="name">@item.DocumentUploadFrom</td>
+                                <td class="name">@item.Remarks</td>
+                                <td class="name">@item.UploadDate</td>
+                            </tr>
+                        }
+                        <tr>
+                            <td height="12" colspan="5"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <script>
+        $(document).ready(function () {
+            $(".iframeRptArtifactDoc").colorbox({ iframe: true, width: "80%", height: "70%" });
+        });
+    </script>
+}
+
+<script>
+    $("#btnDownloadZipCheck").click(function () {
+        debugger
+        $.ajax({
+            url: '@Url.Action("DownloadZipCheck", "Verification")',
+            type: 'GET',
+            data: {
+                PersonalRowID: '@ViewBag.PersonalRowid',
+                SubCheckRowID: '@ViewBag.SubCheckId'
+            },
+            success: function (response) {
+
+            if (response.success === false) {
+            alert(response.message);
+            }
+            else {
+
+
+window.location =
+    '@Url.Action("DownloadZipCheck", "Verification")'
+    + '?PersonalRowID=@ViewBag.PersonalRowid'
+    + '&SubCheckRowID=@ViewBag.SubCheckId';
+
+
+            }
+            },
+            error: function () {
+            alert("Error downloading zip file.");
+            }
+            });
+
+            });
+</script>

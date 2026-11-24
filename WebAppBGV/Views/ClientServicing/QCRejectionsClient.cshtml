@@ -1,0 +1,127 @@
+@{
+    ViewBag.Title = "QC Rejection Client";
+}
+
+@section DisplayTitle
+{
+    @Html.Partial("_DisplayTitle")
+}
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css" />
+
+<div class="container-fluid">
+
+    @using (Html.BeginForm("QCRejectionsClient", "ClientServicing", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        if (ViewBag.Data != null)
+        {
+            <div class="container-fluid ps-0 mt-2 pb-5" style="margin-bottom:2rem;">
+
+                <table class="table table-bordered table-striped align-middle shadow-sm border-0"
+                       id="example1"
+                       style="font-size:1.5rem; width:100%;">
+
+                    <thead class="table-secondary text-center border-dark">
+                        <tr>
+                            <th class="border border-dark">Resume ID</th>
+                            <th class="border border-dark">Securitas ID</th>
+                            <th class="border border-dark">Candidate Name</th>
+                            <th class="border border-dark">QC Rejection Client Date</th>
+                            <th class="border border-dark">Check Details</th>
+                            <th class="border border-dark">QC Rejection Remarks</th>
+                            <th class="border border-dark">Documents if any uploaded</th>
+                        </tr>
+                    </thead>
+
+                    <tbody style="text-align:center;">
+
+                        @foreach (var item in ViewBag.Data)
+                        {
+                            <tr>
+                                <td class="border border-dark">@item.ResumeID</td>
+                                <td class="border border-dark">@item.SecuritasID</td>
+                                <td class="border border-dark">@item.CandidateName</td>
+                                <td class="border border-dark">@item.QCRejectionDate  </td>
+                                <td class="border border-dark">
+                                    @Html.ActionLink("Show", "ClientCheckStatusNew", "ClientServicing", new { CompanyRefNo = item.SecuritasID }, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" })
+                                </td>
+                                <td class="border border-dark">
+                                    @Html.ActionLink("History", "CaseActionHistories", "ReportQC",
+                                        new { pid = item.Personalrowid }, // Note: Ensure PersonalRowID is in your AgencyReverifyCases class
+                                        new { @class = "iframeActionHistories cboxElement" })
+                                </td>
+                                <td class="border border-dark">
+                                    @Html.ActionLink("Case Documents", "UploadCandidateDocNew", "ClientServicing", new { CompanyRefNo = WebAppBGV.CommonMethods.clsCommonMethods.PEncrypt(item.SecuritasID.ToString()), SubCheckRowID = 0, personalrowid = WebAppBGV.CommonMethods.clsCommonMethods.PEncrypt(item.Personalrowid.ToString()) }, new { @class = "iframeActiondocs cboxElement" })
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+    else
+                {
+         <div style="text-align: center; margin-top: 40px;">
+             <h3>No Cases Available</h3>
+             <p>There are currently no cases to display.</p>
+         </div>
+                }
+    }
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+<link href="~/Content/colorbox.css" rel="stylesheet" />
+<script src="~/Scripts/jquery.colorbox-min.js"></script>
+@*<script src="~/assets/plugins/datatable/js/dataTables.buttons.min.js"></script>
+<script src="~/assets/NewScript/jquery-3.7.1.min.js"></script>>*@
+
+<script>
+    $(document).ready(function () {
+        $('#example1').DataTable({
+            "pageLength": 20,
+            "lengthChange": false,
+            "ordering": false,
+            "searching": true,
+            "paging": true,
+            "language": {
+                search: "<b>Search</b>:"
+            },
+            "initComplete": function () {
+                $('.dataTables_filter input').attr('type', 'text');
+            }
+        });
+
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $(".iframeActionHistories").colorbox({
+            iframe: true,
+            width: "60%",
+            height: "80%"
+        });
+
+        $(".iframeActiondocs").colorbox({
+            iframe: true,
+            width: "60%",
+            height: "80%"
+        });
+
+        $(".iframeUpdateStatus").colorbox({
+            iframe: true,
+            width: "80%",
+            height: "80%"
+        });
+
+    });
+</script>

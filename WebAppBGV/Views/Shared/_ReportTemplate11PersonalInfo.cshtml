@@ -1,0 +1,369 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+
+@*@if (Model != null && Model.EducationProvidedList != null && Model.EducationProvidedList.Count() > 0 && Model.AntecedentList != null && Model.AntecedentList.Count() > 0)
+    {
+        foreach (var ProvidedInfo in Model.EducationProvidedList)
+        {
+            var EducationVerInfo = Model.EducationVerifiedList.Where(ver => ver.EducationRowID == ProvidedInfo.EducationRowID).FirstOrDefault();
+            var antecentList = Model.AntecedentList.Where(a => a.CheckFamilyRowID == ProvidedInfo.CheckFamilyRowID && a.SubCheckRowID == ProvidedInfo.SubCheckRowID).ToList();*@
+
+<page id="PrintSrc" size="A4">
+    <div style="page-break-before:avoid;"></div>
+    @*<table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;"><h1 style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;"></h1></p></td>
+                <td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+            </tr>
+            <tr><td colspan="2">&nbsp;</td></tr>
+        </table>*@
+    <!--New Table-->
+    <!--Exiting Table-->
+    <table width="793" border="0" cellspacing="0" cellpadding="0" align="center">
+        <tr>
+            <table width="793" align="center" style="border-bottom:4px solid #00b4fb;">
+                <tr>
+                    <td align="left" valign="bottom">
+                        <table width="100%">
+                            <tr>
+                                <td valign="bottom" width="30%">
+                                    <img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40">
+                                </td>
+                                <td width="70%" align="right">
+                                    <table width="100%">
+                                        <tr>
+                                            <td style="
+    padding: 0 1%;" width="60%" align="right">
+                                                <p>
+                                                    <strong>Subject Name:</strong>
+                                                </p>
+                                            </td>
+                                            <td style="
+    padding: 0 1%;" width="40%" align="right">
+                                                <p>
+                                                    @Model.PersonalName
+                                                </p>
+                                            </td>
+
+                                        </tr>
+
+                                        <tr>
+                                            <td style="padding: 0 1%;" align="right">
+                                                <p style="text-wrap:none">
+                                                    <strong>Vendor Ref No.:</strong>
+                                                </p>
+                                            </td>
+                                            <td style="padding: 0 1%;" align="right">
+                                                <p>
+                                                    @Model.CompanyRefNo
+                                                </p>
+                                            </td>
+                                        </tr>
+
+
+                                        <tr>
+                                            <td style="padding: 0 1%;" align="right">
+                                                <p>
+                                                    <strong>Vendor Name :</strong>
+                                                </p>
+                                            </td>
+                                            <td style="padding: 0 1%;" align="right">
+                                                <p>
+                                                    Securitas-India
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <table width="793" border="0" cellspacing="0" cellpadding="0" align="center" style="border:none">
+                <tr>
+                    @if (Model.Report_Type != "1")
+                    {
+                        <td width="88%">
+                            <p style="font-size:32px; color:#777777; text-decoration:underline; text-align:center; margin:0px 0px 0px 0px; font-weight:bold;">
+                                @*SECURITAS INDIA*@
+                            </p> <p style="text-align: center;border: 2px solid #808080;box-shadow: 0px 1px 2px 1px #c0c0c0;color: #808080;text-transform: uppercase;padding: 5px;width: 35%;font-weight: bolder;margin: 25px 0px 20px 183px;letter-spacing: 0.5px;font-size:14px;">REPORT TYPE FINAL</p>
+                        </td>
+                    }
+                    else
+                    {
+                        <td width="88%">
+                            <p style="font-size:32px; color:#777777; text-decoration:underline; text-align:center; margin:0px 0px 0px 0px; font-weight:bold;">
+                                @*SECURITAS INDIA*@
+                            </p> <p style="text-align: center;border: 2px solid #808080;box-shadow: 0px 1px 2px 1px #c0c0c0;color: #808080;text-transform: uppercase;padding: 5px;width: 35%;font-weight: bolder;margin: 25px 0px 20px 183px;letter-spacing: 0.5px;font-size:14px;">REPORT TYPE INTERIM</p>
+                        </td>
+                    }
+                </tr>
+
+            </table>
+
+            <p>&nbsp;</p>
+            <br />
+            @*<h2 style="text-align: center;">
+                                    @if (Model.ReportPart == "CDB")
+                        {
+                            <strong>Criminal Database Check Report</strong>
+                }
+                else
+                {
+                            <strong>Background Verification Report</strong>
+                }
+                                </h2>*@
+            <table width="793" border="1" cellspacing="0" cellpadding="0" align="center">
+                <tbody>
+                    <tr>
+                        <td>
+                            <table width="100%" border="1">
+                                <tr>
+                                    <td width="50%" align="center" style="padding:1.5%;"><span style="color:#000;">Securitas-India</span></td>
+                                    <td width="50%" align="center" style="background:#00b4fb;padding:1.5%; -webkit-print-color-adjust:exact;">Concentrix</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table width="100%" border="1">
+                                <tr>
+                                    <td align="center" style="padding:1%">@Model.OrderDate.Value.ToString("dd/MM/yyyy")</td>
+                                    <td align="center" style="padding:1%;color-adjust:exact;background:@Model.FinalColorCode">@Model.FinalColor</td>
+                                    <td align="center" style="padding:1%">@Model.ReportDate.Value.ToString("dd/MM/yyyy")</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table width="100%" border="1">
+                                <tr>
+                                    <td colspan="2" align="center" style="padding:1.5%;background:#ccc;color-adjust:exact;"><b>Candidate / Employee Information</b></td>
+                                </tr>
+                                <tr>
+                                    <td width="50%">Name Of Candidate / Employee</td>
+                                    <td width="50%">@Model.PersonalName</td>
+                                </tr>
+                                <tr>
+                                    <td width="50%">Applicant / Employee ID</td>
+                                    <td width="50%">@Model.EmploymentId</td>
+                                </tr>
+                                <tr>
+                                    <td width="50%">Location</td>
+                                    <td width="50%">@Model.TechLocation</td>
+                                </tr>
+                                <tr>
+                                    <td width="50%">Process</td>
+                                    <td width="50%">@Model.ProcessName</td>
+                                </tr>
+                                <tr>
+
+
+                                    @if (@Model.PersonalChecksBriefDetails.Where(T => T.subCheckId == 244).Count() > 0)
+                                    {
+                                        <td colspan="2" align="center" style="padding:1.5%;background:#ccc;color-adjust:exact;"><b>Database Check Summary</b></td>
+                                    }
+                                    else
+                                    {
+                                        <td colspan="2" align="center" style="padding:1.5%;background:#ccc;color-adjust:exact;"><b>Background Verification Summary</b></td>
+                                    }
+
+                                    @*<td colspan="2" align="center" style="padding:1.5%;background:#ccc;color-adjust:exact;"><b>Background Verification Summary</b></td>*@
+
+
+                                </tr>
+                                <tr>
+                                    <td colspan="2" align="center" style="padding:0.5%;">&nbsp;</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table width="100%" border="1">
+                                @if (Model.ReportPart == "CDB")
+                                {
+                                    var a = Model.PersonalChecksBriefDetails.Where(T => T.CheckFName == "Special Checks").ToList();
+                                    Model.PersonalChecksBriefDetails = null;
+                                    Model.PersonalChecksBriefDetails = a.ToList();
+                                }
+                                @*else
+                                    {
+                                        var a = Model.PersonalChecksBriefDetails.Where(T => T.CheckFName != "Special Checks").ToList();
+                                        Model.PersonalChecksBriefDetails = null;
+                                        Model.PersonalChecksBriefDetails = a.ToList();
+                                    }*@
+                                @{int i = 1; bool repeat = false;}
+                                @foreach (var item in Model.PersonalChecksBriefDetails)
+                                {
+                                    <tr>
+                                        @if (@Model.PersonalChecksBriefDetails.Where(T => T.subCheckId == 244).Count() > 0)
+                                        {
+                                            <td colspan="3" style="background:#ccc;padding:0.5%;color-adjust:exact;" align="center"><b>Credit Check Verification</b></td>
+                                        }
+                                        else if (@Model.PersonalChecksBriefDetails.Where(T => T.CheckFamilyRowID == 40).Count() > 0)
+                                        {
+                                            if (repeat == false)
+                                            {
+                                                <td colspan="3" style="background:#ccc;padding:0.5%;color-adjust:exact;" align="center"><b>Criminal Database Checks</b></td>
+                                                repeat = true;
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            <td colspan="3" style="background:#ccc;padding:0.5%;color-adjust:exact;" align="center"><b>@item.CheckFName</b></td>
+
+                                        }
+
+                                    </tr>
+                                    <tr style="font-size:12px; font-weight:bold; padding:5px;">
+
+                                        @*@if (Session["Type"].ToString() == "ReprtToPDF")
+                                                {
+                                                                                <td style="font-size:12px; font-family:Calibri; padding-left:5px;"><a href="#@item.SubCheckFName.TrimEnd()" style="font-size:12px; font-family:Calibri; padding-left:5px;">@item.SubCheckFName.TrimEnd()</a></td>
+                                            }*@
+                                        @if (@item.subCheckId == 244)
+                                        {
+                                            <td width="50%">Credit Check </td>
+                                        }
+                                        else if (Model.ClientRowID == 607 && item.CheckFamilyRowID == 2)
+                                        {
+                                            if (item.subCheckId == 2)
+                                            {
+                                                <td width="50%">Current Address </td>
+                                            }
+                                            else if (item.subCheckId == 13)
+                                            {
+                                                <td width="50%">Permanent Address </td>
+                                            }
+                                            else
+                                            {
+                                                <td width="50%">Previous Address </td>
+                                            }
+
+                                        }
+                                        else if (Model.ClientRowID == 607 && item.CheckFamilyRowID == 40)
+                                        {
+                                            <td width="50%">@item.SubCheckFName </td>
+                                        }
+                                        else
+                                        {
+                                            <td width="50%">@item.SubCheckDetail </td>
+                                        }
+                                        @if (@item.checkStatus != null)
+                                        {
+                                            <td align="center" width="25%">@item.checkStatus</td>
+                                        }
+                                        else
+                                        {
+                                            <td style="  padding-left:5px;"></td>
+                                        }
+                                        @*else
+                                            {
+                                            <td style="  padding-left:5px;">@item.SubCheckFName</td>
+                                            }*@
+                                        @if (@item.Status == "Not Applicable")
+                                        {
+                                            <td width="30%" style=" padding:0 1%;  color-adjust:exact; background:@item.ColorCode;" align="center">Not Applicable</td>
+                                        }
+                                        else
+                                        {
+                                            <td style="font-size:12px;  color-adjust:exact; background:@item.ColorCode;" align="center" width="25%">@item.ColorName.ToUpper() &nbsp;  </td>
+                                        }
+                                        @*<td align="center">@item.Status</td>*@
+
+                                    </tr>
+                                    i++;
+                                }
+                                @*<tr>
+                                        <td colspan="3" style="background:#ccc;padding:0.5%" align="center"><b>Education Verification</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td width="50%">Board/School/Institute/University</td>
+                                        <td width="25%" align="center">Completed</td>
+                                        <td width="25%" align="center">Color Code</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" style="background:#ccc;padding:0.5%" align="center"><b>Employment Verification</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td width="50%">Company Name</td>
+                                        <td width="25%" align="center">Completed</td>
+                                        <td width="25%" align="center">Color Code</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" style="background:#ccc;padding:0.5%" align="center"><b>Address Verification</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td width="50%">Address</td>
+                                        <td width="25%" align="center">Completed</td>
+                                        <td width="25%" align="center">Color Code</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" style="background:#ccc;padding:0.5%" align="center"><b>Police Verification</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td width="50%">Address</td>
+                                        <td width="25%" align="center">Completed</td>
+                                        <td width="25%" align="center">Color Code</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" style="background:#ccc;padding:0.5%" align="center"><b>Reference Verification</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td width="50%">Referee Name</td>
+                                        <td width="25%" align="center">Completed</td>
+                                        <td width="25%" align="center">Color Code</td>
+                                    </tr>*@
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            @*<table style="border-collapse:collapse;position: relative;
+                margin-left: 0;margin-right: 0; margin: auto;" width="350" border="1">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 159px; text-align:center;padding:2%;">
+                                            <strong>Report Status</strong>
+                                        </td>
+                                        <td style="width: 172px; text-align:center;color-adjust:exact; background:@Model.FinalColorCode;padding:2%;">
+
+                                            <strong>@Model.FinalColor</strong>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>*@
+            <p>&nbsp;</p>
+
+            @if (Model.PersonalChecksBriefDetails.Any(x => x.subCheckId == 285)
+                && Model.PersonalChecksBriefDetails.Any(x => x.subCheckId == 204))
+
+            {
+                <table width="793" style="border-collapse:collapse;position: relative; margin-left: 0;margin-right: 0; margin: auto;border:1px solid #000;">
+                    <tr>
+                        <td colspan="4" style="text-align: center;"><img src="~/Content/images/CONCENTRIX_Legend.png" style="width: 30rem; height: 3rem;" /> </td>
+                    </tr>
+                </table>
+            }
+
+            <p>&nbsp;</p>
+            <table width="793" style="border-collapse:collapse;position: relative;
+    margin-left: 0;margin-right: 0; margin: auto;border:1px solid #000;border-top:none;">
+                <tr>
+                    <td colspan="2" align="center" style="background:#fbb27f;font-weight:bold;color-adjust:exact;">***END***</td>
+                </tr>
+            </table>
+        </tr>
+
+    </table>
+
+
+</page>
+
+@*}
+    }*@

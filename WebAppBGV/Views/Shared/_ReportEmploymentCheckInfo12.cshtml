@@ -1,0 +1,694 @@
+﻿
+@model ViewModels.ReportQCViewModel.InterimReportGenerateViewModel
+
+@if (Model != null && Model.EmploymentProvidedList != null && Model.EmploymentProvidedList.Count() > 0 && Model.AntecedentList != null && Model.AntecedentList.Count() > 0)
+
+{
+    //int Annexureindex = 2;
+    var Annexureindex = 2;
+    foreach (var ProvidedInfo in Model.EmploymentProvidedList)
+    {
+        try {
+            var EmploymentVerInfo = Model.EmploymentVerifiedList.Where(ver => ver.EmploymentRowID == ProvidedInfo.EmploymentRowID).FirstOrDefault();
+
+            var antecentList = Model.AntecedentList.Where(a => a.CheckFamilyRowID == ProvidedInfo.CheckFamilyRowID && a.SubCheckRowID == ProvidedInfo.SubCheckRowID).ToList();
+
+<page id="PrintSrc" size="A4">
+
+    <div style="page-break-after:always ;"></div>
+    @if (EmploymentVerInfo != null)
+    {
+        <table width="793" height="1150" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999;page-break-inside:avoid">
+            <!--- Report Header Include -->
+            @*@Html.Partial("_ReportHeader")*@
+            <!--- Report Header Include -->
+            <tr>
+                <td width="2%" align="left" valign="bottom" @*style="border-left:2px solid #999999;"*@>&nbsp;</td>
+                <td valign="top">
+                    <table width="793" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="margin-top:5px;">
+                        <tr>
+                            <td width="85%">
+                                <table width="100%">
+                                    @*<tr>
+                                                                    <td style="
+                                        padding: 0 1%;" width="20%">
+                                                                        <p style="text-align: left;">
+                                                                            <strong>Subject Name:</strong>
+                                                                        </p>
+                                                                    </td>
+                                                                    <td style="
+                                        padding: 0 1%;" width="80%">
+                                                                        <p style="text-align: left;">
+                                                                            @Model.PersonalName
+                                                                        </p>
+                                                                    </td>
+
+                                                                </tr>*@
+
+                                    @*<tr>
+                                            <td style="padding: 0 1%; nowrap">
+                                                <p style="text-align: left; text-wrap:none">
+                                                    <strong>Vendor Ref No.:</strong>
+                                                </p>
+                                            </td>
+                                            <td style="padding: 0 1%;">
+                                                <p style="text-align: left;">
+                                                    @Model.CompanyRefNo
+                                                </p>
+                                            </td>
+                                        </tr>*@
+
+
+                                    @*<tr>
+                                            <td style="padding: 0 1%;">
+                                                <p style="text-align: left;">
+                                                    <strong>Vendor Name :</strong>
+                                                </p>
+                                            </td>
+                                            <td style="padding: 0 1%;">
+                                                <p style="text-align: left;">
+                                                    Securitas-India
+                                                </p>
+                                            </td>
+                                        </tr>*@
+                                </table>
+                            </td>
+                            <td width="15%" align="right" valign="top" style="padding-top:2%;">
+                                <table>
+                                    <tr>
+                                        <td rowspan="3" valign="bottom">
+                                            <img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40">
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                    <table width="793" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;position: relative;
+    margin-left: 0;margin-right: 0; margin: auto;">
+
+
+                        <tr>
+
+                            <p style="text-align: center;">
+                                <strong>Employment Verification</strong>
+
+                            </p>
+                            <table width="793" border="1" style="border-collapse:collapse;position: relative;
+    margin-left: 0;margin-right: 0; margin: auto;">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="2" style="border:hidden;border-right:initial"></td>
+
+                                        <td width="158" border="1" style="background: #ccc;
+    padding: 0 1%;">
+                                            <p style="text-align: center;">
+                                                <strong>Check Status</strong>
+                                            </p>
+                                        </td>
+                                        <td width="158" style="background: @EmploymentVerInfo.ColorCode;color-adjust:exact;
+    padding: 0 1%;">
+                                            <p style="text-align: center;">
+                                                <strong>@EmploymentVerInfo.ColorName</strong>
+                                            </p>
+                                        </td>
+
+                                    </tr>
+                                <tbody>
+                            </table>
+
+
+                            <table width="793" border="1" style="border-collapse:collapse;position: relative;
+    margin-left: 0;margin-right: 0; margin: auto;">
+                                <tbody>
+                                    <tr>
+                                        <td width="158" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p style="text-align: center;">
+                                                <strong>Name of Subject</strong>
+                                            </p>
+                                        </td>
+                                        <td width="158" colspan="3" style="
+    padding: 0 1%;">
+                                            <p style="text-align: center;">
+                                                <strong>@Model.PersonalName</strong>
+                                            </p>
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td width="158" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p style="text-align: center;">
+                                                <strong>Vendor Name Id</strong>
+                                            </p>
+                                        </td>
+                                        <td width="158" style="
+    padding: 0 1%;">
+                                            <p style="text-align: center;">
+                                                <strong>@Model.CompanyRefNo</strong>
+                                            </p>
+                                        </td>
+                                        <td width="158" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p style="text-align: center;">
+                                                <strong>Client Reference Id</strong>
+                                            </p>
+                                        </td>
+                                        <td width="158" style="
+    padding: 0 1%;">
+                                            <p style="text-align: center;">
+                                                <strong>@Model.ClientRefID</strong>
+                                            </p>
+                                        </td>
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                            <p>&nbsp;</p>
+                            <table width="793" border="1" style="border-collapse:collapse;position: relative;
+    margin-left: 0;margin-right: 0; margin: auto;">
+                                <tbody>
+                                    <tr>
+                                        <td width="167" colspan="2" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p style="text-align: center;">
+                                                <strong>Details as per Subject’s Application Form</strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p style="text-align: center;">
+                                                <strong>Verification Remarks</strong>
+                                            </p>
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>Name of the Company (Current)</strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" style="padding: 0 1%;">
+                                            <p>@ProvidedInfo.EV_OrganisationName</p>
+                                        </td>
+                                        <td width="220" style="padding: 0 1%;">
+                                            @if (EmploymentVerInfo != null)
+                                            {
+                                                <p>@EmploymentVerInfo.EV_OrganisationName</p>
+                                            }
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="158" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>
+                                                    Period of Employment  - As per the BVF (Date From : To)
+                                                </strong>
+                                            </p>
+
+                                        </td>
+                                        <td width="158" style="padding: 0 1%;">
+                                            <p>@ProvidedInfo.EV_EmployeeTenure</p>
+                                        </td>
+                                        <td width="158" style="padding: 0 1%;">
+                                            @if (EmploymentVerInfo != null)
+                                            {
+                                                <p>@EmploymentVerInfo.EV_EmployeeTenure</p>
+                                            }
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="158" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>
+                                                    Employee Id/Code
+                                                </strong>
+                                            </p>
+                                        </td>
+                                        <td width="158" style="padding: 0 1%;">
+                                            <p>@ProvidedInfo.EV_EmployeeCode</p>
+                                        </td>
+                                        <td width="158" style="padding: 0 1%;">
+                                            @if (EmploymentVerInfo != null)
+                                            {
+                                                <p>@EmploymentVerInfo.EV_EmployeeCode</p>
+                                            }
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>Designation - As per the BVF</strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" style="padding: 0 1%;">
+                                            <p>@ProvidedInfo.EV_Designation</p>
+                                        </td>
+
+                                        <td width="246" style="padding: 0 1%;">
+                                            <p>@EmploymentVerInfo.EV_Designation</p>
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>
+                                                    Remuneration Gross/Net/ CTC
+                                                </strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" style="padding: 0 1%;">
+                                            <p>@ProvidedInfo.EV_CmpCost</p>
+                                        </td>
+
+                                        <td width="246" style="padding: 0 1%;">
+                                            <p>@EmploymentVerInfo.EV_CmpCost</p>
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>Supervisor Name & designation </strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" style="padding: 0 1%;">
+                                            <p>@ProvidedInfo.EV_ReportingManagerName</p>
+                                        </td>
+
+                                        <td width="246" style="padding: 0 1%;">
+                                            <p>@EmploymentVerInfo.EV_ReportingManagerName    </p>
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>Document to be Authenticated</strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" style="padding: 0 1%;">
+                                            <p>@ProvidedInfo.EV_Name_Dsg_Verfyng_Auth</p>
+                                        </td>
+
+                                        <td width="246" style="padding: 0 1%;">
+                                            <p>@EmploymentVerInfo.EV_Name_Dsg_Verfyng_Auth</p>
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>Reason for Leaving</strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" style="padding: 0 1%;">
+                                            <p>@ProvidedInfo.EV_leavingReason</p>
+                                        </td>
+
+                                        <td width="246" style="padding: 0 1%;">
+                                            <p>@EmploymentVerInfo.EV_leavingReason</p>
+                                        </td>
+
+                                    </tr>
+
+
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong> Exit Formalities (Completed/Pending) If Pending-Please Specify the Reason </strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" colspan="2" style="padding: 0 1%;">
+                                            <p>@EmploymentVerInfo.EV_ExitFormalitiesPending</p>
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>
+                                                    Employment Type
+                                                    (Permanent / Temporary/ Contractual / Probation)
+                                                </strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" colspan="2" style="padding: 0 1%;">
+                                            <p>@EmploymentVerInfo.EV_typ_employ</p>
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>Any Issues during Tenure</strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" colspan="2" style="padding: 0 1%;">
+                                            <p>@EmploymentVerInfo.EV_EmployedEarlierAlso</p>
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>Eligibility for Rehire </strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" colspan="2" style="padding: 0 1%;">
+                                            <p>@EmploymentVerInfo.EV_EligibilityOfRehire</p>
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>Is the document authentic? </strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" colspan="2" style="padding: 0 1%;">
+                                            @if (@EmploymentVerInfo.EV_AttachedDocumentGenuine == "NA")
+                                            {
+                                                <p>Not disclosed</p>
+                                            }
+                                            else
+                                            {
+                                                <p>@EmploymentVerInfo.EV_AttachedDocumentGenuine</p>
+                                            }
+
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>The Above Organization is listed with MCA/ROC</strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" colspan="2" style="padding: 0 1%;">
+                                            <p>@EmploymentVerInfo.EV_lappingOver</p>
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>Organization Authenticity Status</strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" colspan="2" style="padding: 0 1%;">
+                                            <p>@EmploymentVerInfo.ATA_Reg_Company</p>
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>Date of Verification </strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" colspan="2" style="padding: 0 1%;">
+                                            @if (@EmploymentVerInfo.EV_DateTime != null)
+                                            {
+                                                <p>@EmploymentVerInfo.EV_DateTime.Value.ToString("dd MMMM yyyy")</p>
+                                            }
+                                            else
+                                            {
+                                                <p>NA</p>
+                                            }
+
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>Verified by (name) and Designation  </strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" colspan="2" style="padding: 0 1%;">
+                                            <p>@EmploymentVerInfo.EV_DetailsReferee    </p>
+                                        </td>
+
+                                    </tr>
+
+
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>Verifier Contact Details  </strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" colspan="2" style="padding: 0 1%;">
+                                            <p>@EmploymentVerInfo.EV_RefereeNameDetails</p>
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>Mode of Verification  </strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" colspan="2" style="padding: 0 1%;">
+                                            <p>@EmploymentVerInfo.EV_RefereeResponse</p>
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>Document provided by employee  </strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" colspan="2" style="padding: 0 1%;">
+                                            <p>@EmploymentVerInfo.EV_OtherDetails6</p>
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>Remarks  </strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" colspan="2" style="padding: 0 1%;">
+                                            <p>@EmploymentVerInfo.EV_OtherComments</p>
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                            <p>
+                                                <strong>Additional comments  </strong>
+                                            </p>
+                                        </td>
+                                        <td width="246" colspan="2" style="padding: 0 1%;">
+                                            <p>@EmploymentVerInfo.ReportComment</p>
+                                        </td>
+
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+
+                            @*<p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>•&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Employment   Verification :</b>
+        </p>
+        <p>
+            o&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	Attach all the documents through which partner is getting the authentication in the BGV report.
+
+        </p>
+        <p>
+            o&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;		Partner to check, if the company is registered under MCA or not.
+        </p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; •&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            If company is registered under MCA and listed (follow the current process for HR verification)
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and add snapshot of MCA website in the report along with the e-mail Interaction.
+        </p>
+
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; •&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;				If company is registered under MCA and not listed company, physical site visit to be conducted on company address
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and case to be tagged as Red "Major Discrepancy" and add snapshot of MCA with site visit proof
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  (photos of the company and landmark or beside company) in report.
+
+        </p>
+
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  •&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If company is registered under MCA and not listed company, if the company is well known (follow the current process for HR verification)
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and add snapshot of MCA website in the report along with the e-mail Interaction.
+        </p>
+
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  •&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;					If company is not registered under MCA, physical site visit to be conducted on company address and case to be tagged as Red
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Major Discrepancy" and add snapshot of MCA with site visit proof (photos of the company and landmark or beside company) in report.
+        </p>
+
+        <p>
+            o&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;			E-mail interaction details to be added in the BGV report.
+        </p>
+
+        <p>
+
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	<b>For Company Name.</b>
+        </p>
+        <p>
+
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	<b>Name – Designation (QA&C) – Contact No. / xyz@company.com</b>
+        </p>*@
+                            <P>&nbsp;</P>
+                            <P>&nbsp;</P>
+                            <P>&nbsp;</P>
+                            <P>&nbsp;</P>
+                            <P>&nbsp;</P>
+                            <P>&nbsp;</P>
+                            <P>&nbsp;</P>
+                            <P>&nbsp;</P>
+                            <P>&nbsp;</P>
+                            <table width="793" style="border-collapse:collapse;position: relative;padding-top:5%;
+    margin-left: 0;margin-right: 0; margin: auto;border-top:none;">
+                                <tr>
+
+                                    <td colspan="2">@Html.Partial("_ReportFooterAddress")</td>
+                                </tr>
+                            </table>
+                        </tr>
+
+                    </table>
+                </td>
+                <td width="2%" align="left" valign="bottom" @*style="border-left:2px solid #999999;"*@>&nbsp;</td>
+            </tr>
+        </table>
+    }
+    </page>
+        if (Model.CandidateDocList != null)
+        {
+            foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == ProvidedInfo.SubCheckRowID))
+            {
+                if (Doc.SubCheckRowID == ProvidedInfo.SubCheckRowID)
+                {
+                    FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                    if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                    {
+                        <page id="PrintSrc" size="A4">
+                            <div style="page-break-after:always ;"></div>
+                            <table width="793" height="1100" cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center">
+                                <!--- Report Header Include -->
+                                @*@Html.Partial("_ReportHeader")*@
+                                <!--- Report Header Include -->
+                                <tr>
+                                    @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                    <td valign="top" colspan="2" align="center" valign="bottom">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td valign="top">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr>
+                                                            <td>
+                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                    <tr>
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;"><h1 style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;"></h1></p></td>
+                                                                        <td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                                                                    </tr>
+                                                                    <tr><td colspan="2">&nbsp;</td></tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td valign="top">&nbsp;</td>
+                                                        </tr>
+                                                        <tr style="text-align:center">
+                                                            <td valign="top">
+                                                                @{
+                                                                    FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                    System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                    if (image.Height > 600)
+                                                                    {
+                                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                    }
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                                </tr>
+                                <!--- Report Footer with Address Include -->
+
+                                @if (Session["Type"].ToString() == "ReprtToPDF")
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href="#Background Verification Report - Executive Summary">Back</a>
+                                        </td>
+                                    </tr>
+                                }
+                                <!--- Report Footer with Address Include -->
+                                <!--- Report Footer Include -->
+                                @Html.Partial("_ReportFooterAddress")
+                                <!--- Report Footer Include -->
+                            </table>
+                        </page>
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                    Annexureindex++;
+                                                                                }
+                                                                            }
+                                                                            catch { }
+
+                                                                        }
+                                                                    }
+

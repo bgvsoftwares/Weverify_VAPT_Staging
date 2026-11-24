@@ -1,0 +1,137 @@
+﻿
+@{
+    ViewBag.Title = "Manage Address Insuff Cases";
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftInsuff") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("ManageAddressInsuff", "Insuff", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Client Name :</label>
+                                    <div class="col-md-8">
+                                        @Html.DropDownList("ClientRowID",
+                                        new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                                        "-- Select Client -- ",
+                                        new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Keyword :</label>
+                                    <div class="col-md-8">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, SecuritasID..." })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Recieving From Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("RecievingfromDate", null, new { @class = "form-control", @id = "RecievingToDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Recieving To Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("RecievingToDate", null, new { @class = "form-control", @id = "RecievingFromDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Completed From Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("CompletedFromDate", null, new { @class = "form-control", @id = "CompletedToDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Completed To Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("CompletedToDate", null, new { @class = "form-control", @id = "CompletedFromDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <div style="text-align:center;" class="col-md-12">
+                                        <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.PQAllInsuffAddresses != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12 table">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.PQAllInsuffAddresses, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                    htmlAttributes: new { id = "grid", @class = "table" },
+                                    headerStyle: "thead-inverse",
+                                    rowStyle: "ordertxt",
+                                    footerStyle: "custpaging",
+                                    mode: WebGridPagerModes.All,
+                                    columns: new[]
+                                    {
+                                    grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                    grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-2"),
+                                    grid.Column(columnName: "CompanyRefNo", header: "SecuritasID", canSort: false, style:"td-1"),
+                                    grid.Column(columnName: "CandidateName", header: "Candidate Name", canSort: false, style:"td-2"),
+                                    grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-2"),
+                                    grid.Column("InfSuffRaisedDate", "Insuff-Raise-Date", format: (item) => item.InfSuffRaisedDate != DateTime.MinValue ? item.InfSuffRaisedDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"td-2"),
+                                    grid.Column(columnName: "InfSuffRaiseBy", header: "Insuff Raise By", canSort: false, style:"td-2"),
+                                    grid.Column(header : "", format : (item) => {
+                                        var link = Html.ActionLink("Insuff Clear", "AddressInsuffCheckClear", "Insuff", new { id = item.AddressRowID }, null);
+                                        return link;
+                                    }, style:"edit td-1"),
+
+                                    }
+                             )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#RecievingToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#RecievingFromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedFromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+        });
+    </script>
+}

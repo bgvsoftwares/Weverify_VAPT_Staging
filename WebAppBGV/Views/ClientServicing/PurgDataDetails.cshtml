@@ -1,0 +1,199 @@
+﻿@using WebAppBGV.CommonMethods;
+@model ViewModels.ClientViewModel.PurgDataDetailsModel
+
+@{
+    ViewBag.Title = "PurgDataDetails";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+<link href="~/Content/MultiselectcNew.css" rel="stylesheet" type="text/css" />
+<link href="~/MultiSelection/docs/css/prettify.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/MultiSelection/dist/css/bootstrap-multiselect.css" type="text/css">
+
+<h2>Purg Data</h2>
+@*@Html.ActionLink("Saved PurgedData", "PurgDataDetailsGrid")*@
+@Html.ActionLink("History", "PurgDataDetailsGrid", "ClientServicing", new { @class = "iframeActionHistories cboxElement" });
+@using (Html.BeginForm("PurgDataDetails", "ClientServicing", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @*<div class="form-group">
+            @Html.LabelFor(model => model.ClientRow, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ClientRow, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ClientRow, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+    <div class="form-group">
+        <div class="col-md-2" style="margin-top:26px;">
+            @Html.LabelFor(model => model.ClientRow, htmlAttributes: new { @class = "control-label required", @style = "padding-left: 74px;" })
+        </div>
+        <div class="col-md-4" style="margin-top:26px;">
+            @Html.DropDownList("ClientRowID", new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+              new { @class = "form-control", @id = "ClientRowID", @single = "multiple",  @size = "3" })
+            @Html.ValidationMessageFor(model => model.ClientRow, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.DateFrom, htmlAttributes: new { @class = "control-label col-md-2 required" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(model => model.DateFrom, new { @type = "date", @class = "form-control datepicker" })
+
+            @Html.ValidationMessageFor(model => model.DateFrom, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.DateTo, htmlAttributes: new { @class = "control-label col-md-2 required " })
+        <div class="col-md-10">
+            @Html.TextBoxFor(model => model.DateTo, new { @type = "date", @class = "form-control datepicker " })
+
+            @Html.ValidationMessageFor(model => model.DateTo, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Attachement, htmlAttributes: new { @class = "control-label col-md-2 required" })
+        @Html.TextBox("file", "", new { type = "file", @class = "form-control", required = "required" }) <br />
+        @Html.ValidationMessageFor(model => model.Attachement, "", new { @class = "text-danger" })
+        @*<input type="submit" value="Upload" />*@
+        @ViewBag.Message
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "control-label col-md-2 required " })
+        <div class="col-md-10">
+            @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control ", required = "required" })
+
+            @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    @*<div class="form-group">
+            @Html.LabelFor(model => model.ApprovalByOperationHead, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.ApprovalByOperationHead)
+                    @Html.ValidationMessageFor(model => model.ApprovalByOperationHead, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>*@
+
+    @*<div class="form-group">
+            @Html.LabelFor(model => model.ApprovalByIT, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.ApprovalByIT)
+                    @Html.ValidationMessageFor(model => model.ApprovalByIT, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>*@
+
+    @*<div class="form-group">
+            @Html.LabelFor(model => model.ReportDump, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.ReportDump)
+                    @Html.ValidationMessageFor(model => model.ReportDump, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>*@
+
+    @*<div class="form-group">
+            @Html.LabelFor(model => model.CheckDocDump, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.CheckDocDump)
+                    @Html.ValidationMessageFor(model => model.CheckDocDump, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>*@
+
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save" class="btn btn-default" />
+            <input type="reset" value="Reset" class="btn btn-default" style="background: #11c9b7;color: #fff" />
+        </div>
+
+    </div>
+</div>
+}
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}
+
+
+
+@*<script type="text/javascript" src="~/MultiSelection/docs/js/jquery-2.1.3.min.js"></script>*@
+<script type="text/javascript" src="~/Scripts/jquery-3.7.1.min.js"></script>
+<script src="~/MultiSelection/dist/js/popper.min.js"></script>
+<script type="text/javascript" src="~/MultiSelection/docs/js/bootstrap-3.3.2.min.js"></script>
+<script type="text/javascript" src="~/MultiSelection/docs/js/prettify.min.js"></script>
+<script type="text/javascript" src="~/MultiSelection/dist/js/bootstrap-multiselect.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#ClientRowID').multiselect({
+            enableFiltering: true,
+            enableCaseInsensitiveFiltering: true,
+            buttonWidth: '250px',
+            maxHeight: 250,
+            numberDisplayed: 1,
+
+        });
+
+        $("#ClientRowID").change(function () {
+            var ptn = $("#ClientRowID").val() || "0";;
+            if (ptn == "0") {
+                $(".multiselect-selected-text").html('None selected');
+            }
+
+        });
+
+        $(".iframeActionHistories").colorbox({ iframe: true, width: "60%", height: "80%" });
+
+    });
+</script>
+
+@*<script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "60%", height: "80%" });
+
+        });
+    </script>*@
+
+<style>
+    .dropdown-toggle {
+        color: #000 !important;
+    }
+
+
+    .form-control {
+        display: inline-block;
+        width: 35%;
+    }
+
+    .required::after {
+        content: "*";
+        font-weight: bold;
+        color: red;
+    }
+</style>
+@*@section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }*@
+

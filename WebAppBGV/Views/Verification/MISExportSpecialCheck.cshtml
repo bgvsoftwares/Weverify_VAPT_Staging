@@ -1,0 +1,201 @@
+﻿@model IEnumerable<ViewModels.ProvidedInfoViewModel.MISExport>
+
+@{
+    ViewBag.Title = "MISExportSpecialCheck";
+    WebGrid grid = new WebGrid(Model, rowsPerPage: 500);
+
+}
+@{
+    //@ViewBag.NavigationBtnExportExcel
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excels");
+    string hyperLinkExportExcel = Html.ActionLink("linkTitle", "GetExportExcelDE", "Verification", null, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+}
+@section LeftNavigation{ @Html.Partial("_NavLeftProvidedInfo") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+@if (ViewBag.UnAllocated == null)
+{
+    ViewBag.UnAllocated = "";
+}
+@{
+
+
+
+    string UnAllocated = (@ViewBag.InsuffBucket).ToString();
+    string Rejection = @ViewBag.Rejection.ToString();
+    string RevertReceived = @ViewBag.RevertReceived.ToString();
+    string QCBucket = @ViewBag.QCBucket.ToString();
+    string TotalWIP = @ViewBag.Total_WIP.ToString();
+    string TodaysClosure = @ViewBag.Todays_Closure.ToString();
+    string AssignedToday = @ViewBag.Assigned_Today.ToString();
+    string OutOfTat = @ViewBag.OutOfTat.ToString();
+}
+
+<div class="row">
+    <div class="col-md-12" style="margin-bottom:30px;">
+        @if (Session["Designation"].ToString() == "Manager-SPL")
+        {
+
+
+            @grid.GetHtml(
+                                                         htmlAttributes: new { id = "grid", @class = "table" },
+                                                         headerStyle: "thead-inverse",
+
+                                                         columns: new[]
+
+                                                         {
+                                                grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                                grid.Column(columnName: "TMFirstName", header: "TM First Name", canSort: false, style:"td-2"),
+                                                grid.Column(columnName: "InsuffBucket", header: "InsuffBucket", canSort: false, style:"td-2"),
+                                                grid.Column(columnName: "Rejection", header: "Rejection", canSort: false, style:"td-2"),
+                                                grid.Column(columnName: "RevertReceived", header: "RevertReceived", canSort: false, style:"td-2"),
+                                                grid.Column(columnName: "QCBucket", header: "QC Bucket", canSort: false, style:"td-2"),
+                                                grid.Column(columnName: "Total_WIP", header: "Total WIP", canSort: false, style:"td-2"),
+                                                grid.Column(columnName: "Todays_Closure", header: "Today's Closure", canSort: false, style:"td-2"),
+                                                grid.Column(columnName: "Assigned_Today", header: "Assigned Today", canSort: false, style:"td-2"),
+                                                grid.Column(columnName: "OutOfTat", header: "Assigned Today", canSort: false, style:"td-2"),
+                     }
+                     )
+        <table class="table">
+            <tbody>
+                <tr>
+                    <td style="padding-left:10px;font-weight:bold;">Total Count</td>
+                    <td style="padding-left:10px;font-weight:bold;">@Html.ActionLink(UnAllocated, "GetMISTATInfoSpecialCheck", "Verification", routeValues: new { Type = "UnAllocated" }, htmlAttributes: null) </td>
+                    <td style="padding-left:10px;font-weight:bold;">@Html.ActionLink(Rejection, "GetMISTATInfoSpecialCheck", "Verification", routeValues: new { Type = "Rejection" }, htmlAttributes: null) </td>
+                    <td style="padding-left:10px;font-weight:bold;">@Html.ActionLink(RevertReceived, "GetMISTATInfoSpecialCheck", "Verification", routeValues: new { Type = "Revert_Received" }, htmlAttributes: null) </td>
+                    <td style="padding-left:10px;font-weight:bold;">@Html.ActionLink(QCBucket, "GetMISTATInfoSpecialCheck", "Verification", routeValues: new { Type = "QC_Bucket" }, htmlAttributes: null) </td>
+                    <td style="padding-left:10px;font-weight:bold;">@Html.ActionLink(TotalWIP, "GetMISTATInfoSpecialCheck", "Verification", routeValues: new { Type = "Total_WIP" }, htmlAttributes: null) </td>
+                    <td style="padding-left:10px;font-weight:bold;">@Html.ActionLink(TodaysClosure, "GetMISTATInfoSpecialCheck", "Verification", routeValues: new { Type = "Todays_Closure" }, htmlAttributes: null) </td>
+                    <td style="padding-left:10px;font-weight:bold;">@Html.ActionLink(AssignedToday, "GetMISTATInfoSpecialCheck", "Verification", routeValues: new { Type = "Assigned_Today" }, htmlAttributes: null) </td>
+                    <td style="padding-left:10px;font-weight:bold;">@Html.ActionLink(OutOfTat, "GetMISTATInfoSpecialCheck", "Verification", routeValues: new { Type = "Out_Of_Tat" }, htmlAttributes: null) </td>
+
+                </tr>
+            </tbody>
+        </table>
+        }
+
+        <div class="total-record">Total Records: @ViewBag.record</div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*<h2>MISExportSpecialCheck</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table table-bordered tab">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.TMFirstName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.InsuffBucket)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Rejection)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.YTR)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.OutOfTat)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TotalWIP)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.RevertReceived)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.QCBucket)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Total_WIP)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Todays_Closure)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Assigned_Today)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TMFirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InsuffBucket)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rejection)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.YTR)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OutOfTat)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalWIP)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RevertReceived)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QCBucket)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Total_WIP)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Todays_Closure)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Assigned_Today)
+            </td>
+        </tr>
+    }
+</table>
+
+<table class="table">
+    <tbody>
+        <tr>
+            <td style="padding-left:10px;font-weight:bold;">Total Count</td>
+            <td style="padding-left:10px;font-weight:bold;">@Html.ActionLink(UnAllocated, "GetMISTATInfoDE", "Verification", routeValues: new { Type = "Insuff_Bucket" }, htmlAttributes: null) </td>
+            <td style="padding-left:10px;font-weight:bold;">@Html.ActionLink(Rejection, "GetMISTATInfoDE", "Verification", routeValues: new { Type = "Rejection" }, htmlAttributes: null) </td>
+            <td style="padding-left:10px;font-weight:bold;">@Html.ActionLink(RevertReceived, "GetMISTATInfoDE", "Verification", routeValues: new { Type = "QC_Bucket" }, htmlAttributes: null) </td>
+            <td style="padding-left:10px;font-weight:bold;">@Html.ActionLink(QCBucket, "GetMISTATInfoDE", "Verification", routeValues: new { Type = "Total_WIP" }, htmlAttributes: null) </td>
+            <td style="padding-left:10px;font-weight:bold;">@Html.ActionLink(TotalWIP, "GetMISTATInfoDE", "Verification", routeValues: new { Type = "Todays_Closure" }, htmlAttributes: null) </td>
+            <td style="padding-left:10px;font-weight:bold;">@Html.ActionLink(TodaysClosure, "GetMISTATInfoDE", "Verification", routeValues: new { Type = "Assigned_Today" }, htmlAttributes: null) </td>
+            <td style="padding-left:10px;font-weight:bold;">@Html.ActionLink(AssignedToday, "GetMISTATInfoDE", "Verification", routeValues: new { Type = "Assigned_Today" }, htmlAttributes: null) </td>
+            <td style="padding-left:10px;font-weight:bold;">@Html.ActionLink(OutOfTat, "GetMISTATInfoDE", "Verification", routeValues: new { Type = "Assigned_Today" }, htmlAttributes: null) </td>
+
+        </tr>
+    </tbody>
+</table>*@

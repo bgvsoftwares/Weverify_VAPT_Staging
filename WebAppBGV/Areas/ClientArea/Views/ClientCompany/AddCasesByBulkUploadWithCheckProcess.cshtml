@@ -1,0 +1,434 @@
+﻿@model  ViewModels.ProvidedInfoViewModel.AddPQPersonalBulkImportViewModel
+@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Bulk Case Initiation";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManageClientCompany", "ClientCompany", new { area = "ClientArea" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    string clientRowId = "";
+    clientRowId = @ViewBag.clientRowId;
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="submit-progress hidden">
+    <i class="fa fa-2x fa-spinner fa-spin"></i>
+    @*<label>Please wait...</label>*@
+</div>
+<div class="container-fluid form_container pt-3" style="height:78vh;">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 client-edit-form">
+            @using (Html.BeginForm("AddCasesByBulkUploadWithCheckProcess", "ClientCompany", new { area = "ClientArea" }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.HiddenFor(model => model.ClientRowID)
+
+                @Html.AntiForgeryToken()
+                <div class="card h-auto">
+                    <div class="container p-3">
+                        <div class="row row-xs align-items-center mg-b-20">
+                            <div class="col-md-2">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    Batch File Name:
+                                </label>
+                            </div>
+                            <div class="col-md-3 mg-t-5 mg-md-t-0">
+                                @Html.TextBoxFor(model => model.CreatedBySource, new { type = "text", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.CreatedBySource, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-2">
+                                @Html.LabelFor(model => model.UploadDoc, htmlAttributes: new { @class = "form-label mg-b-0 fw-bolder" })
+                            </div>
+                            <div class="col-md-5 mg-t-5 mg-md-t-0">
+                                @Html.TextBoxFor(model => model.UploadDoc, new { type = "file", onchange = "return file_Doc_Validation(this)", @accept = "xls, xlsx", @class = "form-control dropify" })
+                                @Html.ValidationMessageFor(model => model.UploadDoc, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="row row-xs align-items-center mg-b-20">
+                            <div class="col-md-2 mg-t-5 mg-md-t-0">
+                             <label class="control-label fw-bolder text-right"><span style="color:red;">*</span>Pricing Type : </label>
+                            </div>
+                            <div class="col-md-10 mg-t-5 mg-md-t-0">
+                                @Html.DropDownList("PricingType", new List<SelectListItem>
+                { new SelectListItem { Text = "-- Select --", Value = "0" },
+                new SelectListItem { Text = "Package", Value = "1" },
+                new SelectListItem { Text = "Check", Value = "2" }},
+            new { @class = "form-control" })
+                                <div class="row row-xs align-items-center">
+                                    <div id="dvChksPcks" class="col-md-12" style="background:#fff;">
+                                        <label class="scheduler-border m-2"> Selected Checks And Package<em style="color:red;">*</em></label>
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control" placeholder="Search" onkeyup="myFunction()" id="myInput">
+                                            <span class="input-group-text" style="background: #FC273F;color: #fff;position: relative;right: 39px;height: 40px; transition:ease-in-out 0.5s;">
+                                                <i class="bx bx-search-alt"></i>
+                                            </span>
+                                        </div>
+                                        <ul id="dvChecksPackages" style="list-style-type:none!important; height:300px!important; overflow:scroll!important;"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                            @*<div class="col-md-10">
+            @Html.DropDownList("PricingType", new List<SelectListItem>
+                { new SelectListItem { Text = "Pricing Type", Value = "0" },
+                   new SelectListItem { Text = "Package", Value = "1" },
+                    new SelectListItem { Text = "Check", Value = "2" }},
+                new { @class = "form-control" })
+        </div>*@
+                        </div>
+                        
+                        @*<div id="dvChksPcks" class="col-md-12">
+                            <fieldset class="scheduler-border">
+                                <legend class="scheduler-border"> Selected Checks And Package <em>*</em></legend>
+                                <div class="row row-xs align-items-center mg-b-20">
+                                    <div class="form-group branch col-md-12">
+                                        <div id="dvChecksPackages" class="scroll down row">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>*@
+                        @Html.HiddenFor(model => model.CandidateCheckOrPackage)
+                    <div class="row row-xs align-items-center justify-content-center pb-3 mt-4">
+                        <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+                            <button class="submit-btn btn-block rounded-0 m-1" type="submit" name="Action" value="submit" onclick="return validateForm(this,'Saving...')">SUBMIT</button>
+                        </div>
+                        <div class="col-md-2 col-md-offset-2" id="bulktemplate">
+                            <a  class="exceldownloadbtn btn-block rounded-0 m-1" href="@Model.Template" target="_blank"><i class="fa fa-file-excel"></i>Excel Template</a>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <div class="card h-auto">
+                    <div class="row " style="padding:0px 1px;">
+                        <div class="row row-xs align-items-center mg-b-20">
+                            <label class="form-label mg-b-0 fw-bolder">Batch File Name:</label>
+                            <div class="col-md-5 mg-b-0">
+
+                                @Html.DropDownListFor(model => model.BatchFileName,
+                                    new SelectList(ViewBag.BatchFileList, "BatchFileId", "BatchFileName"),
+                                    "-- Select Batch -- ",
+                                    new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.BatchFileName, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-md-2">
+                                <button class="submit-btn btn-block rounded-0 m-1" name="Action" value="Search Batch Data" type="submit">Search File Data</button>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="submit-btn btn-block rounded-0 m-1" type="submit" name="Action" value="Report Download">Report Download</button>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="submit-btn btn-block rounded-0 m-1" type="submit" name="Action" value="Bulk Process">Bulk Process</button>
+                            </div>
+                        </div>
+
+                        <div class="row row-xs align-items-center justify-content-center ">
+                          
+                             
+                        </div>
+                    </div>
+                    <div class="row p-2">
+                        <div class="container " style="padding:0px 20px;">
+                            <div class="row row-xs align-items-center mg-b-20">
+                                <table border="1">
+                                    <thead>
+                                        <tr style="font:bold;background-color:darkgrey">
+                                            <th> Sr No.</th>
+                                            <th>Company Ref No</th>
+                                            <th>Candidate Name</th>
+                                            <th>ClientRefNo</th>
+                                            <th>Batch File Name</th>
+                                            <th style="text-align:center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (ViewBag.CaseList != null)
+                                        {
+                                            int Count = 1;
+                                            foreach (var dd in ViewBag.CaseList)
+                                            {
+                                                <tr>
+                                                    <td>@Count</td>
+                                                    <td>@dd.CompanyRefNo</td>
+                                                    <td>@dd.CandidateName</td>
+                                                    <td>@dd.ClientRefNo</td>
+                                                    <td>@dd.BatchFilename</td>                                                   
+                                                    <td>
+                                                        @if (dd.IsReportUploaded == "True")
+                                                        {
+                                                            <a href='@Url.Action("GetReport","Home", new { ImageName = clsCommonMethods.PEncrypt(dd.CompanyRefNo.ToString()),ReportType = clsCommonMethods.PEncrypt("Final") })' class="btn btn-outline-primary btn-block table_btn">Report Download</a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href=""></a>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                Count = Count + 1;
+                                            }
+
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            }
+        </div>
+    </div>
+</div>
+<style>
+    .uncopy {
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        color: #031F30 !important;
+    }
+    .exceldownloadbtn {
+        background: #8D5FFF !important;
+        color: #FFF;
+        font-family: 'Securitas Pro';
+        font-size: .90rem !important;
+        border-radius: 0px;
+        display: inline-block;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: center;
+        text-decoration: none;
+        vertical-align: middle;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+        background-color: transparent;
+        border: 1px solid transparent;
+        padding: .35rem 1rem .35rem 1rem;
+        transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+</style>
+<style>
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+</style>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dvChksPcks').hide();
+        });
+
+        $(document).on('change', 'input[class="chkPkgChks"]', function (e) {
+            var selectedIds = '';
+            $('input[class="chkPkgChks"]').each(function (index, value) {
+                if (this.checked) { selectedIds += this.value + ','; }
+            });
+            if (selectedIds.length > 0) {
+                selectedIds = selectedIds.substring(0, selectedIds.length - 1);
+            } else { selectedIds = ''; }
+
+            $('#CandidateCheckOrPackage').val(selectedIds.trim());
+        });
+
+        $(function () {
+            $('#ClientRowID').change(function () {
+                $('#PricingType').val(0);
+                $('#dvChksPcks').hide();
+            });
+
+            $('#PricingType').change(function () {
+                if ($('#ClientRowID').val() > 0) {
+                    var url1 = "/ProvidedInfo/GetChecksAndPackageByClientId?cid=" + $("#ClientRowID").val() + "&pt=" + $("#PricingType").val();
+                    $.ajax({
+                        url: url1,
+                        type: 'GET',
+                        async: false,
+                        dataType: 'json',
+                        success: function (allData) {
+                            if (allData != null && allData != "") {
+                                $('#dvChksPcks').show();
+                                var items = '';
+                                jQuery.each(allData, function (index, allData) {
+                                    if (allData.CheckFamilyRowID != 0) {
+                                        items += "<div  class='col-md-6'><input type='checkbox' class='chkPkgChks'' value='Check-" + allData.ClientCheckRowID + "' /> " + allData.CheckOrPackageName + "</div>";
+                                    }
+                                    else {
+                                        items += "<div  class='col-md-6'><input type='checkbox' class='chkPkgChks' name='checkbox1' onClick='ckChange(this)' value='Package-" + allData.CheckOrPackageName + "' /> " + allData.CheckOrPackageName + "</div>";
+                                    }
+                                });
+                                $('#dvChecksPackages').html(items);
+                            }
+                            else {
+                                $('#dvChksPcks').hide();
+                                alert("No Checks And Packages Selected");
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            alert("some error");
+                        }
+                    });
+                }
+                else {
+                    alert("Select a client first!");
+                }
+            });
+        });
+
+        function validateForm(ctl, msg) {
+            if ($('#UploadDoc').val() == '') {
+                alert("Upload Document");
+                return false;
+            }
+
+            if ($('#PricingType').val() == 0) {
+                alert("Select Pricing Type");
+                $('#PricingType').focus();
+                return false;
+            }
+
+            var chkCount = 0;
+            $('input.chkPkgChks:checkbox').each(function (index, value) {
+                if (this.checked) {
+                    chkCount += 1;
+                }
+            });
+            if (chkCount == 0) {
+                alert("Please select atleast one Check or Package.");
+                return false;
+            }
+
+            event.preventDefault();
+            $(ctl).prop("disabled", true).val(msg);
+            $("body").addClass("submit-progress-bg");
+            $(".submit-progress").removeClass("hidden");
+            setTimeout(function () {
+                $("form").submit();
+            }, 1);
+
+
+
+            return true;
+        }
+        function ckChange(el) {
+            var ckName = document.getElementsByName(el.name);
+            for (var i = 0, c; c = ckName[i]; i++) {
+                c.disabled = !(!el.checked || c === el);
+            }
+        }
+    </script>
+
+
+    <script>
+        function file_XLS_Validation(fileInput) {
+            var filePath = fileInput.value;
+            var allowedExtensions = /(\.xls|\.xlsx|\.XLS|\.XLSX)$/i;
+            if (!allowedExtensions.exec(filePath)) {
+                swal.fire('Please upload file having extensions .xls/.xlsx only.');
+                fileInput.value = '';
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        function file_Doc_Validation(fileInput) {
+            var filePath = fileInput.value;
+            var allowedExtensions = /(\.gif|\.GIF\.doc|\.docx|\.xls|\.xlsx|\.pdf|\.rtf|\.txt|\.jpeg|\.jpg|\.png|\.eml|\.email|\.msg|\.DOC|\.DOCX|\.XLS|\.XLSX|\.PDF|\.RTF|\.TXT|\.JPEG|\.JPG|\.PNG|\.EML|\.EMAIL|\.MSG|\.zip|\.ZIP|\.rar|\.RAR)$/i;
+            if (!allowedExtensions.exec(filePath)) {
+                swal.fire('Please upload file having extensions .doc/.gif/.GIF/.docx/.xls/.xlsx/.pdf/.rtf/.txt/.jpeg/.jpg/.png/.eml/.email/.msg/.DOC/.DOCX/.XLS/.XLSX/.PDF/.RTF/.TXT/.JPEG/.JPG/.PNG/.EML/.EMAIL/.MSG/.ZIP.zip only.');
+                fileInput.value = '';
+                return false;
+            } else {
+                return true;
+            }
+        }
+    </script>
+
+    <script>
+        function validateForm(ctl, msg) {
+
+            //event.preventDefault();
+            //$(ctl).prop("disabled", true).val(msg);
+            //$("body").addClass("submit-progress-bg");
+            //$(".submit-progress").removeClass("hidden");
+            //setTimeout(function () {
+            //    $("form").submit();
+            //}, 1);
+
+            return true;
+        }
+    </script>
+
+
+    <style>
+        .submit-progress-bg {
+            background-color: lightgray;
+            opacity: .5;
+        }
+
+        .submit-progress {
+            position: fixed;
+            top: 45%;
+            left: 60%;
+            height: 5em;
+            padding-top: 2.3em;
+            z-index: 1;
+            /* The following properties are the ones most likely to change */
+            width: 20em;
+            /* Set 'margin-left' to a negative number that is 1/2 of 'width' */
+            margin-left: -10em;
+            padding-left: 1.1em;
+            color: white;
+            -webkit-border-radius: 0.4em;
+            -moz-border-radius: 0.4em;
+            border-radius: 0.4em;
+        }
+
+        /* Changing style for spinner */
+        .submit-progress {
+            padding-top: 0em;
+            width: 19em;
+            margin-left: -11.5em; /* Set to a negative number that is 1/2 of the width */
+        }
+
+            .submit-progress i {
+                margin-right: 0.5em;
+                color: black
+            }
+
+        .hidden {
+            display: none;
+        }
+
+        .fa-2x {
+            font-size: 4em;
+        }
+    </style>
+
+
+}
+
+
+

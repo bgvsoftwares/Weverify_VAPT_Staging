@@ -1,0 +1,140 @@
+﻿@model ViewModels.AddArtifactMappingViewModel
+
+@{
+    ViewBag.Title = "Add Artifact Mapping (" + ViewBag.ClientName + "-" + ViewBag.ReportType + "-" + ViewBag.CheckFamilyName + ")";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "EditReportCheckMapping", "Master", new { RCMRowID = Model.ReportCheckMappingRowID }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftMaster") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.ReportCheckMappingRowID)
+
+            <div class="form-horizontal">
+                <div class="form-group branch row">
+                    @Html.LabelFor(model => model.ColorCode, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                    <div class="col-md-3">
+                        @Html.DropDownListFor(model => model.ClientSeverityRowId, new SelectList(ViewBag.ColorIdName, "ColorId", "ColorName"),
+                            "-- Select ColorCode -- ", new { @id = "ddlColorCode", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ColorCode, "", new { @class = "text-danger" })
+                        
+                    </div>
+                </div>
+
+                <div class="col-md-12"></div>
+                <div class="col-md-12">
+                    <div class=" container">
+                        <div class='row'>
+                            <div class="col-sm-4">
+                                <label type='checkbox' class='branchname control-label'><strong>Document Type</strong> </label>
+                            </div>                            
+                            <div class="col-sm-1">
+                                <label class='branchname control-label' style="text-align: center;"> <strong>Order Sequence </strong></label>
+                            </div>
+                        </div>
+                    </div>
+                    @foreach (var item in ViewBag.ArtifactDocument)
+                    {
+                        <div class="container">
+                            <div class="row">                               
+                                <div class="col-sm-4">
+                                    <input type="checkbox" name="chkDocumentType" id="chkDocumentType_@item.DocumentId" value="@item.DocumentId" /> @item.DocumentType
+                                </div>
+                                <div class="col-sm-1" style="text-align:center;">
+                                    <input type="text" id="txtDocumentSeqNo_@item.DocumentId" name="txtDocumentSeqNo" maxlength="2" onkeypress="return isNumberKey(event,false)" style="width:60%" />                                    
+                                </div>
+                            </div>
+                        </div> 
+                    }
+                </div>
+                <div class="all-button-bg">
+                    @Html.ActionLink("Back", "EditReportCheckMapping", "Master", new { RCMRowID = Model.ReportCheckMappingRowID }, new { @class = "btn bun-bg btn-default" })
+                    <input class="btn bun-bg btn-default" type="submit" value="Submit" />
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div id="ManageSction" class="product-frame1"></div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script type="text/javascript">
+        
+        $(document).ready(function () {
+            //Initially hide all textboxes
+            $("input[id^='txtDocumentSeqNo_']").hide();
+
+            //On checkbox change event
+            $("input[id^='chkDocumentType_']").change(function () {
+                var docId = $(this).val();
+                var textBox = $("#txtDocumentSeqNo_" + docId);
+
+                if ($(this).is(":checked")) {
+                    textBox.show();
+                } else {
+                    textBox.hide();
+                    textBox.val(""); //Clear text when hidden
+                }
+            });
+
+            // On ColorCode dropdown change
+            $("#ddlColorCode").change(function () {                 
+                var colorCode = $(this).val();
+                var reportCheckMappingRowId = $("input[name='ReportCheckMappingRowID']").val();
+                var checkFamilyRowId = "@Model.CheckFamilyRowID";                
+                if (colorCode !== "") {
+                    $.ajax({
+                        url: '/Master/GetArtifactMapping',
+                        type: 'GET',
+                        data: {
+                            RCMRowID: reportCheckMappingRowId,
+                            CheckFamilyRowID: checkFamilyRowId,
+                            ClientSeverityRowId: colorCode
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                // Reset all checkboxes and textboxes
+                                $("input[name='chkDocumentType']").prop("checked", false);
+                                $("input[name='txtDocumentSeqNo']").val("").hide();
+
+                                $.each(response.data, function (index, item) {
+                                    $("#chkDocumentType_" + item.DocumentTypeId).prop("checked", true);
+                                    var textbox = $("#txtDocumentSeqNo_" + item.DocumentTypeId);
+                                    textbox.val(item.DocumentSeqNo).show();
+                                });
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function () {
+                            alert("Error fetching artifact mappings.");
+                        }
+                    });
+                }
+            });
+
+        });
+
+    </script>
+
+}

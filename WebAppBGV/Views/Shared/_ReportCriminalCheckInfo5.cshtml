@@ -1,0 +1,832 @@
+﻿
+@model ViewModels.ReportQCViewModel.InterimReportGenerateViewModel
+
+@if (Model != null && Model.CriminalProvidedList != null && Model.CriminalProvidedList.Count() > 0 && Model.AntecedentList != null && Model.AntecedentList.Count() > 0)
+{
+    foreach (var ProvidedInfo in Model.CriminalProvidedList)
+    {
+        var CriminalVerInfo = Model.CriminalVerifiedList.Where(ver => ver.CriminalRowID == ProvidedInfo.CriminalRowID).FirstOrDefault();
+        var antecentList = Model.AntecedentList.Where(a => a.CheckFamilyRowID == ProvidedInfo.CheckFamilyRowID && a.SubCheckRowID == ProvidedInfo.SubCheckRowID).ToList();
+<style>
+    .padding-td > td {
+        height: 40px;
+        vertical-align: middle;
+        padding-left: 10px;
+    }
+</style>
+        <page id="PrintSrc" size="A4">
+            <div style="page-break-after:always ;"></div>
+            <table width="793" @*border="0"*@ cellspacing="0" cellpadding="0" align="center">
+                <!--- Report Header Include -->
+                @*@Html.Partial("_ReportHeader")*@
+                <!--- Report Header Include -->
+
+
+                <tr>
+                    <td width="2%" align="left" valign="bottom" @*style="border-left:2px solid #999999;"*@>&nbsp;</td>
+                    <td valign="top">
+                        <table width="100%" style="border-left:hidden; border-right:hidden" cellpadding="0" cellspacing="0">
+
+                            <tr>
+                                <td valign="top">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                        <tr><td width="20%" align="right"><img src='@Url.Content("/Images/footer-logo.jpg")' height="60"></td></tr>
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                             @if(ProvidedInfo.SubCheckRowID==28)
+                                            {
+                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">CRIMINAL CHECK (eCourt Record) (At the address of longest stay in the last 7 yrs)</p></td>
+                                             }
+                                             else if(ProvidedInfo.SubCheckRowID == 24)
+                                             {
+                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">CRIMINAL CHECK (eCourt Record) (Present Address) </p></td>
+                                            }
+
+                                        </tr>
+                                        <tr>
+                                            <td valign="top">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top" align="center"></td>
+                                        </tr>
+                                        <tr>
+                                            <td height="30">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td valign="top" align="center">
+                                                <table class="sd" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;" width="25%">TCS APPLICANT ID </td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;" width="25%"><label for=""></label>@Model.ApplicationId</td>
+                                                        <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;" width="25%">VENDOR RF-ID</td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;" width="25%">@Model.CompanyRefNo</td>
+                                                    </tr>
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">RECRUITMENT BRANCH </td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for="">@Model.Location</label></td>
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">NSR IT_PIN</td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;">NIL</td>
+                                                    </tr>
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">NAME OF CANDIDATE</td>
+                                                        <td colspan="3" style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for="">@Model.PersonalName</label></td>
+                                                        @*<td style="padding-left:5px;font-weight:bold; color-adjust:exact; background:#c0c0c0;"></td>
+                                    <td style="padding-left:5px;"></td>*@
+
+                                                    </tr>
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">DATE OF BIRTH</td>
+                                                        @if (Model.DOB != null)
+                                                        {
+                                                            <td style="padding-left:5px; font-size:12px; font-family:Calibri;">@Model.DOB.Value.ToString("dd-MM-yyyy")</td>
+                                                        }
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">
+                                                            FINAL BGC STATUS
+                                                            (RED/GREEN)
+                                                        </td>
+                                                        @if (CriminalVerInfo != null)
+                                                        {
+                                                            <td style="padding-left:5px; font-size:12px; font-family:Calibri; color:@CriminalVerInfo.ColorCode"><label for="">@ProvidedInfo.CheckStatus</label></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for=""></label></td>
+                                                        }
+
+
+                                                    </tr>
+
+
+
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">CATEGORY (CAMPUS/DT/ EP/EP From CAMPUS)</td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for="">@Model.VerticalLocation</label></td>
+                                                        <td colspan="2" align="left" style="border-top:groove;">
+                                                            <img src='@Url.Content("~/Images/TCS_IT_TwoColor.JPG")' width="265" />
+
+                                                        </td>
+
+
+                                                    </tr>
+                                                    <tr class="padding-td">
+                                                        <td colspan="3" style="border:0;"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="5" style="border:0">
+                                                            <table width="100%">
+                                                                <tr class="padding-td">
+                                                                    <td width="10%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Sl. No</td>
+                                                                    <td width="40%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">PARTICULARS</td>
+                                                                    @*<td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Provided by the Applicant</td>*@
+                                                                    <td colspan="3" width="50%" style="font-size:12px;  margin-top:20px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Verified and Confirmed by BGC Agency</td>
+                                                                </tr>
+                                                                <tr class="padding-td">
+                                                                    <td colspan="5" style="height:25px;  text-align:center; text-decoration:underline;"><b>Verification Details</b></td>
+                                                                </tr>
+
+
+
+
+
+
+
+
+                                                                <tr class="padding-td">
+                                                                    <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">1 </td>
+                                                                    <td style="font-size:12px; font-family:Calibri; font-weight:bold;">Name and Designation of verified person </td>
+                                                                    @*<td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.AV_OtherDetails14</td>*@
+                                                                    <td colspan="3" style="font-size:12px; font-family:Calibri; text-align:center;">Muzzamil Ali, Advocate</td>
+                                                                </tr>
+                                                                <tr class="padding-td">
+                                                                    <td colspan="5" style="border:0;"></td>
+                                                                </tr>
+                                                                </table>
+                                                            <table width="100%">
+
+                                                                <tr class="padding-td">
+                                                                    <td colspan="5" style="font-size:12px; margin-top:2px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Civil Proceedings</td>
+
+                                                                </tr>
+
+                                                                <tr class="padding-td">
+                                                                    <td colspan="5" style="height:25px;  text-align:center; ">Includes Original Suit, Miscellaneous Suit, Execution and Arbitration Case</td>
+                                                                </tr>
+
+
+                                                                <tr class="padding-td">
+                                                                    <td  style="width:20%; font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Date of Search</td>
+                                                                    <td  style="width:20%; font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Court</td>
+
+                                                                    <td style="width:20%; font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Jurisdiction</td>
+                                                                    <td  style="width:20%; font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">
+                                                                        Name Of the
+                                                                        Court
+                                                                    </td>
+                                                                    <td  style="width:20%; font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Result</td>
+
+                                                                    @*<td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Provided by the Applicant</td>*@
+                                                                </tr>
+
+                                                                <tr class="padding-td">
+
+                                                                    @if (CriminalVerInfo.CRV_Date_Verf != null)
+                                                                    {
+                                                                        <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">@CriminalVerInfo.CRV_Date_Verf.Value.ToString("dd-MMM-yyyy")</td>
+                                                                    }
+
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">High Court</td>
+
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">All High Courts of India</td>
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">All High Courts of India</td>
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">No Record</td>
+
+                                                                    @*<td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Provided by the Applicant</td>*@
+                                                                </tr>
+
+                                                                <tr class="padding-td">
+                                                                    @if (CriminalVerInfo.CRV_Date_Verf != null)
+                                                                    {
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">@CriminalVerInfo.CRV_Date_Verf.Value.ToString("dd-MMM-yyyy")</td>
+                                                                    }
+                                                                        
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">Civil Court</td>
+
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">All India Courts</td>
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">All India Courts</td>
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">No Record</td>
+
+                                                                    @*<td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Provided by the Applicant</td>*@
+                                                                </tr>
+
+
+                                                                <tr class="padding-td">
+                                                                    <td colspan="5" style="font-size:12px; margin-top:2px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Criminal Proceedings</td>
+
+                                                                </tr>
+
+                                                                <tr class="padding-td">
+                                                                    <td colspan="5" style="height:25px;  text-align:center; ">
+                                                                        
+                                                                            Includes Criminal Petitions, Criminal Appeal, Sessions Case, Special Sessions Case, <br />
+                                                                            Criminal Miscellaneous Petition and Criminal Revision Appeal
+                                                                        
+                                                                    </td>
+                                                                </tr>
+
+                                                                <tr class="padding-td">
+                                                                    <td  style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Date of Search</td>
+                                                                    <td  style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Court</td>
+
+                                                                    <td  style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Jurisdiction</td>
+                                                                    <td  style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">
+                                                                        Name Of the
+                                                                        Court
+                                                                    </td>
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Result</td>
+
+                                                                    @*<td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Provided by the Applicant</td>*@
+                                                                </tr>
+
+                                                                <tr class="padding-td">
+                                                                    @if (CriminalVerInfo.CRV_Date_Verf != null)
+                                                                    {
+                                                                        <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">@CriminalVerInfo.CRV_Date_Verf.Value.ToString("dd-MMM-yyyy")</td>
+                                                                    }
+
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">Magistrate Court</td>
+
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">
+                                                                        All Magistrate
+                                                                        courts
+                                                                    </td>
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">
+                                                                        All Magistrate
+                                                                        courts
+                                                                    </td>
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">No Record</td>
+
+                                                                    @*<td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Provided by the Applicant</td>*@
+                                                                </tr>
+
+                                                                <tr class="padding-td">
+                                                                    @if (CriminalVerInfo.CRV_Date_Verf != null)
+                                                                    {
+                                                                        <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">@CriminalVerInfo.CRV_Date_Verf.Value.ToString("dd-MMM-yyyy")</td>
+
+                                                                    }
+
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">Session Court</td>
+
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">
+                                                                        All Session Courts
+                                                                    </td>
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">
+                                                                        All Session Courts
+                                                                    </td>
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">No Record</td>
+
+                                                                    @*<td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Provided by the Applicant</td>*@
+                                                                </tr>
+
+                                                                <tr class="padding-td">
+                                                                    @if (CriminalVerInfo.CRV_Date_Verf != null)
+                                                                    {
+                                                                        <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">@CriminalVerInfo.CRV_Date_Verf.Value.ToString("dd-MMM-yyyy")</td>
+                                                                    }
+
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">High Court</td>
+
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">All High Courts of India</td>
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">All High Courts of India</td>
+                                                                    <td style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">No Record</td>
+
+                                                                    @*<td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Provided by the Applicant</td>*@
+                                                                </tr>
+
+                                                                <tr class="padding-td">
+                                                                    <td colspan="3" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   font-weight:700;">Additional Comments</td>
+                                                                    
+                                                                    <td colspan="2" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;text-align:center;   ">The case is closed with eCourt Records Criminal check due to Covid-19 pandemic.</td>
+
+                                                                    @*<td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Provided by the Applicant</td>*@
+                                                                </tr>
+
+
+                                                            </table>
+                                                                        @*<tr>
+                    <td style="font-size:12px; font-family:Calibri; vertical-align:top">Name of the verifier from agency </td>
+
+                    <td colspan="2" style="font-size:12px; font-family:Calibri;height:50px; vertical-align:top "></td>
+                </tr>*@
+                                                                        
+
+                                                                            @*<tr class="padding-td"><td colspan="4" style="font-weight:bold"> Additional Comments by BGC agency-@CriminalVerInfo.ReportComment</td></tr>*@
+
+
+
+                                                                           
+                                                                        
+                                                        </td>
+                                                    </tr>
+                                                   
+                                                  
+                                                    @*<tr>
+                                    <td colspan="4" style="font-weight:bold">Additional Comments by BGC agency. If Respondent’s signature is not obtained on this page, please give the reasons for the same here: Nil</td>
+                                </tr>*@
+
+                                                </table>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td colspan="4" style=" border:0; text-align:left"><img src='@Url.Content("~/Images/Signature.JPG")'></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" style="padding-left:25px; font-size:12px; font-family:Calibri; border:hidden">
+                                                <label for="">
+                                                    Date:
+                                                    @if (Model.ReportDate != null)
+                                                    {<span>@Model.ReportDate.Value.ToString("dd-MMM-yyyy")</span> }
+                                                else
+                                                { <span>N/A</span>}
+                                                </label>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+
+                </tr>
+
+                <!--- Report Footer Address Include -->
+                @*@Html.Partial("_ReportFooterAddress")*@
+                <!--- Report Footer Address Include -->
+                <!--- Report Footer Include -->
+                @*@Html.Partial("_ReportFooter")*@
+                
+                <!--- Report Footer Include -->
+            </table>
+        </page>
+
+        <page id="PrintSrc" size="A4">
+            <div style="page-break-after:always ;"></div>
+            <table width="793" @*border="0"*@ cellspacing="0" cellpadding="0" align="center">
+                <!--- Report Header Include -->
+                @*@Html.Partial("_ReportHeader")*@
+                <!--- Report Header Include -->
+
+
+                <tr>
+                    <td width="2%" align="left" valign="bottom" @*style="border-left:2px solid #999999;"*@>&nbsp;</td>
+                    <td valign="top">
+                        <table width="100%" style="border-left:hidden; border-right:hidden" cellpadding="0" cellspacing="0">
+
+                            <tr>
+                                <td valign="top">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                        <tr><td width="20%" align="right"><img src='@Url.Content("/Images/footer-logo.jpg")' height="60"></td></tr>
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            
+                                           
+                                            <td></td>
+
+
+                                        </tr>
+                                        <tr>
+                                            <td valign="top">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top" align="center"></td>
+                                        </tr>
+                                        <tr>
+                                            <td height="30">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td valign="top" align="center" style="border:none;">
+                                                <table class="sd" width="100%" border="0" cellpadding="0" cellspacing="0" style="border:none">
+                                                    <tr class="padding-td">
+                                                        <td colspan="8" style="padding-left:5px;font-weight:bold; font-size:15px; text-align:center; font-family:Calibri; color-adjust:exact; border:none; text-decoration-line: underline;  ">
+                                                            <mark style="background-color: black; color:white">
+                                                                Bar council Number: Kar/2134/12 <br />
+                                                                Chamber &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                            </mark>
+</td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="8" style="padding-left:5px;font-weight:bold; font-size:15px;text-align:center; font-style:italic; font-family:Calibri; color-adjust:exact; border:none; border-top: 4px solid black;  text-decoration-line: underline; ">
+                                                            TO WHOMSOEVER IT MAY CONCERN
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="8" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; border:none;  ">
+                                                            This information is given with regards to search conducted for:
+                                                        </td>
+
+                                                    </tr>
+
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="4" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; border:none;  ">
+                                                            Name of the Subject
+                                                        </td>
+
+                                                        <td colspan="4" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; border:none;   ">
+                                                            : @CriminalVerInfo.CRV_Cand_Name
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="4" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; border:none;  ">
+                                                            Order Reference Number
+                                                        </td>
+
+                                                        <td colspan="4" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; border:none; ">
+                                                            : @Model.CompanyRefNo
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="4" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; border:none; ">
+                                                            Date of Birth
+                                                        </td>
+                                                        @if(CriminalVerInfo.CRV_DOB!=null)
+                                                        {
+                                                        <td colspan="4" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; border:none; ">
+
+                                                            : @CriminalVerInfo.CRV_DOB.Value.ToString("dd-MM-yyyy")
+
+
+                                                        </td>
+                                                        }
+                                                        else
+                                                        {
+                                                        <td colspan="4" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; border:none; ">           
+
+
+                                                        </td>
+                                                        }
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="4" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; border:none; ">
+                                                            Father's Name
+                                                        </td>
+
+                                                        <td colspan="4" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; border:none; ">
+                                                            : @CriminalVerInfo.CRV_Father_Name
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="4" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact;  border:none; ">
+                                                            Address1
+                                                        </td>
+
+                                                        <td colspan="4" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact;border:none;  ">
+                                                            : @CriminalVerInfo.CRV_Others6
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="4" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; border:none;  ">
+                                                            Period of Stay
+                                                        </td>
+
+                                                        <td colspan="4" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; border:none; ">
+                                                            : @CriminalVerInfo.CRV_Dur_Yr_Covered
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="4" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; border:none;  ">
+                                                            Date of Verification
+                                                        </td>
+
+                                                       
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="8" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; border:none;  text-align:center; text-decoration-line: underline; ">
+                                                            RESULTS
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="8" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; border:none;  ">
+                                                            &nbsp;&nbsp; 1.	Civil Proceedings: Original Suit / Miscellaneous Suit / Execution Petition
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="2" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact;    ">
+                                                            Court
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            Court name
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            Results
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            Period
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;   ">
+                                                            District Court/Lower Court/ Civil Court & Small Causes
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact; ">
+                                                            All India courts
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;   ">
+                                                            No Record
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact; ">
+                                                            7 Years
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact; ">
+                                                            High Court
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            All High Courts of India
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            No Record
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;   ">
+                                                            7 Years
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;    ">
+                                                            Supreme Court
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;   ">
+                                                            Supreme Court of India
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            No Record
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            7 Years
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="8" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; border:none; ">
+                                                            &nbsp;&nbsp; 2.	Criminal Proceedings: Criminal Petitions / Criminal Appeal / Sessions Case / Criminal Miscellaneous Petition / Criminal Revision Appeal
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="2" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            Court
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; ">
+                                                            Court name
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            Results
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            Period
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            Magistrate Court
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            All Magistrate Courts
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            No Record
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            7 Years
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            Sessions Court
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;   ">
+                                                            All Sessions Courts
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            No Record
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            7 Years
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            High Court
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;   ">
+                                                            All High Courts of India
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            No Record
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            7 Years
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            Supreme Court
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;   ">
+                                                            Supreme Court of India
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact;  ">
+                                                            No Record
+                                                        </td>
+                                                        <td colspan="2" style="padding-left:5px; font-size:12px; font-family:Calibri; color-adjust:exact; ">
+                                                            7 Years
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="8" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; border:none; ">
+                                                            Conclusion:
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr class="padding-td">
+                                                        <td colspan="8" style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color:green; color-adjust:exact; border:none;">
+                                                            In Conclusion, as on date of this search, there appears to be no Civil or Criminal case instituted against the Subject, at the given address
+                                                        </td>
+
+                                                    </tr>
+
+
+
+                                                    
+                                                    
+
+
+                                                    @*<tr>
+            <td colspan="4" style="font-weight:bold">Additional Comments by BGC agency. If Respondent’s signature is not obtained on this page, please give the reasons for the same here: Nil</td>
+        </tr>*@
+
+                                                </table>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td colspan="4" style=" border:0; text-align:left"><img src='@Url.Content("~/Images/Signature.JPG")'></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" style="padding-left:25px; font-size:12px; font-family:Calibri; border:hidden">
+                                                <label for="">
+                                                    Date:
+                                                    @if (Model.ReportDate != null)
+                                                    {<span>@Model.ReportDate.Value.ToString("dd-MMM-yyyy")</span> }
+                                                else
+                                                { <span>N/A</span>}
+                                                </label>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+
+                </tr>
+
+                <!--- Report Footer Address Include -->
+                @*@Html.Partial("_ReportFooterAddress")*@
+                <!--- Report Footer Address Include -->
+                <!--- Report Footer Include -->
+                @*@Html.Partial("_ReportFooter")*@
+
+                <!--- Report Footer Include -->
+            </table>
+        </page>
+
+        if (Model.CandidateDocList != null)
+        {
+            foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == ProvidedInfo.SubCheckRowID))
+            {
+                if (Doc.SubCheckRowID == ProvidedInfo.SubCheckRowID)
+                {
+                    FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                    if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                    {
+                        <page id="PrintSrc" size="A4">
+                            <div style="page-break-after:always ;"></div>
+                            <table width="793" cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center">
+                                <!--- Report Header Include -->
+                                @*@Html.Partial("_ReportHeader")*@
+                                <!--- Report Header Include -->
+                                <tr>
+                                    @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                    <td valign="top" colspan="2" align="center" valign="bottom">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td valign="top">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr>
+                                                            <td>
+                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                    <tr><td width="20%" align="right"><img src='@Url.Content("/Images/footer-logo.jpg")' height="60"></td></tr>
+                                                                    <tr>
+
+                                                                        @*if (CriminalList.SubCheckRowID == 24)
+                                                                            {
+                                                                            CriminalList.SubCheckName = "POLICE VERIFICATION (Present Address)";
+                                                                            }
+
+                                                                            if (CriminalList.SubCheckRowID == 197)
+                                                                            {
+                                                                            CriminalList.SubCheckName = "POLICE VERIFICATION (At the address of longest stay in the last 7 yrs.)";
+                                                                            }
+
+                                                                            if (CriminalList.SubCheckRowID == 210)
+                                                                            {
+                                                                            CriminalList.SubCheckName = "POLICE VERIFICATION (Present Address)";
+                                                                            }*@
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">eCourt Records Search</p></td>
+                                                                        @*<td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>*@
+                                                                    </tr>
+                                                                    <tr><td colspan="2">&nbsp;</td></tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td valign="top">&nbsp;</td>
+                                                        </tr>
+                                                        <tr style="text-align:center">
+                                                            <td valign="top" style="border:3px solid #000;padding:5px;">
+                                                                @{
+                                                                    FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                    System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                    if (image.Height > 600)
+                                                                    {
+                                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                    }
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>&nbsp;</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                                </tr>
+                                <!--- Report Footer Address Include -->
+                                @*@Html.Partial("_ReportFooterAddress")*@
+                                <!--- Report Footer Address Include -->
+                                <!--- Report Footer Include -->
+                                @*@Html.Partial("_ReportFooter")*@
+
+                                <!--- Report Footer Include -->
+                            </table>
+                        </page>
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,52 @@
+@model IEnumerable<ViewModels.ProvidedInfoViewModel.InfoMISTAT>
+@{
+    ViewBag.Title = "GetMISTATInfo";
+    WebGrid grid = new WebGrid(Model, rowsPerPage: 500);
+
+}
+@{
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    string hyperLinkExportExcel = Html.ActionLink("linkTitle", "GetExportExcelDetails", "Verification", new { Type = ViewBag.Typee }, new {@class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+}
+
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+
+<h2>@ViewBag.Heading</h2>
+@Html.ActionLink("Back to MIS Summary", "MISExport", "Verification", new { @class = "backbtn" })
+<div class="row">
+    <div class="col-md-12" style="margin-bottom:30px;">
+
+        @grid.GetHtml(
+                                                     htmlAttributes: new { id = "grid", @class = "table" },
+                                                     headerStyle: "thead-inverse",
+                                                     columns: new[]
+                                                     {
+                                            grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                            grid.Column(columnName: "SecuritasID", header: "Securitas ID", canSort: false, style:"td-2"),
+                                            grid.Column(columnName: "CandidateName", header: "Candidate Name", canSort: false, style:"td-2"),
+                                            grid.Column(columnName: "CheckID", header: "Check ID", canSort: false, style:"td-2"),
+                                            grid.Column(columnName: "SubCheckName", header: "Sub Check Name", canSort: false, style:"td-2"),
+                                            grid.Column(columnName: "TMFirstName", header: "TM Name", canSort: false, style:"td-2"),
+                                            grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-2"),
+                                            grid.Column(columnName: "CreatedOn", header: "CreatedOn", canSort: false, style:"td-2"),
+                                            grid.Column(columnName: "InternalOutDate", header: "InternalOutDate", canSort: false, style:"td-2"),
+                                            grid.Column(columnName: "OutDate", header: "OutDate", canSort: false, style:"td-2"),
+                                            grid.Column(columnName: "SpocName", header: "SpocName", canSort: false, style:"td-2"),
+                                            grid.Column(columnName: "ReWorkCheckStatus", header: "ReWorkCheckStatus", canSort: false, style:"td-2"),
+                                            grid.Column(columnName: "CheckStatus", header: "CheckStatus", canSort: false, style:"td-2"),
+                                            grid.Column(columnName: "CheckType", header: "CheckType", canSort: false, style:"td-2"),
+                                            grid.Column(columnName: "TLAllocationDate", header: "TLAllocationDate", canSort: false, style:"td-2"),
+                                            grid.Column(columnName: "TMAllocationDate", header: "TMAllocationDate", canSort: false, style:"td-2"),
+                                            grid.Column(columnName: "completedDate", header: "completedDate", canSort: false, style:"td-2"),
+                                            grid.Column(columnName: "LastInsuffClearDate", header: "LastInsuffClearDate", canSort: false, style:"td-2"),
+
+
+
+
+                 }
+                 )
+
+        <div class="total-record">Total Records: @ViewBag.record</div>
+    </div>
+</div>

@@ -1,0 +1,232 @@
+﻿@model ViewModels.ReportQCViewModel.InterimReportGenerateViewModel
+
+
+    
+
+        <page id="PrintSrc" size="A4">
+            <div style="page-break-after:always ;"></div>
+            <br />
+            
+            <table width="793" align="center" style="border-bottom:2px solid #ccc;">
+                <tr>
+                    <td width="85%">
+                        <table width="100%">
+                            <tr>
+                                <td style="
+    padding: 0 1%;" width="20%">
+                                    <p style="text-align: left;">
+                                        <strong>Subject Name:</strong>
+                                    </p>
+                                </td>
+                                <td style="
+    padding: 0 1%;" width="80%">
+                                    <p style="text-align: left;">
+                                        @Model.PersonalName
+                                    </p>
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td style="padding: 0 1%; nowrap">
+                                    <p style="text-align: left; text-wrap:none">
+                                        <strong>Vendor Ref No.:</strong>
+                                    </p>
+                                </td>
+                                <td style="padding: 0 1%;">
+                                    <p style="text-align: left;">
+                                        @Model.CompanyRefNo
+                                    </p>
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td style="padding: 0 1%;">
+                                    <p style="text-align: left;">
+                                        <strong>Vendor Name :</strong>
+                                    </p>
+                                </td>
+                                <td style="padding: 0 1%;">
+                                    <p style="text-align: left;">
+                                        Securitas-India
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td width="15%" align="right" valign="top" style="padding-top:2%;">
+                        <table>
+                            <tr>
+                                <td rowspan="3" valign="bottom">
+                                    <img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40">
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <table width="793" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999;">
+                <tr>
+
+                    <p style="text-align: center;">&nbsp;</p>
+
+                    <p>&nbsp;</p>
+
+
+                    <p>&nbsp;</p>
+
+                   
+
+
+                    <table width="793" border="1" cellspacing="0" cellpadding="0" align="center">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <table width="100%" border="1">
+                                        <tr>
+                                            <td width="50%" align="center" style="background:#000;color:#fff;padding:1.5%;"><span style="color:#fff;">Securitas-India</span></td>
+                                            <td width="50%" align="center" style="background:#00b4fb;padding:1.5%;color-adjust:exact;">Concentrix</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table width="100%" border="1">
+                                        <tr>
+                                            <td align="center" style="padding:1%">@Model.OrderDate.Value.ToString("dd/MM/yyyy")</td>
+                                            <td align="center" style="padding:1%">Okay</td>
+                                            <td align="center" style="padding:1%">@Model.ReportDate.Value.ToString("dd/MM/yyyy")</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table width="100%" border="1">
+                                        <tr>
+                                            <td colspan="2" align="left" style="padding:1.5%;background:#ccc;color-adjust:exact;"><b>Candidate / Employee Information</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="50%">Name Of Candidate / Employee</td>
+                                            <td width="50%">@Model.PersonalName</td>
+                                        </tr>
+                                        <tr>
+                                            <td width="50%">Applicant / Employee ID</td>
+                                            <td width="50%">@Model.EmploymentId</td>
+                                        </tr>
+                                        <tr>
+                                            <td width="50%">Location</td>
+                                            <td width="50%">@Model.TechLocation</td>
+                                        </tr>
+                                        <tr>
+                                            <td width="50%">Process</td>
+                                            <td width="50%">@Model.ProcessName</td>
+                                        </tr>
+                                        <tr>
+
+
+
+                                            <td colspan="2" align="center" style="padding:1.5%;background:#ccc;color-adjust:exact;"><b>Other BGV Check Summary</b></td>
+
+
+
+                                            @*<td colspan="2" align="center" style="padding:1.5%;background:#ccc;color-adjust:exact;"><b>Background Verification Summary</b></td>*@
+
+
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" align="center" style="padding:0.5%;">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+
+
+
+                                            <td colspan="2" align="left" style="padding:1.5%;background:#ccc;color-adjust:exact;"><b>OIG / GSA</b></td>
+
+
+
+                                           
+
+
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table width="100%" border="1">
+                                        @if (Model.ReportPart == "CDB")
+                        {
+                            var a = Model.PersonalChecksBriefDetails.Where(T => T.CheckFName == "Special Checks").ToList();
+                            Model.PersonalChecksBriefDetails = null;
+                            Model.PersonalChecksBriefDetails = a.ToList();
+                        }
+                        
+                                        @{int i = 1;}
+                                        @foreach (var item in Model.PersonalChecksBriefDetails)
+                        {
+                                       
+                            <tr style="font-size:12px; font-weight:bold; padding:5px;">
+
+                                @if (Session["Type"].ToString() == "ReprtToPDF")
+                {
+                    <td style="font-size:12px; font-family:Calibri; padding-left:5px;"><a href="#@item.SubCheckFName.TrimEnd()" style="font-size:12px; font-family:Calibri; padding-left:5px;">@item.SubCheckFName.TrimEnd()</a></td>
+}
+else if (@item.subCheckId == 227)
+{
+                <td width="50%">Office of Inspector General ( <br />
+                                                              <a href=""> http://oig.hhs.gov/ </a>) </td>
+}
+else if(@item.subCheckId == 243)
+{
+                <td width="50%">General Services <br /> Administration (GSA) list of<br /> excluded parties (<a href=""> https://<br />www.sam.gov </a>)</td>
+}
+                                @if (@item.checkStatus != null)
+                {
+                    <td align="center" width="25%">@item.checkStatus</td>
+}
+else
+{
+                <td style="  padding-left:5px;"></td>
+}
+                                @*else
+                    {
+                    <td style="  padding-left:5px;">@item.SubCheckFName</td>
+                    }*@
+                                @if (@item.Status == "Not Applicable")
+                {
+                    <td width="30%" style=" padding:0 1%;  color-adjust:exact; background:@item.ColorCode;" align="center">Not Applicable</td>
+}
+else
+{
+                <td style="font-size:12px;  color-adjust:exact; background:@item.ColorCode;" align="center" width="25%">@item.ColorName.ToUpper() &nbsp;  </td>
+}
+                                @*<td align="center">@item.Status</td>*@
+
+                            </tr>
+            i++;
+        }
+                                       
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>&nbsp;</p>
+                </tr>
+            </table>
+            <table width="793" style="border-collapse:collapse;position: relative;
+    margin-left: 0;margin-right: 0; margin: auto;border:1px solid #000;border-top:none;">
+                <tr>
+
+                    <td colspan="2">@Html.Partial("_ReportFooterAddress")</td>
+                </tr>
+            </table>
+
+        </page>
+        
+
+
+  

@@ -1,0 +1,126 @@
+﻿@model ViewModels.ReportWritingProductivityListPagedModel
+@{
+    ViewBag.Title = "ReportWritingProductivity";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+}
+@{
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' ></i> Export Excel");
+    string hyperLinkExportExcel = "";
+    hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportReportWritingProductivity", "ReportQC", new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+}
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="container-fluid">
+    @using (Html.BeginForm("ReportWritingProductivity", "ReportQC", FormMethod.Post))
+    {
+        @*<div class="form-horizontal">
+               <div class="form-group branch search-frame row text-center">
+                    <label class="col-md-1 control-label">Search :</label>
+                    <div class="col-md-4">
+                        @Html.TextBox("SearchValue", null, new { @class = "form-control", placeholder = "Type Search Text", @autocomplete = "off" })
+                    </div>
+                </div>
+                <div class="form-group branch search-frame">
+                    <div style="text-align:center;">
+                        <input class="btn bun-bg btn-default" type="submit" value="Search" style="width: 160px !important;" />
+                    </div>
+                </div>
+            </div>*@
+    }
+
+    @if (Model != null && Model.lstReportWritingProductivityViewModels != null)
+    {
+        <div id="table-responsive">
+            @{
+                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                grid.Bind(Model.lstReportWritingProductivityViewModels, autoSortAndPage: false, rowCount: Model.TotalRecords);
+            }
+            @grid.GetHtml(
+               htmlAttributes: new { id = "grid", @class = "table table-bordered" },
+               headerStyle: "thead-inverse",
+               rowStyle: "ordertxt",
+               footerStyle: "custpaging",
+               mode: WebGridPagerModes.All,
+               columns: new[]
+               {
+                    grid.Column(header: "No.", style:"td-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                    grid.Column(columnName: "SPOC", header: "SPOC", canSort: false, style:"td-1"),
+                    grid.Column(columnName: "RWAssignedDate", header: "RW Assigned Date", canSort: false, style:"td-1"),
+                    grid.Column(columnName: "Client", header: "Client", canSort: false, style:"td-1"),
+                    grid.Column(columnName: "SecuritasID", header: "Securitas ID", canSort: false, style:"td-1"),
+                    grid.Column(columnName: "CandidateName", header: "Candidate Name", canSort: false, style:"td-1"),
+                    grid.Column(columnName: "RWEmployeecode", header: "RW Employeecode", canSort: false, style:"td-1"),
+                    grid.Column(columnName: "RWName", header: "RW Name", canSort: false, style:"td-1"),
+                    grid.Column(columnName: "NoofChecks", header: "No. of Checks", canSort: false, style:"td-1"),
+                    grid.Column(columnName: "RWDoneDate", header: "RW Done Date", canSort: false, style:"td-1"),
+                    grid.Column(columnName: "ReportStatus", header: "Report Status", canSort: false, style:"td-1"),                   
+               })
+            <div class="total-record">Total Records: @Model.TotalRecords</div>
+            <br />
+        </div>
+    }
+</div>
+@section Scripts{
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+
+            $("#grid th").each(function () {
+                if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                    $(this).text('');
+                    $("<input/>", { type: "checkbox", id: "select_all", value: "" }).appendTo($(this));
+
+                }
+            });
+        });
+    </script>
+}
+
+<script>
+    $(document).ready(function () {
+        var table = $('#grid').DataTable({
+            responsive: true,
+        });
+
+        new $.fn.dataTable.FixedHeader(table);
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".iframeCheckList").colorbox({ iframe: true, width: "80%", height: "65%" });
+
+    });
+</script>
+<style>
+    #select_all {
+        width: 30px !important;
+    }
+
+    .personalId {
+        width: 30px !important;
+    }
+
+    @@media screen and (max-width: 1450px) and (min-width: 600px) {
+        #grid {
+            font-size: .90rem;
+            width: 100%;
+        }
+
+        .table td, .table th {
+            padding: .60rem !important;
+        }
+
+        .thead-inverse {
+            font-size: .90rem !important;
+        }
+
+        .table, td, .edit {
+            font-size: .95rem !important;
+        }
+    }
+</style>
+
+

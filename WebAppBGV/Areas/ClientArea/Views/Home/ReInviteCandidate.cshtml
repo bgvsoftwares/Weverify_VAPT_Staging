@@ -1,0 +1,80 @@
+﻿@model ViewModels.VerificationViewModel.checkViewModel
+@{
+    ViewBag.Title = "Re-Invite Candidate";
+}
+
+<div class="container mt-4">
+    <h2 class="text-primary mb-4">🔁 Re-Invite Candidate</h2>
+
+    <!-- 🔍 Search Form -->
+    <form method="get" action="@Url.Action("ReInviteCandidate", "Home")" class="form-inline mb-4">
+     
+        <div class="input-group w-50">
+            <input style="margin-left:20px;" type="text" name="CompanyRefNo" class="form-control" placeholder="Enter CompanyRefNo" value="@Request.QueryString["CompanyRefNo"]" />
+            <div class="input-group-append">
+                <button style="margin-left:20px;" type="submit" class="btn btn-success">Search</button>
+            </div>
+        </div>
+    </form>
+
+    @if (ViewBag.ErrorMsg != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            <strong>Error:</strong> @ViewBag.ErrorMsg
+        </div>
+    }
+
+    @if (Model.ClientServiceChecks != null && Model.ClientServiceChecks.Any())
+    {
+        <form method="post" action="@Url.Action("SubmitSelectedChecks", "Home")">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Select</th>
+                            <th scope="col">Company Ref No</th>
+                            <th scope="col">Check Name</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Order Date</th>
+                            <th scope="col">Out Date</th>
+                            <th scope="col">Created Date</th>
+                            @*<th scope="col">Candidate Name</th>*@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ClientServiceChecks)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="checkbox" name="selectedChecks" value="@item.ClientCheckRowID" />
+                                    <input name="PersonalIdss" value="@item.PersonalRowID.ToString()"  hidden/>
+                                </td>
+                                <td>@item.SecuritasID</td>
+                                <td>@item.CheckName</td>
+                                <td>@item.CheckStatus</td>
+                                <td>@item.OrderDate</td>
+                                <td>@item.OutDate</td>
+                                <td>@item.CreatedDate</td>
+                                @*<td>@item.CheckName</td>*@
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-right">
+                <center>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Re-Invite Selected
+                    </button>
+                </center>
+             
+            </div>
+        </form>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            No checks found for the provided <strong>CompanyRefNo</strong>.
+        </div>
+    }
+</div>

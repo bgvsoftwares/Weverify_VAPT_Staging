@@ -1,0 +1,204 @@
+
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    var list = Model.SpecialInfoModel.Where(x => x.SubcheckRowID == 1005).GroupBy(x => x.SubcheckRowID)
+                          .Select(g => g.First())
+                          .ToList();
+
+    var list1 = Model.CriminalInfoModel.GroupBy(x => x.SubcheckRowID)
+                          .Select(g => g.First())
+                          .ToList();
+
+    var AddressReportComments = new List<string>();
+    var CriminalReportComments = new List<string>();
+
+    foreach (var a in list1)
+    {
+        CriminalReportComments.Add(a.ReportComment);
+    }
+    foreach (var a in list)
+    {
+        AddressReportComments.Add(a.ReportComment);
+    }
+
+    // Helper flags (exclude the literal "no record found")
+    var negativePhrases = new[] { "no record found", "no match found", "verified" };
+
+    bool hasAddressMatches = AddressReportComments.Any(item =>
+        !negativePhrases.Any(phrase => item.Equals(phrase, StringComparison.OrdinalIgnoreCase))
+    );
+
+    bool hasCriminalMatches = CriminalReportComments.Any(item =>
+        !negativePhrases.Any(phrase => item.Equals(phrase, StringComparison.OrdinalIgnoreCase))
+    );
+}
+
+@if ((Model.SpecialInfoModel != null && Model.SpecialInfoModel.Count > 0)
+    || (Model.CriminalInfoModel != null && Model.CriminalInfoModel.Count > 0))
+{
+    <tr>
+        <td valign="top">
+            <table width="100%" border="1" cellpadding="2" cellspacing="5" style="border-collapse:collapse;">
+                <tr>
+                    <td style="font-size:12px; font-family:Calibri; padding-left:5px; font-weight:bold;" width="30%">
+                        Observations:
+                    </td>
+                    @if (Model.FinalColor.ToLower() != "green")
+                    {
+                        <td width="70%" style="padding-left:5px;">
+                            <table style="width:100%;">
+                                @if (hasAddressMatches)
+                                {
+                                    <tr>
+                                        <th style="text-align:start;">
+                                            Address :
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <ul style="margin:0; padding-left:18px; font-size:12px; font-family:Calibri;">
+                                                @foreach (var item in AddressReportComments)
+                                                {
+                                                    if (!negativePhrases.Any(p => p.Equals(item, StringComparison.OrdinalIgnoreCase)))
+                                                    {
+                                                        <li>@Html.Raw(item)</li>
+                                                    }
+                                                }
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                }
+
+                                @* Render Criminal if there are criminal matches OR when Address has NO matches *@
+                                @if (hasCriminalMatches || !hasAddressMatches)
+                                {
+                                    <tr>
+                                        <th style="text-align:start;">
+                                            Criminal :
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <ul style="margin:0; padding-left:18px; font-size:12px; font-family:Calibri;">
+                                                @foreach (var item in CriminalReportComments)
+                                                {
+                                                    if (!negativePhrases.Any(p => p.Equals(item, StringComparison.OrdinalIgnoreCase)))
+                                                    {
+                                                        <li>@Html.Raw(item)</li>
+                                                    }
+                                                }
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                }
+
+                            </table>
+                        </td>
+                    }
+                    else
+                    {
+                        <td width="70%" style="padding-left:5px;"> No Adverse remarks found against this case</td>
+                    }
+                </tr>
+            </table>
+        </td>
+    </tr>
+}
+
+
+
+
+@*@model ViewModels.ReportQCViewModel.ReportViewModel
+    @{
+        var list = Model.SpecialInfoModel.Where(x => x.SubcheckRowID == 1005).GroupBy(x => x.SubcheckRowID)
+                                  .Select(g => g.First())
+                                  .ToList();
+
+        var list1 = Model.CriminalInfoModel.GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+    }
+    @if (Model.SpecialInfoModel != null && Model.SpecialInfoModel.Count > 0 || Model.CriminalInfoModel != null && Model.CriminalInfoModel.Count > 0)
+    {
+
+        List<string> AddressReportComments = new List<string>();
+        List<string> CriminalReportComments = new List<string>();
+        int AddressSubcheckRowID = 0;
+        int CriminalSubcheckRowID = 0;
+
+        foreach (var a in list1)
+        {
+            CriminalSubcheckRowID = a.SubcheckRowID;
+            CriminalReportComments.Add(a.ReportComment);
+        }
+        foreach (var a in list)
+        {
+            AddressSubcheckRowID = a.SubcheckRowID;
+            AddressReportComments.Add(a.ReportComment);
+        }
+
+        <tr>
+            <td valign="top">
+                <table width="100%" border="1" cellpadding="2" cellspacing="5" style="border-collapse:collapse;">
+                    <tr>
+                        <td style="font-size:12px; font-family:Calibri; padding-left:5px; font-weight:bold;" width="30%">
+                            Observations:
+                        </td>
+                        <td width="70%" style="padding-left:5px;">
+                            <table style="width:100%;">
+                                @if (list != null)
+                                {
+                                    <tr>
+                                        <th style="text-align:start;">
+                                            Address
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <ul style="margin:0; padding-left:18px; font-size:12px; font-family:Calibri;">
+                                                @foreach (var item in AddressReportComments)
+                                                {
+                                                    if (!item.Equals("no record found", StringComparison.OrdinalIgnoreCase))
+                                                    {
+                                                        <li>@Html.Raw(item)</li>
+                                                    }
+
+                                                }
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (list1 != null)
+                                {
+                                    <tr>
+                                        <th style="text-align:start;">
+                                            Criminal
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <ul style="margin:0; padding-left:18px; font-size:12px; font-family:Calibri;">
+                                                @foreach (var item in CriminalReportComments)
+                                                {
+                                                    if (!item.Equals("no record found", StringComparison.OrdinalIgnoreCase))
+                                                    {
+                                                        <li>@Html.Raw(item)</li>
+                                                    }
+
+                                                }
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+
+
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+
+    }*@

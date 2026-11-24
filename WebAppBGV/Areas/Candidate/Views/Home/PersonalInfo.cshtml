@@ -1,0 +1,451 @@
+﻿@model ViewModels.ProvidedInfoViewModel.PQPersonalInfoViewModel
+
+@{
+
+    ViewBag.Title = "Personal Information";
+    string imgb64 = ViewBag.LoaImageB64;
+    Layout = "~/Areas/Candidate/Views/Shared/_Layout.cshtml";
+
+    HtmlHelper.ClientValidationEnabled = false;
+    HtmlHelper.UnobtrusiveJavaScriptEnabled = false;
+}
+
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+
+@*@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }*@
+@*@if (ViewBag.ErrorMsg != null)
+    {
+        string err = @ViewBag.ErrorMsg.ToString();
+        //string[] err2 = err.Split(',');
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'Mandatory Fields.',
+                html: '<div class="errormsg" style="text-align:left;"><ol type="1"><li> @err</li> </ol></div>'
+           })
+        </script>
+    }
+    @if (ViewBag.Success != null)
+    {
+        <script>
+            Swal.fire({
+                icon: 'success',
+                html:'<div class="errormsg">@ViewBag.Success.ToString()</div>',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        </script>
+    }*@
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<style>
+    .control-label {
+        font-size: 1.3rem !important;
+    }
+
+    .swal2-confirm {
+        font-size: 1.3rem !important;
+        width: 7rem;
+    }
+
+    .swal2-cancel {
+        font-size: 1.3rem !important;
+        width: 7rem;
+    }
+</style>
+
+@using (Html.BeginForm("PersonalInfo", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div>
+        @Html.Partial("_DisplayTitle")
+
+    </div>
+    <div class="container mb-5" style="width:1050px; margin:10px !important;">
+        @Html.HiddenFor(model => model.ClientRowID, new { @id = "ClientRowID" })
+        @Html.HiddenFor(model => model.PersonalRowID, new { @id = "PersonalRowID" })
+        @Html.HiddenFor(model => model.EncPersonalID, new { @id = "EncPersonalID" })
+        <div class="container mb-3">
+            <div class="row">
+                @*@Html.LabelFor(model => model.CandTitle, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                        @Html.DropDownListFor(model => model.CandTitle,
+                        new SelectList(ViewBag.DepartmentList, "Value", "Text"),
+                        "-- Select -- ",
+                        new { @class = "form-control", @style="font-size:1.3rem;" })
+                    </div>*@
+                @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+                @Html.LabelFor(model => model.Gender, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.Gender, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+            </div>
+        </div>
+        <div class="container mb-3">
+            <div class="row">
+                @Html.LabelFor(model => model.DOB, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.DOB, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+                @Html.LabelFor(model => model.FatherName, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.FatherName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+            </div>
+        </div>
+        <div class="container mb-3">
+            <div class="row">
+                @Html.LabelFor(model => model.MobileNo, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.MobileNo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+                @Html.LabelFor(model => model.AlternateNo, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.AlternateNo, new { htmlAttributes = new { @class = "form-control", @autocomplete = "off", @onkeypress = "return onlyNumericValue(event);", @oninput = "process(this)", @maxlength = "12" } })
+                </div>
+            </div>
+        </div>
+        <div class="container mb-3">
+            <div class="row">
+                @Html.LabelFor(model => model.EmailID, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.EmailID, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+                @Html.LabelFor(model => model.AlternateEmailID, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.AlternateEmailID, new { htmlAttributes = new { @class = "form-control", @maxlength = "100", @autocomplete = "off" } })
+                </div>
+            </div>
+        </div>
+        <div class="container mb-3">
+            <div class="row">
+                @Html.LabelFor(model => model.AadhaarCardNo, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.AadhaarCardNo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+                @Html.LabelFor(model => model.PanCardNo, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.PanCardNo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+            </div>
+        </div>
+        <div class="container mb-3" style="display:none !important;">
+            <div class="row">
+                @Html.LabelFor(model => model.DurationOfStay, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.DurationOfStay, new { htmlAttributes = new { @class = "form-control", @maxlength = "50", @autocomplete = "off" } })
+                </div>
+
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                @Html.LabelFor(model => model.Address, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextAreaFor(model => model.Address, new { @class = "form-control", @row = 3, @col = 20, @maxlength = "2000", @style = "font-size: 1.3rem !important;", @autocomplete = "off" })
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div id="viewContent">
+
+        <table style="width:100%; border-collapse:collapse;border:none; margin:20px auto auto auto!important;">
+            <tbody>
+                <tr>
+                    <td class="bg-success" colspan="2" style="width:507.75pt;border:solid #A6A6A6 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:27.55pt;">
+                        <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><strong><span style='font-size:15px;font-family:"Tahoma",sans-serif;color:white;'>DECLARATION &amp; Authorization</span></strong></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="width: 507.75pt;border-color: currentcolor rgb(166, 166, 166) rgb(166, 166, 166);border-style: none solid solid;border-width: medium 1pt 1pt;border-image: none 100% / 1 / 0 stretch;padding: 0px 5.4pt;height: 127.75pt;vertical-align: top;">
+                        <p style='margin:0px;font-size:16px;font-family:Times New Roman,serif;text-align:justify;'><span style='font-size:13px;font-family:Tahoma,sans-serif;'>&nbsp;</span></p>
+                        <div style='margin:0px;font-size:16px;font-family:Times New Roman,serif'>
+                            <ul style="margin-bottom:0px;list-style-type: disc;margin-left:8.95px;">
+                                <li style='margin:0px;font-size:16px;font-family:"Times New Roman",serif;'><span style='font-family:"Tahoma",sans-serif;color:#626366;font-size:13px;color:#626366;'>I certify that the statements made in this application are valid and complete to the best of my knowledge. I understand that false or misleading information may result in termination of the agreement.</span></li>
+                                <li style='margin:0px;font-size:16px;font-family:"Times New Roman",serif;'><span style='font-family:"Tahoma",sans-serif;color:#626366;font-size:13px;color:#626366;'>If upon investigations, any of this information is found to be incomplete or inaccurate, I understand that agreement will be subject to dismissal at any time during my employment.</span></li>
+                                <li style='margin:0px;font-size:16px;font-family:"Times New Roman",serif;'><span style='font-family:"Tahoma",sans-serif;color:#626366;font-size:13px;color:#626366;'>I hereby authorize</span><span style='font-family:"Tahoma",sans-serif;font-size:13px;'> </span><strong><span style='font-family:"Tahoma",sans-serif;color:#11C9B7;font-size:13px;'>the Company</span></strong><span style='font-family:"Tahoma",sans-serif;font-size:13px;'>&nbsp;<span style="color:#626366;">and/or any of its subsidiaries or affiliates and any persons or organizations acting on its behalf, to verify the information presented on this application form and to procure an investigative report or consumer report for that purpose. &nbsp;</span></span></li>
+                                <li style='margin:0px;font-size:16px;font-family:"Times New Roman",serif;'><span style='font-family:"Tahoma",sans-serif;color:#626366;font-size:13px;color:#626366;'>I hereby grant authority for the bearer of this letter to access or be provided with full details of my previous records. In addition, please provide any other pertinent information requested by the individual presenting this authority.</span></li>
+                                <li style='margin:0px;font-size:16px;font-family:"Times New Roman",serif;'><span style='font-family:"Tahoma",sans-serif;color:#626366;font-size:13px;color:#626366;'>I hereby release from liability all persons or entities requesting or supplying such information.</span></li>
+                                <li style='margin:0px;font-size:16px;font-family:"Times New Roman",serif;'><span style='font-family:"Tahoma",sans-serif;color:#626366;font-size:13px;color:#626366;'>I am aware that no Money/fee/postage/ gift to be paid or given in goodwill to any one during the process of verification and I have informed my family members as well regarding this.&nbsp;</span></li>
+                                <li style='margin:0px;font-size:16px;font-family:"Times New Roman",serif;'><span style='font-family:"Tahoma",sans-serif;color:#626366;font-size:13px;color:#626366;'>I am aware that during the Address verification, no photographs or documents to be shared with verifier through any medium (Whats App, Email, Etc.).&nbsp;</span></li>
+                            </ul>
+                        </div>
+                        <p style='margin:0px;font-size:16px;font-family:"Times New Roman",serif;margin-left:18.0pt;text-align:justify;text-indent:  -13.25pt;'><span style='font-size:13px;font-family:"Tahoma",sans-serif;color:#626366;'>&nbsp;</span></p>
+                        <p style='margin:0px;font-size:16px;font-family:"Times New Roman",serif;margin-left:18.0pt;text-align:justify;text-indent:  -13.25pt;'><span style='font-size:13px;font-family:"Tahoma",sans-serif;color:#626366;'>I have read, understand, and by my signature consent to these statements.</span></p>
+                        <p style='margin:0px;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><span style='font-family:"Tahoma",sans-serif;'>&nbsp;</span></p>
+                        <p style='margin:0px;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><span style='font-family:"Tahoma",sans-serif;'>Please Sign In given below box. And click On Save Button to give your Consent.</span></p>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td colspan="2" style="width:293.95pt;border:solid #A6A6A6 1.0pt;border-top:  none;padding:0cm 5.4pt 0cm 5.4pt;height:71.0pt;">
+                        <div id="signature-pad" class="signature-pad">
+                            <div class="signature-pad--body text-center">
+                                <canvas id="tools_sketch" name="Canvas" style="border:2px solid #000;margin-top:10px;width:400px!important; height:200px!important;  font-size:1.1rem!important;"> </canvas>
+                            </div>
+                            <div class="signature-pad--footer">
+                                <div class="signature-pad--actions " style="height:100%">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-sm-2 signature-button" style="margin-left:25%; text-align:right;margin-top:10px;">
+
+                                                <button name="Edit" type="button" id="btnClear" class="button clear" value="Clear" data-action="clear" style="font-size:1.5rem; padding:5px 20px 5px 20px;">Clear</button>
+
+                                            </div>
+                                            <div class="col-sm-3 signature-button" style="text-align:center;">
+                                                <p style="color:red;font-size:14px;"><span>*</span>If you want to change the signature please clear then save.</p>
+                                                <button type="button" class="button" data-action="change-color" style="font-size:1.5rem; padding:5px 20px 5px 20px;  display:none;">Change color</button>
+                                            </div>
+                                            <div class="col-sm-4 signature-button">
+                                                <button type="button" class="button" data-action="undo" style="font-size:1.5rem; padding:5px 20px 5px 20px;  display:none;">Undo</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-md-2" style="font-size:1.4rem;margin-top:10px;">
+                                                @Html.LabelFor(model => model.LOA_Name, htmlAttributes: new { @class = "control-label col-md-3" })
+                                            </div>
+                                            <div class="col-md-4" style="margin-top:10px;">
+                                                @Html.EditorFor(model => model.LOA_Name, new { @class = "form-control" })
+                                            </div>
+                                            <div class="col-md-2" style="font-size:1.4rem!important;margin-top:10px;">Date Time</div>
+                                            <div class="col-md-4" style="margin-top:10px;">
+                                                @Html.EditorFor(model => model.LOA_TimeStamp, new { htmlAttributes = new { @class = "form-control", @style = "width:15rem!important;", @readonly = "readonly" } })
+                                            </div>
+                                            @*<div class="col-md-2" style="margin-top:10px!important; font-size:1.4rem!important;"> UPload Photo (Optional)</div>
+                                                <div class="col-md-3" style="margin-top:10px!important;">
+                                                    <input type="file" name="file" id="ImageData" onchange="fileCheck(this);" />
+                                                </div>*@
+                                        </div>
+                                    </div>
+
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-sm-4"></div>
+                                            <div class="col-sm-4" style="text-align:center;margin-top:10px!important;">
+                                                <input type="submit" id="submitButton" value="Save" data-action="save-jpg" style="padding: 10px 70px 10px 50px; font-size:1.4rem!important; width:20px!important;" onclick="return validateForm();" />
+                                                <input type="button" id="FinalSubmitButton" value="Final Submit" data-action="save-jpg" style="padding: 10px 70px 10px 50px; font-size:1.4rem!important; width:150px!important;" />
+                                                @Html.Hidden("hfSign", imgb64)
+                                            </div>
+                                            <div class="col-sm-4"></div>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix" style="margin-top:5px;"></div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;'><span style='font-family:"Tahoma",sans-serif;'>&nbsp;</span></p>
+}
+
+
+@section Scripts {
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+    <script src="~/Scripts/signature_pad.umd.js"></script>
+    <script src="~/Scripts/app.js"></script>
+
+    <script type="text/javascript">
+        if ('@ViewBag.Message' == '1') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                html: '<div class="errormsg" style="text-align:center;">Your information and signature has been saved successfully in the system.<br>if you want to submit the given informtion to the verification team then click on the "Final Submit" button.<br>OR <br>if you want to change the information/signature then click on the "Clear" button</div>'
+
+            });
+        }
+    </script>
+    <script>
+
+        function onlyNumericValue(event) {
+            var charCode = (event.which) ? event.which : event.keyCode
+            if (charCode > 31 && (charCode < 48 || charCode > 57))
+                return false;
+            return true;
+        }
+
+        function process(input) {
+            let value = input.value;
+            let numbers = value.replace(/[^0-9]/g, "");
+            input.value = numbers;
+        }
+        function validateForm() {
+            var altn = $("#AlternateNo").val();
+            if (altn != '') {
+                if (altn.length < 10) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning',
+                        html: '<div class="errormsg" style="text-align:center;">Please enter atleast 10-digit number</div>'
+                    });
+                    $("#AlternateNo").focus();
+                    return false;
+                }
+            }
+
+            if (signaturePad.isEmpty()) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    html: '<div class="errormsg" style="text-align:center;">Please provide a signature first.</div>'
+                });
+                return false;
+            }
+            var alonm = $("#LOA_Name").val();
+            if (alonm == '') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    html: '<div class="errormsg" style="text-align:center;">Please enter name</div>'
+                });
+                $("#LOA_Name").focus();
+                return false;
+            }
+
+        }
+
+        $("#FinalSubmitButton").click(function () {
+           var altn = $("#AlternateNo").val();
+            if (altn != '') {
+                if (altn.length < 10) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning',
+                        html: '<div class="errormsg" style="text-align:center;">Please enter atleast 10-digit number</div>'
+                    });
+                    $("#AlternateNo").focus();
+                    return false;
+                }
+            }
+
+            var dataURL = document.getElementById("hfSign").value;
+            if (dataURL == '') {
+               Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    html: '<div class="errormsg" style="text-align:center;">Please provide a signature first.</div>'
+                });
+                return false;
+            }
+            var alonm = $("#LOA_Name").val();
+            if (alonm == '') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    html: '<div class="errormsg" style="text-align:center;">Please enter name</div>'
+                });
+                $("#LOA_Name").focus();
+                return false;
+            }
+
+            var crid = $("#ClientRowID").val();
+            var prid = $("#PersonalRowID").val();
+            var id = $("#EncPersonalID").val();
+            Swal.fire({
+                title: 'Warning',
+                html: "<h4>You cannot change the information after final submit also you logout from the application and not able to login again.<br>Do you want to Proceed further</h4>",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("UpdatetempPQCandidateChecks", "Home")',
+                        type: 'POST',
+                        dataType: 'JSON',
+                        data: { crid: crid, prid: prid },
+                        success: function (result) {
+                            if (result != null) {
+                                window.location.href = '@Url.Action("FinalSubmit1015", "Home")/?id=' + id;
+                            }
+                        }
+                    });
+                }
+            });
+
+
+        });
+
+
+    </script>
+    @*<script type="text/javascript">
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-39365077-1']);
+            _gaq.push(['_trackPageview']);
+
+            (function () {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+
+            })();
+        </script>*@
+
+    <script type="text/javascript">
+        var canvas = document.getElementById("tools_sketch");
+        var ctx = canvas.getContext("2d");
+        make_base();
+
+        function make_base() {
+            base_image = new Image();
+            var a = "data:image/png;base64,@ViewBag.LoaImageB64";
+            base_image.src = a;
+            base_image.onload = function () {
+                ctx.drawImage(base_image, -80, -90);
+            };
+
+            var b = '@Model.LOA_Name';
+            if (a != '' && b != '') {
+
+                document.getElementById("submitButton").disabled = true;
+            }
+            else {
+
+                document.getElementById("submitButton").disabled = false;
+            }
+
+        }
+
+
+
+        $("#btnClear").click(function () {
+            document.getElementById("submitButton").disabled = false;
+            $("#hfSign").val('');
+        });
+
+        $("#AlternateNo").on('input', function () {
+            $("#btnClear").trigger('click');
+        });
+        $("#Address").on('input', function () {
+            $("#btnClear").trigger('click');
+        });
+        $("#AlternateEmailID").on('input', function () {
+            $("#btnClear").trigger('click');
+        });
+        $("#LOA_Name").on('input', function () {
+            $("#btnClear").trigger('click');
+        });
+
+    </script>
+
+
+
+
+
+}

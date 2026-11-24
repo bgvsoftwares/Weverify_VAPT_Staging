@@ -1,0 +1,243 @@
+@model  ViewModels.ProvidedInfoViewModel.AddPQPersonalBulkImportViewModel
+
+@{
+    ViewBag.Title = "Bulk Candidate Import Wipro";
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitleWoutNav") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+
+
+<div class="submit-progress hidden">
+    <i class="fa fa-2x fa-spinner fa-spin"></i>
+    @*<label>Please wait...</label>*@
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("AddBulkImportsWipro", "ClientServicing", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                <div class="form-group branch row">
+                    @Html.LabelFor(model => model.ClientRowID, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                    <div class="col-md-8">
+                        @Html.DropDownListFor(model => model.ClientRowID,
+                            new SelectList(ViewBag.ClientList, "Value", "Text"),
+                            "-- Select Client -- ",
+                            new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ClientRowID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group branch row">
+                    @Html.LabelFor(model => model.UploadDoc, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                    <div class="col-md-3">
+                        @Html.TextBoxFor(model => model.UploadDoc, new { type = "file", @accept = "xls, xlsx" })
+                        @Html.ValidationMessageFor(model => model.UploadDoc, "", new { @class = "text-danger" })
+                    </div>
+                    @*<div class="col-md-3 col-md-offset-2">
+                            <a href="@Url.Action("DownloadDemoExcelDE" , "ProvidedInfo")" target="_blank">Click here for excel template download</a>
+                        </div>*@
+                </div>
+
+                <div>
+                    <a href="@Url.Action("DownloadDummyExcel", "ClientServicing" , new {Clientrowid = "317"})" class="btn bun-bg btn-default">Download WT Excel File</a>
+                    <a href="@Url.Action("DownloadDummyExcel", "ClientServicing" , new {Clientrowid = "327"})" class="btn bun-bg btn-default">Download DOP Excel File</a>
+                </div>
+                <!--<div class="form-group branch row">
+                    @Html.LabelFor(model => model.UploadDoc1, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                    <div class="col-md-3">
+                        @Html.TextBoxFor(model => model.UploadDoc1, new { type = "file", @accept = "xls, xlsx" })
+                        @Html.ValidationMessageFor(model => model.UploadDoc1, "", new { @class = "text-danger" })
+                    </div>-->
+                    @*<div class="col-md-3 col-md-offset-2">
+                            <a href="@Url.Action("DownloadDemoExcelDE" , "ProvidedInfo")" target="_blank">Click here for excel template download</a>
+                        </div>*@
+                <!--</div>-->
+                @*<div class="form-group branch row">
+                        <label class="col-md-2 control-label">Pricing Type : </label>
+                        <div class="col-md-3">
+                            @Html.DropDownList("PricingType", new List<SelectListItem>
+                                { new SelectListItem { Text = "Pricing Type", Value = "0" },
+                                   new SelectListItem { Text = "Package", Value = "1" },
+                                    new SelectListItem { Text = "Check", Value = "2" }},
+                                new { @class = "form-control" })
+                        </div>
+                    </div>*@
+                <div class="form-group branch row"></div>
+                @*<div id="dvChksPcks" class="col-md-12">
+                        <fieldset class="scheduler-border">
+                            <legend class="scheduler-border"> Selected Checks And Package <em>*</em></legend>
+                            <div class="form-group branch row">
+                                <div class="form-group branch col-md-12">
+                                    <div id="dvChecksPackages" class="scroll down row">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    @Html.HiddenFor(model => model.CandidateCheckOrPackage)*@
+                <div class="form-group branch row"></div>
+                <div class="all-button-bg">
+                    @Html.ActionLink("Back", "Index", "ClientServicing", null, new { @class = "btn bun-bg btn-default" })
+                    <input class="btn bun-bg btn-default" type="submit" onclick="return validateForm(this,'Saving...')" value="Submit" />
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts{
+
+    <link href="~/assets/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dvChksPcks').hide();
+        });
+
+        $(document).on('change', 'input[class="chkPkgChks"]', function (e) {
+            var selectedIds = '';
+            $('input[class="chkPkgChks"]').each(function (index, value) {
+                if (this.checked) { selectedIds += this.value + ','; }
+            });
+            if (selectedIds.length > 0) {
+                selectedIds = selectedIds.substring(0, selectedIds.length - 1);
+            } else { selectedIds = ''; }
+
+            $('#CandidateCheckOrPackage').val(selectedIds.trim());
+        });
+
+        $(function () {
+            $('#ClientRowID').change(function () {
+                $('#PricingType').val(0);
+                $('#dvChksPcks').hide();
+            });
+
+        //    $('#PricingType').change(function () {
+        //        if ($('#ClientRowID').val() > 0) {
+        //            var url1 = "/ProvidedInfo/GetChecksAndPackageByClientId1?cid=" + $("#ClientRowID").val() + "&pt=" + $("#PricingType").val();
+        //            $.ajax({
+        //                url: url1,
+        //                type: 'GET',
+        //                async: false,
+        //                dataType: 'json',
+        //                success: function (allData) {
+        //                    if (allData != null && allData != "") {
+        //                        $('#dvChksPcks').show();
+        //                        var items = '';
+        //                        jQuery.each(allData, function (index, allData) {
+        //                            if (allData.CheckFamilyRowID != 0) {
+        //                                items += "<div  class='col-md-6'><input type='checkbox' class='chkPkgChks'' value='Check-" + allData.ClientCheckRowID + "' /> " + allData.CheckOrPackageName + "</div>";
+        //                            }
+        //                            else {
+        //                                items += "<div  class='col-md-6'><input type='checkbox' class='chkPkgChks' name='checkbox1' onClick='ckChange(this)' value='Package-" + allData.CheckOrPackageName + "' /> " + allData.CheckOrPackageName + "</div>";
+        //                            }
+        //                        });
+        //                        $('#dvChecksPackages').html(items);
+        //                    }
+        //                    else {
+        //                        $('#dvChksPcks').hide();
+        //                        alert("No Checks And Packages Selected");
+        //                    }
+        //                },
+        //                error: function (XMLHttpRequest, textStatus, errorThrown) {
+        //                    alert("some error");
+        //                }
+        //            });
+        //        }
+        //        else {
+        //            alert("Select a client first!");
+        //        }
+        //    });
+        //});
+
+        function validateForm(ctl, msg) {
+            if ($('#UploadDoc').val() == '') {
+                alert("Upload Document");
+                return false;
+            }
+
+            //if ($('#PricingType').val() == 0) {
+            //    alert("Select Pricing Type");
+            //    $('#PricingType').focus();
+            //    return false;
+            //}
+
+            //var chkCount = 0;
+            //$('input.chkPkgChks:checkbox').each(function (index, value) {
+            //    if (this.checked) {
+            //        chkCount += 1;
+            //    }
+            //});
+            //if (chkCount == 0) {
+            //    alert("Please select atleast one Check or Package.");
+            //    return false;
+            //}
+
+            event.preventDefault();
+            $(ctl).prop("disabled", true).val(msg);
+            $("body").addClass("submit-progress-bg");
+            $(".submit-progress").removeClass("hidden");
+            setTimeout(function () {
+                $("form").submit();
+            }, 1);
+
+
+
+            return true;
+        }
+        function ckChange(el) {
+            var ckName = document.getElementsByName(el.name);
+            for (var i = 0, c; c = ckName[i]; i++) {
+                c.disabled = !(!el.checked || c === el);
+            }
+        }
+    </script>
+    <style>
+        .submit-progress-bg {
+            background-color: lightgray;
+            opacity: .5;
+        }
+
+        .submit-progress {
+            position: fixed;
+            top: 45%;
+            left: 60%;
+            height: 5em;
+            padding-top: 2.3em;
+            z-index: 1;
+            /* The following properties are the ones most likely to change */
+            width: 20em;
+            /* Set 'margin-left' to a negative number that is 1/2 of 'width' */
+            margin-left: -10em;
+            padding-left: 1.1em;
+            color: white;
+            -webkit-border-radius: 0.4em;
+            -moz-border-radius: 0.4em;
+            border-radius: 0.4em;
+        }
+
+        /* Changing style for spinner */
+        .submit-progress {
+            padding-top: 0em;
+            width: 19em;
+            margin-left: -11.5em; /* Set to a negative number that is 1/2 of the width */
+        }
+
+            .submit-progress i {
+                margin-right: 0.5em;
+                color: black
+            }
+
+        .hidden {
+            display: none;
+        }
+
+        .fa-2x {
+            font-size: 4em;
+        }
+    </style>
+}

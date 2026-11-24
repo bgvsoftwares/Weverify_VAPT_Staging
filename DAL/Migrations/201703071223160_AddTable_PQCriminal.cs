@@ -1,0 +1,148 @@
+namespace DAL.Migrations
+{
+    using System;
+    using System.Data.Entity.Migrations;
+    
+    public partial class AddTable_PQCriminal : DbMigration
+    {
+        public override void Up()
+        {
+            CreateTable(
+                "dbo.PQCriminals",
+                c => new
+                    {
+                        CriminalRowId = c.Int(nullable: false, identity: true),
+                        ClientRowID = c.Short(nullable: false),
+                        PersonalRowID = c.Int(nullable: false),
+                        ClientPackageRowID = c.Int(nullable: false),
+                        CheckFamilyRowID = c.Short(nullable: false),
+                        SubCheckRowID = c.Short(nullable: false),
+                        UniqueComponentID = c.String(maxLength: 20),
+                        CRV_Cand_Name = c.String(nullable: false, maxLength: 100),
+                        CRV_Sec_Ref_No = c.String(maxLength: 50),
+                        CRV_DOB = c.DateTime(),
+                        CRV_Father_Name = c.String(maxLength: 100),
+                        CRV_First_Name = c.String(maxLength: 50),
+                        CRV_Last_Name = c.String(maxLength: 50),
+                        CRV_Nationality = c.String(maxLength: 50),
+                        CRV_Name_Chngd_Effect_Frm = c.DateTime(),
+                        CRV_Nationality_On_Passport = c.String(maxLength: 50),
+                        CRV_Country_of_Issue = c.String(maxLength: 100),
+                        CRV_Addr_Type = c.String(maxLength: 50),
+                        CRV_Current_Addr = c.String(maxLength: 200),
+                        CRV_Prev_Addr1 = c.String(maxLength: 200),
+                        CRV_Prev_Addr2 = c.String(maxLength: 200),
+                        CRV_Prev_Addr3 = c.String(maxLength: 200),
+                        CRV_Prev_Addr4 = c.String(maxLength: 200),
+                        CRV_Permanent_Addr = c.String(maxLength: 200),
+                        CRV_Period_Of_Stay = c.String(maxLength: 100),
+                        CRV_Gender = c.String(maxLength: 20),
+                        CRV_Identity_No = c.String(maxLength: 100),
+                        CRV_Identity_Prov = c.String(maxLength: 200),
+                        CRV_Doc_Received = c.String(maxLength: 200),
+                        CRV_IdentityProof = c.Byte(nullable: false),
+                        CRV_AddressProof = c.Byte(nullable: false),
+                        CRV_AuthrizedLetter = c.Byte(nullable: false),
+                        CRV_OtherProof = c.Byte(nullable: false),
+                        CRV_Others = c.String(maxLength: 200),
+                        CRV_Others2 = c.String(maxLength: 200),
+                        CRV_Others3 = c.String(maxLength: 200),
+                        CRV_Others4 = c.String(maxLength: 200),
+                        CRV_Others5 = c.String(maxLength: 200),
+                        CRV_Others6 = c.String(maxLength: 200),
+                        CRV_Others7 = c.String(maxLength: 200),
+                        CRV_Others8 = c.String(maxLength: 200),
+                        CRV_Others9 = c.String(maxLength: 200),
+                        CRV_Others10 = c.String(maxLength: 200),
+                        ATA_CID_No = c.String(maxLength: 50),
+                        ATA_Cmpny_Addr = c.String(maxLength: 200),
+                        CreatedBy = c.Short(nullable: false),
+                        CreatedDate = c.DateTime(),
+                        OutDate = c.DateTime(),
+                        InternalOutDate = c.DateTime(),
+                        ModifiedBy = c.Short(nullable: false),
+                        ModifiedDate = c.DateTime(),
+                        CheckStatus = c.String(maxLength: 20),
+                        CaseStatus = c.String(maxLength: 20),
+                        Remarks = c.String(maxLength: 200),
+                        Status = c.Byte(nullable: false),
+                        MgrAllocatedBy = c.Short(nullable: false),
+                        MgrAllocatedTo = c.Short(nullable: false),
+                        MgrAllocatedDate = c.DateTime(),
+                        TLAllocatedBy = c.Short(nullable: false),
+                        TLAllocatedTo = c.Short(nullable: false),
+                        TLAllocatedDate = c.DateTime(),
+                        TMAllocatedBy = c.Short(nullable: false),
+                        TMAllocatedTo = c.Short(nullable: false),
+                        TMAllocatedDate = c.DateTime(),
+                        TMQCAllocatedBy = c.Short(nullable: false),
+                        TMQCAllocatedTo = c.Short(nullable: false),
+                        TMQCAllocatedDate = c.DateTime(),
+                        PVMgrAllocatedBy = c.Short(nullable: false),
+                        PVMgrAllocatedTo = c.Short(nullable: false),
+                        PVMgrAllocatedDate = c.DateTime(),
+                        PVTLAllocatedBy = c.Short(nullable: false),
+                        PVTLAllocatedTo = c.Short(nullable: false),
+                        PVTLAllocatedDate = c.DateTime(),
+                        PVTMAllocatedBy = c.Short(nullable: false),
+                        PVTMAllocatedTo = c.Short(nullable: false),
+                        PVTMAllocatedDate = c.DateTime(),
+                        PVTMQCAllocatedBy = c.Short(nullable: false),
+                        PVTMQCAllocatedTo = c.Short(nullable: false),
+                        PVTMQCAllocatedDate = c.DateTime(),
+                        PVFVAllocatedBy = c.Short(nullable: false),
+                        PVFVQAllocatedTo = c.Short(nullable: false),
+                        PVFVAllocatedDate = c.DateTime(),
+                        Verify = c.Byte(nullable: false),
+                        VerifiedBy = c.Short(nullable: false),
+                        VerifiedDate = c.DateTime(),
+                        InfSuffRaiseBy = c.Short(nullable: false),
+                        InfSuffRaisedDate = c.DateTime(),
+                        InfSuffClearBy = c.Short(nullable: false),
+                        InfSuffClearDate = c.DateTime(),
+                        Mailto = c.String(maxLength: 200),
+                        MailtoClient = c.String(maxLength: 200),
+                        MailedBy = c.String(maxLength: 100),
+                        ClientComment = c.String(maxLength: 100),
+                        ClienINFClearDate = c.DateTime(),
+                        INFRemarks = c.String(maxLength: 200),
+                        StoppedCheckStatus = c.Byte(nullable: false),
+                        StoppedCheckBy = c.Short(nullable: false),
+                        StoppedCheckDate = c.DateTime(),
+                        StoppedCheckClearBy = c.Short(nullable: false),
+                        StoppedCheckClearDate = c.DateTime(),
+                        ReportWritterBy = c.Short(nullable: false),
+                        ReportWritterDate = c.DateTime(),
+                        RWQCManageBy = c.Short(nullable: false),
+                        RWQCManageDate = c.DateTime(),
+                        RWQCTeamLeaderBy = c.Short(nullable: false),
+                        RWQCTeamLeaderDate = c.DateTime(),
+                        RWQCTeamMemberBy = c.Short(nullable: false),
+                        RWQCTeamMemberDate = c.DateTime(),
+                    })
+                .PrimaryKey(t => t.CriminalRowId)
+                .ForeignKey("dbo.MasterCheckFamilies", t => t.CheckFamilyRowID)
+                .ForeignKey("dbo.MasterSubCheckFamilies", t => t.SubCheckRowID)
+                .ForeignKey("dbo.PQClientMasters", t => t.ClientRowID)
+                .ForeignKey("dbo.PQPersonals", t => t.PersonalRowID)
+                .Index(t => t.ClientRowID)
+                .Index(t => t.PersonalRowID)
+                .Index(t => t.CheckFamilyRowID)
+                .Index(t => t.SubCheckRowID);
+            
+        }
+        
+        public override void Down()
+        {
+            DropForeignKey("dbo.PQCriminals", "PersonalRowID", "dbo.PQPersonals");
+            DropForeignKey("dbo.PQCriminals", "ClientRowID", "dbo.PQClientMasters");
+            DropForeignKey("dbo.PQCriminals", "SubCheckRowID", "dbo.MasterSubCheckFamilies");
+            DropForeignKey("dbo.PQCriminals", "CheckFamilyRowID", "dbo.MasterCheckFamilies");
+            DropIndex("dbo.PQCriminals", new[] { "SubCheckRowID" });
+            DropIndex("dbo.PQCriminals", new[] { "CheckFamilyRowID" });
+            DropIndex("dbo.PQCriminals", new[] { "PersonalRowID" });
+            DropIndex("dbo.PQCriminals", new[] { "ClientRowID" });
+            DropTable("dbo.PQCriminals");
+        }
+    }
+}

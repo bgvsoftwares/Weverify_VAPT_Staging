@@ -1,0 +1,111 @@
+﻿@model ViewModels.ClientViewModel.EditPackageClientChecksViewModel
+
+@{
+    ViewBag.Title = "Manage Client Checks (" + Convert.ToString(Session["ClientNameForContract"]) + ")";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManagePackages", "Client", new { CId = Request.QueryString["CId"] }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+@section LeftNavigation{ @Html.Partial("_NavLeftClient") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@{
+    //For ClientTabs Section
+    ViewBag.ClientID = Request.QueryString["CId"];
+    ViewBag.CheckCssClass = "current";
+}
+@section ClientTabs{ @Html.Partial("_ClientTabs") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row"></div>
+                <div class="col-md-12">
+                    @using (Html.BeginForm("EditPackageClientChecks", "Client", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(model => model.ClientPackageRowID, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.HiddenFor(model => model.ClientRowID, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.HiddenFor(model => model.CheckFamilyRowID, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.HiddenFor(model => model.SubCheckRowID, new { htmlAttributes = new { @class = "form-control" } })
+
+                        <div class="form-group branch row">
+                            @Html.LabelFor(model => model.ClientPackageName, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                            <div class="col-md-4">
+                                @Html.EditorFor(model => model.ClientPackageName, new { htmlAttributes = new { @class = "form-control " } })
+                                @Html.ValidationMessageFor(model => model.ClientPackageName, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.LabelFor(model => model.PackageNameInReport, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                            <div class="col-md-4">
+                                @Html.EditorFor(model => model.PackageNameInReport, new { htmlAttributes = new { @class = "form-control " } })
+                                @Html.ValidationMessageFor(model => model.PackageNameInReport, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group branch row">
+                            @Html.LabelFor(model => model.SubCheckFamilyName, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                            <div class="col-md-4">
+                                @Html.EditorFor(model => model.SubCheckFamilyName, new { htmlAttributes = new { @class = "form-control " } })
+                                @Html.ValidationMessageFor(model => model.SubCheckFamilyName, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.LabelFor(model => model.CheckNameInReport, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                            <div class="col-md-4">
+                                @Html.EditorFor(model => model.CheckNameInReport, new { htmlAttributes = new { @class = "form-control " } })
+                                @Html.ValidationMessageFor(model => model.CheckNameInReport, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group branch row">
+                            @Html.LabelFor(model => model.CostPerCheck, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                            <div class="col-md-2">
+                                @Html.EditorFor(model => model.CostPerCheck, new { htmlAttributes = new { @class = "form-control " } })
+                                @Html.ValidationMessageFor(model => model.CostPerCheck, "", new { @class = "text-danger" })
+                            </div>
+
+                            @Html.LabelFor(model => model.BillingPerCheck, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                            <div class="col-md-2">
+                                @Html.EditorFor(model => model.BillingPerCheck, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.BillingPerCheck, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group branch row">
+                            @Html.LabelFor(model => model.InternalTAT, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                            <div class="col-md-2">
+                                @Html.EditorFor(model => model.InternalTAT, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.InternalTAT, "", new { @class = "text-danger" })
+                            </div>                          
+
+                            @Html.LabelFor(model => model.TAT, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                            <div class="col-md-2">
+                                @Html.EditorFor(model => model.TAT, new { htmlAttributes = new { @class = "form-control " } })
+                                @Html.ValidationMessageFor(model => model.TAT, "", new { @class = "text-danger" })
+                            </div>
+
+                            @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                            <div class="col-md-1">
+                                @Html.EditorFor(model => model.Status, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+                        <div class="form-group branch row">
+                            
+                            
+                        </div>
+                        <div class="all-button-bg">
+                            <input class="btn bun-bg btn-default" type="submit" value="Submit" />
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+}

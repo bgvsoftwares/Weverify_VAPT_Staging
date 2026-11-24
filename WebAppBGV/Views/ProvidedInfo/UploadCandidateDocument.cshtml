@@ -1,0 +1,243 @@
+﻿@using ViewModels.ProvidedInfoViewModel;
+@using WebAppBGV.CommonMethods;
+@model ViewModels.ProvidedInfoViewModel.PQAddVerifiedUploadDocViewModel
+@{
+    ViewBag.Title = "Upload New Document (" + Convert.ToString(Session["CandidateName"]) + ")";
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+
+    string hyperLink = string.Empty;
+    if (Request.QueryString["CaseStatus"] != null)
+    {
+        hyperLink = Html.ActionLink("linkTitle", "ManageUploadDocmentList", "ProvidedInfo", new { pid = clsCommonMethods.PEncrypt(Model.PersonalRowID.ToString()), CaseStatus = clsCommonMethods.PEncrypt(Request.QueryString["Casestatus"].ToString()) }, new { @class = "headerbacklink" }).ToString();
+    }
+    else if (Request.QueryString["tatHours"] != null)
+    {
+        hyperLink = Html.ActionLink("linkTitle", "ManageUploadDocmentList", "ProvidedInfo", new { pid = clsCommonMethods.PEncrypt(Model.PersonalRowID.ToString()), tatHours = Request.QueryString["tatHours"].ToString() }, new { @class = "headerbacklink" }).ToString();
+    }
+    else if (Request.QueryString["window"] == "TLDE")
+    {
+        hyperLink = Html.ActionLink("linkTitle", "ManageCandidateChecksForReportQCTM", "ProvidedInfo", new { PersonalRowID = Model.PersonalRowID, dispFor = "TeamMember" }, new { @class = "headerbacklink" }).ToString();
+    }
+    else if (Request.QueryString["W"] == "RWQC")
+    {
+        hyperLink = Html.ActionLink("linkTitle", "ManageCandidateChecksForReportQCTM", "ReportQC", new { PersonalRowID = Model.PersonalRowID }, new { @class = "headerbacklink" }).ToString();
+    }
+    else
+    {
+        hyperLink = Html.ActionLink("linkTitle", "ManageUploadDocmentList", "ProvidedInfo", new { pid = clsCommonMethods.PEncrypt(Model.PersonalRowID.ToString()) }, new { @class = "headerbacklink" }).ToString();
+    }
+
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    <div class="row m-3">
+        <table><tr><td class="personal-details-head" align="right">@Html.ActionLink("Check Action History", "CheckActionHistory", "ProvidedInfo", new { scid = @ViewBag.PersonalBind.SubCheckRowID, pe = @ViewBag.PersonalBind.PersonalRowID }, new { @class = "iframeActionHistories cboxElement btn btn-default" })</td></tr></table>
+    </div>
+}
+@section LeftNavigation{ @Html.Partial("_NavLeftDataEntryProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("UploadCandidateDocument", "ProvidedInfo", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.PersonalRowID)
+            @Html.HiddenFor(model => model.CheckFamilyRowID)
+            @Html.HiddenFor(model => model.SubCheckRowID)
+            @Html.HiddenFor(model => model.ClientRowId)
+
+            <div class="form-horizontal">
+                @Html.Partial("_InstructionDetails")
+                <div class="row m-3">
+                    <table width="100%"><tr><td>@Html.Partial("_DocumentList")</td></tr></table>
+                </div>
+                <div id="dvChksPcks">
+                    <div class="form-group branch row">
+                        <div class="row" style="margin-top:15px;width:100%;">
+                            <div class="col-md-3" style="padding-left:25px;">
+                                @Html.LabelFor(model => model.SubCheckRowID, htmlAttributes: new { @class = "form-label" })
+                            </div>
+                            <div class="col-md-1">
+                                &nbsp;
+                            </div>
+                            <div class="col-md-5">
+                                @Html.DropDownListFor(model => model.SubCheckRowID,
+          new SelectList(ViewBag.CheckList, "SubCheckRowID", "SubCheckName"),
+                 "- Select Check -", new { @class = "form-control", @disabled = "disabled" })
+                            </div>
+                        </div>
+
+                        <div id="dvUplodDoc" style="width:100%;">
+                        </div>
+                        <div class="row" style="margin-top:15px;width:100%;">
+                            <div class="col-md-3" style="padding-left:25px;">
+                                @Html.LabelFor(model => model.OtherDocName, htmlAttributes: new { @class = "form-label" })
+                            </div>
+                            <div class="col-md-1">
+                                &nbsp;
+                            </div>
+                            <div class="col-md-5">
+                                @Html.TextBoxFor(model => model.OtherDocName, new { @class = "form-control", })
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top:15px;width:100%;">
+                            <div class="col-md-3" style="padding-left:25px;">
+                                @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "form-label" })
+                            </div>
+                            <div class="col-md-1">
+                                &nbsp;
+                            </div>
+                            <div class="col-md-5">
+                                @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @rows = "4" })
+                            </div>
+                        </div>
+                        @Html.Hidden("UploadHid", null)
+                        @Html.HiddenFor(model => model.CheckWithFileName, new { id = "CheckWithFileName" })
+                    </div>
+
+                    <div class="all-button-bg m-5">
+                        @if (Request.QueryString["W"] == "TLDE")
+                        {
+                            @Html.ActionLink("Back", "ManageCandidateChecksForReportQCTM", "ProvidedInfo", new { PersonalRowID = Model.PersonalRowID, dispFor = "TeamMember" }, new { @class = "btn bun-bg btn-default" })
+                        }
+                        else if (Request.QueryString["W"] == "RWQC")
+                        {
+                            hyperLink = Html.ActionLink("linkTitle", "ManageCandidateChecksForReportQCTM", "ReportQC", new { PersonalRowID = Model.PersonalRowID }, new { @class = "headerbacklink" }).ToString();
+                        }
+                        else
+                        {
+                            @Html.ActionLink("Back", "ManageUploadDocmentList", "ProvidedInfo", new { pid = clsCommonMethods.PEncrypt(Model.PersonalRowID.ToString()), CRId = clsCommonMethods.PEncrypt(Model.ClientRowId.ToString()) }, new { @class = "btn bun-bg btn-default" })
+                        }
+
+                        <input class="btn bun-bg btn-default" type="submit" value="Submit" onclick="return fnGetFiles()" />
+                    </div>
+                </div>
+            </div>
+
+        }
+    </div>
+</div>
+<style>
+    input[type="checkbox"], input[type="radio"] {
+        width: 25px;
+        height: 25px;
+    }
+
+    .form-label {
+        font-size: 1.5rem;
+        padding-top: 3px;
+    }
+
+    .form-control {
+        font-size: 13px;
+    }
+</style>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    <script>
+
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+            if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected" || $("#CheckStatus").val() == "Review Requested") {
+                $("#INFRemarks").prop("disabled", false);
+            }
+            else {
+                $("#INFRemarks").prop("disabled", true);
+            }
+
+
+
+        });
+        $(document).ready(function () {
+            if ($("#SubCheckRowID").val() != 0) {
+                var url1 = "/ProvidedInfo/GetDocumentTypeListBySubCheckID/" + $("#SubCheckRowID").val();
+                $.ajax({
+                    url: url1,
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+                    success: function (allData) {
+                        if (allData != null && allData != "") {
+                            $('#dvChksPcks').show();
+                            var items = '';
+                            jQuery.each(allData, function (index, allData) {
+                                items += "<div class='row' style='margin-top:15px;'><div class='col-md-3'><label class='branch rowname form-label'>" + allData.Text + " :</label></div><div class='col-md-1'><input type='checkbox' name='chkPkgChks'  value=" + allData.Value + " class='form-check'/></div><div class='col-md-5'><input class='form-control' data-val='true' name='UploadDoc' disabled='true' type='file' value=" + allData.Value + "  id=" + allData.Value + " onchange='return fileValidation(this)' accept='.png, .jpg, .jpeg, .pdf, .doc, .zip, .msg' multiple> </div></div>";
+                            });
+                            $('#dvUplodDoc').html(items);
+                        }
+                        else {
+                            $('#dvChksPcks').hide();
+                            alert("No Doc Selected");
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("some error");
+                    }
+                });
+            }
+            else {
+                $('#dvChksPcks').hide();
+            }
+        });
+
+        $(document).on('change', 'input[name="chkPkgChks"]', function (e) {// on change of state
+            var chkPkgChkss = '';
+            $('input[name="chkPkgChks"]').each(function (index, value) {
+                if (this.checked) {
+                    chkPkgChkss += this.value + ',';
+                    $("#" + this.value + "").removeAttr("disabled");
+                }
+                else {
+                    $("#" + this.value + "").attr("disabled", "disabled");
+                }
+            });
+
+            if (chkPkgChkss.length > 0) {
+                chkPkgChkss = chkPkgChkss.substring(0, chkPkgChkss.length - 1);
+            } else { chkPkgChkss = ''; }
+            $('#UploadHid').val(chkPkgChkss.trim());
+
+        });
+        function fnGetFiles() {
+            var docs = [];
+            $('input[name="chkPkgChks"]').each(function (index, value) {
+                if (this.checked) {
+                    idv = this.value;
+                    var fi = document.getElementById(idv);
+                    for (var i = 0; i <= fi.files.length - 1; i++) {
+                        docs.push(idv + "|" + fi.files.item(i).name + "|" + parseInt(i + 1).toString());
+                    }
+                    $('#CheckWithFileName').val(docs.join(","));
+                }
+            });
+            if (docs.length > 0) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        function fileValidation(fileInput) {
+            var filePath = fileInput.value;
+            var allowedExtensions = /(\.gif|\.GIF\.doc|\.docx|\.xls|\.xlsx|\.pdf|\.rtf|\.txt|\.jpeg|\.jpg|\.png|\.eml|\.email|\.msg|\.DOC|\.DOCX|\.XLS|\.XLSX|\.PDF|\.RTF|\.TXT|\.JPEG|\.JPG|\.PNG|\.EML|\.EMAIL|\.MSG|\.WEBP|\.webp)$/i;
+            if (!allowedExtensions.exec(filePath)) {
+                alert('Please upload file having extensions .doc/.gif/.GIF/.docx/.xls/.xlsx/.pdf/.rtf/.txt/.jpeg/.jpg/.png/.eml/.email/.msg/.DOC/.DOCX/.XLS/.XLSX/.PDF/.RTF/.TXT/.JPEG/.JPG/.PNG/.EML/.EMAIL/.MSG/.WEBP/.webp only.');
+                fileInput.value = '';
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+    </script>
+}

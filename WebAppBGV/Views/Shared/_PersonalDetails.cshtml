@@ -1,0 +1,427 @@
+﻿@* Personal Details *@
+
+@{ 
+    string userid = Session["CRPUserName"].ToString();
+}
+
+@if (ViewBag.PersonalBind != null)
+{
+    <table style="width:100%">
+        <tr>
+            <td class="personal-details-head"><i class="fa fa-file-text-o" aria-hidden="true"></i> Personal Details :</td>
+            @if (ViewBag.PersonalBind.CheckFamilyRowID == 12)
+            {
+                if (!userid.ToUpper().Contains("PARTNER"))
+                {
+                    <td class="personal-details-head" align="right">@Html.ActionLink("Check Verification Employment History", "GetEmploymentVerificationHistories", "Verification", new { AuditType = @ViewBag.PersonalBind.employmentName, PersonalRowID = @ViewBag.PersonalBind.PersonalRowID, SubCheckRowID = @ViewBag.PersonalBind.SubCheckRowID }, new { @class = "iframeActionHistories cboxElement btn btn-default" })</td>
+                }
+            }
+            else if (ViewBag.PersonalBind.CheckFamilyRowID == 11)
+            {
+                if (!userid.ToUpper().Contains("PARTNER"))
+                {
+                    <td class="personal-details-head" align="right">@Html.ActionLink("Check Verification Education History", "GetEducationVerificationHistories", "Verification", new { AuditType = @ViewBag.PersonalBind.collegeName, PersonalRowID = @ViewBag.PersonalBind.PersonalRowID, SubCheckRowID = @ViewBag.PersonalBind.SubCheckRowID }, new { @class = "iframeActionHistories cboxElement btn btn-default" })</td>
+                }
+            }
+
+           
+            @if (!userid.ToUpper().Contains("PARTNER"))
+            {
+                <td class="personal-details-head" align="right">
+                    @if ((ViewBag.PersonalBind.ClientRowID == 317 || ViewBag.PersonalBind.ClientRowID == 327) && ViewBag.PersonalBind.CreatedBySource == "API")
+                    {
+                        @Html.ActionLink("Candidate Details", "CandidateDetailsAPI", "ProvidedInfo", new { UniqueReferenceID = @ViewBag.PersonalBind.ClientRefId, Types = "candidate_details", LoginType = "DETL" }, new { @class = "iframeActionHistories cboxElement btn btn-default mr-3" })
+
+                        @Html.ActionLink("Gap List", "PatternDetailsCheck", "ProvidedInfo", new { UniqueReferenceID = @ViewBag.PersonalBind.ClientRefId, Types = "gaplist", LoginType = "DETL" }, new { @class = "iframeActionHistories cboxElement btn btn-default mr-3" })
+
+                        @Html.ActionLink("Client Remarks", "CaseRemarksAPI", "ProvidedInfo", new { UniqueReferenceID = @ViewBag.PersonalBind.ClientRefId, Types = "CaseRemarksAPI", LoginType = "DETL" }, new { @class = "iframeActionHistories cboxElement btn btn-default mr-3" })
+
+                        @Html.ActionLink("Check Pattern", "PatternDetailsCheck", "ProvidedInfo", new { UniqueReferenceID = @ViewBag.PersonalBind.ClientRefId, Types = "PatternDetails", LoginType = "DETL" }, new { @class = "iframeActionHistories cboxElement btn btn-default" })
+                    }
+                    @Html.ActionLink("Check Action History", "CheckActionHistory", "Verification", new { scid = @ViewBag.PersonalBind.SubCheckRowID, pe = @ViewBag.PersonalBind.PersonalRowID }, new { @class = "iframeActionHistories cboxElement btn btn-default" })
+                </td>
+
+            }
+            @*<td class="personal-details-head" id="btnStopAutomation" onclick="return validateForm()" align="right">@Html.ActionLink("Stop Automation", "StopAutomation", "Verification", new { scid = @ViewBag.PersonalBind.SubCheckRowID, pe = @ViewBag.PersonalBind.PersonalRowID, CheckStatusId = @ViewBag.PersonalBind.CheckStatusID, AuditType = @ViewBag.PersonalBind.CheckFamilyRowID }, new { @class = "iframeActionHistories cboxElement btn btn-default" })</td>*@
+            @*<td class="personal-details-head" id="btnStopVendor" align="right">@Html.ActionLink("Stop Vendor", "StopVendor", "Verification", new { pe = @ViewBag.PersonalBind.PersonalRowID, scid = @ViewBag.PersonalBind.SubCheckRowID, CheckStatusId = @ViewBag.PersonalBind.CheckStatusID, AuditType = @ViewBag.PersonalBind.CheckFamilyRowID }, new { @class = "iframeActionHistories cboxElement btn btn-default" })</td>*@
+        </tr>
+        <tr>
+
+            <td valign="top" colspan="2">
+                <table class="personal-details-frame" style="width:100%;">
+                    <tr>
+                        <td class="personal_name">Client Name :</td>
+                        <td class="personal_name2">@ViewBag.PersonalBind.ClientName</td>
+                        <td class="personal_name">Securitas Id :</td>
+                        <td class="personal_name2">
+                            @ViewBag.PersonalBind.CompanyReferenceNo
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="personal_name">Unique Component ID :</td>
+                        <td class="personal_name2">
+                            @ViewBag.PersonalBind.UniqueComponentID
+                        </td>
+                        <td class="personal_name">Sub Check :</td>
+                        <td class="personal_name2">@ViewBag.PersonalBind.SubReferenceID</td>
+                    </tr>
+                    <tr>
+                        <td class="personal_name">Candidate Name :</td>
+                        <td class="personal_name2">@ViewBag.PersonalBind.CandidateName</td>
+                        <td class="personal_name">Mobile No :</td>
+                        <td class="personal_name2">
+                            @if (!userid.ToLower().Contains("partner"))
+                            {
+                                @ViewBag.PersonalBind.MobileNo
+                            }
+                            else
+                            {
+                                <p>**********</p>
+                            }
+
+                        </td>
+                    </tr>
+                    @*<tr>
+            <td class="personal_name">Check Status :</td>
+            <td class="personal_name2">@ViewBag.PersonalBind.CheckStatus </td>
+            <td class="personal_name">&nbsp;</td>
+            <td class="personal_name2">&nbsp;</td>
+            @*<td class="personal_name">Allocated By</td>
+            <td class="personal_name2">@ViewBag.PersonalBind.AllocatedTMBy</td>
+        </tr>*@
+                    @if (ViewBag.clientRowId == "446")
+                    {
+                        <tr>
+                            <td class="personal_name">Process Name:</td>
+                            <td class="personal_name2">
+                                @ViewBag.PersonalBind.ProcessName
+                            </td>
+                            @if (ViewBag.ConxRow == 607)
+                            {
+                                <td class="personal_name">DOJ:</td>
+                                @*<td class="personal_name2">@ViewBag.PersonalBind.ConcentrixDOJ</td>*@
+                                <td class="personal_name2">@ViewBag.DOJ</td>
+                            }
+                        </tr>
+                    }
+                    else if (ViewBag.clientRowId == "791")
+                    {
+                        <tr>
+                            <td class="personal_name">Account Name:</td>
+                            <td class="personal_name2">
+                                @ViewBag.PersonalBind.AccountName
+                            </td>
+                            <td class="personal_name">Entity Name:</td>
+                            <td class="personal_name2">@ViewBag.PersonalBind.EntityName</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td class="personal_name">Account Name:</td>
+                            <td class="personal_name2">
+                                @ViewBag.PersonalBind.AccountName
+                            </td>
+                            @if (ViewBag.ConxRow == 607)
+                            {
+                                <td class="personal_name">DOJ:</td>
+                                @*<td class="personal_name2">@ViewBag.PersonalBind.ConcentrixDOJ</td>*@
+                                <td class="personal_name2">@ViewBag.DOJ</td>
+                            }
+                            else
+                            {
+                                <td class="personal_name">Package/Check Details :</td>
+                                <td class="personal_name2">@ViewBag.PersonalBind.PackageCheckDetails</td>
+                            }
+
+                        </tr>
+                        if (ViewBag.clientRowId == "722")
+                        {
+                            <tr>
+                                <td class="personal_name">Process Name:</td>
+                                <td class="personal_name2">
+                                    @ViewBag.PersonalBind.ProcessName
+                                </td>
+                                <td class="personal_name">Mode of Verification</td>
+                                <td class="personal_name2">@ViewBag.PersonalBind.ModeOfVerification</td>
+                                
+
+                            </tr>
+                        }
+
+                        if (ViewBag.clientRowId == "317" || ViewBag.clientRowId == "327")
+                        {
+                        <tr>
+                    
+                            <td class="personal_name">Entity Name:</td>
+                            <td class="personal_name2">@ViewBag.PersonalBind.EntityName</td>
+
+                            <td class="personal_name">Email ID:</td>
+                            <td class="personal_name2">@ViewBag.PersonalBind.EmailID</td>
+                         </tr>
+
+                        <tr>
+                            <td class="personal_name">Career Band Name:</td>
+                            <td class="personal_name2">@ViewBag.PersonalBind.CareerBandName</td>
+
+                            <td class="personal_name">Date of Joining:</td>
+                            <td class="personal_name2">@ViewBag.PersonalBind.DOJ</td>
+                        </tr>
+
+                        <tr>
+                            <td class="personal_name">Pattern Name:</td>
+                            <td class="personal_name2">@ViewBag.PersonalBind.PatternName</td>
+                        </tr>
+                        }
+                    }
+
+
+                </table>
+
+            </td>
+
+        </tr>
+
+        @* Special Instrucation  *@
+        <tr>
+            <td class="personal-details-head" colspan="2"><i class="fa fa-file-text-o" aria-hidden="true"></i> Special Instruction :</td>
+        </tr>
+    </table>
+
+    if (ViewBag.clientRowId == "1470")
+    {
+        if (ViewBag.PersonalBind.CheckFamilyRowID == 2)
+        {
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_Basic Mastercard" || ViewBag.PersonalBind.AccountName == "Package-CAPCO_Mastercard")
+            {
+                <div class="special_instrucation" style=" background-color: pink;"><strong>Address Verification:</strong> <span>  Last 7 years. </span></div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_Core Package" || ViewBag.PersonalBind.AccountName == "Package-CAPCO_Basis Core Package")
+            {
+                <div class="special_instrucation" style=" background-color: pink;"><strong>Address Check:</strong> <span> All addresses where the employee has resided in the last 6 months to be verified. </span></div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_CAPCO_HSBC" || ViewBag.PersonalBind.AccountName == "Package-CAPCO_Basic HSBC")
+            {
+                <div class="special_instrucation" style=" background-color: pink;"><strong>Address Check:</strong> <span> All addresses where the employee has resided in the last 6 months to be verified. </span></div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_MS")
+            {
+                <div class="special_instrucation" style=" background-color: pink;"><strong>Address Check:</strong> <span> All addresses where the employee has resided in the last 6 months to be verified. </span></div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_Aviva")
+            {
+                <div class="special_instrucation" style=" background-color: pink;"><strong>Address Check:</strong> <span> All addresses where the employee has resided in the last 6 months to be verified. </span></div>
+            }
+        }
+        if (ViewBag.PersonalBind.CheckFamilyRowID == 5)
+        {
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_Basic Mastercard" || ViewBag.PersonalBind.AccountName == "Package-CAPCO_Mastercard")
+            {
+                <div class="special_instrucation" style=" background-color: pink;"><strong>Criminal Check:</strong> <span> Last 7 years.</span></div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_Core Package" || ViewBag.PersonalBind.AccountName == "Package-CAPCO_Basis Core Package")
+            {
+                <div class="special_instrucation" style=" background-color: pink;"><strong>Criminal Check:</strong> <span> All addresses where the employee has resided in the last 6 months to be verified. </span></div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_CAPCO_HSBC" || ViewBag.PersonalBind.AccountName == "Package-CAPCO_Basic HSBC")
+            {
+                <div class="special_instrucation" style=" background-color: pink;"><strong>Criminal Check:</strong> <span> All addresses where the employee has resided in the last 6 months to be verified. </span></div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_Package SCB" || ViewBag.PersonalBind.AccountName == "Package-CAPCO_Basis SCB")
+            {
+                <div class="special_instrucation" style=" background-color: pink;"><strong>Criminal Check:</strong> <span> If record is found then Physical Court Check needs to be initiated.</span></div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_MS")
+            {
+                <div class="special_instrucation" style=" background-color: pink;"><strong>Criminal Check:</strong> <span> All addresses where the employee has resided in the last 6 months to be verified. </span></div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_Aviva")
+            {
+                <div class="special_instrucation" style=" background-color: pink;"><strong>Criminal Check:</strong> <span> All addresses where the employee has resided in the last 6 months to be verified. </span></div>
+            }
+        }
+        if (ViewBag.PersonalBind.CheckFamilyRowID == 11)
+        {
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_Basic Mastercard" || ViewBag.PersonalBind.AccountName == "Package-CAPCO_Mastercard")
+            {
+                <div class="special_instrucation" style=" background-color: pink;">
+                    <strong>Education Check:</strong> <span> Both 1st and 2nd Highest qualification to be initiated. Based on case due date, check & case to be cleared even if either of the education is cleared and remove the failed education details from the report. </span>
+                </div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_Core Package" || ViewBag.PersonalBind.AccountName == "Package-CAPCO_Basis Core Package")
+            {
+                <div class="special_instrucation" style=" background-color: pink;">
+                    <strong>Education Check:</strong> <span> Both 1st and 2nd Highest qualification to be initiated. Based on case due date, check & case to be cleared even if either of the education is cleared and remove the failed education details from the report. </span>
+                </div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_CAPCO_HSBC" || ViewBag.PersonalBind.AccountName == "Package-CAPCO_Basic HSBC")
+            {
+                <div class="special_instrucation" style=" background-color: pink;">
+                    <strong>Education Check:</strong> <span> Both 1st and 2nd Highest qualification to be initiated. Based on case due date, check & case to be cleared even if either of the education is cleared and remove the failed education details from the report. </span>
+                </div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_Package SCB" || ViewBag.PersonalBind.AccountName == "Package-CAPCO_Basis SCB")
+            {
+                <div class="special_instrucation" style=" background-color: pink;">
+                    <strong>Education:</strong> <span> Highest qualification to be initiated. </span>
+                </div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_MS")
+            {
+                <div class="special_instrucation" style=" background-color: pink;">
+                    <strong>Education Check:</strong> <span> Both 1st and 2nd Highest qualification to be initiated. Based on case due date, check & case to be cleared even if either of the education is cleared and remove the failed education details from the report </span>
+                </div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_Aviva")
+            {
+                <div class="special_instrucation" style=" background-color: pink;">
+                    <strong>Education Check:</strong> <span> Both 1st and 2nd Highest qualification to be initiated. Based on case due date, check & case to be cleared even if either of the education is cleared and remove the failed education details from the report </span>
+                </div>
+            }
+        }
+        if (ViewBag.PersonalBind.CheckFamilyRowID == 12)
+        {
+            <div class="special_instrucation" style=" background-color: pink;">
+                <strong>Employment:</strong> <span> 5 HR follow up emails> > if failed Supervisor/RM Check.</span>
+            </div>
+        }
+        if (ViewBag.PersonalBind.CheckFamilyRowID == 26)
+        {
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_Basic Mastercard" || ViewBag.PersonalBind.AccountName == "Package-CAPCO_Mastercard")
+            {
+                <div class="special_instruction" style="background-color: pink; padding: 6px;">
+                    <div><strong>Identity Verification:</strong> <span>Pan.</span></div>
+                </div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_Core Package" || ViewBag.PersonalBind.AccountName == "Package-CAPCO_Basis Core Package")
+            {
+                <div class="special_instruction" style="background-color: pink; padding: 6px;">
+                    <div><strong>ID Check:</strong> <span>Only Pan.</span></div>
+                    <div><strong>Right To Work:</strong> <span>Only Passport.</span></div>
+                </div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_CAPCO_HSBC" || ViewBag.PersonalBind.AccountName == "Package-CAPCO_Basic HSBC")
+            {
+                <div class="special_instruction" style="background-color: pink; padding: 6px;">
+                    <div><strong>ID Check:</strong> <span>Only Pan.</span></div>
+                    <div><strong>Right To Work:</strong> <span>Only Passport.</span></div>
+                </div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_MS")
+            {
+                <div class="special_instruction" style="background-color: pink; padding: 6px;">
+                    <div><strong>ID Check:</strong> <span>Only Pan.</span></div>
+                    <div><strong>Right To Work:</strong> <span>Only Passport.</span></div>
+                </div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_Aviva")
+            {
+                <div class="special_instruction" style="background-color: pink; padding: 6px;">
+                    <div><strong>ID Check:</strong> <span>Only Pan.</span></div>
+                    <div><strong>Right To Work:</strong> <span>Only Passport.</span></div>
+                </div>
+            }
+        }
+        if (ViewBag.PersonalBind.CheckFamilyRowID == 40)
+        {
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_Basic Mastercard" || ViewBag.PersonalBind.AccountName == "Package-CAPCO_Mastercard")
+            {
+                <div class="special_instrucation" style=" background-color: pink;">
+                    <div><strong>Gap Check for last 10 years:</strong> <span> If the gap is 3 months or more, Gap Verification to be initiated between employments/education (whichever is applicable) for last 10 years. Gap Reason to be added in BGV report.</span></div>
+                </div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_Core Package" || ViewBag.PersonalBind.AccountName == "Package-CAPCO_Basis Core Package")
+            {
+                <div class="special_instrucation" style=" background-color: pink;">
+                    <div><strong>Gap Check for last 5 years:</strong> <span> Gap Verification between employments/education (whichever is applicable) for last 5 years.</span></div>
+                    <div><strong>Directorship:</strong> <span> In case of no conflict in the line of business with CAPCO, check to be cleared based on candidate declaration and approval from CAPCO HR HEAD.</span></div>
+                </div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_CAPCO_HSBC" || ViewBag.PersonalBind.AccountName == "Package-CAPCO_Basic HSBC")
+            {
+                <div class="special_instrucation" style=" background-color: pink;">
+                    <div><strong>Gap Check for last 5 years:</strong> <span> Gap Verification between employments/education (whichever is applicable) for last 5 years.</span></div>
+                    <div><strong>Directorship:</strong> <span> In case of no conflict in the line of business with CAPCO, check to be cleared based on candidate declaration and approval from CAPCO HR HEAD.</span></div>
+                </div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_Package SCB" || ViewBag.PersonalBind.AccountName == "Package-CAPCO_Basis SCB")
+            {
+                <div class="special_instrucation" style=" background-color: pink;">
+                    <div><strong>Gap Verification:</strong> <span>If the gap is 6 months or more, Gap Verification to be initiated between employments/education (whichever is applicable) for last 3 years. Gap Reason to be added in BGV report.</span></div>
+                </div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_MS")
+            {
+                <div class="special_instrucation" style=" background-color: pink;">
+                    <div><strong>Gap Check for last 5 years:</strong> <span> Gap Verification between employments/education (whichever is applicable) for last 5 years.</span></div>
+                    <div><strong>Directorship:</strong> <span> In case of no conflict in the line of business with CAPCO, check to be cleared based on candidate declaration and approval from CAPCO HR HEAD.</span></div>
+                </div>
+            }
+            if (ViewBag.PersonalBind.AccountName == "Package-CAPCO_Aviva")
+            {
+                <div class="special_instrucation" style=" background-color: pink;">
+                    <div><strong>Gap Check for last 5 years:</strong> <span> Gap Verification between employments/education (whichever is applicable) for last 5 years.</span></div>
+                    <div><strong>Directorship:</strong> <span> In case of no conflict in the line of business with CAPCO, check to be cleared based on candidate declaration and approval from CAPCO HR HEAD.</span></div>
+                </div>
+            }
+        }
+    }
+    else
+    {
+        if (ViewBag.SpecialInstruction != null)
+        {
+            foreach (var item in ViewBag.SpecialInstruction)
+            {
+                <div>
+                    @if (item.Priority == 1)
+                    {
+                        <div class="special_instrucation" style=" background-color: pink;">@Html.Raw(item.Instructions)</div>
+                    }
+                    @if (item.Priority == 2)
+                    {
+                        <div class="special_instrucation" style=" background-color: yellow;">@Html.Raw(item.Instructions)</div>
+                    }
+                    @if (item.Priority == 3)
+                    {
+                        <div class="special_instrucation" style=" background-color: mediumpurple;">@Html.Raw(item.Instructions)</div>
+                    }
+                    @if (item.Priority == 4)
+                    {
+                        <div class="special_instrucation">@Html.Raw(item.Instructions)</div>
+                    }
+                    @if (item.Priority == 0)
+                    {
+                        <div class="special_instrucation">@Html.Raw(item.Instructions)</div>
+                    }
+                </div>
+            }
+        }
+    }
+
+}
+
+
+<script>
+    $(".iframeUpdateStatus").colorbox({ iframe: true, width: "60%", height: "60%" });
+    $(".callbacks").colorbox({
+        //onOpen: function () { alert('onOpen: colorbox is about to open'); },
+        //onLoad: function () { alert('onLoad: colorbox has started to load the targeted content'); },
+        //onComplete: function () { alert('onComplete: colorbox has displayed the loaded content'); },
+        //onCleanup: function () { alert('onCleanup: colorbox has begun the close process'); },
+        onClosed: function () {
+            //alert('onClosed: colorbox has completely closed');
+            window.location.reload(false);
+        }
+    });
+
+    $(".iframeUpdateVerDoc").colorbox({ iframe: true, width: "60%", height: "60%" });
+    $(".callbacks").colorbox({
+        onClosed: function () {
+            window.location.reload(true);
+        }
+    });
+
+    $(".iframeEmailStatus").colorbox({ iframe: true, width: "80%", height: "90%" });
+
+    $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+</script>

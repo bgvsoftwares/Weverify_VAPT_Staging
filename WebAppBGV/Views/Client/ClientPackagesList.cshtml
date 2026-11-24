@@ -1,0 +1,101 @@
+﻿
+@{
+    ViewBag.Title = "Manage Client Packages (" + Convert.ToString(Session["ClientNameForContract"]) + ")";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManagePQClient", "Client", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+@{
+    string faIconAddNew = string.Format("<i class='fa fa-plus-circle' aria-hidden='true'></i> Add New Package");
+    string hyperLinkAddNew = Html.ActionLink("linkTitle", "CreateClientPackage", "Client", new { CId = Request.QueryString["CId"] }, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnAddNew = new HtmlString(hyperLinkAddNew.ToString().Replace("linkTitle", faIconAddNew));
+
+
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    string hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportClientPackage", "Client", new { CId = Request.QueryString["CId"] }, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+ 
+}
+@section LeftNavigation{ @Html.Partial("_NavLeftClient") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@{
+    //For ClientTabs Section
+    ViewBag.ClientID = Request.QueryString["CId"];
+    ViewBag.PackageCssClass = "current";
+}
+@section ClientTabs{ @Html.Partial("_ClientTabs") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
+                    <div class="col-md-9">
+                        @using (Html.BeginForm("ClientPackagesList", "Client", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch row  search-frame">
+                                    <label class="col-md-3 control-label">Package Name :</label>
+                                    <div class="col-md-7">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Package name..." })
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.ClientPackages != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12 table">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.ClientPackages, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                    htmlAttributes: new { id = "grid", @class = "table" },
+                                    headerStyle: "thead-inverse",
+                                    rowStyle: "ordertxt",
+                                    footerStyle: "custpaging",
+                                    mode: WebGridPagerModes.All,
+                                    columns: new[]
+                                    {
+                                    grid.Column(header: "No.",  format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                    grid.Column(columnName: "ClientPackageName", header: "Package Name", canSort: true),
+                                    grid.Column(columnName: "ClientPackageShortName", header: "Package Name In Report", canSort: false),
+                                    grid.Column(columnName: "InternalTAT", header: "Internal TAT", canSort: false),
+                                    grid.Column(columnName: "ExternalTAT", header: "External TAT", canSort: false),
+                                     grid.Column(columnName: "Price", header: "Price", canSort: false),
+                                      grid.Column(columnName: "Visiblity", header: "Visiblity", canSort: false),
+
+                                    grid.Column(header : "Edit Check", format : (item) => {
+                                        var link = Html.ActionLink("Edit", "EditPackage", "Client", new { PId=item.ClientPackageRowID,CId=item.ClientRowId}, null);
+                                        return link;
+                                    }, style:"edit"),
+                                }
+                            )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        $(document).ready(function () {
+            var table = $('#grid').DataTable({
+                responsive: true,
+            });
+            new $.fn.dataTable.FixedHeader(table);
+        });
+</script>

@@ -1,0 +1,89 @@
+﻿@model ViewModels.ProvidedInfoViewModel.VerifiedUploadDocViewModel
+@{
+    ViewBag.Title = "Uplod Verification Docs";
+    Layout = null;
+}
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/colorbox.css" rel="stylesheet" />
+<link href="~/Content/Site.css" rel="stylesheet" />
+
+<script src="~/Scripts/jquery-3.7.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/modernizr-2.8.3.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<div class="row">
+    <div class="col-md-12">
+        @if (ViewBag.SuccessMsg != null)
+        {
+            <div class="successmsg">@ViewBag.SuccessMsg.ToString()</div>
+        }
+
+        @if (ViewBag.ErrorMsg != null)
+        {
+            <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+
+        @using (Html.BeginForm("UplodVerificationDocs", "ClientServicing", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.SubCheckRowID)
+            @Html.HiddenFor(model => model.PersonalRowID)
+            @Html.HiddenFor(model => model.CheckStatus)
+            <div class="form-horizontal">
+                <div class="form-group branch">
+                    @Html.LabelFor(model => model.DocumentType, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.DocumentType, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.DocumentType, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group branch">
+                    @Html.LabelFor(model => model.UploadDoc, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.TextBoxFor(model => model.UploadDoc, new { @accept = "image/gif, image/jpeg, image/png, image/jpg", type = "file", multiple = "multiple" })
+                        @Html.ValidationMessageFor(model => model.UploadDoc, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group branch">
+                    @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-8">
+                        @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @rows = "2" })
+                        @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="all-button-bg">
+                   <input class="btn bun-bg btn-default" type="submit" value="Submit" />
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+
+    <script type="text/javascript">
+        function fileValidation(fileInput) {           
+            var filePath = fileInput.value;
+            var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.pdf\.JPG|\.JPEG|\.PNG|\.GIF|\.PDF)$/i;
+            if (!allowedExtensions.exec(filePath)) {
+                alert('Please upload file having extensions .jpeg/.jpg/.png/.gif/.pdf only.');
+                fileInput.value = '';
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+    </script>
+}

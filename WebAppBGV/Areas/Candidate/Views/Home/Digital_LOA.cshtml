@@ -1,0 +1,1110 @@
+﻿@{
+    ViewBag.Title = "LOA";
+    Layout = "~/Areas/Candidate/Views/Shared/_Layout.cshtml";
+    string name = @ViewBag.CanName;
+    //dynamic image= @ViewBag.LoaImage;
+    string imgb64 = @ViewBag.LoaImageB64;
+
+    int clientRowID = Convert.ToInt32(Session["ClientRowID"].ToString());
+    int ClientUserRowID = Convert.ToInt32(Session["ClientUserRowID"].ToString());
+
+    string PersonalRowid = "";
+
+    PersonalRowid = @ViewBag.PersonalRowid;
+
+
+    string candidateName = Session["CandidateNameForHeader"] != null ? Session["CandidateNameForHeader"].ToString() : "";
+}
+
+
+@{
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "Home", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftCandidateCaseInfoProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<!--[if IE]>
+  <link rel="stylesheet" type="text/css" href="css/ie9.css">
+<![endif]-->
+<script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-39365077-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function () {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+
+    })();
+</script>
+
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+@if (ViewBag.ErrorMsg != null)
+{
+    string err = @ViewBag.ErrorMsg.ToString();
+    //string[] err2 = err.Split(',');
+    <script>
+        Swal.fire({
+            icon: 'info',
+            title: 'Mandatory Fields.',
+            html: '<div class="errormsg" style="text-align:left;"><ol type="1"><li> @err</li> </ol></div>'
+       })
+    </script>
+}
+@if (ViewBag.Success != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'success',
+            html:'<div class="errormsg">@ViewBag.Success.ToString()</div>',
+            showConfirmButton: false,
+            timer: 1500
+        })
+    </script>
+}
+@if (ViewBag.Success != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'success',
+            html:'<div class="errormsg">@ViewBag.Success.ToString()</div>',
+            showConfirmButton: false,
+            timer: 1500
+        })
+    </script>
+}
+
+<div class="container-fluid form_container" onselectstart="return false">
+    @using (Html.BeginForm("Digital_LOA", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="col-md-12 pt-4">
+            <div class="card" style="height:auto!important; border-radius:7px;">
+                <div id="viewContent table-responsive table-responsive-md table-responsive-sm">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td class="text-center" colspan="2" style="background-color: #ACC2DD;">
+                                    @if (clientRowID == 957)
+                                    {
+                                        <p class="text-center mb-0 text-uppercase fw-bold" style='color:#031F30; font-size:16px;letter-spacing: 1.5px;'>DECLARATION &amp; AUTHORIZATION</p>
+                                        <p class="text-center mb-0" style='color:#031F30; font-size:13px;'>For Aadhaar-Based Identity Verification &amp; Background Screening</p>
+                                    }
+                                    else if (clientRowID == 684)
+                                    {
+                                        <p class="text-center mb-0 text-uppercase fw-bold" style='color:#031F30; font-size:16px;letter-spacing: 1.5px;'>INFORMATION RELEASE AUTHORIZATION</p>
+
+                                    }
+                                    else
+                                    {
+                                        <p class="text-center mb-0 text-uppercase fw-bold" style='color:#031F30; font-size:16px;letter-spacing: 1.5px;'>DECLARATION &amp; Authorization</p>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <div style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                        @if (clientRowID == 957)
+                                        {
+
+                                            <ul class="side-menu" style="list-style-type:none;">
+
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <p class="fw-bold mb-1" style="color:#031F30;font-size:15px;">To Whom It May Concern,</p>
+                                                </li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <span class="Instr_text d-block" style="padding-left:0;">
+                                                        I, <b>@candidateName</b>, hereby declare that all information provided by me in connection with my application and background verification is true, accurate, and complete to the best of my knowledge. I understand that any false, misleading, or incomplete information may lead to termination of employment or withdrawal of offer at any stage.
+                                                    </span>
+                                                </li>
+
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <p class="fw-bold mb-1 mt-2" style="color:#031F30;font-size:15px;">Authorization for Verification</p>
+                                                </li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <span class="Instr_text d-block" style="padding-left:0;">I authorize the Company, its subsidiaries/affiliates, and its authorized Background Verification (BGV) partner/vendor to:</span>
+                                                </li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">Collect, verify, validate, and process my personal information, including Aadhaar details, for identity verification and background screening.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">Access and authenticate my Aadhaar through UIDAI-approved methods strictly for verification purposes.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">Obtain records, reports, or confirmations from previous employers, educational institutions, or other relevant organizations.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">Share and receive necessary information with authorized parties involved in the verification process.</span></a></li>
+
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <p class="fw-bold mb-1 mt-2" style="color:#031F30;font-size:15px;">Consent &amp; Data Usage</p>
+                                                </li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <span class="Instr_text d-block" style="padding-left:0;">I confirm that:</span>
+                                                </li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">My Aadhaar details are being provided voluntarily and will be used only for identity authentication and verification.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">My personal data will be handled with appropriate security safeguards, including restricted access, secure storage, and compliance with applicable laws and UIDAI guidelines.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">My information will be retained only for the minimum duration necessary and securely deleted thereafter unless required by law.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">I have the right to request correction of my personal information.</span></a></li>
+
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <p class="fw-bold mb-1 mt-2" style="color:#031F30;font-size:15px;">Declarations</p>
+                                                </li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <span class="Instr_text d-block" style="padding-left:0;">I further acknowledge that:</span>
+                                                </li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">No fee, gift, or payment is required to be made to any individual during the verification process.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">During address verification, I will not share photographs or documents with any verifier via unofficial channels (e.g., WhatsApp, email, etc.).</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">Withdrawal of consent may impact the verification process and my employment eligibility.</span></a></li>
+
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <p class="fw-bold mb-1 mt-2" style="color:#031F30;font-size:15px;">Release of Liability</p>
+                                                </li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <span class="Instr_text d-block" style="padding-left:0;">I hereby release from liability all individuals, organizations, and entities involved in collecting, verifying, or sharing information for the purpose of my background verification.</span>
+                                                </li>
+
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <p class="fw-bold mb-1 mt-2" style="color:#031F30;font-size:15px;">Final Consent</p>
+                                                </li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <span class="Instr_text d-block" style="padding-left:0;">By signing below, I confirm that I have read, understood, and agreed to the above terms and voluntarily provide my consent.</span>
+                                                </li>
+
+                                                <li class="slide ms-4" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        @if (@ViewBag.CaseStatus == "Completed")
+                                                        {
+                                                            <input type="checkbox" class="form-check-input p-0 m-0" id="digital_check" checked="checked">
+                                                            <span class="Instr_text ms-4">I have read, understand, and by my signature consent to these statements</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" class="form-check-input p-0 m-0" id="digital_check">
+                                                            <span class="Instr_text ms-4">I have read, understand, and by my signature consent to these statements</span>
+                                                        }
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        }
+                                        else if (clientRowID == 1428 || clientRowID == 1435)
+                                        {
+                                            <ul class="side-menu" style="list-style-type:none;">
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">Collect and process my personal information as required to process background verification, including collection and processing of sensitive personal information.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">Share my personal information with, and obtain information from, the following third parties as necessary to carry out the requested services: police, courts, suppliers of court and police information for criminal record checks, employers, employment agencies, educational institutions, credit and consumer reporting agencies, government agencies and other public bodies, regulatory or professional bodies, references you provide, other organizations with which I have been associated, and other publicly available print or online sources. I understand that these third parties may be located in countries or regions other than my country of residence, including places where I have previously lived, studied or worked.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">Where necessary, act as my agent to share or obtain your personal information when carrying out the services.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">The data may cross geographical boundaries for the purpose of background verification. For more information, please refer to our privacy policy.</span></a></li>
+                                                <li class="slide ms-4" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        @if (@ViewBag.CaseStatus == "Completed")
+                                                        {
+                                                            <input type="checkbox" class="form-check-input p-0 m-0" id="digital_check" checked="checked">
+                                                            <span class="Instr_text ms-4">I have read, understand, and by my signature consent to these statements</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" class="form-check-input p-0 m-0" id="digital_check">
+                                                            <span class="Instr_text ms-4">I have read, understand, and by my signature consent to these statements</span>
+                                                        }
+
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        }
+                                        else if (clientRowID == 559)
+                                        {
+                                            <ul class="side-menu" style="list-style-type:none;">
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">I in relation to my existing and/or potential association and/or contractual arrangement and/or relationship with First American (India) Private Limited, I am voluntarily providing my personal information in relation to specific verification to be conducted by the relevant verification agency upon the request of First American (India) Private Limited ("Verification").</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">I acknowledge the fact that First American (India) Private Limited has appointed the relevant verification agency and its associated third parties for conducting the specific verification.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">I authorize First American (India) Private Limited and its associated third parties (irrespective of location) to collect, process, store, use, transfer, maintain my personal data and sensitive personal data in relation to this Verification.I hereby authorize First American (India) Private Limited and its associated third parties to obtain information from my all-previous employers, educational institutions, consumer reporting agencies and other persons or entities having information about me for the purpose of this Verification.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">I am aware that the relevant verification agency shall submit a verification report which may include information regarding my character, reputation, personal characteristics, education (authentication of acquired or pursuing degrees/diplomas); employment history; credit history; court records, including criminal verification records as permitted by law; national identity verification; drug test; address verification, references from professional and personal associates as maybe applicable and any other check as found relevant and as determined by First American (India) Private Limited.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">I, further understand and agree that the verification report may be obtained at any time and any number of times as necessary before, during or post my employment and/or potential association and/or contractual arrangement and/or relationship with First American (India) Private Limited.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">I hereby grant authority for the bearer of this letter to access or be provided with full details of my previous records. In addition, please provide any other pertinent information requested by the individual presenting this authority. I hereby release from liability all persons or entities requesting or supplying such information.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">I understand that some or all the information I have provided in relation to this Verification will be held as in digital form and/or as physical records and shall be retained by the relevant verification agency and its associated third parties for compliance with applicable laws and its legal obligations.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">I understand that the continuance of the employment or contractual arrangement or the offer of employment or relationship with First American (India) Private Limited is contingent upon the outcome of the verification report and the discretions of the First American (India) Private Limited.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">I agree and acknowledge, the relevant verification agency and its associated third parties shall not be responsible for any damages, claims, loss, or liabilities that me and/or any person claiming on my behalf have sustained or that may arise in connection with Verification and/or by reason of accessing, using of or reliance placed on Verification Report.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">I declare that, to the best of my knowledge, any information, documents that I have provided for verification and with my application of employment is true, correct, and complete.</span></a></li>
+                                                <li class="slide ms-4" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        @if (@ViewBag.CaseStatus == "Completed")
+                                                        {
+                                                            <input type="checkbox" class="form-check-input p-0 m-0" id="digital_check" checked="checked">
+                                                            <span class="Instr_text ms-4">By signing this consent terms, I confirm that I have read, understood, and accept all the above-mentioned terms.</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" class="form-check-input p-0 m-0" id="digital_check">
+                                                            <span class="Instr_text ms-4">By signing this consent terms, I confirm that I have read, understood, and accept all the above-mentioned terms.</span>
+                                                        }
+
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        }
+                                        else if (clientRowID == 1481)
+                                        {
+                                            <ul class="side-menu" style="list-style-type:none;">
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" />
+                                                        I certify that the statements made in this application are valid and
+                                                        complete to the best of my knowledge. I understand that false or
+                                                        misleading information may result in termination of the agreement.
+
+                                                    </a>
+                                                </li>
+
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" />
+                                                        If upon investigations, any of this information is found to be incomplete
+                                                        or inaccurate, I understand that agreement will be subject to dismissal
+                                                        at any time during my employment.
+
+                                                    </a>
+                                                </li>
+
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" />
+                                                        I hereby authorize CtrlS Datacenters Limited and/or any of its
+                                                        subsidiaries or affiliates and any persons or organizations acting on its
+                                                        behalf, to verify the information presented on this application form and
+                                                        to procure an investigative report or consumer report for that purpose.
+
+                                                    </a>
+                                                </li>
+
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" />
+                                                        I hereby grant authority for the bearer of this letter to access or be
+                                                        provided with full details of my previous records. In addition, please
+                                                        provide any other pertinent information requested by the individual
+                                                        presenting this authority.
+
+                                                    </a>
+                                                </li>
+
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" />
+                                                        I hereby release from liability all persons or entities requesting or
+                                                        supplying such information.
+
+                                                    </a>
+                                                </li>
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" />
+                                                        I am aware that no Money / fee / postage / gift to be paid or given in
+                                                        goodwill to any one during the process of verification and I have
+                                                        informed my family members as well regarding this.
+
+
+                                                    </a>
+                                                </li>
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" />
+                                                        I am aware that during the Address verification, no photographs or
+                                                        documents to be shared with verifier through any medium (Whats App,
+                                                        Email, Etc.)
+                                                    </a>
+                                                </li>
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" />
+                                                        I have read, understand, and by my signature consent to these
+                                                        statements.
+                                                    </a>
+                                                </li>
+
+                                                <li class="slide ms-4" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        @if (@ViewBag.CaseStatus == "Completed")
+                                                        {
+                                                            <input type="checkbox" class="form-check-input p-0 m-0" id="digital_check" checked="checked">
+                                                            <span class="ms-4">
+                                                                Please Sign In given below box. And click On Save Button to give your
+                                                                Consent.
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" class="form-check-input p-0 m-0" id="digital_check">
+                                                            <span class="ms-4">
+                                                                Please Sign In given below box. And click On Save Button to give your
+                                                                Consent.
+                                                            </span>
+                                                        }
+
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        }
+                                        else if (clientRowID == 684)
+                                        {
+                                            <ul class="side-menu" style="list-style-type:none;">
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" />
+                                                        <span class="Instr_text"></span>
+                                                        To secure employment with ALLEGIS SERVICES (INDIA) PRIVATE LIMITED (hereinafter referred to as “Company”), I certify that the
+                                                        statements made in this application are valid and complete to the best of my knowledge. I understand that by sharing any false or
+                                                        misleading information, I may be disqualified from my employment, or it may result in termination of my employment with the
+                                                        Company, whereby the Company may also recover any remuneration paid to me.
+                                                    </a>
+                                                </li>
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" /><span class="Instr_text"></span>
+                                                        I understand and acknowledge that the Company may request a verification of the information I have provided and /or conduct a
+                                                        background check through an agency hired by the Company for this purpose.
+
+
+                                                    </a>
+                                                </li>
+
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" /><span class="Instr_text"></span>
+                                                        I further understand and acknowledge that the results of verification and checks, and any records created from that information, will
+                                                        be used for employment purposes only and will not be given to unauthorized persons.
+
+                                                    </a>
+                                                </li>
+
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" /><span class="Instr_text"></span>
+                                                        I authorize the Company and/or its agents to conduct a background verification check including but not limited to criminal record
+                                                        verification, previous employment records verification, educational records verification, and check of information and references
+                                                        stated by me in this application for the consideration of the Company, to be used solely for my employment purposes.
+
+
+                                                    </a>
+                                                </li>
+
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" /><span class="Instr_text"></span>
+                                                        I also authorize all the relevant individuals, authorities, organizations, their employees, agents, or authorized representatives, whether
+                                                        named in the application or not, to disclose the information in their knowledge/possession/records relevant to my employment, subject
+                                                        to compliance with all applicable laws.
+
+                                                    </a>
+                                                </li>
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" /><span class="Instr_text"></span>
+                                                        If the Company and /or its agents cannot verify any information and references stated in this application, it is my responsibility to
+                                                        furnish the necessary documentation in support of that information.
+                                                    </a>
+                                                </li>
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" /><span class="Instr_text"></span>
+                                                        I understand that no money, fee, postage, or gift should be offered in goodwill to anyone during the verification process. I also agree
+                                                        to have informed my family members of this.
+                                                    </a>
+                                                </li>
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" /><span class="Instr_text"></span>
+                                                        I am aware that during the address verification, no photographs or documents should be shared with the agency/verifier through any
+                                                        medium, including but not limited to WhatsApp or Email.
+                                                    </a>
+                                                </li>
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" /><span class="Instr_text"></span>
+                                                        I fully understand and acknowledge that this application or subsequent employment does not create a contract of employment nor
+                                                        guarantee employment for any definite period of time, and my employment decision will always be at the Company's sole discretion.
+                                                    </a>
+                                                </li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text" style="font-size:16px;">I have read, understood, and, by my signature, consent to these statements.</span></a></li>
+                                                <li class="slide ms-4" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        @if (@ViewBag.CaseStatus == "Completed")
+                                                        {
+                                                            <span class="Instr_text ms-4" style="font-size:16px;">I have read, understand, and by my signature consent to these statements</span>
+                                                            <input type="checkbox" class="form-check-input p-0 m-0" id="digital_check" checked="checked">
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="Instr_text ms-4" style="font-size:16px;">I have read, understand, and by my signature consent to these statements</span>
+                                                            <input type="checkbox" class="form-check-input p-0 m-0" id="digital_check">
+                                                        }
+
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        }
+                                        else if (clientRowID == 1747 && ClientUserRowID == 5159)
+                                        {
+                                            <ul class="side-menu" style="list-style-type:none;">
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" />
+                                                        <span class="Instr_text"></span>
+                                                        I certify that the statement made in the application are valid and complete to the best of my knowledge, I understand any incorrect Information provided by me may affect my employment.
+                                                    </a>
+                                                </li>
+
+
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" /><span class="Instr_text"></span>
+                                                        I hereby authorize Securitas India Private Limited and/or any of its subsidiaries or affiliates and any person or organizations acting on its behalf of Ingram Micro India Private Limited, to verify the information presented on this application form and to procure an investigative report or consumer report for that purpose.
+                                                    </a>
+                                                </li>
+
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" /><span class="Instr_text"></span>
+                                                        I hereby grant authority for the bearer of this letter to access or be provided with full details of my previous records. In addition, please provide any other pertinent information requested by the individual presenting this authority.
+                                                    </a>
+                                                </li>
+
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" />
+                                                        I hereby release from liability all persons or entities requesting or supplying such information.
+                                                    </a>
+                                                </li>
+
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" /><span class="Instr_text"></span>
+                                                        I am aware that no Money/fee/postage/ gift to be paid or given in goodwill to any one during the process of verification and I have informed my family members as well regarding this.
+                                                    </a>
+                                                </li>
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" /><span class="Instr_text"></span>
+                                                        I am aware that during the Address verification, no photographs or documents to be shared with verifier through any medium (WhatsApp, Email, Etc.).
+                                                    </a>
+
+                                                <li class="slide ms-4" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        @if (@ViewBag.CaseStatus == "Completed")
+                                                        {
+                                                            <span class="Instr_text ms-4" style="font-size:16px;">I have read, understand, and by my signature consent to these statements</span>
+                                                            <input type="checkbox" class="form-check-input p-0 m-0" id="digital_check" checked="checked">
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="Instr_text ms-4" style="font-size:16px;">I have read, understand, and by my signature consent to these statements</span>
+                                                            <input type="checkbox" class="form-check-input p-0 m-0" id="digital_check">
+                                                        }
+
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        }
+                                        else if (clientRowID == 1747 && ClientUserRowID == 5160)
+                                        {
+                                            <ul class="side-menu" style="list-style-type:none;">
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" />
+                                                        <span class="Instr_text"></span>
+                                                        I certify that the statement made in the application are valid and complete to the best of my knowledge, I understand any incorrect Information provided by me may affect my employment.
+                                                    </a>
+                                                </li>
+
+
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" /><span class="Instr_text"></span>
+                                                        I hereby authorize Securitas India Private Limited and/or any of its subsidiaries or affiliates and any persons or organizations acting on its behalf of Ingram Micro Platform Technology India Private Limited, toverify the information presented on this application form and to procure an investigative report or consumer report for that purpose.
+                                                    </a>
+                                                </li>
+
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" /><span class="Instr_text"></span>
+                                                        I hereby grant authority for the bearer of this letter to access or be provided with full details of my previous records. In addition, please provide any other pertinent information requested by the individual presenting this authority.
+                                                    </a>
+                                                </li>
+
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" />
+                                                        I hereby release from liability all persons or entities requesting or supplying such information.
+                                                    </a>
+                                                </li>
+
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" /><span class="Instr_text"></span>
+                                                        I am aware that no Money/fee/postage/ gift to be paid or given in goodwill to any one during the process of verification and I have informed my family members as well regarding this.
+                                                    </a>
+                                                </li>
+                                                <li class="slide">
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        <img class="Ins_img mt-1 me-1" src="~/assets/DashboaredImages/three-arrows.png" /><span class="Instr_text"></span>
+                                                        I am aware that during the Address verification, no photographs or documents to be shared with verifier through any medium (WhatsApp, Email, Etc.).
+                                                    </a>
+
+                                                <li class="slide ms-4" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                    <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                        @if (@ViewBag.CaseStatus == "Completed")
+                                                        {
+                                                            <span class="Instr_text ms-4" style="font-size:16px;">I have read, understand, and by my signature consent to these statements</span>
+                                                            <input type="checkbox" class="form-check-input p-0 m-0" id="digital_check" checked="checked">
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="Instr_text ms-4" style="font-size:16px;">I have read, understand, and by my signature consent to these statements</span>
+                                                            <input type="checkbox" class="form-check-input p-0 m-0" id="digital_check">
+                                                        }
+
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        }
+                                        else
+                                        {
+                                            <ul class="side-menu" style="list-style-type:none;">
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">I certify that the statements made in this application are valid and complete to the best of my knowledge. I understand that false or misleading information may result in termination of the agreement.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">If upon investigations, any of this information is found to be incomplete or inaccurate, I understand that agreement will be subject to dismissal at any time during my employment.</span></a></li>
+                                                @if (clientRowID == 576)
+                                                {
+                                                    <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">I hereby authorize Nagarro Software Private Limited and/or any of its subsidiaries or affiliates and any persons or organizations acting on its behalf Walsons Services Private Limited, to verify the information presented on this application form and to procure an investigative report or consumer report for that purpose.</span></a></li>
+                                                }
+                                                else
+                                                {
+                                                    <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">I hereby authorize the Company and/or any of its subsidiaries or affiliates and any persons or organizations acting on its behalf, to verify the information presented on this application form and to procure an investigative report or consumer report for that purpose.</span></a></li>
+                                                }
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">I hereby grant authority for the bearer of this letter to access or be provided with full details of my previous records. In addition, please provide any other pertinent information requested by the individual presenting this authority.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">I hereby release from liability all persons or entities requesting or supplying such information.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">I am aware that no Money/fee/postage/ gift to be paid or given in goodwill to any one during the process of verification and I have informed my family members as well regarding this.</span></a></li>
+                                                <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text">I am aware that during the Address verification, no photographs or documents to be shared with verifier through any medium (Whats App, Email, Etc.).</span></a></li>
+                                                @if (clientRowID == 576)
+                                                {
+                                                    <li class="slide" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><p class="Inst_link" style="display:flex; margin: 10px 0px;"><img class="Ins_img" src="~/assets/DashboaredImages/three-arrow.png" /><span class="Instr_text d-block">Nagarro acts as the data fiduciary and engages appointed vendors to conduct background verification checks. By signing this authorization letter, you agree and acknowledge that your personal data will be collected, processed, and stored in compliance with applicable data protection laws. Detailed information about how your personal data is handled can be found at: <a href="https://www.nagarro.com/hubfs/NagarroWebsiteRedesign-Aug2020/Assets/Docs/Applicant Privacy Notice-EN.pdf" target="_blank" style="color:#8D5FFF;cursor:pointer;font-weight:bold;">Applicant Privacy Notice-EN.pdf</a></span></p></li>
+                                                    <li class="slide ms-4" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" href='#' style="display:flex; margin: 10px 0px;"><input type="checkbox" value="Checked" class="form-check-input p-0 m-0"><span class="Instr_text ms-4">I understand that some or all the information I provide will be held as digitized or physical records as per the data retention period, contractually agreed between the employer and Securitas.</span></a></li>
+                                                    <li class="slide ms-4" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" href='#' style="display:flex; margin: 10px 0px;"><input type="checkbox" value="Checked" class="form-check-input p-0 m-0"><span class="Instr_text ms-4">Please Sign In given below box. And click On Save Button to give your Consent.</span></a></li>
+                                                    <li class="slide ms-4" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><a class="Inst_link" href='#' style="display:flex; margin: 10px 0px;"><input type="checkbox" value="Checked" class="form-check-input p-0 m-0"><span class="Instr_text ms-4">I have read, understand, and by my signature consent to these statements</span></a></li>
+                                                }
+                                                else
+                                                {
+                                                    <li class="slide ms-4" style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'>
+                                                        <a class="Inst_link" style="display:flex; margin: 10px 0px;">
+                                                            @if (@ViewBag.CaseStatus == "Completed")
+                                                            {
+                                                                <input type="checkbox" class="form-check-input p-0 m-0" id="digital_check" checked="checked">
+                                                                <span class="Instr_text ms-4">I have read, understand, and by my signature consent to these statements</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <input type="checkbox" class="form-check-input p-0 m-0" id="digital_check">
+                                                                <span class="Instr_text ms-4">I have read, understand, and by my signature consent to these statements</span>
+                                                            }
+
+                                                        </a>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td colspan="2">
+                                    <div id="signature-pad" class="signature-pad">
+                                        <div class="signature-pad--body text-center">
+                                            <div class="card h-auto w-75 m-auto" style="border-radius: .50rem; border:1px solid #ACC2DD;">
+                                                <div class="card-header p-0" style="background-color:#ACC2DD;">
+                                                    <p class="text-dark mb-0 p-2 fw-bolder tx-16">Signature Pad</p>
+                                                </div>
+                                                <div class="card-body p-0">
+                                                    <canvas id="tools_sketch" name="Canvas"></canvas>
+                                                </div>
+                                                <div class="card-footer d-flex justify-content-between p-1" style="border-color: #ACC2DD;">
+                                                    <p class="mb-0 ps-2" style="color:red;font-size:12px;"><span>*</span>If you want to change the signature please clear then save.</p>
+                                                    <button name="Edit" type="button" id="btnClear" class="button clear next_btn" value="Clear" data-action="clear" style="font-size:.90rem; padding:3px 15px 3px 15px; width:20%;">Clear Sign</button>
+                                                </div>
+                                            </div>
+                                            <div class="card h-auto w-75 m-auto shadow-none border-0 pt-4">
+                                                <div class="card-body p-0">
+                                                    @if (clientRowID == 957)
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                <label class="form-label fw-bold align-items-center d-flex">Candidate Name :</label>
+                                                                <input class="form-control" type="text" name="Name" value="@candidateName" id="Name" autocomplete="off" maxlength="200" />
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <label class="form-label fw-bold align-items-center d-flex">Candidate ID / Application No. :</label>
+                                                                <input class="form-control" type="text" name="ApplicationNo" value="@ViewBag.ApplicationNo" id="ApplicationNo" autocomplete="off" maxlength="100" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="row pt-3">
+                                                            <div class="col-sm-6">
+                                                                <label class="form-label fw-bold align-items-center d-flex">Date :</label>
+                                                                <input class="form-control" type="text" value='@DateTime.Now' readonly="readonly" name="CTStamp" id="CTStamp" />
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                <label class="form-label fw-bold align-items-center d-flex">Name :</label>
+                                                                <input class="form-control" type="text" name="Name" value="@Session["CandidateNameForHeader"].ToString()" id="Name" autocomplete="off" maxlength="200" />
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <label class="form-label fw-bold align-items-center d-flex">Date Time :</label>
+                                                                <input class="form-control" type="text" value='@DateTime.Now' readonly="readonly" name="CTStamp" id="CTStamp" />
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    @if (clientRowID != 1188)
+                                                    {
+                                                        if (Session["ClientRowID"].ToString() == "974")
+                                                        {
+                                                            <div class="row pt-3">
+                                                                <div class="col-sm-12">
+                                                                    <label class="form-label fw-bold align-items-center d-flex">UPload Photo<sup style="color:#FC273F;">(Requiered)</sup></label>
+                                                                    <input type="file" name="file" id="ImageDataAdidas" accept=".png, .jpg, .jpeg" required />
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else if (Session["ClientRowID"].ToString() == "1731")
+                                                        {
+                                                            <div class="row pt-3">
+                                                                <div class="col-sm-12">
+                                                                    <label class="form-label fw-bold align-items-center d-flex">Upload Manually Signed LOA<sup style="color:#FC273F;">(Optional)</sup></label>
+                                                                    <input class="dropify" type="file" name="file" id="ImageDataSamsung" accept=".png, .jpg, .jpeg, .pdf" />
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else if (Session["ClientRowID"].ToString() == "51")
+                                                        {
+                                                            <div class="row pt-3">
+                                                                <div class="col-sm-12">
+                                                                    <label class="form-label fw-bold align-items-center d-flex">Upload photo/Manually signed letter of authorization (LOA)<sup style="color:#FC273F;"></sup></label>
+                                                                    <input class="dropify" type="file" name="file" id="ImageData" accept=".png, .jpg, .jpeg" />
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else if (Session["ClientRowID"].ToString() == "709")
+                                                        {
+                                                            <div class="row pt-3">
+                                                                <div class="col-sm-12">
+                                                                    <label class="form-label fw-bold align-items-center d-flex">
+                                                                        Upload Passport Size Photo<sup style="color:#FC273F;">(Mandatory)</sup>
+                                                                    </label>
+                                                                    <input class="dropify"
+                                                                           type="file"
+                                                                           name="file"
+                                                                           id="ImageData"
+                                                                           accept=".png, .jpg, .jpeg"
+                                                                           required />
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else if (Session["ClientRowID"].ToString() == "1803")
+                                                        {
+                                                            <div class="row pt-3">
+                                                                <div class="col-sm-12">
+                                                                    <label class="form-label fw-bold align-items-center d-flex">
+                                                                        Upload EXL LOA<sup style="color:#FC273F;">(Mandatory)</sup>
+                                                                    </label>
+                                                                    <input class="dropify"
+                                                                           type="file"
+                                                                           name="file"
+                                                                           id="ImageData"
+                                                                           @*accept=".png, .jpg, .jpeg"*@
+                                                                           required />
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else if (Session["ClientRowID"].ToString() == "684")
+                                                        {
+                                                            <div class="row pt-3">
+                                                                <div class="col-sm-12">
+                                                                    <label class="form-label fw-bold align-items-center d-flex">
+                                                                        Upload the PAN Card<sup style="color:#FC273F;">(Mandatory)</sup>
+                                                                    </label>
+                                                                    <input class="dropify"
+                                                                           type="file"
+                                                                           name="file"
+                                                                           id="ImageData"
+                                                                           accept=".png, .jpg, .jpeg, .pdf"
+                                                                           required />
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="row pt-3">
+                                                                <div class="col-sm-12">
+                                                                    <label class="form-label fw-bold align-items-center d-flex">UPload Photo<sup style="color:#FC273F;">(Optional)</sup></label>
+                                                                    <input class="dropify" type="file" name="file" id="ImageData" accept=".png, .jpg, .jpeg" />
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="signature-pad--footer">
+                                            <div class="signature-pad--actions " style="height:100%">
+                                                <div class="container">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 signature-button" style="text-align:center;">
+                                                            <button type="button" class="button" data-action="change-color" style="font-size:1rem; padding:5px 20px 5px 20px;  display:none;">Change color</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-4 signature-button" style="display:none;">
+                                                            <button type="button" class="button" data-action="undo" style="font-size:1rem; padding:5px 20px 5px 20px;">Undo</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="container mt-3">
+                                                    <div class="row d-flex justify-content-center">
+                                                        <div class="col-sm-2 text-start">
+                                                            @Html.Hidden("hfSign", imgb64)
+                                                            <input class="submit-btn w-100" type="submit" id="submitButton" value="Save Sign" data-action="save-jpg" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="container mt-4 ms-5">
+                                                    <div class="row d-flex justify-content-center">
+                                                        <div class="col-sm-2">
+                                                            <a name="pre" href='@Url.Action("Preview", "Home", new { area = "Candidate", id = Session["TempPersonalRowID"] } )' value="prev" type="button" class="iframePreview fw-bolder">Preview<i class="fa fa-eye ps-2"></i></a>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <a href="~/Candidate/Home/FinalSubmit/@PersonalRowid" class="final_submit text-center">Final Submission<span></span></a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<p style='margin:0cm;font-size:16px;font-family:"Securitas Pro";'><span style='font-family:"Securitas Pro";'>&nbsp;</span></p>
+<script src="~/Scripts/jquery-3.7.1.min.js"></script>
+<script src="~/Scripts/signature_pad.umd.js"></script>
+<script src="~/Scripts/app.js"></script>
+<script src="~/assets/plugins/jquery/jquery.min.js"></script>
+
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+<script src="~/Scripts/normalizePlugin.js"></script>
+<!--Internal  Notify js -->
+<script src="~/assets/plugins/notify/js/notifIt.js"></script>
+<script src="~/assets/plugins/notify/js/notifit-custom.js"></script>
+
+<script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+<link href="~/Content/colorbox.css" rel="stylesheet" />
+<script src="~/Scripts/jquery.colorbox-min.js"></script>
+
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+<script src="~/Scripts/normalizePlugin.js"></script>
+<script>
+    $('#digital_check').change(function () {
+        var digitalcheck = $("#digital_check").val();
+        var url = "/Candidate/Home/Digital_LOA";
+        if (this.checked) {
+            $.ajax({
+                type: 'POST',
+                url: url,
+                dataType: 'JSON', // 'JSON' to 'json' for consistency
+                data: { "digitalcheck": digitalcheck },
+                success: function (result) {
+                    // Handle success response, if needed
+                    // console.log("Success:", result);
+                },
+                error: function (xhr, status, error) {
+                    // Handle error response
+
+                    //alert("Error: " + error); // Displaying error message
+                }
+            });
+        }
+        else {
+            return false; // Returning false here might not have any effect
+        }
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".iframePreview").colorbox({ iframe: true, width: "80%", height: "80%" });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#ImageDataAdidas').change(function () {
+            var fileSize = this.files[0].size; // Get the size of the selected file
+            var maxSize = 1024 * 1024; // 1 MB in bytes
+            var fileTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+
+            if ($.inArray(this.files[0].type, fileTypes) === -1) {
+                alert('Please select a file of type PNG, JPEG, or JPG.');
+                // Clear the file input to allow the user to select a different file
+                $(this).val('');
+                return;
+            }
+
+            if (fileSize > maxSize) {
+                alert('Please select a file smaller than 1 MB.');
+                // Clear the file input to allow the user to select a different file
+                $(this).val('');
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        // Function to check file extension
+        function fileCheck(input) {
+            var fileExt = input.value.split('.').pop().toLowerCase();
+            if ($.inArray(fileExt, ['png', 'jpg', 'jpeg']) == -1) {
+                alert("Please select a valid Image");
+                // Clear the file input
+                $('#ImageData').val('');
+            }
+        }
+
+        // Trigger fileCheck function on file selection change
+        $('#ImageData').change(function () {
+            fileCheck(this);
+        });
+
+        function fileCheck(input) {
+            var fileExt = input.value.split('.').pop().toLowerCase();
+            if ($.inArray(fileExt, ['png', 'jpg', 'jpeg', 'pdf']) == -1) {
+                alert("Please select a valid Image");
+                // Clear the file input
+                $('#ImageDataSamsung').val('');
+            }
+        }
+
+        // Trigger fileCheck function on file selection change
+        $('#ImageDataSamsung').change(function () {
+            fileCheck(this);
+        });
+    });
+</script>
+<script type="text/javascript">
+        var canvas = document.getElementById("tools_sketch");
+        var ctx = canvas.getContext("2d");
+        make_base();
+
+    function make_base() {
+        base_image = new Image();
+        base_image.onload = function () {
+            // Define the desired width and height for the resized image
+            const desiredWidth = 300;  // Set your desired width
+            const desiredHeight = 200;  // Set your desired height
+            ctx.drawImage(base_image, 60,-5,desiredWidth, desiredHeight);
+
+        };
+            var a = "data:image/png;base64,@imgb64";
+            base_image.src = a;
+            var b = '@ViewBag.CanName';
+            if (a !='' && b !='') {
+                document.getElementById("submitButton").disabled = true;
+            }
+            else {
+
+                document.getElementById("submitButton").disabled = false;
+            }
+    }
+        $("#btnClear").click(function () {
+            document.getElementById("submitButton").disabled = false;
+            $("#hfSign").val('');
+        });
+
+        //$("#Name").on('input', function () {
+        //    $("#btnClear").trigger('click');
+        //});
+
+</script>
+
+<script>
+    $("#submitButton").click(function () {
+        var obj = $('form input[type="text"]').NormalizedString();
+        if (obj == false) {
+            return false;
+        }
+        if (signaturePad.isEmpty()) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Info',
+                html: '<div class="errormsg" style="text-align:center;">Please provide a signature first.</div>'
+            });
+            return false;
+        }
+
+        var nm = $("#Name").val();
+        if (nm == '') {
+            $("#Name").focus();
+            Swal.fire({
+                icon: 'info',
+                title: 'Info',
+                html: '<div class="errormsg" style="text-align:center;">Please enter name</div>'
+            });
+            return false;
+        }
+    });
+
+    $("#Name").AlphabetWithSpace();
+
+
+</script>
+<style>
+    .table tr td {
+        line-height: 1.5rem !important;
+    }
+
+     #tools_sketch {
+        touch-action: none;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+
+    #cboxTopCenter {
+        display: none !important;
+    }
+
+    #cboxTopLeft {
+        display: none !important;
+    }
+
+    #cboxTopRight {
+        display: none !important;
+    }
+
+    #cboxMiddleLeft {
+        display: none !important;
+    }
+
+    #cboxBottomCenter {
+        display: none !important;
+    }
+
+    #cboxBottomLeft {
+        display: none !important;
+    }
+
+    #cboxBottomRight {
+        display: none !important;
+    }
+
+    #cboxMiddleRight {
+        display: none !important;
+    }
+
+    .final_submit {
+        background: #8D5FFF;
+        border: 1px solid #8D5FFF;
+        color: #FFF;
+        padding: 10px 15px;
+        transition: .3s ease-in-out;
+    }
+
+        .final_submit:hover {
+            background: #FFF;
+            color: #031F30;
+        }
+
+    .iframePreview {
+        background: #ACC2DD;
+        border: 1px solid #ACC2DD;
+        color: #031F30;
+        padding: 10px 15px;
+        transition: .3s ease-in-out;
+        font-family: 'Securitas Pro';
+        font-size: .90rem;
+        border-radius: 0px;
+        display: inline-block;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: center;
+        text-decoration: none;
+        vertical-align: middle;
+        cursor: pointer;
+    }
+
+        .iframePreview:hover {
+            background: #FFF;
+            color: #031F30;
+        }
+
+    .btn_preview {
+        background: #031F30;
+        color: #FFF;
+        border: 1px solid #031F30;
+        padding: 10px 15px;
+        transition: .3s ease-in-out;
+    }
+
+        .btn_preview:hover {
+            background: #FFF;
+            color: #031F30;
+        }
+
+    .Instr_text {
+        white-space: break-spaces;
+        -webkit-box-flex: 1;
+        -ms-flex: 1 1 auto;
+        flex: 1 1 auto;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-align-items: center;
+        align-items: center;
+        color: #031F30 !important;
+        position: relative;
+        font-size: 13px;
+        line-height: 1.3;
+        vertical-align: middle;
+        font-weight: 400;
+        padding-left: 5px;
+    }
+
+    .Ins_img {
+        width: 20px;
+        height: 16px;
+    }
+
+    .form-check-input + label:after {
+        background-color: #031F30 !important;
+        color: #FFF;
+    }
+
+    .form-check-input {
+        width: 1.2em;
+        height: 1.2em;
+        accent-color: #031F30 !important;
+    }
+
+        .form-check-input:checked {
+            background-color: #031F30;
+            border-color: #031F30;
+        }
+
+        .form-check-input:focus {
+            border-color: #031F30;
+            outline: 0;
+            box-shadow: 0 0 0 .25rem rgba(3, 31, 48, 0.24);
+        }
+</style>

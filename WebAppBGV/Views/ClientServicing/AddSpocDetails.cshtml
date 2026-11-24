@@ -1,0 +1,254 @@
+﻿@model  ViewModels.ClientViewModel.UpdatePQClientViewModel
+
+@{
+    ViewBag.Title = "Add Spoc Details";
+}
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("AddSpocDetails", "ClientServicing", FormMethod.Post))
+        {
+            <div class="form-horizontal">
+                <div class="form-group branch row">
+                    @Html.LabelFor(model => model.ClientAbbRowID, htmlAttributes: new { @class = "col-md-3 control-label required" })
+                    <div class="col-md-8">
+                        @*@Html.DropDownListFor(model => model.ClientAbbRowID,
+        new SelectList(ViewBag.ClientAbbList, "ClientAbbRowID", "ClientName"),
+        "-- Select Client -- ",
+        new { @class = "form-control", @disabled = "disabled" })*@
+                        @Html.TextBoxFor(model => model.ClientName, new { @class = "form-control", @disabled = "disabled" })
+                        @Html.ValidationMessageFor(model => model.ClientAbbRowID, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.ClientAbbRowID, new { @id = "hdnClientAbbRowID" })
+                    </div>
+                </div>
+                <div class="form-group branch row">
+                    @Html.LabelFor(model => model.CSpocName, htmlAttributes: new { @class = "col-md-3 control-label required" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(model => model.CSpocName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CSpocName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group branch row">
+                    @Html.LabelFor(model => model.CSpocEmailID, htmlAttributes: new { @class = "col-md-3 control-label required" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(model => model.CSpocEmailID, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CSpocEmailID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <fieldset class="scheduler-border">
+                        <legend class="scheduler-border">Primary Spoc Name</legend>
+                        <div class="form-group branch row">
+                            <div class="col-md-10 col-md-offset-2">
+                                <div class="scroll down">
+                                    @foreach (var item in ViewBag.PrimaryClientSpocList)
+                                    {
+                                        <div class="col-md-5">
+                                            <input type="checkbox" class="chkSpocPrimary" name="@item.SpocNameWDesig" value="@item.MemberSpocRowId" />
+                                            @item.SpocNameWDesig
+                                        </div>
+                                    }
+                                    @Html.HiddenFor(model => model.SpocName)
+                                    @*@Html.HiddenFor(model => model.SpocEmailID)*@
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="col-md-12">
+                    <fieldset class="scheduler-border">
+                        <legend class="scheduler-border">Secondary Spoc Name </legend>
+                        <div class="form-group branch row">
+                            <div class="col-md-10 col-md-offset-2">
+                                <div class="scroll down">
+                                    @foreach (var item in ViewBag.SecondaryClientSpocList)
+                                    {
+                                        <div class="col-md-5">
+                                            <input type="checkbox" class="chkSpocSecondary" name="@item.SpocNameWDesig" value="@item.MemberSpocRowId" />
+                                            @item.SpocNameWDesig
+                                        </div>
+                                    }
+                                    @Html.HiddenFor(model => model.SecondarySpocName)
+                                    @*@Html.HiddenFor(model => model.SpocEmailID)*@
+                                </div>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                    <fieldset class="scheduler-border">
+                        <legend class="scheduler-border">(Enter Multiple Email Separated By Comma)</legend>
+
+                        <div class="form-group branch row">
+                            <label class="col-md-2 control-label required">Email :<br /></label>
+                            <div class="col-md-10">
+                                @Html.TextAreaFor(model => model.CSpocEmailID, new { @class = "form-control", @rows = "2" })
+                                @Html.ValidationMessageFor(model => model.CSpocEmailID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </fieldset>
+                    @Html.HiddenFor(model => model.ClientRowID)
+                    <input class="btn bun-bg btn-default" type="submit" onclick="return validateForm()" value="Submit" />
+                    <br />
+                    <div class="row btn-class-dat"></div>
+                    <br />
+                    <div class="row btn-class-dat"></div>
+                </div>
+
+            </div>
+        }
+    </div>
+
+</div>
+<style>
+    .btn-class-dat{
+        margin-top:70px;
+    }
+    .btn-default {
+        margin-top: 5px;
+        margin-left: 300px;
+    }
+
+    .check-box {
+        width: 30px !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+</style>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.chkSpocPrimary').click(function () {
+                var getchkid = $(this).attr('id');
+                var isChecked = $('#' + getchkid).is(':checked');
+                if ($('#' + getchkid).is(':checked') == true) {
+
+                }
+                else {
+
+                }
+            });
+
+            $('.chkSpocSecondary').click(function () {
+                var SecondarySpocName = '';
+                $('input.chkSpocSecondary:checkbox').each(function (index, value) {
+                    if (this.checked) {
+                        SecondarySpocName += this.value + ',';
+                    }
+                });
+                if (SecondarySpocName.length > 0) {
+                    SecondarySpocName = SecondarySpocName.substring(0, SecondarySpocName.length - 1);
+                } else { SecondarySpocName = ''; }
+                $('#SecondarySpocName').val(SecondarySpocName.trim());
+
+            });
+
+            $('.chkAddressMode').click(function () {
+                debugger;
+                var AddressMode = '';
+                $('input.chkAddressMode:checkbox').each(function (index, value) {
+                    if (this.checked) {
+                        AddressMode += this.value + ',';
+                    }
+                });
+                if (AddressMode.length > 0) {
+                    AddressMode = AddressMode.substring(0, AddressMode.length - 1);
+                } else { AddressMode = ''; }
+                $('#AddressMode').val(AddressMode.trim());
+
+            });
+
+
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //Primary SpocName
+            var str = $('#SpocName').val();
+            var list = $('input[class="chkSpocPrimary"]');
+            list.each(function (index) {
+                item = $(this);
+                var temp = new Array();
+                temp = str.split(",");
+                var values = str.split(',');
+                for (i = 0; i < values.length; i++) {
+                    if (values[i] == item.val()) {
+                        item.attr('checked', true);
+                    }
+                }
+            });
+
+            //Secondry Spoc
+            var Sstr = $('#SecondarySpocName').val();
+            var Slist = $('input[class="chkSpocSecondary"]');
+            Slist.each(function (index) {
+                item = $(this);
+                var temp = new Array();
+                temp = Sstr.split(",");
+                var values = Sstr.split(',');
+                for (i = 0; i < values.length; i++) {
+                    if (values[i] == item.val()) {
+                        item.attr('checked', true);
+                    }
+                }
+            });
+            // Selected Spocs
+            $('.chkSpocPrimary').click(function () {
+                var SpocName = '';
+                //var SpocEmail = '';
+                $('input.chkSpocPrimary:checkbox').each(function (index, value) {
+                    if (this.checked) {
+                        SpocName += this.value + ',';
+                        //SpocEmail += this.name + ',';
+                    }
+                });
+                if (SpocName.length > 0) {
+                    SpocName = SpocName.substring(0, SpocName.length - 1);
+                    //SpocEmail = SpocEmail.substring(0, SpocEmail.length - 1);
+                } else { SpocName = ''; }
+
+                $('#SpocName').val(SpocName.trim());
+                //$('#SpocEmailID').val(SpocEmail.trim());
+            });
+
+
+
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input[type=datetime]').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: "-66:+10",
+                //onClose: function (dateText, inst) {
+                //    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
+                //}
+            });
+        });
+    </script>
+    <style>
+        .ui-datepicker-buttonpane {
+            display: none;
+        }
+
+        .down {
+            height: 120px;
+            padding-left: 0px !important;
+            width: 100%;
+        }
+    </style>
+}

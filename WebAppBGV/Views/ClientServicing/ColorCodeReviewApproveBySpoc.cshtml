@@ -1,0 +1,138 @@
+﻿@model ViewModels.VerificationViewModel.FundPendingApprovalViewModel
+@{
+    ViewBag.Title = "Funds Pending Approval By Spoc";
+    //Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+    Layout = null;
+}
+@{ 
+    string clid = ViewBag.clid != null ? ViewBag.clid.ToString() : "0";
+}
+
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/colorbox.css" rel="stylesheet" />
+<link href="~/Content/Site.css" rel="stylesheet" />
+
+<script src="~/Scripts/jquery-3.7.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/modernizr-2.8.3.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<div class="col-md-12">
+    <div class="branch-office">
+        <div>Color code review Approval/Reject By Spoc</div>
+    </div>
+</div>
+<div class="">
+    <div class="col-md-12">
+        @if (ViewBag.SuccessMsg != null)
+        {
+            <div class="successmsg">@ViewBag.SuccessMsg.ToString()</div>
+        }
+
+        @if (ViewBag.ErrorMsg != null)
+        {
+            <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+        }
+    </div>
+</div>
+<div class="">
+    <div class="col-md-12">
+
+        @using (Html.BeginForm("ColorCodeReviewApproveBySpoc", "ClientServicing", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.PersonalRowID)
+          
+        <div class="form-horizontal">
+
+            <div class="form-group branch">
+                @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-8">
+                    @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @rows = "2" })
+                    @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            @if (clid == "607")
+            {
+                <div class="form-group branch">
+                    <label class="col-md-2 control-label">Report Type:</label>
+                    <div class="col-md-8">
+                        @Html.DropDownList("ReportTypeconcentrix", new List<SelectListItem>
+                        {
+                            new SelectListItem { Text = "Fresh Report", Value = "Fresh" },
+                            new SelectListItem { Text = "Revised Report", Value = "Revised" },
+                            new SelectListItem { Text = "Re-verified Report", Value = "Re-verified" },
+                            new SelectListItem { Text = "Revised re-verified Report", Value = "Revised re-verified" }
+                        }, "-- Select Report Type --", new { @class = "form-control", @id = "ReportTypeconcentrix" })
+                    </div>
+                </div>
+            }
+
+
+            <div class="form-group branch">
+                Approve Status:
+                <div class="col-md-8">
+                    @Html.DropDownListFor(model => model.FundsStatus, new List<SelectListItem>
+                                                       { new SelectListItem{Text="Approve", Value="Approve"},
+                                                           new SelectListItem{Text="Reject", Value="Reject"},
+                                                           }, "-- Select --", new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="all-button-bg" style="margin-top:16px">
+                <input class="btn bun-bg btn-default" id="btnApprove" type="submit" value="Submit" />
+            </div>
+        </div>
+        }
+    </div>
+</div>
+<script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+
+<script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+<script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+
+<script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+<script type="text/javascript">
+
+    //function validatestatus() {
+    //    alert('test');
+    //        var CheckStatus = $('#FundsStatus').val();
+    //        if (CheckStatus == '') {
+    //            alert("please select status!");
+    //            $('#FundsStatus').focus();
+    //            return false;
+    //        }
+    //}
+
+
+    $(document).ready(function () {
+
+        $('#btnApprove').click(function () {
+
+            debugger;
+            var CheckStatus = $('#FundsStatus').val();
+            
+            if (CheckStatus == '') {
+                alert("please select status!");
+                $('#FundsStatus').focus();
+                return false;
+            }
+
+            var ReportType = $('#ReportTypeconcentrix').val();
+
+            if (ReportType == '') {
+                alert("please select Report Type!");
+                $('#ReportTypeconcentrix').focus();
+                return false;
+            }
+
+
+        })
+
+    });
+
+</script>

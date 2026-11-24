@@ -1,0 +1,444 @@
+﻿
+@model dynamic
+@{
+   Layout = "~/Areas/Candidate/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "Home", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+    string msg = "";
+    if (Request.QueryString["ErrorMsg"] != null)
+    {
+        msg = Request.QueryString["ErrorMsg"].ToString();
+    }
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+
+
+    PersonalRowid = @ViewBag.PersonalRowid;
+    SubCheckId = @ViewBag.SubCheckId;
+    clientRowId = @ViewBag.clientRowId;
+}
+<style>
+
+    input[type=text], textarea {
+        width: 100%;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    select {
+        width: 30rem !important;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    label {
+        padding: 12px 12px 12px 0;
+        display: inline-block;
+    }
+
+    input[type=submit] {
+        background-color: #04AA6D;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        float: right;
+    }
+
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+
+    .container {
+        border-radius: 5px;
+        /*background-color: #f2f2f2;*/
+        padding: 8px;
+        font-size: 1.2rem !important;
+    }
+
+    .col-25 {
+        float: left;
+        width: 25%;
+        margin-top: 20px;
+    }
+
+    .col-75 {
+        float: left;
+        width: 75%;
+        margin-top: 6px;
+    }
+
+    #UplodVerificationDocs {
+        margin-right: 0px !important;
+        padding: 7% !important;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+    @@media screen and (max-width: 600px) {
+        .col-25, .col-75, input[type=submit] {
+            width: 100%;
+            margin-top: 0;
+        }
+    }
+</style>
+<div class="card shadow-sm  bg-white rounded">
+    @section LeftNavigation{ @Html.Partial("_NavLeftCandidateCaseInfoProvided") }
+    @section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+    @*@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }*@
+    @section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+</div>
+@if (ViewBag.ErrorMsg != null)
+{
+    string err = @ViewBag.ErrorMsg.ToString();
+    string[] err2 = err.Split(',');
+    <script>
+        Swal.fire({
+            icon: 'info',
+            title: 'Mandatory Fields.',
+            html: '<div class="errormsg" style="text-align:left;"><ol type="1">@foreach(String item in err2){<li> @item</li> }</ol></div>'
+       })
+    </script>
+}
+@if (ViewBag.Success != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'success',
+            html:'<div class="errormsg">@ViewBag.Success.ToString()</div>',
+            showConfirmButton: false,
+            timer: 1500
+        })
+    </script>
+}
+<div class="row" style="background:rgba(141, 195, 255, .1);width:auto!important;">
+    <div class="col-md-12 mt-4">
+        <div>
+
+            @using (Html.BeginForm("AddReference_Info", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+                @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+                <input id="SubCheckId" type="hidden" value=@SubCheckId>
+                @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+                <input id="clientRowId" type="hidden" value=@clientRowId>
+                @Html.Hidden("clientRowId", clientRowId.ToString())
+                @Html.ValidationSummary()
+
+                foreach (var category in Model)
+                {
+                    <div class="container">
+                        @{
+                            string[] nm = category.Key.Split('_');
+
+                            if (@nm[2] == "textbox")
+                            {
+                                <div class="row">
+
+                                    <div class="col-25">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7>*</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </div>
+                                    <div class="col-75">
+                                        <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                    </div>
+
+                                </div>
+                            }
+                            if (@nm[2] == "dropdown")
+                            {
+                                <div class="row">
+
+                                    <div class="col-25">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7>*</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </div>
+                                    <div class="col-75">
+                                        <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                        @{
+                                            string[] nmOption = nm[7].Split(',');
+                                        }
+                                        <select name=@nm[0] id=@nm[0]>
+                                            @for (int i = 0; i < nmOption.Length; i++)
+                                            {
+                                                if (@nmOption[i].Trim() == @nm[6])
+                                                {
+                                                    <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                                }
+                                                if (@nmOption[i].Trim() != @nm[6])
+                                                {
+                                                    <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                                }
+                                            }
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+                            }
+                            if (@nm[2] == "checkbox")
+                            {
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7>*</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </div>
+                                    <div class="col-sm-4">
+
+                                        @{
+                                            if (@nm[6] == "TRUE")
+                                            {
+                                                <input type="checkbox" id=@nm[0] name=@nm[0] value="checked" checked>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" id=@nm[0] name=@nm[0] value=@nm[0]>
+                                            }
+                                        }
+
+                                    </div>
+                                    <div class="col-sm-4">
+                                        @nm[4]
+                                    </div>
+                                </div>
+                            }
+                            if (@nm[2] == "fileUpload")
+                            {
+                                <div class="row">
+                                    <div class="col-25">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7>*</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </div>
+                                    <div class="col-75">
+                                        <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                        <input type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                                    </div>
+
+                                </div>
+
+                            }
+                        }
+
+                    </div>
+
+                }
+                <div class="row">
+                    <div class="col-sm-12 cytoscape-parent">
+                        <div class="w-400 h-400 d-inline-block" id="cytoscape-container"></div>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-3">
+
+                        </div>
+                        <div class="col-sm-2" style="text-align:center;">
+                            <input type="submit" value="Save" style="width:12.2rem!important; padding:7% 0 7% 0; border-radius:.90rem; font-size:1.6rem!important;" id="btnSave" />
+                        </div>
+
+                    </div>
+                </div>
+            }
+            <div class="container">
+                <div class="row">
+                    @{
+                        string[] NextPreviousButtonsURL = (string[])(Session["NextPreviousButtonsURL"]);
+                        for (int I = 0; I < NextPreviousButtonsURL.Length; I++)
+                        {
+                            if (NextPreviousButtonsURL[I] != null)
+                            {
+                                string[] Nenu1 = NextPreviousButtonsURL[I].Split('|');
+                                string NextURL = Nenu1[0];
+                                if (Nenu1[0] == "End")
+                                {
+                                    NextURL = Nenu1[1];
+                                }
+                                if (SubCheckId == Nenu1[4].ToString())
+                                {
+                                    if (Nenu1[2] != "Start")
+                                    {
+                                        <div class="col-sm-3">
+                                            <a href="@Nenu1[1]" class="GFG btn btn-primar"><span>&laquo;&laquo; Previous</span></a>
+                                        </div>
+                                    }
+                                    else if (Nenu1[2] == "Start")
+                                    {
+                                        <div class="col-sm-3">
+                                            <a href="~/Candidate/Home/UpdateCandidateDetails/@PersonalRowid" class="GFG btn btn-primar"><span>&laquo;&laquo; Previous</span></a>
+                                        </div>
+                                    }
+
+                                    if (Nenu1[3] != "End")
+                                    {
+                                        <div class="col-sm-5">
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <a href="@NextURL" class="GFG btn btn-primar"><span>Next &raquo;&raquo;</span></a>
+                                        </div>
+                                    }
+                                    else if (Nenu1[3] == "End")
+                                    {
+
+                                        <div class="col-sm-4">
+                                            <a href="~/Candidate/Home/FinalSubmit/@PersonalRowid" class="GFGSubmit btn btn-primar" style="padding: 5px 75px;"><span>Final Submission</span></a>
+                                        </div>
+                                    }
+                                }
+                            }
+
+                        }
+
+                    }
+
+                </div>
+            </div>
+            <div class="container"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script>
+        //validation for candidatename
+        document.getElementById('158').onkeypress = function (e) {
+            if (!(/[a-z ]/i.test(String.fromCharCode(e.keyCode)))) {
+                e.preventDefault();
+                return false;
+            }
+        }
+
+        document.getElementById('109').onkeypress = function (e) {
+            if (!(/[a-z ]/i.test(String.fromCharCode(e.keyCode)))) {
+                e.preventDefault();
+                return false;
+            }
+        }
+
+        document.getElementById('189').onkeypress = function (e) {
+            if (!(/[a-z ]/i.test(String.fromCharCode(e.keyCode)))) {
+                e.preventDefault();
+                return false;
+            }
+        }
+
+        //validation for candidatename
+        $("#177").keypress(function (e) {
+            $("177").attr("min", "10");
+            var valueLength = this.value.length;
+            if (valueLength == 10) {
+                return false;
+            }
+            var kk = e.which;
+            if (kk < 48 || kk > 57)
+                e.preventDefault();
+        });
+    </script>
+    <script>
+        $("#btnSave").click(function () {
+            var obj = $('form input[type="text"]').NormalizedString();
+            if (obj == false) {
+                return false;
+            }
+        });
+
+    </script>
+
+}
+<style>
+    .GFG {
+        background-color: #11c9b7; /*#45a049;*/
+        border: 2px solid rgb(255 255 255 / 15%);
+        padding: 5px 10px;
+        color: #f8f9fa;
+        text-align: center;
+        display: inline-block;
+        font-size: 16px;
+        margin: 0px 0px;
+        cursor: pointer;
+        transition: all 0.5s;
+    }
+
+        .GFG span:focus {
+            content: '\00bb';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 0.5s;
+        }
+
+        .GFG:hover {
+            background: #fc223d;
+            color: black;
+        }
+</style>
+<style>
+    .GFGSubmit {
+        background-color: #11c9b7; /*#45a049;*/
+        border: 2px solid rgb(255 255 255 / 15%);
+        padding: 5px 10px;
+        color: #f8f9fa;
+        text-align: center;
+        display: inline-block;
+        font-size: 16px;
+        margin: 0px 0px;
+        cursor: pointer;
+        transition: all 0.5s;
+    }
+
+        .GFGSubmit span:focus {
+            content: '\00bb';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 0.5s;
+        }
+
+        .GFGSubmit:hover {
+            background: #fc223d;
+            color: black;
+        }
+</style>

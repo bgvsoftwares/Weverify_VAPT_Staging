@@ -1,0 +1,232 @@
+﻿
+@{
+    ViewBag.Title = "Manage Report QC Cases And Allocate To TeamLeader";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+}
+@{
+    string tatHours1 = "";
+    string CaseStatus1 = "";
+    string AllocatedToTL1 = "";
+    string AllocatedToTM1 = "";
+    if (Request.QueryString["tatHours"] != null)
+    {
+        tatHours1 = Request.QueryString["tatHours"].ToString();
+    }
+    if (Request.QueryString["AllocatedToTL"] != null)
+    {
+        AllocatedToTL1 = Request.QueryString["AllocatedToTL"].ToString();
+    }
+    if (Request.QueryString["AllocatedToTM"] != null)
+    {
+        AllocatedToTM1 = Request.QueryString["AllocatedToTM"].ToString();
+    }
+    if (Request.QueryString["CaseStatus"] != null)
+    {
+        CaseStatus1 = @Request.QueryString["CaseStatus"].ToString();
+    }
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    string hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportAddressMge", "ReportQC", new { CaseStatus = "CaseStatus1Time", tatHours = tatHours1 }, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+    @*//@ViewBag.NavigationBtnExportWord
+        //string faIconExportWord = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Word");
+        //string hyperLinkExportWord = Html.ActionLink("linkTitle", "ExportCountryInWord", "Master", null, new { class = "btn bun-bg btn-default" }).ToString();
+        //ViewBag.NavigationBtnExportWord = new HtmlString(hyperLinkExportWord.ToString().Replace("linkTitle", faIconExportWord));
+
+        //@ViewBag.NavigationBtnBackExportPDF
+        //string faIconExportPDF = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export PDF");
+        //string hyperLinkExportPDF = Html.ActionLink("linkTitle", "ExportCountryInPDF", "Master", null, new { class = "btn bun-bg btn-default" }).ToString();
+        //ViewBag.NavigationBtnBackExportPDF = new HtmlString(hyperLinkExportPDF.ToString().Replace("linkTitle", faIconExportPDF));*@
+}
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("ManageLTIInterimRequest", "ReportQC", FormMethod.Get))
+                        {
+                        <div class="form-horizontal">
+
+                            <div class="form-group branch row search-frame">
+                                <label class="col-md-2 control-label">Client Name :</label>
+                                <div class="col-md-4">
+                                    @Html.DropDownList("ClientRowID",
+                                   new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                                   "-- Select Client -- ",
+                                   new { @class = "form-control" })
+                                </div>
+                                <label class="col-md-2 control-label">Keyword :</label>
+                                <div class="col-md-4">
+                                    @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, Ref No..." })
+                                </div>
+                            </div>
+
+                            <div class="form-group branch row search-frame">
+                                <label class="col-md-2 control-label">Select TeamLeader :</label>
+                                <div class="col-md-4">
+                                    @Html.DropDownList("AllocateTL",
+new SelectList(ViewBag.depTeamLeader, "TeamMemberRowID", "TeamMemberName"),
+"-- Select Member -- ",
+new { @class = "form-control" })
+                                </div>
+                                @Html.Hidden("PersonalIds", null)
+                                @Html.Hidden("SubCheckRowID", null)
+
+                            </div>
+
+                            <div class="all-button-bg">
+                                @{
+                                    if (Request.QueryString["CaseStatus"] != null)
+                                    {
+                                        @Html.Hidden("CaseStatus", Request.QueryString["CaseStatus"].ToString())
+                                    }
+
+
+                                }
+
+                                <input class="btn bun-bg btn-default" type="submit" onclick="SearchFunction()" value="Search" />
+                                <input class="btn bun-bg btn-default" type="submit" id="btnAllocation" onclick="return validateForm()" value="Allocate" />
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.PQPersonalForReportQC != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12">
+                            @{
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.PQPersonalForReportQC, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                         htmlAttributes: new { id = "grid", @class = "table" },
+                                         headerStyle: "thead-inverse",
+                                         rowStyle: "ordertxt",
+                                         footerStyle: "custpaging",
+                                         mode: WebGridPagerModes.All,
+                                         columns: new[]
+                                         {
+                                                grid.Column(header: "{checkall}",format: @<text> <input type="checkbox" value="@item.PersonalRowID-@item.SubCheckRowid" name="personalId" class="personalId" /> </text>,style:"td-1"),
+                                                                                    grid.Column(header: "No.", style:"td-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                                                                    grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-3"),
+                                                                                    grid.Column(columnName: "Name", header: "Candidate Name", canSort: false, style:"td-2"),
+                                                                                    grid.Column(columnName: "ClientRefID", header: "Client-Ref-ID", canSort: false, style:"td-1"),
+                                                                                     grid.Column(columnName: "SubCheckName", header: "SubCheckName", canSort: false, style:"td-1"),
+
+                                                                                    grid.Column(header : "Securitas ID", format : (item) => {
+                                                                                        string CompanyRefNo=item.CompanyRefNo;
+                                                                                                var link = Html.ActionLink(CompanyRefNo, "ManageCandidateChecksForReportQC", "ReportQC", new { PersonalRowID = item.PersonalRowID, dispFor="Manager"  }, new { @class="edit" });
+                                                                                             return link;
+                                                                                    }, style:"td-2"),
+
+                                                                                    grid.Column(columnName: "CaseStatus", header: "Case-Status", canSort: false, style:"td-1"),
+                                                                                     grid.Column(header : "Action", format : (item) => {
+                                                                                        var link = Html.ActionLink("History", "CaseActionHistories", "ReportQC", new { pid = item.PersonalRowID }, new { @class = "iframeActionHistories cboxElement" });
+                                                                                        return link;
+                                                                                    }, style:"edit td-1"),
+                                                                                     grid.Column("Check Status", canSort: false, format: (item)=> {
+
+                                                                 var link=@Html.ActionLink("Show", "ClientCheckStatus", "ClientServicing", new { CompanyRefNo=item.CompanyRefNo    }, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" });
+                                                                                                    return link;}, style:"td-1" ),
+
+                                                                             }
+                                                                      )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @*<script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>*@
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+            $(".iframeUpdateStatus").colorbox({ iframe: true, width: "80%", height: "65%" });
+            $("#grid th").each(function () {
+                if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                    $(this).text('');
+                    $("<input/>", { type: "checkbox", id: "select_all", value: "" }).appendTo($(this));
+                    //$(this).append("<span>Select All</span>");
+                }
+            });
+
+            //2nd click event for header checkbox for select /deselect all
+            $('#select_all').change(function () {
+                $('input[class="personalId"]').prop('checked', $(this).prop('checked'));
+                var personalIds = '';
+                $('input[class="personalId"]').each(function (index, value) {
+                    if (this.checked) { personalIds += this.value + ','; }
+                });
+                if (personalIds.length > 0) {
+                    personalIds = personalIds.substring(0, personalIds.length - 1);
+                } else { personalIds = ''; }
+                $('#PersonalIds').val(personalIds.trim());
+            });
+        });
+
+        function SearchFunction() {
+            $('#VerificationIds').val("");
+        }
+
+        function SearchFunction() {
+            $('#PersonalIds').val("");
+        }
+
+        //3rd click event for checkbox of each row
+        $(document).on('change', 'input[class="personalId"]', function (e) {// on change of state
+            var personalIds = '';
+            $('input[class="personalId"]').each(function (index, value) {
+                if (this.checked) { personalIds += this.value + ','; }
+            });
+
+            if (false == $(this).prop("checked")) { //if this item is unchecked
+                $("#select_all").prop('checked', false); //change "select all" checked status to false
+            }
+            //check "select all" if all checkbox items are checked
+            if ($('.personalId:checked').length == $('.personalId').length) {
+                $("#select_all").prop('checked', true);
+            }
+
+            if (personalIds.length > 0) {
+                personalIds = personalIds.substring(0, personalIds.length - 1);
+            } else { personalIds = ''; }
+            $('#PersonalIds').val(personalIds.trim());
+        })
+
+        function validateForm() {
+            if ($("#AllocateTL").val() == 0) {
+                alert("Select Team Leader For Allocate.");
+                return false;
+            }
+
+            var count = 0;
+            $('input[class="personalId"]').each(function (index, value) {
+                if (this.checked) { count += 1; }
+            });
+
+            if (count == 0) {
+                alert("Please select atleast one case.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+}
+
+
+

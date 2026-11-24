@@ -1,0 +1,192 @@
+﻿
+@{
+    ViewBag.Title = "Welcome Partner Screen";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+@{
+    string CaseStatus = "";
+    if (Request.QueryString["CaseStatus"] != null)
+    {
+        CaseStatus = @Request.QueryString["CaseStatus"].ToString();
+    }
+
+    if (CaseStatus == "Allocated")
+    {
+
+        <div>
+            <a href="ExportChecksReport" class="btn bun-bg btn-default" style="margin:0px auto; display:block">Export Excel</a>
+        </div>
+    }
+
+    if(CaseStatus == "UnAllocated")
+    {
+
+        <div>
+            <a href="ExportChecksReportForNonallocated" class="btn bun-bg btn-default" style="margin:0px auto; display:block">Export Excel</a>
+        </div>
+    }
+
+
+
+}
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("GetPartnerCasesDashBoardInfo", "Home", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch row  search-frame row">
+                                    <label class="col-md-1 control-label">Client Name :</label>
+                                    <div class="col-md-8">
+                                        @Html.DropDownList("ClientRowID",
+                                                            new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                                                            "-- Select Client -- ",
+                                                            new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+
+
+
+
+
+
+
+
+
+                                    <label class="col-md-2 control-label">Recieving Date :</label>
+                                        <div class="col-md-3">
+                                            @Html.TextBox("RecievingDate", null, new { @class = "form-control", @id = "RecievingDate", @placeholder = "yyyy-mm-dd" })
+                                        </div>
+                                        <label class="col-md-1 control-label">Completed Date :</label>
+                                        <div class="col-md-3">
+                                            @Html.TextBox("CompletedDate", null, new { @class = "form-control", @id = "CompletedDate", @placeholder = "yyyy-mm-dd" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group branch search-frame row">
+                                        <label class="col-md-1 control-label">Keyword :</label>
+                                        <div class="col-md-8">
+                                            @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, Securitas Id..." })
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group branch search-frame">
+                                        @{
+                                            if (Request.QueryString["CaseStatus"] != null)
+                                            {
+                                                @Html.Hidden("CaseStatus", Request.QueryString["CaseStatus"].ToString())
+                                            }
+
+                                        }
+                                        <div style="text-align:center;">
+                                            <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                                        </div>
+                                    </div>
+                                </div>
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.DashboardPartnerCandidates != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12 table">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.DashboardPartnerCandidates, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                                        htmlAttributes: new { id = "grid", @class = "table" },
+                                                        headerStyle: "thead-inverse",
+                                                        rowStyle: "ordertxt",
+                                                        footerStyle: "custpaging",
+                                                        mode: WebGridPagerModes.All,
+                                                        columns: new[]
+                                                        {
+                                                                                                grid.Column(header: "No.", style:"td-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                                                                                grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-2"),
+                                                                                                grid.Column(columnName: "CompanyRefNo", header: "Securitas Id", canSort: false, style:"td-1"),
+                                                                                                grid.Column(columnName: "CandidateName", header: "Candidate Name", canSort: false, style:"td-2"),
+                                                                                                grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-2"),
+                                                                                                grid.Column(columnName: "UniqueComponentID", header: "Unique ComponentID", canSort: false, style:"td-2"),
+                                                                                                grid.Column("Ageing", format: (item) => item.ModifiedDate != null ? (DateTime.Now - item.ModifiedDate).Days : "", canSort: false,style:"td-1"),
+                                                                                                grid.Column(columnName: "CheckStatus", header: "Status", canSort: false, style:"td-1"),
+                                                                                                grid.Column(columnName: "PartnerUserName", header: "Alloc Part User", canSort: false, style:"td-1"),
+
+                                                                                                grid.Column(header : "Verification", format : (item) => {
+                                                                                                    if(item.CheckFamilyRowID==11)
+                                                                                                    {
+                                                                                                        return Html.ActionLink("Complete", "AddEducationInfoByPTR", "Home", new {  id = item.PQAddressVarPtrRowId,PersonalRowID=item.PersonalRowID,subCheckId=item.SubCheckRowID,ClientRowID=item.ClientRowID }, null);
+
+                                                                                                    }
+                                                                                                    else if(item.CheckFamilyRowID==12)
+                                                                                                    {
+                                                                                                        return Html.ActionLink("Complete", "AddEmploymentInfoByPTR", "Home", new {  id = item.PQAddressVarPtrRowId,PersonalRowID=item.PersonalRowID,subCheckId=item.SubCheckRowID,ClientRowID=item.ClientRowID }, null);
+
+                                                                                                    }
+                                                                                                    else
+                                                                                                    {
+                                                                                                        return Html.ActionLink("Complete", "AddAddressInfoByPTRTeamMember", "Home", new {  id = item.PQAddressVarPtrRowId,PersonalRowID=item.PersonalRowID,subCheckId=item.SubCheckRowID,ClientRowID=item.ClientRowID }, null);
+
+                                                                                                    }
+                                                                                                }, style:"edit td-1"),
+
+                                                                                                @*grid.Column(header : "Action", format : (item) => {
+                                                                                                    var link = Html.ActionLink("History", "BindCheckActionHistory", "Home", new { PersonalRowID = item.PersonalRowID, subCheckId = item.SubCheckRowID, area="Partner" }, new { @class = "iframeActionHistories cboxElement" });
+                                                                                                    return link;
+                                                                                                }, style:"edit td-1"),*@
+                                                            }
+                                                         )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts{
+        <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+        <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+        <link href="~/Content/colorbox.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery.colorbox-min.js"></script>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+
+                $(".iframeUpdateAddressDoc").colorbox({ iframe: true, width: "60%", height: "60%" });
+                $(".callbacks").colorbox({
+                    onClosed: function () {
+                        window.location.reload(true);
+                    }
+                });
+
+                $('#RecievingDate').datepicker({
+                    dateFormat: "yy-mm-dd",
+                    changeMonth: true,
+                    changeYear: true,
+                    //showButtonPanel: true,
+                    yearRange: "-66:+0",
+                });
+                $('#CompletedDate').datepicker({
+                    dateFormat: "yy-mm-dd",
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "-66:+0",
+                });
+            });
+        </script>
+    }

@@ -1,0 +1,463 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    /**/
+
+    /**/
+
+    var list = Model.SpecialInfoModel.Where(T => T.SubcheckRowID == 304 || T.SubcheckRowID == 203).GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+
+
+}
+
+@if (list.Count > 0)
+{
+    if (Model.SpecialInfoModel != null)
+    {
+        int i = 0;
+        int j = 0;
+        double annuxureno = Convert.ToDouble(Session["AnnexureNo"]);
+        int k = Convert.ToInt32(annuxureno);
+        foreach (var a in list)
+        {
+            var Anticident = Model.SpecialInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+
+            var ReportComment = list[i].ReportComment;
+            if (j == 0)
+            {
+                annuxureno = k + 1;
+            }
+            else
+            {
+                annuxureno = annuxureno + .1;
+            }
+            j = 2;
+            Session["AnnexureNo"] = annuxureno.ToString();
+
+            if (a.SubcheckRowID == 203)
+            {
+                <page id="PrintSrc" size="A4">
+                    <div style="page-break-after:always ;"></div>
+                    <table width="793" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999;border-collapse:collapse;">
+                        <!--- Report Header Include -->
+                        @*@Html.Partial("_ReportHeader")*@
+                        <!--- Report Header Include -->
+                        <tr>
+                            <td width="2%" align="left" valign="bottom" @*style="border-left:2px solid #999999;"*@>&nbsp;</td>
+                            <td valign="top">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+                                    <tr>
+                                        <td valign="top">
+                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                <tr>
+                                                    <td>
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+                                                            <tr>
+                                                                <td width="94%" style="padding-top:4%"><p style="font-size:32px; color:black; text-decoration:underline; text-align:center; margin:0px 0px 0px 0px; font-weight:bold;"></p> </td>
+                                                                <td width="6%" align="right"><img src='@Url.Content("~/Images/logo.jpg")' width="60" height="auto"></td>
+                                                            </tr>
+                                                        </table>
+                                                        <br />
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding-top:10px; border: 0px  #0070c0; color-adjust:exact;" valign="top" align="center">
+                                                        <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>Social Media Check</u></strong></p>
+                                                        <table width="100%" border="1" cellspacing="5" cellpadding="2" style="border-collapse:collapse;border-collapse:collapse;font-family:Calibri;font-size:17px; margin-top:10px">
+
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td width="159" style="text-align:center">
+                                                                        <p><strong>Details</strong></p>
+                                                                    </td>
+                                                                    <td width="244" style="text-align:center">
+                                                                        <p><strong>Information Provided</strong></p>
+                                                                    </td>
+                                                                    <td width="194" style="text-align:center">
+                                                                        <p><strong>Information Verified</strong></p>
+                                                                    </td>
+                                                                </tr>
+
+                                                                @foreach (var item in Anticident)
+                                                                {
+                                                                    if (item.AntecedentRowID == "116" || item.AntecedentRowID == "117" || item.AntecedentRowID == "178")
+                                                                    {
+                                                                        <tr>
+                                                                            <td width="159" style="text-align:left">
+                                                                                <p>@item.DisplayNameRep</p>
+                                                                            </td>
+                                                                            <td width="244" style="text-align:left">
+                                                                                <p>@item.DataEntryValue</p>
+                                                                            </td>
+                                                                            <td width="194" style="text-align: left">
+                                                                                <p>@item.OpsValue</p>
+                                                                            </td>
+                                                                        </tr>
+
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <tr>
+                                                                            <td width="159" style="text-align: left">
+                                                                                <p>@item.DisplayNameRep</p>
+                                                                            </td>
+                                                                            @if (item.AntecedentRowID == "114")
+                                                                            {
+                                                                                <td colspan="2" width="194" style="text-align: left">
+                                                                                    <p>@Html.Raw(ReportComment)</p>
+                                                                                </td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td colspan="2" width="194" style="text-align: left">
+                                                                                    <p>@item.OpsValue</p>
+                                                                                </td>
+                                                                            }
+
+                                                                        </tr>
+                                                                    }
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                        <p><strong><u>&nbsp;</u></strong></p>
+                                                        <p><strong>&nbsp;</strong></p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td valign="top">&nbsp;</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td height="30">&nbsp;</td>
+                                                </tr>
+
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <p><br></p>
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:15rem;">
+                                        <tbody>
+                                            <tr>
+                                                <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                                                    &nbsp;
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                                <td width="1%">&nbsp;</td>
+                                                <td width="79%">
+                                                    <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                                    <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                                    <p style="font-size:16px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                                    <p style="font-size:16px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </table>
+                            </td>
+                            <td @*style="border-right:2px solid #999999;"*@ align="left" valign="top">&nbsp;</td>
+                        </tr>
+                        <!--- Report Footer Address Include -->
+                        @*@Html.Partial("_ReportFooterAddress")*@
+                        <!--- Report Footer Address Include -->
+                        <!--- Report Footer Include -->
+                        @*@Html.Partial("_ReportFooter")*@
+                        <!--- Report Footer Include -->
+                    </table>
+                </page>
+            }
+            else
+            {
+                <page id="PrintSrc" size="A4">
+                    <div style="page-break-after:always ;"></div>
+                    <table width="793" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999;border-collapse:collapse;">
+                        <!--- Report Header Include -->
+                        @*@Html.Partial("_ReportHeader")*@
+                        <!--- Report Header Include -->
+                        <tr>
+                            <td width="2%" align="left" valign="bottom" @*style="border-left:2px solid #999999;"*@>&nbsp;</td>
+                            <td valign="top">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+                                    <tr>
+                                        <td valign="top">
+                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                <tr>
+                                                    <td>
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+                                                            <tr>
+                                                                <td width="94%" style="padding-top:4%"><p style="font-size:32px; color:black; text-decoration:underline; text-align:center; margin:0px 0px 0px 0px; font-weight:bold;"></p> </td>
+                                                                <td width="6%" align="right"><img src='@Url.Content("~/Images/logo.jpg")' width="60" height="auto"></td>
+                                                            </tr>
+                                                        </table>
+                                                        <br />
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding-top:10px; border: 0px  #0070c0; color-adjust:exact;" valign="top" align="center">
+                                                        <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>Gap Check</u></strong></p>
+                                                        <table width="100%" border="1" cellspacing="5" cellpadding="2" style="border-collapse:collapse;border-collapse:collapse;font-family:Calibri;font-size:17px; margin-top:10px">
+
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td width="159" style="text-align:center">
+                                                                        <p><strong>Candidate Name</strong></p>
+                                                                    </td>
+                                                                    <td width="244" style="text-align:center">
+                                                                        <p><strong>Details</strong></p>
+                                                                    </td>
+                                                                    <td width="194" style="text-align:center">
+                                                                        <p><strong>Remark</strong></p>
+                                                                    </td>
+                                                                </tr>
+
+                                                                @foreach (var item in Anticident)
+                                                                {
+                                                                    if (item.AntecedentRowID == "191")
+                                                                    {
+                                                                        <tr>
+                                                                            <td width="159" style="text-align:center">
+                                                                                <p>@Model.PersonalName</p>
+                                                                            </td>
+                                                                            <td width="244" style="text-align:center">
+                                                                                <p>@item.OpsValue</p>
+                                                                            </td>
+                                                                            <td width="194" style="text-align:center">
+                                                                                <p>@Html.Raw(ReportComment)</p>
+                                                                            </td>
+                                                                        </tr>
+
+                                                                    }
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                        <p><strong><u>&nbsp;</u></strong></p>
+                                                        <p><strong>&nbsp;</strong></p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td valign="top">&nbsp;</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td height="30">&nbsp;</td>
+                                                </tr>
+
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <p><br></p>
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:15rem;">
+                                        <tbody>
+                                            <tr>
+                                                <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                                                    &nbsp;
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                                <td width="1%">&nbsp;</td>
+                                                <td width="79%">
+                                                    <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                                    <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                                    <p style="font-size:16px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                                    <p style="font-size:16px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </table>
+                            </td>
+                            <td @*style="border-right:2px solid #999999;"*@ align="left" valign="top">&nbsp;</td>
+                        </tr>
+                        <!--- Report Footer Address Include -->
+                        @*@Html.Partial("_ReportFooterAddress")*@
+                        <!--- Report Footer Address Include -->
+                        <!--- Report Footer Include -->
+                        @*@Html.Partial("_ReportFooter")*@
+                        <!--- Report Footer Include -->
+                    </table>
+                </page>
+            }
+
+            if (Model.CandidateDocList != null)
+            {
+                int index = 0;
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                {
+                    if (Doc.SubCheckRowID == 304)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                            <page id="PrintSrc" size="A4">
+                                <div style="page-break-after:always ;"></div>
+                                <table width="793" cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center;border-collapse:collapse;">
+                                    <!--- Report Header Include -->
+                                    @*@Html.Partial("_ReportHeader")*@
+                                    <!--- Report Header Include -->
+                                    <tr>
+                                        @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                        <td valign="top" colspan="2" align="center" valign="bottom">
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td valign="top">
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tr>
+                                                                <td>
+                                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+                                                                        <tr>
+                                                                            <td width="94%" style="padding-top:4%"><p style="font-size:32px; color:black; text-decoration:underline; text-align:center; margin:0px 0px 0px 0px; font-weight:bold;"></p> </td>
+                                                                            <td width="6%" align="right"><img src='@Url.Content("~/Images/logo.jpg")' width="45" height="auto"></td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td valign="top">&nbsp;</td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td height="30">&nbsp;</td>
+                                                            </tr>
+                                                            <tr>
+
+                                                                @if (index == 0)
+                                                                {
+                                                                    int AnnexureNo = Convert.ToInt32(Session["Annexure"].ToString());
+                                                                    <td style="padding-left:30px;font-weight:bold">Annexure @AnnexureNo   </td>
+                                                                    Session["Annexure"] = AnnexureNo + 1;
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td></td>
+                                                                }
+                                                            </tr>
+
+                                                            <tr>
+
+                                                                <td style="padding-top:10px">  </td>
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td valign="top">
+                                                                    @{
+                                                                        FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                        System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                        if (image.Height > 600)
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                        }
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>&nbsp;</td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                                    </tr>
+                                    <!--- Report Footer Address Include -->
+                                    @Html.Partial("_ReportFooterAddress")
+                                    <!--- Report Footer Address Include -->
+                                    <!--- Report Footer Include -->
+                                    @*@Html.Partial("_ReportFooter")*@
+                                    <!--- Report Footer Include -->
+                                </table>
+                            </page>
+                        }
+                    }
+                    else
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                            <page id="PrintSrc" size="A4">
+                                <div style="page-break-after:always ;"></div>
+                                <table width="793" cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center;border-collapse:collapse;">
+                                    <!--- Report Header Include -->
+                                    @*@Html.Partial("_ReportHeader")*@
+                                    <!--- Report Header Include -->
+                                    <tr>
+                                        @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                        <td valign="top" colspan="2" align="center" valign="bottom">
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td valign="top">
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tr>
+                                                                <td>
+                                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+                                                                        <tr>
+                                                                            <td width="94%" style="padding-top:4%"><p style="font-size:32px; color:black; text-decoration:underline; text-align:center; margin:0px 0px 0px 0px; font-weight:bold;"></p> </td>
+                                                                            <td width="6%" align="right"><img src='@Url.Content("~/Images/logo.jpg")' width="45" height="auto"></td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td valign="top">&nbsp;</td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td height="30">&nbsp;</td>
+                                                            </tr>
+                                                            <tr>
+
+                                                                <td style="padding-top:10px">  </td>
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td valign="top">
+                                                                    @{
+                                                                        FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                        System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                        if (image.Height > 600)
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                        }
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>&nbsp;</td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                                    </tr>
+                                    <!--- Report Footer Address Include -->
+                                    @Html.Partial("_ReportFooterAddress")
+                                    <!--- Report Footer Address Include -->
+                                    <!--- Report Footer Include -->
+                                    @*@Html.Partial("_ReportFooter")*@
+                                    <!--- Report Footer Include -->
+                                </table>
+                            </page>
+                        }
+                    }
+                    index++;
+
+                }
+            }
+        }
+    }
+}

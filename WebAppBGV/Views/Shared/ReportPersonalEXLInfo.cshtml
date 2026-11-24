@@ -1,0 +1,255 @@
+
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+
+
+    bool hasWip = Model.PersonalChecksBriefDetails != null &&
+
+    Model.PersonalChecksBriefDetails.Any(x =>
+
+    string.Equals(x.ColorName, "WIP", StringComparison.OrdinalIgnoreCase));
+
+    string finalStatus = hasWip ? "WIP" : Model.FinalColor;
+
+
+}
+
+
+<table width="100%" height="1100" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; border-collapse:collapse;">
+    <tr>
+        <td valign="top">
+            <table style="width:98%; font-family: Calibri; margin: auto; border-collapse: collapse;">
+                <tr>
+                    <td valign="top" style="width:100%; text-align:end;"><img src='@Url.Content("~/Content/images/Securitas-logo.png")' style="width:5rem; margin-top:10px; margin-right:10px;"></td>
+                </tr>
+            </table>
+            <table border="1" style="width:98%; font-family: Calibri; margin: auto; border-collapse: collapse; margin-top: 20px;">
+                <tr>
+                    <td colspan="4" style="padding: 8px 11px; background: #9FAFCD; text-align: center; font-size: 16px; font-family: 'Calibri', sans-serif; font-weight: bolder; ">Background Screening Report</td>
+                </tr>
+
+            </table>
+            <table border="1" style="width: 98%; font-family: Calibri; margin: auto; border-collapse: collapse; margin-top: 20px">
+                <tr>
+                    <td colspan="4" style="text-align: center; background: rgb(191, 191, 191); width: 211px; padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px; font-weight: bolder;">
+                        Candidate Report
+                    </td>
+                </tr>
+                <tr>
+                    <td style="background: rgb(191, 191, 191); width: 211px; padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px; font-weight: bolder;">
+                        Name of the Candidate
+                    </td>
+                    <td colspan="3" style="padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px;">
+                        @Model.PersonalName
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background: rgb(191, 191, 191); width: 211px; padding: 5px 8px; font-family: 'Calibri', sans-serif; font-size: 16px; font-weight: bolder;">Father Name</td>
+                    <td colspan="3" style="padding: 5px 8px; font-family: 'Calibri', sans-serif; font-size: 16px;">@Model.FatherName</td>
+                </tr>
+
+                <tr>
+                    <td style="background: rgb(191, 191, 191); width: 211px; padding: 5px 8px; font-family: 'Calibri', sans-serif; font-size: 16px; font-weight: bolder;">Date of Birth</td>
+                    <td colspan="3" style="padding: 5px 8px; font-family: 'Calibri', sans-serif; font-size: 16px;">
+                        @*@if (Model.DOJ != null)
+        {
+        <p>
+            @Convert.ToDateTime(Model.DOJ).ToString("dd-MMMM-yyyy")
+        </p>
+        }*@
+                        @if (!string.IsNullOrWhiteSpace(Model.DOJ))
+                        {
+                            DateTime dob;
+                            @*if (DateTime.TryParse(Model.dob, out dob))
+                            {
+                                <p>@dob.ToString("dd-MMMM-yyyy")</p>
+                            }
+                            else
+                            {
+                                <p>Not Applicable</p>
+                            }*@
+
+                            if (Model.DOB != null)
+                            {
+                                <p> @Convert.ToDateTime(Model.DOB).ToString("dd-MMMM-yyyy")</p>
+                            }
+                            else
+                            {
+                                <p>Not Applicable</p>
+                            }
+                        }
+                        else
+                        {
+                            <p>
+                                Not Applicable
+                            </p>
+                        }
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background: rgb(191, 191, 191); width: 211px; padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px; font-weight: bolder;">ORC ID</td>
+                    <td colspan="3" style="padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px;">@Model.ClientRefID</td>
+                </tr>
+
+                <tr>
+                    <td style="background: rgb(191, 191, 191); width: 211px; padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px; font-weight: bolder;">EXL Employee ID</td>
+                    <td colspan="3" style="padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px;">@Model.EmploymentId</td>
+                </tr>
+
+                <tr>
+                    <td style="background: rgb(191, 191, 191); width: 211px; padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px; font-weight: bolder;">Temp/TYDY ID</td>
+                    <td colspan="3" style="padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px;">@Model.CandidateCode</td>
+                </tr>
+
+                <tr>
+                    <td style="background: rgb(191, 191, 191); width: 211px; padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px; font-weight: bolder;">Process/Client</td>
+                    <td colspan="3" style="padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px;">@Model.ProcessName</td>
+                </tr>
+
+                <tr>
+                    <td style="background: rgb(191, 191, 191); width: 211px; padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px; font-weight: bolder;">Line of Business</td>
+                    <td colspan="3" style="padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px;">@Model.BusinessName</td>
+                </tr>
+
+                <tr>
+                    <td style="background: rgb(191, 191, 191); width: 211px; padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px; font-weight: bolder;">Date of Joining</td>
+                    <td colspan="3" style="padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px;">
+                        @if (Model.DOJ != null)
+                        {
+                            <p>
+                                @Convert.ToDateTime(Model.DOJ).ToString("dd-MMMM-yyyy")
+                            </p>
+                        }
+                        else
+                        {
+                            <p>
+                                Not Applicable
+                            </p>
+                        }
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background: rgb(191, 191, 191); width: 211px; padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px; font-weight: bolder;">Case Reference ID</td>
+                    <td colspan="3" style="padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px;">@Model.CompanyRefNo</td>
+                </tr>
+
+                <tr>
+                    <td style="background: rgb(191, 191, 191); width: 211px; padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px; font-weight: bolder;">Final Report Date</td>
+                    <td colspan="3" style="padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px;">
+                        @if (Model.ReportDate != null)
+                        {
+                            <p>@Convert.ToDateTime(@Model.ReportDate).ToString("dd MMMM yyyy")</p>
+                        }
+                        else
+                        {
+                            <p>Not Applicable</p>
+                        }
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background: rgb(191, 191, 191); width: 211px; padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px; font-weight: bolder;">Re-verification Date</td>
+                    <td colspan="3" style="padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px;">
+
+                        <p>NA</p>
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background: rgb(191, 191, 191); width: 211px; padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px; font-weight: bolder;">Final Status</td>
+                    @if (finalStatus.ToLower() == "wip")
+                    {
+                        <td colspan="3" style="padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px;">
+                            <p>Interim</p>
+                        </td>
+                    }
+                    else if (Model.FinalColor != null)
+                    {
+                        <td colspan="3" style="padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px; background: @Model.FinalColorCode">
+                            <p> @Model.FinalColor</p>
+                        </td>
+                    }
+                    else
+                    {
+                        <td colspan="3" style="padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px; background: @Model.FinalColorCode">
+                            <p>Not Applicable</p>
+                        </td>
+
+                    }
+
+                </tr>
+
+                @*<tr>
+                        <td style="background: rgb(191, 191, 191); width: 211px; padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px; font-weight: bolder;">Final Status</td>
+
+                        <td colspan="3" style="padding: 5px 8px; font-family:'Calibri', sans-serif; font-size: 16px; background: @Model.FinalColorCode;">
+                            @if (Model.FinalColor != null)
+                            {
+                                <p>@Model.FinalColor</p>
+                            }
+                            else
+                            {
+                                <p>Not Applicable</p>
+                            }
+                        </td>
+                    </tr>*@
+            </table>
+            <table border="1" style="width: 98%; margin: auto; border-collapse: collapse; font-family: Calibri; margin-top: 20px;">
+                <tr>
+                    <td style="text-align:center; padding:12px 10px; border:none;">
+                        <span style="font-size: 15px; background: red; color: white; padding: 0 3px;">RED</span>
+                        <span style="font-size: 15px; margin-right: 20px;">Major Discrepancy</span>
+
+                        <span style="font-size: 15px; background: green; color: white; padding: 0 3px;">GREEN</span>
+                        <span style="font-size: 15px;">All Verified</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center; padding:6px 10px; border:none;">
+                        <span style="font-size: 15px; background: yellow; padding: 0 3px; font-weight: bold;">
+                            YELLOW
+                        </span>
+                        <span style="font-size: 15px;">
+                            Inaccessible for verification / Unable to verify/ Additional Information/Documents required.
+                        </span>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <!--- Report Footer with Address Include -->
+    <tr>
+        <td>
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tbody>
+                    <tr>
+                        <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                            &nbsp;
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                        <td width="1%">&nbsp;</td>
+
+                        <td width="79%">
+                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                            <p style="font-size:16px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                        </td>
+
+                    </tr>
+
+                </tbody>
+            </table>
+        </td>
+    </tr>
+
+</table>

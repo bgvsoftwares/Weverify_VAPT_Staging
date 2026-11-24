@@ -1,0 +1,350 @@
+﻿
+@model ViewModels.ReportQCViewModel.InterimReportGenerateViewModel
+
+@if (Model != null && Model.NationalIdentityProvidedList != null && Model.NationalIdentityProvidedList.Count() > 0 && Model.AntecedentList != null && Model.AntecedentList.Count() > 0)
+{
+    foreach (var ProvidedInfo in Model.NationalIdentityProvidedList)
+    {
+        var NationalIdentityVerInfo = Model.NationalIdentityVerifiedList.Where(ver => ver.NationalIdentityRowID == ProvidedInfo.NationalIdentityRowID).FirstOrDefault();
+        var antecentList = Model.AntecedentList.Where(a => a.CheckFamilyRowID == ProvidedInfo.CheckFamilyRowID && a.SubCheckRowID == ProvidedInfo.SubCheckRowID).ToList();
+        <page id="PrintSrc" size="A4">  
+            <div style="page-break-after:always ;"></div>
+            <table width="793" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999;">
+                <!--- Report Header Include -->
+                @*@Html.Partial("_ReportHeader")*@
+                <!--- Report Header Include -->
+                <tr>
+                    <td width="2%" align="left" valign="bottom" @*style="border-left:2px solid #999999;"*@>&nbsp;</td>
+                    <td valign="top">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td valign="top">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                        <tr>
+                                            <td>
+                                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                    <tr>
+                                                        <td colspan="2" align="right"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@ProvidedInfo.SubCheckName</p></td>
+                                                        @*<td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>*@
+                                                    </tr>
+                                                    <tr><td colspan="2">&nbsp;</td></tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                   
+                                        <tr>
+                                            <td valign="top">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top" align="center">
+                                                <table width="100%" border="1" cellpadding="4" cellspacing="1" style="border:groove; border-color:gainsboro; border-spacing:4px; font-size:10px; font-weight:bold">
+                                                    <tr>
+
+
+                                                        <td style="border:groove; border-color:gainsboro;padding-left:5px; font-weight:bold; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">Unique ID</td>
+                                                        @if (Model.EmploymentId != "")
+    {
+                                                    <td style="border:groove; border-color:gainsboro;padding-left:5px;  font-family:Calibri;"><label for="">@Model.EmploymentId</label></td>
+}
+else
+{
+                                                    <td style="border:groove; border-color:gainsboro;padding-left:5px;  font-family:Calibri;"><label for=""></label></td>
+}
+
+
+                                                        <td style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Component Color Code</td>
+                                                 
+                                                        @if (NationalIdentityVerInfo != null && !string.IsNullOrEmpty(NationalIdentityVerInfo.ColorName))
+    {
+
+                                                    <td style="color-adjust:exact;background:@NationalIdentityVerInfo.ColorCode;font-size:14px;  font-weight:bold; padding:5px; text-align:center;">@NationalIdentityVerInfo.ColorName</td>
+
+}
+else
+{
+                                                    <td bgcolor="#fff" style="font-size:14px;  font-weight:bold; padding:5px; text-align:center;">@ProvidedInfo.CheckStatus</td>
+}
+                                                    </tr>
+                                                    <tr>
+                                                        
+                                                    </tr>
+                                                   
+                                                    
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td height="30">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top" align="center">
+                                                <table width="100%" border="1" cellpadding="4" cellspacing="1" style="border:groove; border-color:gainsboro; border-spacing:4px; font-size:10px; font-weight:bold">
+                                                   
+
+                                                    @{
+        if (NationalIdentityVerInfo != null)
+        {
+
+
+                                               
+                                               
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">ID Proof </td>
+                                                    @if (@NationalIdentityVerInfo.NIC_ID_No != null && @NationalIdentityVerInfo.NIC_ID_No != "")
+    {
+                                                <td style="font-size:10px; font-family:Calibri;">@NationalIdentityVerInfo.NIC_Type_Id_Card </td>
+
+
+}
+                                                    <td style="font-size:10px; font-family:Calibri;">Verification Date </td>
+                                                    @if (Model.CreatedDate != null)
+    {
+                                                <td style="font-size:10px; font-family:Calibri;">@Model.CreatedDate.Value.ToString("dd-MMM-yyyy")</td>
+}
+else
+{
+                                                <td style="font-size:10px; font-family:Calibri;"></td>
+}
+
+
+
+
+
+                                                </tr>
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">ID Number </td>
+                                                    <td  style="font-size:10px; font-family:Calibri;">@NationalIdentityVerInfo.NIC_ID_No</td>
+                                                    @*<td colspan="2" style="font-size:10px; font-family:Calibri;">National ID No</td>*@
+
+                                                    @if (@NationalIdentityVerInfo.NIC_Aadhar_Card_No != null && @NationalIdentityVerInfo.NIC_Aadhar_Card_No != "")
+    {
+                                                <td style="font-size:10px; font-family:Calibri;">AAdhar Card Detail </td>
+                                                <td  style="font-size:10px; font-family:Calibri;">@NationalIdentityVerInfo.NIC_Aadhar_Card_No</td>
+                                                @*<td colspan="2" style="font-size:10px; font-family:Calibri;">AadharCardNo</td>*@
+}
+                                                    @if (@NationalIdentityVerInfo.NIC_Voter_Id_No != null && @NationalIdentityVerInfo.NIC_Voter_Id_No != "")
+    {
+                                                <td style="font-size:10px; font-family:Calibri;">Voter Card Detail </td>
+                                                <td  style="font-size:10px; font-family:Calibri;">@NationalIdentityVerInfo.NIC_Voter_Id_No</td>
+                                                @*<td colspan="2" style="font-size:10px; font-family:Calibri;">VoterIdNo</td>*@
+}
+                                                    @if (@NationalIdentityVerInfo.NIC_Pan_No != null && @NationalIdentityVerInfo.NIC_Pan_No != "")
+    {
+                                                <td style="font-size:10px; font-family:Calibri;">Voter Card Detail </td>
+                                                <td  style="font-size:10px; font-family:Calibri;">@NationalIdentityVerInfo.NIC_Pan_No</td>
+                                                @*<td colspan="2" style="font-size:10px; font-family:Calibri;">PanCard</td>*@
+}
+
+                                                    @if (@NationalIdentityVerInfo.NIC_Passport_No != null && @NationalIdentityVerInfo.NIC_Passport_No != "")
+    {
+                                                <td style="font-size:10px; font-family:Calibri;">Voter Card Detail </td>
+                                                <td  style="font-size:10px; font-family:Calibri;">@NationalIdentityVerInfo.NIC_Passport_No</td>
+                                                @*<td colspan="2" style="font-size:10px; font-family:Calibri;">Passport</td>*@
+}
+
+
+
+                                                <td style="font-size:10px; font-family:Calibri;">Verification Status </td>
+                                                   
+                                                <td style="font-size:10px; font-family:Calibri;">Positive </td>
+
+
+
+
+
+
+                                                </tr>
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Name as per ID Proof </td>
+
+                                                    @if (NationalIdentityVerInfo.NIC_Cand_Name != null)
+    {
+                                                <td style="font-size:10px; font-family:Calibri;">@NationalIdentityVerInfo.NIC_Cand_Name</td>
+}
+else
+{
+                                                <td style="font-size:10px; font-family:Calibri;"></td>
+}
+                                                <td style="font-size:10px; font-family:Calibri;">Remark </td>
+
+                                                <td style="font-size:10px; font-family:Calibri;"></td>
+                                                </tr>
+
+
+}
+
+
+else
+{
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Father’s Name </td>
+                                                    <td colspan="2" style="font-size:10px; font-family:Calibri;"> @Model.FatherName</td>
+                                                  
+                                                </tr>
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Date of Birth </td>
+                                                    @*<td style="font-size:10px; font-family:Calibri;">@ProvidedInfo.NIC_DOB1</td>*@
+                                                    @if (@ProvidedInfo.NIC_DOB1 != null)
+    {
+                                                <td colspan="2" style="font-size:10px; font-family:Calibri;">@ProvidedInfo.NIC_DOB1.Value.ToString("dd-MMM-yyyy")</td>
+}
+else
+{
+                                                <td colspan="2" style="font-size:10px; font-family:Calibri;"></td>
+}
+                                                    @*<td style="font-size:10px; font-family:Calibri;">&nbsp;</td>*@
+                                                </tr>
+
+
+                                                <tr>
+
+
+                                                    @if (@ProvidedInfo.NIC_ID_No != null && @ProvidedInfo.NIC_ID_No != "")
+    {
+                                                <td style="font-size:10px; font-family:Calibri;">Id Detail </td>
+                                                <td colspan="2" style="font-size:10px; font-family:Calibri;">@ProvidedInfo.NIC_ID_No</td>
+}
+
+                                                    @if (@ProvidedInfo.NIC_Aadhar_Card_No != null && @ProvidedInfo.NIC_Aadhar_Card_No != "")
+    {
+                                                <td style="font-size:10px; font-family:Calibri;">AAdhar Card Detail </td>
+                                                <td colspan="2" style="font-size:10px; font-family:Calibri;">@ProvidedInfo.NIC_Aadhar_Card_No</td>
+}
+                                                    @if (@ProvidedInfo.NIC_Voter_Id_No != null && @ProvidedInfo.NIC_Voter_Id_No != "")
+    {
+                                                <td style="font-size:10px; font-family:Calibri;">Voter Card Detail </td>
+                                                <td colspan="2" style="font-size:10px; font-family:Calibri;">@ProvidedInfo.NIC_Voter_Id_No</td>
+}
+                                                    @if (@ProvidedInfo.NIC_Pan_No != null && @ProvidedInfo.NIC_Pan_No != "")
+    {
+                                                <td style="font-size:10px; font-family:Calibri;">PAN Card Detail </td>
+                                                <td colspan="2" style="font-size:10px; font-family:Calibri;">@ProvidedInfo.NIC_Pan_No</td>
+}
+
+                                                    @if (@ProvidedInfo.NIC_Passport_No != null && @ProvidedInfo.NIC_Passport_No != "")
+    {
+                                                <td style="font-size:10px; font-family:Calibri;">Passport Detail </td>
+                                                <td colspan="2" style="font-size:10px; font-family:Calibri;">@ProvidedInfo.NIC_Passport_No</td>
+}
+                                                </tr>
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Date of ID Check </td>
+                                                   
+                                                    @if (Model.CreatedDate != null)
+    {
+                                                <td colspan="2" style="font-size:10px; font-family:Calibri;">@Model.CreatedDate.Value.ToString("dd-MMM-yyyy")</td>
+}
+else
+{
+                                                <td colspan="2" style="font-size:10px; font-family:Calibri;"></td>
+}
+                                                </tr>
+
+
+
+
+
+
+}
+                                                    }
+
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td @*style="border-right:2px solid #999999;"*@ align="left" valign="top">&nbsp;</td>
+                </tr>
+                <!--- Report Footer Address Include -->
+                @Html.Partial("_ReportFooterAddress")
+                <!--- Report Footer Address Include -->
+                <!--- Report Footer Include -->
+                @*@Html.Partial("_ReportFooter")*@
+                <!--- Report Footer Include -->
+            </table>                
+            </page>
+
+        if (Model.CandidateDocList != null)
+        {
+            foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == ProvidedInfo.SubCheckRowID))
+            {
+                if (Doc.SubCheckRowID == ProvidedInfo.SubCheckRowID)
+                {
+                    FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                    if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                    {
+                       <page id="PrintSrc" size="A4"> 
+                           <div style="page-break-after:always ;"></div>
+                           <table width="793" cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center">
+                               <!--- Report Header Include -->
+                               @*@Html.Partial("_ReportHeader")*@
+                               <!--- Report Header Include -->
+                               <tr>
+                                   @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                   <td valign="top" colspan="2" align="center" valign="bottom">
+                                       <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                           <tr>
+                                               <td valign="top">
+                                                   <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                       <tr>
+                                                           <td style="font-size:10px; font-family:Calibri;">
+                                                               <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                   <tr>
+                                                                       <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@ProvidedInfo.SubCheckName (@Doc.DocumentType)</p></td>
+                                                                       <td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                                                                   </tr>
+                                                                   <tr><td colspan="2">&nbsp;</td></tr>
+                                                               </table>
+                                                           </td>
+                                                       </tr>
+                                                       <tr>
+                                                           <td valign="top">&nbsp;</td>
+                                                       </tr>
+                                                       <tr style="text-align:center">
+                                                           <td valign="top">
+                                                               @{
+                                                                   FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                   System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                   if (image.Height > 600)
+                                                                   {
+                                                                       <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                   }
+                                                                   else
+                                                                   {
+                                                                       <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                   }
+                                                               }
+                                                           </td>
+                                                       </tr>
+                                                   </table>
+                                               </td>
+                                           </tr>
+                                       </table>
+                                   </td>
+                                   @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                               </tr>
+                               <!--- Report Footer with Address Include -->
+                               @Html.Partial("_ReportFooterAddress")
+                               <!--- Report Footer with Address Include -->
+                               <!--- Report Footer Include -->
+                               @*@Html.Partial("_ReportFooter")*@
+                               <!--- Report Footer Include -->
+                           </table>
+                        </page>
+                    }
+                }
+            }
+        }
+    }
+}

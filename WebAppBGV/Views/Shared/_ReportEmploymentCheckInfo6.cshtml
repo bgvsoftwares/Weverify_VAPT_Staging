@@ -1,0 +1,553 @@
+﻿
+@model ViewModels.ReportQCViewModel.InterimReportGenerateViewModel
+
+@if (Model != null && Model.EmploymentProvidedList != null && Model.EmploymentProvidedList.Count() > 0 && Model.AntecedentList != null && Model.AntecedentList.Count() > 0)
+ {
+
+    foreach (var ProvidedInfo in Model.EmploymentProvidedList)
+    {
+        var EmploymentVerInfo = Model.EmploymentVerifiedList.Where(ver => ver.EmploymentRowID == ProvidedInfo.EmploymentRowID).FirstOrDefault();
+
+        var antecentList = Model.AntecedentList.Where(a => a.CheckFamilyRowID == ProvidedInfo.CheckFamilyRowID && a.SubCheckRowID == ProvidedInfo.SubCheckRowID).ToList();
+
+        <page id="PrintSrc" size="A4" > 
+            <div style="page-break-after:always ;"></div>
+            <table width="793"  @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999;">
+                <!--- Report Header Include -->
+                @*@Html.Partial("_ReportHeader")*@
+                <!--- Report Header Include -->
+                <tr>
+                    <td width="2%" align="left" valign="bottom" @*style="border-left:2px solid #999999;"*@>&nbsp;</td>
+                    <td valign="top">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td valign="top">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                        <tr>
+                                            <td>
+                                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                    <tr>
+                                                        <td colspan="2" align="right"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@ProvidedInfo.SubCheckName</p></td>
+                                                        @*<td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>*@
+                                                    </tr>
+                                                    <tr><td colspan="2">&nbsp;</td></tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        @*<tr>
+                                            <td valign="top" align="right">
+                                                <table width="30%" border="1" cellpadding="4" cellspacing="1" style="border:groove; border-color:gainsboro; border-spacing:4px; font-size:10px; font-weight:bold">
+                                                    <tr>
+                                                        <td style="background:#c0c0c0;">Check Status</td>
+                                                        @if (EmploymentVerInfo != null && !string.IsNullOrEmpty(EmploymentVerInfo.ColorName))
+                                                        {
+                                                            <td width="49%" style="color-adjust:exact;background:@EmploymentVerInfo.ColorCode;font-size:14px;  font-weight:bold; padding:5px; text-align:center;">@EmploymentVerInfo.ColorName</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td bgcolor="#fff" style="font-size:14px;  font-weight:bold; padding:5px; text-align:center;">@ProvidedInfo.CheckStatus</td>
+                                                        }
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>*@
+                                        <tr>
+                                            <td valign="top">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top" align="center">
+                                                <table width="100%" border="1" cellpadding="4" cellspacing="1" style="border:groove; border-color:gainsboro; border-spacing:4px; font-size:10px; font-weight:bold">
+                                                    <tr>
+                                                        <td width="33%" style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Unique ID</td>
+                                                        @if (Model.EmploymentId != "")
+    {
+                                                    <td style="font-size:10px; font-family:Calibri;padding-left:5px;"><label for="">@Model.EmploymentId</label></td>
+}
+else
+{
+                                                    <td style="font-size:10px; font-family:Calibri;padding-left:5px;"><label for=""></label></td>
+}
+
+
+
+
+                                                        <td style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Component Color Code</td>
+                                                        @*<td style="font-size:10px; font-family:Calibri; padding-left:5px;"><label for="">@ProvidedInfo.AV_Sec_Ref_No</label></td>*@
+                                                        @if (EmploymentVerInfo != null && !string.IsNullOrEmpty(EmploymentVerInfo.ColorName))
+    {
+                                                    <td style="color-adjust:exact;background:@EmploymentVerInfo.ColorCode;font-size:14px;  font-weight:bold; padding:5px; text-align:center;">@EmploymentVerInfo.ColorName</td>
+
+}
+else
+{
+                                                    <td bgcolor="#fff" style="font-size:14px;  font-weight:bold; padding:5px; text-align:center;">@ProvidedInfo.CheckStatus</td>
+}
+                                                    </tr>
+                                                    @*<tr>
+                                                        
+                                                    </tr>*@
+                                                    @*<tr>
+                                                        <td style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;padding-left:5px; font-weight:bold;">Unique ID</td>
+                                                        <td style="font-size:10px; font-family:Calibri; padding-left:5px;"><label for="">@Model.ClientRefID</label></td>
+                                                    </tr>*@                                                    
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td height="30">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top" align="center">
+                                                <table width="100%" border="1" cellpadding="4" cellspacing="1" style="border:groove; border-color:gainsboro; border-spacing:4px; font-size:10px; font-weight:bold">
+                                                    <tr>
+                                                        <td width="33%" style="font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center; font-size:12px;  font-weight:700;">Details</td>
+                                                        <td width="33%" style="font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center; font-size:12px;  font-weight:700;">Information Provided</td>
+                                                        <td width="33%" style="font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center; font-size:12px;  font-weight:700;">Information Verified</td>
+                                                    </tr>
+                                                    @{
+        if (EmploymentVerInfo != null)
+        {
+
+
+                                                    <tr>
+                                                        <td style="font-size:10px; font-family:Calibri;">Name of the Company </td>
+                                                        <td style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_OrganisationName</td>
+                                                        @if (!string.IsNullOrEmpty(ProvidedInfo.EV_OrganisationName))
+    {
+        if (@ProvidedInfo.EV_OrganisationName.ToLower() == EmploymentVerInfo.EV_OrganisationName.ToLower())
+        {
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">Correct</td>
+}
+else
+{
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">@EmploymentVerInfo.EV_OrganisationName</td>
+}
+}
+else
+{
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;"></td>
+
+
+}
+                                                        @*<td style="font-size:10px; font-family:Calibri;">@EmploymentVerInfo.EV_OrganisationName</td>*@
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="font-size:10px; font-family:Calibri;">Locality/City of the Company </td>
+                                                        <td style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_CmpNameAddress</td>
+                                                        @if (!string.IsNullOrEmpty(ProvidedInfo.EV_OrganisationName))
+    {
+        if (@ProvidedInfo.EV_CmpNameAddress.ToLower() == EmploymentVerInfo.EV_CmpNameAddress.ToLower())
+        {
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">Correct</td>
+}
+else
+{
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">@EmploymentVerInfo.EV_CmpNameAddress</td>
+}
+}
+                                                        @*<td style="font-size:10px; font-family:Calibri;">@EmploymentVerInfo.EV_CmpNameAddress</td>*@
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td style="font-size:10px; font-family:Calibri;">Period of Employment </td>
+                                                        @*<td style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_EmployeeTenure</td>*@
+                                                        @if (!string.IsNullOrEmpty(ProvidedInfo.EV_EmployeeTenure) && !string.IsNullOrEmpty(EmploymentVerInfo.EV_EmployeeTenure))
+    {
+        if (@ProvidedInfo.EV_EmployeeTenure.ToLower() == EmploymentVerInfo.EV_EmployeeTenure.ToLower())
+        {
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">Correct</td>
+}
+else
+{
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">@EmploymentVerInfo.EV_EmployeeTenure</td>
+}
+}
+else
+{
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;"></td>
+
+
+}
+                                                        @*<td style="font-size:10px; font-family:Calibri;">@EmploymentVerInfo.EV_EmployeeTenure</td>*@
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td style="font-size:10px; font-family:Calibri;">Designation </td>
+                                                        @*<td style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_Designation</td>*@
+                                                        @if (!string.IsNullOrEmpty(ProvidedInfo.EV_Designation) && !string.IsNullOrEmpty(EmploymentVerInfo.EV_Designation))
+                                                        {
+                                                            if (@ProvidedInfo.EV_Designation.ToLower() == EmploymentVerInfo.EV_Designation.ToLower())
+                                                            {
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">Correct</td>
+}
+else
+{
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">@EmploymentVerInfo.EV_Designation</td>
+}
+}
+else
+{
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;"></td>
+
+
+}
+                                                        @*<td style="font-size:10px; font-family:Calibri;">@EmploymentVerInfo.EV_Designation</td>*@
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td style="font-size:10px; font-family:Calibri;">Remuneration </td>
+                                                        @*<td style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_CmpCost</td>*@
+                                                        @if (!string.IsNullOrEmpty(ProvidedInfo.EV_CmpCost) && !string.IsNullOrEmpty(EmploymentVerInfo.EV_CmpCost))
+                                                 
+{
+    if (@ProvidedInfo.EV_CmpCost.ToLower() == EmploymentVerInfo.EV_CmpCost.ToLower())
+    {
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">Correct</td>
+}
+else
+{
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">@ProvidedInfo.EV_CmpCost.ToLower()</td>
+}
+}
+else
+{
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;"></td>
+
+
+}
+                                                    @*<td style="font-size:10px; font-family:Calibri;">@EmploymentVerInfo.EV_CmpCost</td>*@
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td style="font-size:10px; font-family:Calibri;">Reporting Manager </td>
+                                                        @*<td style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_ReportingManagerName</td>*@
+                                                        @if (!string.IsNullOrEmpty(ProvidedInfo.EV_ReportingManagerName) && !string.IsNullOrEmpty(EmploymentVerInfo.EV_ReportingManagerName))
+    {
+        if (@ProvidedInfo.EV_ReportingManagerName.ToLower() == EmploymentVerInfo.EV_ReportingManagerName.ToLower())
+        {
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">Correct</td>
+}
+else
+{
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">@EmploymentVerInfo.EV_ReportingManagerName</td>
+}
+}
+else
+{
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;"></td>
+
+
+}
+                                                        @*<td style="font-size:10px; font-family:Calibri;">@EmploymentVerInfo.EV_ReportingManagerName</td>*@
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td style="font-size:10px; font-family:Calibri;">Reason for Leaving </td>
+
+                                                        @*<td colspan="2" style="font-size:10px; font-family:Calibri;">@EmploymentVerInfo.EV_leavingReason</td>*@
+                                                        <td style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_leavingReason</td>
+                                                        @if (!string.IsNullOrEmpty(ProvidedInfo.EV_leavingReason) && !string.IsNullOrEmpty(EmploymentVerInfo.EV_leavingReason))
+    {
+        if (@ProvidedInfo.EV_leavingReason.ToLower() == EmploymentVerInfo.EV_leavingReason.ToLower())
+        {
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">Correct</td>
+}
+else
+{
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">@EmploymentVerInfo.EV_leavingReason</td>
+}
+}
+else
+{
+                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;"></td>
+
+
+}
+                                                        @*<td style="font-size:10px; font-family:Calibri;">@EmploymentVerInfo.EV_leavingReason</td>*@
+                                                    </tr>
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Eligible for Rehire </td>
+                                                    <td colspan="2" style="font-size:10px; font-family:Calibri;">@EmploymentVerInfo.EV_EligibilityOfRehire</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri; vertical-align:top">Additional Comments </td>
+
+                                                    <td colspan="2" style="font-size:10px; font-family:Calibri;height:50px; vertical-align:top ">@EmploymentVerInfo.ReportComment</td>
+                                                </tr>
+
+
+
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Verified By </td>
+
+                                                    <td colspan="2" style="font-size:10px; font-family:Calibri;">@EmploymentVerInfo.EV_DetailsReferee @EmploymentVerInfo.EV_RefereeNameDetails @EmploymentVerInfo.EV_Rptng_Mgr_Name_ConDet  </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Date of verification</td>
+                                                  
+                                                    @*<td style="font-size:10px; font-family:Calibri;">@ProvidedInfo.AV_Date_Verification</td>*@
+                                                    @*<td colspan="2" style="font-size:10px; font-family:Calibri;">@EducationVerInfo.
+        </td>*@
+                                                    @if (EmploymentVerInfo.VerifiedDate != null)
+    {
+                                                <td colspan="2" style="font-size:10px; font-family:Calibri;">@EmploymentVerInfo.VerifiedDate.Value.ToString("dd-MMMM-yyyy")</td>
+}
+else
+{
+                                                <td colspan="2" style="font-size:10px; font-family:Calibri;"></td>
+}
+                                                </tr>
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Mode of Verification </td>
+
+                                                    <td colspan="2" style="font-size:10px; font-family:Calibri;">Written</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Document provided by Employee </td>
+
+                                                    <td colspan="2" style="font-size:10px; font-family:Calibri;">@EmploymentVerInfo.EV_AttachedDocumentGenuine</td>
+                                                </tr>
+
+                                                @*<tr>
+                                                        <td style="font-size:10px; font-family:Calibri;">Name of the verifier from agency </td>
+                                                        @if (EmploymentVerInfo != null && !string.IsNullOrEmpty(EmploymentVerInfo.EV_OtherDetails15))
+        {
+                                                    <td colspan="2" style="font-size:10px; font-family:Calibri;">@EmploymentVerInfo.EV_OtherDetails15</td>
+    }
+                                                    </tr>*@
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Agency Executive Detail </td>
+                                                    @*<td style="font-size:10px; font-family:Calibri;">@ProvidedInfo.AV_OtherDetails14</td>*@
+                                                    <td colspan="2" style="font-size:10px; font-family:Calibri;">@EmploymentVerInfo.VerifierName</td>
+
+                                                </tr>
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Artifact Enclosed </td>
+                                                    <td colspan="2" style="font-size:10px; font-family:Calibri;">Yes</td>
+
+                                                </tr>
+
+
+                                                @*<tr>
+        <td style="font-size:10px; font-family:Calibri;">Closure Date</td>
+        <td colspan="2" style="font-size:10px; font-family:Calibri;">@EmploymentVerInfo.EV_DateTime</td>
+    </tr>*@
+
+}
+
+
+else
+{
+
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Name of the Company </td>
+                                                    <td style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_OrganisationName</td>
+                                                    <td style="font-size:10px; font-family:Calibri;">&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Locality/City of the Company </td>
+                                                    @*<td style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_CmpNameAddress</td>*@
+                                                    @if (EmploymentVerInfo != null && !string.IsNullOrEmpty(EmploymentVerInfo.EV_CmpNameAddress))
+    {
+                                                <td style="font-size:10px; font-family:Calibri;">@EmploymentVerInfo.EV_CmpNameAddress</td>
+}
+
+                                                </tr>
+                                                @*<tr>
+        <td style="font-size:10px; font-family:Calibri;">Employee Code </td>
+        <td style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_EmployeeCode</td>
+        <td style="font-size:10px; font-family:Calibri;">&nbsp;</td>
+    </tr>*@
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Period of Employment </td>
+                                                    <td style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_EmploymentPeriod</td>
+                                                    <td style="font-size:10px; font-family:Calibri;">&nbsp;</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Designation </td>
+                                                    <td style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_Designation</td>
+                                                    <td style="font-size:10px; font-family:Calibri;">&nbsp;</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Remuneration </td>
+                                                    <td style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_CmpCost</td>
+                                                    <td style="font-size:10px; font-family:Calibri;">&nbsp;</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Reporting Manager </td>
+                                                    <td style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_ReportingManagerName</td>
+                                                    <td style="font-size:10px; font-family:Calibri;">&nbsp;</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Reason for Leaving </td>
+                                                    <td style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_leavingReason</td>
+                                                    <td style="font-size:10px; font-family:Calibri;">&nbsp;</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Eligible for Rehire </td>
+                                                    <td colspan="2" style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_EligibileForRehire</td>
+
+                                                </tr>
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri; vertical-align:top">Additional Comments </td>
+                                                    <td colspan="2" style="font-size:10px; font-family:Calibri;">@ProvidedInfo.ReportComment</td>
+                                                </tr>
+
+
+
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Verified By </td>
+                                                    <td colspan="2" style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_DetailsReferee</td>
+
+                                                </tr>
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Mode of Verification </td>
+                                                    <td colspan="2" style="font-size:10px; font-family:Calibri;">Written</td>
+
+                                                </tr>
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Document provided by Employee </td>
+                                                    <td colspan="2" style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_AttachedDocumentGenuine</td>
+
+                                                </tr>
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Name of the verifier from agency </td>
+                                                    @*<td colspan="2" style="font-size:10px; font-family:Calibri;"></td>*@
+                                                    @if (EmploymentVerInfo != null && !string.IsNullOrEmpty(EmploymentVerInfo.EV_OtherDetails15))
+
+    {
+                                                <td colspan="2" style="font-size:10px; font-family:Calibri;">@EmploymentVerInfo.EV_OtherDetails15</td>
+}
+
+
+                                                </tr>
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Artifact Enclosed </td>
+                                                    <td colspan="2" style="font-size:10px; font-family:Calibri;">Yes</td>
+
+                                                </tr>
+
+
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">Closure Date</td>
+                                                    <td colspan="2" style="font-size:10px; font-family:Calibri;">@ProvidedInfo.EV_DateTime</td>
+                                                </tr>
+
+
+
+
+}
+                                                    }
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                </tr>
+                <!--- Report Footer with Address Include -->
+                @Html.Partial("_ReportFooterAddress")
+                <!--- Report Footer with Address Include -->
+                <!--- Report Footer Include -->
+                @*@Html.Partial("_ReportFooter")*@
+                <!--- Report Footer Include -->
+            </table>
+               
+        </page>
+
+        if (Model.CandidateDocList != null)
+        {
+            foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == ProvidedInfo.SubCheckRowID))
+            {
+                if (Doc.SubCheckRowID == ProvidedInfo.SubCheckRowID)
+                {
+                    FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                    if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                    {
+                        <page id="PrintSrc" size="A4" > 
+                            <div style="page-break-after:always ;"></div>
+                            <table width="793" cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center">
+                                <!--- Report Header Include -->
+                                @*@Html.Partial("_ReportHeader")*@
+                                <!--- Report Header Include -->
+                                <tr>
+                                    @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                    <td valign="top" colspan="2" align="center" valign="bottom">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td valign="top">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr>
+                                                            <td>
+                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                    <tr>
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@ProvidedInfo.SubCheckName (@Doc.DocumentType)</p></td>
+                                                                        <td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                                                                    </tr>
+                                                                    <tr><td colspan="2">&nbsp;</td></tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td valign="top">&nbsp;</td>
+                                                        </tr>
+                                                        <tr style="text-align:center">
+                                                            <td valign="top">
+                                                                @{
+                                                                    FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                    System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                    if (image.Height > 600)
+                                                                    {
+                                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                    }
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                                </tr>
+                                <!--- Report Footer with Address Include -->
+                                @Html.Partial("_ReportFooterAddress")
+                                <!--- Report Footer with Address Include -->
+                                <!--- Report Footer Include -->
+                                @*@Html.Partial("_ReportFooter")*@
+                                <!--- Report Footer Include -->
+                            </table>                                                                                    
+                        </page>
+                    }
+                }
+            }
+        }
+    }
+}

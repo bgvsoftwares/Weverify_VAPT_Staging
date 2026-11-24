@@ -1,0 +1,259 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    /**/
+
+    /**/
+
+    var list = Model.ReferenceInfoModel.Where(T => T.SubcheckRowID == 155).GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+
+
+}
+
+@if (Model != null && Model.ReferenceInfoModel != null && Model.ReferenceInfoModel.Count > 0)
+{
+    if (Model.ReferenceInfoModel != null)
+    {
+        int i = 0;
+        int j = 0;
+        double annuxureno = Convert.ToDouble(Session["AnnexureNo"]);
+        int k = Convert.ToInt32(annuxureno);
+        foreach (var a in list)
+        {
+            var Anticident = Model.ReferenceInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+
+            var ReportComment = list[i].ReportComment;
+            if (j == 0)
+            {
+                annuxureno = k + 1;
+            }
+            else
+            {
+                annuxureno = annuxureno + .1;
+            }
+            j = 2;
+            Session["AnnexureNo"] = annuxureno.ToString();
+
+
+            <page id="PrintSrc" size="A4">
+                <div style="page-break-after:always ;"></div>
+                <table style="border: 3px solid #999999; margin: auto; width: 67%;">
+                    <tr>
+                        <td>
+                            <table width="793" align="center">
+                                <tr>
+                                    <td width="85%"></td>
+                                    <td width="15%" align="right" valign="top" style="padding-top:2%;">
+                                        <table>
+                                            <tr>
+                                                <td rowspan="3" valign="bottom">
+                                                    <img src='@Url.Content("~/Images/logo.jpg")' width="60" height="40">
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <p style="text-align: center;"><br></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <br />
+                    <tr>
+                        <td>
+                            <table style="margin:auto; width:793px; font-family:'Calibri';">
+                                <tr>
+                                    <td>
+                                        @*<table class="tableClass border-none" style="width: 100%;">
+                                                <tr>
+                                                    <td style="text-align:right; border:none!important;">
+                                                        <img src="https://bgv.securitas-india.com/images/SecuritasLogo.jpg" alt=""
+                                                             style="width:60px" />
+                                                    </td>
+                                                </tr>
+                                            </table>*@
+                                        <br>
+                                        <table style="margin:auto; width:95%; border-collapse:collapse; font-weight:bold;" border="1">
+                                            <tr>
+                                                <td colspan="2" style="text-align:center;background:#DAE4F0; font-weight: bold;">SUPERVISOR CHECK</td>
+                                            </tr>
+                                            @*<tr>
+                                                    <td>Company Name</td>
+                                                    <td>Wet ANd Dry Personal Care Pvt Ltd</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Reference Person Name</td>
+                                                    <td>Hariom</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Reference Person Designation</td>
+                                                    <td>Not disclosed</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Contact No.</td>
+                                                    <td>+91-1143715213</td>
+                                                </tr>*@
+
+                                            @foreach (var item in Anticident)
+                                            {
+                                                if (item.AntecedentRowID == "107" || item.AntecedentRowID == "109" || item.AntecedentRowID == "108" || item.AntecedentRowID == "177")
+                                                {
+
+                                                    <tr>
+                                                        <td>@item.DisplayNameRep</td>
+                                                        <td>@item.OpsValue</td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </table>
+                                        <br>
+                                        <table style="margin:auto; width:95%; border-collapse: collapse; font-weight: bold;" border="1">
+                                            <tr>
+                                                <td style="text-align:center;background:#DAE4F0; font-weight: bold; width:341px;">DETAILS</td>
+                                                <td style="text-align:center;background:#DAE4F0; font-weight: bold;">COMMENT</td>
+                                            </tr>
+                                            @*<tr>
+                                                    <td>Conduct and Performance (Excellent/ Good/ Average)</td>
+                                                    <td>Hard Worker</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Is there any past complaint/incident</td>
+                                                    <td>Not Disclosed</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Reference Person Designation</td>
+                                                    <td>Not disclosed</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Additional Comments (If Any)</td>
+                                                    <td>Good</td>
+                                                </tr>*@
+
+                                            @foreach (var item in Anticident)
+                                            {
+                                                if (item.AntecedentRowID == "161" || item.AntecedentRowID == "301")
+                                                {
+
+                                                    <tr>
+                                                        <td>@item.DisplayNameRep</td>
+                                                        <td>@item.OpsValue</td>
+                                                    </tr>
+                                                }
+                                            }
+                                            <tr>
+                                                <td>Additional Comments (If Any)</td>
+                                                <td>@Html.Raw(ReportComment)</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <p><br></p>
+                    <tr>
+                        <td valign="bottom">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:15rem;">
+                                <tbody>
+                                    <tr>
+                                        <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                                            &nbsp;
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                        <td width="1%">&nbsp;</td>
+                                        <td width="79%">
+                                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                            <p style="font-size:16px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+            </page>
+
+            if (Model.CandidateDocList != null)
+            {
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                {
+                    if (Doc.SubCheckRowID == a.SubcheckRowID)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                            <page id="PrintSrc" size="A4">
+                                <div style="page-break-after:always ;"></div>
+                                <table width="793" cellspacing="0" height="1100" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center">
+                                    <!--- Report Header Include -->
+                                    @*@Html.Partial("_ReportHeader")*@
+                                    <!--- Report Header Include -->
+                                    <tr>
+                                        @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                        <td valign="top" colspan="2" align="center" valign="bottom">
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td valign="top">
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tr>
+                                                                <td style="font-size:10px; font-family:Calibri;">
+                                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                        <tr>
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@a.SubCheckName (@Doc.DocumentType)</p></td>
+                                                                            <td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                                                                        </tr>
+                                                                        <tr><td colspan="2">&nbsp;</td></tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td valign="top">&nbsp;</td>
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td valign="top">
+                                                                    @{
+                                                                        FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                        System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                        if (image.Height > 600)
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                        }
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                                    </tr>
+                                    <!--- Report Footer with Address Include -->
+                                    @Html.Partial("_ReportFooterAddress")
+                                    <!--- Report Footer with Address Include -->
+                                    <!--- Report Footer Include -->
+                                    @*@Html.Partial("_ReportFooter")*@
+                                    <!--- Report Footer Include -->
+                                </table>
+                            </page>
+                        }
+                    }
+                }
+            }
+            i++;
+        }
+    }
+}
+<br />

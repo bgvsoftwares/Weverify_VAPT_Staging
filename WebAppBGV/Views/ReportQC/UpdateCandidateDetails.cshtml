@@ -1,0 +1,596 @@
+﻿@model  ViewModels.ProvidedInfoViewModel.UpdatePQPersonalViewModel
+
+@{
+    ViewBag.Title = "Candidate Personal Info";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+}
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<head>
+    <link href="~/Content/newcss/font-awesome.min.css" rel="stylesheet" />
+    <link href='@Url.Content("~/Content/bootstrap.min.css")' rel="stylesheet" type="text/css" />
+    <link href='@Url.Content("~/Content/bootstrap-theme.min.css")' rel="stylesheet" />
+    <link href='@Url.Content("~/Content/Site.css")' rel="stylesheet" type="text/css" />
+    <script src='@Url.Content("~/Scripts/modernizr-2.8.3.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery-3.7.1.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/DisableBackForwordBtn.js")'></script>
+</head>
+
+<div class="row">
+    <div class="col-md-12">
+       
+
+        @if (ViewBag.ErrorMsg != null)
+        {
+            <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+        }
+        @using (Html.BeginForm("UpdateCandidateDetails", "ReportQC", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.PersonalRowID)
+            @Html.HiddenFor(model => model.CaseStatus)
+            <div class="form-horizontal">
+                <div class="form-group branch row ">
+                    @Html.LabelFor(model => model.ClientRowID, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                    <div class="col-md-8">
+                        @Html.DropDownListFor(model => model.ClientRowID,
+                            new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                            "-- Select Client -- ",
+                            new { @class = "form-control", @disabled = "disabled" })
+                        @Html.ValidationMessageFor(model => model.ClientRowID, "", new { @class = "text-danger" })
+                    </div>
+                    @Html.HiddenFor(model => model.ClientRowID)
+                </div>
+                <div class="form-group branch row ">
+                    @Html.LabelFor(model => model.ClientRefID, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.ClientRefID, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.ClientRefID, "", new { @class = "text-danger" })
+                    </div>
+                    @Html.LabelFor(model => model.CandidateCode, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.CandidateCode, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
+                        @Html.ValidationMessageFor(model => model.CandidateCode, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group branch row ">
+                    @Html.LabelFor(model => model.CompanyRefNo, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.CompanyRefNo, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
+                        @Html.ValidationMessageFor(model => model.CompanyRefNo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 col-md-offset-2 title_head">Title :<em>*</em></label>
+                    <label class="col-md-2 title_head">Name :<em>*</em></label>
+                    <label class="col-md-2 title_head">Middle Name :</label>
+                    <label class="col-md-2 title_head">Last Name :</label>
+                </div>
+                <div class="form-group branch row ">
+                    <label class="col-md-2 branch row name control-label">Candidate Name :<em>*</em></label>
+                    <div class="col-md-2">
+                        @Html.DropDownListFor(model => model.CandTitle,
+                                        new SelectList(ViewBag.TitleList, "Text", "Value"),
+                                        "-- Select -- ",
+                                        new { @class = "form-control" ,
+
+                                        })
+                        @Html.ValidationMessageFor(model => model.CandTitle, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control",
+
+                   } })
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.EditorFor(model => model.MiddleName, new { htmlAttributes = new { @class = "form-control",
+
+                   } })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control",
+
+                   } })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 col-md-offset-2 title_head">Title :<em>*</em></label>
+                    <label class="col-md-2 title_head">Name :<em>*</em></label>
+                    <label class="col-md-2 title_head">Middle Name :</label>
+                    <label class="col-md-2 title_head">Last Name :</label>
+                </div>
+                <div class="form-group branch row ">
+                    <label class="col-md-2 branch row name control-label">Father's Name :<em>*</em></label>
+                    <div class="col-md-2">
+                        @Html.DropDownListFor(model => model.FatherTitle,
+                                        new SelectList(ViewBag.TitleFatherList, "Text", "Value"),
+                                        "-- Select -- ",
+                                        new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.FatherTitle, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.EditorFor(model => model.FatherName, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.EditorFor(model => model.FatherMiddleName, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.EditorFor(model => model.FatherLastName, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @*<label class="col-md-2 col-md-offset-2 title_head">Title :<em>*</em></label>*@
+                    <label class="col-md-2 col-md-offset-2 title_head">Name :<em>*</em></label>
+                    <label class="col-md-2 title_head">Middle Name :</label>
+                    <label class="col-md-2 title_head">Last Name :</label>
+                </div>
+                <div class="form-group branch row ">
+                    <label class="col-md-2 branch row name control-label">Spouse Name : <em>*</em></label>
+                    <div class="col-md-2">
+                        @Html.EditorFor(model => model.SpouseName, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.EditorFor(model => model.SpouseMiddleName, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.EditorFor(model => model.SpouseLastName, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+                <div class="form-group branch row ">
+                    @Html.LabelFor(model => model.Gender, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.RadioButtonFor(model => model.Gender, "Male", new { @class = "Gender", @checked = "checked" })&nbsp;
+                        Male&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        @Html.RadioButtonFor(model => model.Gender, "Female", new { @class = "Gender" })&nbsp;
+                        Female
+                    </div>
+                    @Html.LabelFor(model => model.DOB, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.DOB, new { htmlAttributes = new { @class = "date-picker form-control", @placeholder = "yyyy-MM-dd" } })
+                        @Html.ValidationMessageFor(model => model.DOB, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group branch row ">
+                    @Html.LabelFor(model => model.MaritalStatus, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.DropDownListFor(model => model.MaritalStatus,
+                            new SelectList(ViewBag.MaritalStatusList, "Value", "Text"),
+                            "-- Select -- ",
+                            new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.MaritalStatus, "", new { @class = "text-danger" })
+                    </div>
+                    @Html.LabelFor(model => model.MobileNo, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.MobileNo, new { htmlAttributes = new { @class = "form-control", @onkeypress = "return isNumberKey(event,false)" } })
+                        @Html.ValidationMessageFor(model => model.MobileNo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group branch row ">
+                    @Html.LabelFor(model => model.AlternateNo, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.AlternateNo, new { htmlAttributes = new { @class = "form-control", @onkeypress = "return isNumberKey(event,false)" } })
+                        @Html.ValidationMessageFor(model => model.AlternateNo, "", new { @class = "text-danger" })
+                    </div>
+                    @Html.LabelFor(model => model.ResidencePhoneNo, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-1">
+                        @Html.EditorFor(model => model.STD, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.EditorFor(model => model.ResidencePhoneNo, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+                <div class="form-group branch row ">
+                    @Html.LabelFor(model => model.EmailID, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.EmailID, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.EmailID, "", new { @class = "text-danger" })
+                    </div>
+                    @Html.LabelFor(model => model.AlternateEmailID, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.AlternateEmailID, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.AlternateEmailID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group branch row ">
+                    @Html.LabelFor(model => model.CandidateType, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.DropDownListFor(model => model.CandidateType,
+                            new SelectList(ViewBag.CandidateTypeList, "Value", "Text"),
+                            "-- Select -- ",
+                            new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CandidateType, "", new { @class = "text-danger" })
+                    </div>
+                    @Html.LabelFor(model => model.Catagory, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.DropDownListFor(model => model.Catagory,
+                            new SelectList(ViewBag.CatagoryList, "Value", "Text"),
+                            "-- Select -- ",
+                            new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Catagory, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+              
+                <div class="form-group branch row ">
+                    @Html.LabelFor(model => model.Nationality, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.Nationality, new { htmlAttributes = new { @class = "form-control", @Value = "Indian" } })
+                        @Html.ValidationMessageFor(model => model.Nationality, "", new { @class = "text-danger" })
+                    </div>
+                    @if (Model.ClientRowID == 722)
+                    {
+                        @Html.Label("OHR ID", htmlAttributes: new { @class = "col-md-2 control-label" })
+                    }
+                    else
+                    {
+                        @Html.LabelFor(model => model.EmployeeID, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    }
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.EmployeeID, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.EmployeeID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group branch row ">
+                    @Html.LabelFor(model => model.Designation, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.Designation, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Designation, "", new { @class = "text-danger" })
+                    </div>
+                    @Html.LabelFor(model => model.PlaceofJoining, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.PlaceofJoining, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.PlaceofJoining, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group branch row ">
+                    @Html.LabelFor(model => model.DateofJoining, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.DateofJoining, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.DateofJoining, "", new { @class = "text-danger" })
+                    </div>
+
+                    @if (Model.ClientRowID == 722)
+                    {
+                        @Html.Label("Band", htmlAttributes: new { @class = "col-md-2 control-label" })
+                        <div class="col-md-3">
+                            @Html.DropDownListFor(model => model.SSNNo, new List<SelectListItem>
+        { new SelectListItem { Text = "-- Select --", Value = "-- Select --" },
+        new SelectListItem { Text = "VP/SVP", Value = "VP/SVP " },
+        new SelectListItem { Text = "VP", Value = "VP" },
+        new SelectListItem { Text = "AVP", Value = "AVP" },
+        new SelectListItem { Text = "4 D", Value = "4 D" },
+        new SelectListItem { Text = "4 C", Value = "4 C" },
+        new SelectListItem { Text = "4 B", Value = "4 B" },
+        new SelectListItem { Text = "4 A", Value = "4 A" },
+        new SelectListItem { Text = "5 B", Value = "5 B" },
+        new SelectListItem { Text = "5 A", Value = "5 A" },
+        },
+        new { @id = "ddlGenBand", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.SSNNo, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.LabelFor(model => model.SSNNo, htmlAttributes: new { @class = "col-md-2 control-label" })
+                        <div class="col-md-3">
+                            @Html.EditorFor(model => model.SSNNo, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.SSNNo, "", new { @class = "text-danger" })
+                        </div>
+                    }
+
+
+
+
+                </div>
+                @if (Model.ClientRowID == 249 || Model.ClientRowID == 277 || Model.ClientRowID == 607 || Model.ClientRowID == 722)
+                {
+                    <div id="dvSProjectName" class="form-group branch row ">
+                        @if (Model.ClientRowID != 607)
+                        {
+                            if (Model.ClientRowID == 722)
+                            {
+                                @Html.Label("Process ID", htmlAttributes: new { @class = "col-md-2 control-label", @id = "ProjectId" })
+                            }
+                            else
+                            {
+                                @Html.Label("Project Id", htmlAttributes: new { @class = "col-md-2 control-label", @id = "ProjectId" })
+                            }
+
+                        }
+                        else
+                        {
+                            @Html.Label("Process Name", htmlAttributes: new { @class = "col-md-2 control-label" })
+                        }
+                        <div class="col-md-3">
+                            @Html.EditorFor(model => model.ProcessName, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                        @if (Model.ClientRowID != 607)
+                        {
+                            if (Model.ClientRowID == 722)
+                            {
+                                @Html.Label("COE/SDO", htmlAttributes: new { @class = "col-md-2 control-label", @id = "ProjectId" })
+                            }
+                            else
+                            {
+                                @Html.Label("Project Name", htmlAttributes: new { @class = "col-md-2 control-label", @id = "ProjectName" })
+                            }
+                            <div class="col-md-3">
+                                @Html.EditorFor(model => model.BusinessName, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        }
+
+                    </div>
+                }
+                <div class="form-group branch row ">
+                    @Html.LabelFor(model => model.NationalSkills, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.NationalSkills, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.NationalSkills, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group branch row "></div>
+                <div class="form-group branch"></div>
+                <div style="text-align:center; font-size:1.4rem!important;">
+                    @*@Html.ActionLink("Back", "ManageDataEntryJob", "ProvidedInfo", new { id = Model.PersonalRowID }, new { @class = "btn bun-bg btn-primary" })*@
+                    <input class="btn bun-bg btn-primary" type="submit" onclick="return validateForm()" value="Save" />
+                </div>
+                <br />
+                <br />
+            </div>
+        }
+    </div>
+</div>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            //Bind Candidate code
+            $('#CaseType').change(function () {
+                if ($("#CaseType").val() == "Normal") {
+                    GetClientTAT();
+                    var tat= $('#hdnTAT').val();
+                    $('#TAT').val(tat);
+                    $('#TAT').attr("readonly",true);
+                }
+                if ($("#CaseType").val() == "Priority") {
+                    $('#TAT').val(0);
+                    $('#TAT').attr("readonly", false);
+                }
+            });
+        });
+
+        function GetClientTAT()
+        {
+            var url = "/ProvidedInfo/GetClientTATByCandidateId/" + $("#PersonalRowID").val();
+            $.ajax({
+                url: url,
+                type: 'GET',
+                async: false,
+                dataType: 'json',
+                success: function (tat) {
+                    $('#hdnTAT').val(tat);
+                }
+            });
+        }
+
+        function validateForm() {
+            var ClientRowID = $('#ClientRowID').val();
+            if (ClientRowID == 607) { // Concentrix Daksh Services India Private Limited
+                var EmpId = $("#EmployeeID").val();
+                var POJ = $("#PlaceofJoining").val();
+                var ProcessName = $("#ProcessName").val();
+                if (EmpId == "") {
+                    alert("Please fill Employee Id!!!");
+                    $("#EmployeeID").focus();
+                    return false;
+                }
+
+                if (POJ == "") {
+                    alert("Please fill Place of Joining!!!");
+                    $("#PlaceofJoining").focus();
+                    return false;
+                }
+
+                if (ProcessName == "") {
+                    alert("Please fill Process Name!!!");
+                    $("#ProcessName").focus();
+                    return false;
+                }
+
+            }
+
+            if (ClientRowID == 446) {// Tech Mahindra Limited
+                var EmpId = $("#EmployeeID").val();
+                var POJ = $("#PlaceofJoining").val();
+                var ProcessName = $("#ProcessName").val();
+                if (EmpId == "") {
+                    alert("Please fill Employee Id!!!");
+                    $("#EmployeeID").focus();
+                    return false;
+                }
+
+                if (POJ == "") {
+                    alert("Please fill Place of Joining!!!");
+                    $("#PlaceofJoining").focus();
+                    return false;
+                }
+
+            }
+
+            if (ClientRowID == 535) { // Muthoot Microfin Ltd
+                var EmpId = $("#EmployeeID").val();
+                var POJ = $("#PlaceofJoining").val();
+                var ProcessName = $("#ProcessName").val();
+                if (EmpId == "") {
+                    alert("Please fill Employee Id!!!");
+                    $("#EmployeeID").focus();
+                    return false;
+                }
+            }
+
+            if (ClientRowID == 722) { // Muthoot Microfin Ltd
+                var EmpId = $("#EmployeeID").val();
+                var ProcessName = $("#ProcessName").val();
+                var COESDO  = $("#BusinessName").val();
+                if (EmpId == "") {
+                    alert("OHR ID/ Taleo ID!!!");
+                    $("#EmployeeID").focus();
+                    return false;
+                }
+
+                if (ProcessName == "") {
+                    alert("plesae fill Process ID !!!");
+                    $("#ProcessName").focus();
+                    return false;
+                }
+
+                if (COESDO == "") {
+                    alert("please fill COE/SDO !!!");
+                    $("#BusinessName").focus();
+                    return false;
+                }
+
+                if ($("#ddlGenBand").val() == "-- Select --")
+                {
+                    alert("please select Band !!!");
+                    $("#ddlGenBand").focus();
+                    return false;
+                }
+            }
+
+            if (ClientRowID == 649) {// Ageas Federal Life Insurance Company Limited
+                var EmpId = $("#EmployeeID").val();
+
+                if (EmpId == "") {
+                    alert("Please fill Employee Id!!!");
+                    $("#EmployeeID").focus();
+                    return false;
+                }
+            }
+
+            var dob = $('#DOB').val();
+            var doj = '@DateTime.Now.Date.ToString("yyyy-MM-dd")';
+
+            if (dob != '') {
+                var str = dob.split('-');
+                var dojday1 = str[2];
+                var dojmonth1 = str[1];
+                var dojyear1 = str[0];
+
+                var dateOfBorth = new Date(dojyear1, dojmonth1 - 1, dojday1);
+
+                var str1 = doj.split('-');
+                var day = str1[2];
+                var month = str1[1];
+                var year = str1[0];
+
+                var DateOfJoin = new Date(year, month - 1, day)
+
+                var timeDiff = DateOfJoin - dateOfBorth;
+
+                var diffDays = timeDiff / (1000 * 3600 * 24 * 365);
+                var age = parseInt(diffDays);
+
+                if (age < 18) {
+                    alert("Age should be more than 18 years. from date of joining!");
+                    return false;
+                }
+            }
+
+            if ($("#CaseType").val() == "Priority") {
+                GetClientTAT();
+                var tat=$("#TAT").val();
+                var hdtat = $("#hdnTAT").val();
+                if (parseInt(tat)==0 || parseInt(tat) >= parseInt(hdtat)) {
+                    alert("Please enter valid TAT!");
+                    return false;
+                }
+            }
+
+            var count = 0;
+            if ($("#AadhaarCardNo").val() != '') {
+                count += 1;
+            }
+            if ($("#DrivingLicenseNo").val() != '') {
+                count += 1;
+            }
+            if ($("#PassportNo").val() != '') {
+                count += 1;
+            }
+            if ($("#PanCardNo").val() != '') {
+                count += 1;
+            }
+            if ($("#VoterIDCardNo").val() != '') {
+                count += 1;
+            }
+            if (count == 0) {
+                alert("Please enter atleast one document no details!");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('#DateofJoining').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: "-66:+00",
+                //onClose: function (dateText, inst) {
+                //    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
+                //}
+            });
+
+            var start = new Date();
+            start.setFullYear(start.getFullYear() - 60);
+            var end = new Date();
+            end.setFullYear(end.getFullYear() - 18);
+
+            $('input[type=datetime]').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                minDate: start,
+                maxDate: end,
+                //yearRange: "-66:-10",
+                yearRange: start.getFullYear() + ':' + end.getFullYear(),
+                //onClose: function (dateText, inst) {
+                //    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
+                //}
+            });
+
+
+            var ClientRowID = $('#ClientRowID').val();
+            if (ClientRowID == 249) {
+                $("#EmployeeID").attr('maxlength', '6');
+                $("#EmployeeID").keypress(function (event) {
+                    // Allow only backspace and delete
+                    if (event.keyCode == 46 || event.keyCode == 8) {
+                        // let it happen, don't do anything
+                    }
+                    else {
+                        // Ensure that it is a number and stop the keypress
+                        if (event.keyCode < 48 || event.keyCode > 57) {
+                            event.preventDefault();
+                        }
+                    }
+                });
+            }
+            else {
+                $("#EmployeeID").attr('maxlength', '50');
+                $('#EmployeeID').unbind("keypress");
+            }
+        });
+    </script>
+}

@@ -1,0 +1,120 @@
+﻿@model ViewModels.ClientViewModel.ClientServiceListViewModel
+@{
+    ViewBag.Title = "Insufficiency Check Clear By SPOC";
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftClientServicingInsuff") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="col-md-12">
+
+        @using (Html.BeginForm("CheckApprovalAction", "ClientServicing", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.ReverificationApp.ClientRowId)            
+            @Html.HiddenFor(model => model.ReverificationApp.SubCheckid)
+            @Html.HiddenFor(model => model.ReverificationApp.PersonalRowID)
+            @Html.HiddenFor(model => model.ReverificationApp.SecuritasID)           
+            @Html.HiddenFor(model => model.ReverificationApp.SubCheckName)
+
+
+        <div class="form-horizontal">
+            <div class="form-group branch">
+                @Html.Label("SubCheckName", htmlAttributes: new { @class = "col-md-2 control-label" })
+
+                <div class="col-md-6"> @Model.ReverificationApp.SubCheckName </div>
+            </div>
+
+            <div class="form-group branch">
+                @Html.Label("Billing Status", htmlAttributes: new { @class = "col-md-2 control-label" })
+
+                <div class="col-md-6"> @Model.ReverificationApp.billingStatus </div>
+            </div>
+
+
+            <div class="form-group branch">
+                @Html.Label("Approval Action", htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-4">
+
+                    @Html.DropDownListFor(model => model.ReverificationApp.approvalAction, new List<SelectListItem>
+                                                        { new SelectListItem{Text="Approve", Value= "Approve"},
+                                                            new SelectListItem{Text="Reject", Value="Reject"},
+                                                           }, "-- Select --", new { @class = "form-control" })
+
+                </div>
+            </div>
+
+            <div class="form-group branch">
+                @Html.Label("Remark", htmlAttributes: new { @class = "col-md-2 control-label" });
+                <div class="col-md-8">
+                    @Html.TextAreaFor(model => model.ReverificationApp.Remark, new { @class = "form-control", @rows = "2" })
+                </div>
+            </div>
+
+            <div class="all-button-bg">
+                @Html.ActionLink("Back", "BillingApproval", "ClientServicing", new { @class = "btn bun-bg btn-default" })
+                <input class="btn bun-bg btn-default" type="submit" value="Submit" />
+            </div>
+
+        </div>
+
+        }
+
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <script>
+        //$(document).ready(function () {
+        //    var url1 = "/ProvidedInfo/GetDocumentTypeListBySubCheckID/" + $("#SubCheckRowID").val();
+        //    $.ajax({
+        //        url: url1,
+        //        type: 'GET',
+        //        async: false,
+        //        dataType: 'json',
+        //        success: function (allData) {
+        //            if (allData != null && allData != "") {
+        //                $('#dvChksPcks').show();
+        //                var items = '';
+        //                jQuery.each(allData, function (index, allData) {
+
+        //                    items += "<div  class='col-md-8'><label class='col-md-3 branchname control-label'>" + allData.Text + " :</label><input type='checkbox' name='chkDoc'  value=" + allData.Value + " class='col-md-1'/><div class='col-md-2'><input data-val='true' name='UploadDoc' disabled='true' type='file' value=" + allData.Value + "  id=" + allData.Value + "> </div></div>";
+        //                });
+        //                $('#dvUplodDoc').html(items);
+        //            }
+        //            else {
+        //                $('#dvChksPcks').hide();
+        //                alert("No Doc Selected");
+        //            }
+        //        },
+        //        error: function (XMLHttpRequest, textStatus, errorThrown) {
+        //            alert("some error");
+        //        }
+        //    });
+        //});
+
+        //$(document).on('change', 'input[name="chkDoc"]', function (e) {// on change of state
+        //    var chkDocs = '';
+        //    $('input[name="chkDoc"]').each(function (index, value) {
+        //        if (this.checked) {
+        //            chkDocs += this.value + ',';
+        //            $("#" + this.value + "").removeAttr("disabled");
+        //        }
+        //        else {
+        //            $("#" + this.value + "").attr("disabled", "disabled");
+        //        }
+        //    });
+
+        //    if (chkDocs.length > 0) {
+        //        chkDocs = chkDocs.substring(0, chkDocs.length - 1);
+        //    } else { chkDocs = ''; }
+        //    $('#UploadHid').val(chkDocs.trim());
+        //});
+
+    </script>
+}

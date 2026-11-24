@@ -1,0 +1,253 @@
+@model  ViewModels.ClientViewModel.PQClientSpecialInstructionViewModel
+
+@{
+    ViewBag.Title = "Special Instructions";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManagePQClient", "Sales", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftClientSales") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+
+
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("SpecialInstruction", "Sales", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <div class="clearfix"><br /></div>
+            <div class="form-horizontal">
+                <div class="form-group branch row">
+                    @Html.Label("Check Details", htmlAttributes: new { @class = "col-md-2 control-label required" })
+                    <div class="col-md-2">
+                        @Html.DropDownListFor(model => model.CheckFamilyRowID,
+                            new SelectList(ViewBag.CheckFamiliesForInstruction, "CheckFamilyRowID", "CheckFamilyName"), new { @class = "form-control" })
+                    </div>
+                    @Html.Label("Department", htmlAttributes: new { @class = "col-md-2 control-label required" })
+                    <div class="col-md-2">
+                        @Html.DropDownListFor(model => model.Department,
+                            new SelectList(ViewBag.DepartmentList, "Value", "Text"), new { @class = "form-control" })
+                    </div>
+                    @Html.Label("Priority", htmlAttributes: new { @class = "col-md-1 control-label required" })
+                    <div class="col-md-2">
+                        @Html.DropDownListFor(model => model.Priority,
+                            new SelectList(ViewBag.PriorityList, "Value", "Text"), new { @class = "form-control" })
+                    </div>
+                    <div class="col-md-1">
+                        <input class="btn bun-bg btn-default" type="submit" name="btnSubmit" onclick="return validateSearch();" value="Search" />
+                    </div>
+                </div>
+                <div class="clearfix"><br /></div>
+                <div class="form-group branch row">
+                    @Html.LabelFor(model => model.SpecialInstruction, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-10">
+                        @Html.TextAreaFor(model => model.SpecialInstruction, 10, 8, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group branch row"></div>
+                <div class="all-button-bg">
+                    @Html.HiddenFor(model => model.ClientRowID)
+                    @Html.HiddenFor(model => model.SID)
+                    @Html.ActionLink("Back", "ManagePQClient", "Sales", null, new { @class = "btn bun-bg btn-default" })
+                    <input class="btn bun-bg btn-default" type="submit" name="btnSubmit" id="btnSubmit" onclick="return validateForm();" value="Submit" />
+                </div>
+                <div class="form-group branch row"></div>
+                <div class="form-group branch row">
+                    <div class="col-md-12 scroll" style="height:200px">
+                        <table class="table table-responsive-sm">
+                            <thead style="background: #009688 !important; color:white;font-size:18px">
+                                <tr>
+                                    <th>Check Family</th>
+                                    <th>Department</th>
+                                    <th>Instruction</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            @if (Model.Instructions.Count == 0)
+                            {
+                                <tr colspan="4" class="text-center">
+                                    <td>No Records Found !</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                foreach (var item in Model.Instructions)
+                                {
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.CheckFamilyName)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.DepartmentName)</td>
+                                        <td>@Html.Raw(item.SpecialInstruction)</td>
+                                        <td>
+                                            <span style="background-color:lightpink;color:white;padding:0px 4px 2px 4px">
+                                                <a href="javascript: void (0);" onclick="updateInstruction(@item.SID);">Update</a>
+                                            </span>
+                                            <hr />
+                                            <span style="background-color:lightpink;color:white;padding:0px 4px 2px 4px">
+                                                <a href="javascript: void (0);" onclick="DeleteInstruction(@item.SID);">Delete</a>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts{
+
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/tinymceNew.min.js"></script>
+    <script src="~/Scripts/tinymce-jquery.min.js"></script>
+    <script>
+        $('textarea').tinymce({
+            height: 200,
+            plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+            ],
+            toolbar: 'undo redo | blocks | bold italic backcolor | ' +
+                'alignleft aligncenter alignright alignjustify | ' +
+                'bullist numlist outdent indent | removeformat | help'
+        });
+        // Prevent jQuery UI dialog from blocking focusin
+        $(document).on('focusin', function (e) {
+            if ($(e.target).closest(".tox-tinymce, .tox-tinymce-aux, .moxman-window, .tam-assetmanager-root").length) {
+                e.stopImmediatePropagation();
+            }
+        });
+    </script>
+    <style>
+        .tox-tinymce {
+            margin-top: 10px !important;
+        }
+
+        .tox-editor-header {
+            box-shadow: none !important;
+            z-index: 0 !important;
+            border-bottom: 0.5px solid #000 !important;
+        }
+
+        .tox-statusbar__branding {
+            display: none !important;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            if ('@TempData["Message"]' != '') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Success',
+                    html: '<div class="errormsg" style="text-align:center;">@TempData["Message"].ToString()</div>'
+                });
+            }
+
+            $("#btnSubmit").val("Submit");
+            $("#SpecialInstruction").val("");
+            tinyMCE.get('SpecialInstruction').setContent("");
+        });
+    </script>
+    <script type="text/javascript">
+
+        function validateForm() {
+
+            var cfrid = $("#CheckFamilyRowID").val();
+            if (cfrid == '0') {
+                  Swal.fire({
+                    icon: 'info',
+                    title: 'Mandatory',
+                     html: '<div class="errormsg" style="text-align:center;">Please select check family.</div>'
+                });
+                $("#CheckFamilyRowID").first().focus();
+                return false;
+            }
+            var dpt = $("#Department").val();
+            if (dpt == '0') {
+                  Swal.fire({
+                    icon: 'info',
+                    title: 'Mandatory',
+                    html: '<div class="errormsg" style="text-align:center;">Please select department.</div>'
+                });
+                $("#Department").first().focus();
+                return false;
+            }
+
+            var myContent = tinymce.get("SpecialInstruction").getContent();
+            var spins = $("#SpecialInstruction").val(myContent);
+            if (spins == '') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Mandatory',
+                    html: '<div class="errormsg" style="text-align:center;">Please special instruction.</div>'
+                });
+                $("#SpecialInstruction").focus();
+                return false;
+            }
+
+        }
+        function validateSearch() {
+            $("#SpecialInstruction").val("");
+            tinyMCE.get('SpecialInstruction').setContent("");
+            $("#btnSubmit").val("Submit");
+        }
+
+        function updateInstruction(sids) {
+            var sid = sids;
+            $.ajax({
+                url: '@Url.Action("BindSpecialInstructionToUpdate", "Sales")',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { sid: sid },
+                success: function (result) {
+                    if (result != null) {
+                        $("#ClientRowID").val(result.ClientRowID) || 0;
+                        $("#CheckFamilyRowID").val(result.CheckFamilyRowID);
+                        $("#Department").val(result.Department);
+                        $("#Priority").val(result.Priority);
+                        $("#SpecialInstruction").val(result.SpecialInstruction);
+                        tinyMCE.get('SpecialInstruction').setContent(result.SpecialInstruction)
+                        $("#btnSubmit").val("Update");
+                    }
+                }
+            });
+
+
+        }
+
+
+         function DeleteInstruction(sids) {
+            var sid = sids;
+            $.ajax({
+                url: '@Url.Action("BindSpecialInstructionToDelete", "Sales")',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { sid: sid },
+                success: function (result) {
+                    if (result == 1) {
+                        alert('Delete Successfully');
+                    }
+                    else {
+                        alert('wrong');
+                    }
+                }
+            });
+
+
+        }
+
+
+
+    </script>
+}

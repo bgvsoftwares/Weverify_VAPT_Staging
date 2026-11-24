@@ -1,0 +1,1872 @@
+﻿@using WebAppBGV.CommonMethods;
+@model dynamic
+@{
+    ViewBag.Title = "Add Address Info";
+    Layout = "~/Areas/Candidate/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "Home", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+    string msg = "";
+    if (Request.QueryString["ErrorMsg"] != null)
+    {
+        //hyperLink = Html.ActionLink("linkTitle", "AllocatedDataEntryJob", "ProvidedInfo", new { CaseStatus = Request.QueryString["Casestatus"].ToString() }, new { @class = "headerbacklink" }).ToString();
+        msg = Request.QueryString["ErrorMsg"].ToString();
+    }
+    var clid = "";
+    clid = Session["ClientRowID"].ToString();
+    string CountryName = "";
+    string StateName = "";
+    string CityName = "";
+    string clientRowId = "";
+    string countryid = "";
+    string StateId = "";
+    string CityId = "";
+    string DateClientID = "";
+    bool isChecked = ViewBag.NotApplicable != null && (bool)ViewBag.NotApplicable;
+    if (@ViewBag.clientRowId != "" && @ViewBag.clientRowId != null)
+    {
+        clientRowId = @ViewBag.clientRowId;
+        DateClientID = clsCommonMethods.PDecrypt(@ViewBag.clientRowId);
+    }
+    if (clid != "1425" && clid != "1428" && clid != "1395" && clid != "1414" && clid != "1415" && clid != "1416" && clid != "1429" && clid != "1435" && clid != "1514")
+    {
+        CountryName = @ViewBag.CountryName != null ? @ViewBag.CountryName.Trim() : "";
+    }
+    if (clid != "1425" && clid != "1428" && clid != "1395" && clid != "1414" && clid != "1415" && clid != "1416" && clid != "1429" && clid != "1435" && clid != "1514")
+    {
+        StateName = @ViewBag.StateName != null ? @ViewBag.StateName.Trim() : "";
+    }
+    if (clid != "1425" && clid != "1428" && clid != "1395" && clid != "1414" && clid != "1415" && clid != "1416" && clid != "1429" && clid != "1435" && clid != "1514")
+    {
+        CityName = @ViewBag.CityName != null ? @ViewBag.CityName.Trim() : "";
+    }
+    if (clid != "1425" && clid != "1428" && clid != "1395" && clid != "1414" && clid != "1415" && clid != "1416" && clid != "1429" && clid != "1435" && clid != "1514")
+    {
+        countryid = @ViewBag.countryid != null ? @ViewBag.countryid.Trim() : "";
+    }
+    if (clid != "1425" && clid != "1428" && clid != "1395" && clid != "1414" && clid != "1415" && clid != "1416" && clid != "1429" && clid != "1435" && clid != "1514")
+    {
+        StateId = @ViewBag.stateId != null ? @ViewBag.stateId : "";
+    }
+    if (clid != "1425" && clid != "1428" && clid != "1395" && clid != "1414" && clid != "1415" && clid != "1416" && clid != "1429" && clid != "1435" && clid != "1514")
+    {
+        CityId = @ViewBag.Cityid != null ? @ViewBag.Cityid : "";
+    }
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string Candidatedocvisibilty = ViewBag.Candidatedocvisibilty;
+
+    PersonalRowid = @ViewBag.PersonalRowid;
+
+    SubCheckId = @ViewBag.SubCheckId;
+
+    //SubCheckId = @ViewBag.SubCheckId;
+    //clientRowId = Session["ClientRowID"].ToString();
+    int clientno = @ViewBag.clientno;
+    string SubCheckIdNew = clsCommonMethods.PDecrypt(SubCheckId).ToString();
+    //bool NACheckStatus = ViewBag.NACheckStatus;
+
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftCandidateCaseInfoProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+
+@if (ViewBag.ErrorMsg != null)
+{
+    string err = @ViewBag.ErrorMsg.ToString();
+    string[] err2 = err.Split(',');
+    <script>
+        Swal.fire({
+            icon: 'info',
+            title: 'Mandatory Fields.',
+            timer: 5000,
+            html: '<div class="errormsg" style="text-align:left;"><ol type="1">@foreach(String item in err2){<li> @item</li> }</ol></div>'
+        })
+    </script>
+}
+@if (ViewBag.AstraErrorPopup != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Documents Required',
+            html: '<div style="color:#A32D2D; font-weight:500;">@ViewBag.AstraErrorPopup.ToString()</div>',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#A32D2D'
+        })
+    </script>
+}
+@*@if (ViewBag.Success != null)
+    {
+        <script>
+            Swal.fire({
+                icon: 'success',
+                html:'<div class="errormsg">@ViewBag.Success.ToString()</div>',
+                showConfirmButton: false,
+                timer: 5000
+            })
+        </script>
+    }*@
+@if (TempData["ErrorMessage"] != null)
+{
+    <script>
+Swal.fire({
+        icon: 'error',
+        timer: 5000,
+        showConfirmButton: false,
+        html: '<div style="color:#A32D2D; font-weight:500;">@TempData["ErrorMessage"].ToString()</div>'    });
+    </script>
+}
+@if (ViewBag.Success != null)
+{
+    <script>
+        var msg = @Html.Raw(Json.Encode(ViewBag.Success.ToString()));
+        var iconType = 'info';
+        if (msg.includes('Upload file extension not allowed')) {
+            iconType = 'error';
+        }
+        else if (msg.includes('Document Uploaded Successfully')) {
+            iconType = 'success';
+        }
+        Swal.fire({
+            icon: iconType,
+            text: msg,
+            showConfirmButton: false,
+            timer: 5000
+        });
+    </script>
+}
+@if (clid == "559")
+{
+    if (ViewBag.Information != null)
+    {
+        <script>
+        Swal.fire({
+            icon: 'info',
+            html:'<div class="errormsg">@ViewBag.Information.ToString()</div>',
+            showConfirmButton: false,
+            timer: 20000
+        })
+        </script>
+    }
+
+}
+<div class="container-fluid form_container">
+    @using (Html.BeginForm("AddAddressInfo", "Home", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+        @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+        <input id="SubCheckId" type="hidden" value=@SubCheckId>
+        @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+        <input id="clientRowId" type="hidden" value=@clientRowId>
+        @Html.Hidden("clientRowId", clientRowId.ToString())
+
+
+        <input id="Hfcountryid" type="hidden" value=@countryid>
+
+        @Html.Hidden("Hfcountryid", countryid.ToString())
+
+        <input id="HfStateId" type="hidden" value=@StateId>
+        @Html.Hidden("HfStateId", StateId.ToString())
+
+        <input id="HfCityId" type="hidden" value=@CityId>
+        @Html.Hidden("HfCityId", CityId.ToString())
+        <input id="latlng" name="latlng" type="hidden" value=''>
+
+        <input id="CheckFamilyId" type="hidden" value="2">
+        @Html.Hidden("CheckFamilyId", "2")
+        <input type="hidden" id="decSubCheckId" value="@SubCheckIdNew" />
+
+        @Html.ValidationSummary()
+        if (SubCheckIdNew != "2")
+        {
+            <div class="row row-sm p-3 pb-0">
+                <div class="col-md-12" id="NADiv">
+                    @if (@Session["SubCheckFamilyIDforcheck"].ToString() == "true")
+                    {
+                        if (@Session["Check"].ToString() == "Copy")
+                        {
+                            <label class="checkbox-inline d-flex" style="margin:-5px 20px 0 10px;
+  background: #c2b4fc;
+  padding: 5px 10px;">
+                                <input class="form-check-input ms-1" type="checkbox" checked="checked" id="Notraised" />
+                                <span class="text-white fw-bold ms-4">In case of same address as current,Please select check box & submit the application.</span>
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="checkbox-inline d-flex" style="margin: -5px 20px 0 10px;
+  background: #c2b4fc;
+  padding: 5px 10px;">
+                                <input class="form-check-input ms-1" type="checkbox" id="Notraised" />
+                                <span class="text-white fw-bold ms-4">In case of same address as current,Please select check box & submit the application.</span>
+                            </label>
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                </div>
+            </div>
+        }
+        if (clientRowId == "UitaN2JodDBFcWc9")
+        {
+            <div class="row row-sm p-3 pb-0">
+                <div class="col-md-12">
+                    <span class="" style="color:#FC273F; font-size:.90rem;">
+                        Note:- if your duration of stay is less than 6 months, then you need to be Fill Permanent Address.<br />Please correct the address in case of any discrepancy
+                    </span>
+                </div>
+            </div>
+        }
+        if (clid == "1680")
+        {
+            if (ViewBag.packagename != null)
+            {
+                <div class="row row-sm p-3 pb-0">
+                    <div class="col-md-12">
+
+
+                        @if (ViewBag.packagename == "VSSPL_Package G1(07YrsCRC_1YrsEMP_EDUH_PAN_Drug)")
+                        {
+                            <span class="" style="color:#FC273F; font-size:.90rem;">
+                                Kindly Fill Details of 07 Yrs Address details for Criminal Check, Last 1 Year employments, Highest Education and PAN Card and Drug Test)
+                            </span>
+                        }
+                        @if (ViewBag.packagename == "VSSPL_Package G2 (10YrsCRC_7YrsEMP_EDUH_ID)")
+                        {
+                            <span class="" style="color:#FC273F; font-size:.90rem;">
+                                Kindly Fill Details of 10 Yrs Address details for Criminal Check, Last 7 Year employments, Highest Education and PAN / Passport Details)
+                            </span>
+                        }
+                        @if (ViewBag.packagename == "VSSPL_Package G3 (10YrsCRC_10YrsEMP_EDUH_PAN_GSE_CUR-ADD_PER-ADD)")
+                        {
+                            <span class="" style="color:#FC273F; font-size:.90rem;">
+                                Kindly Fill Details of 10 Yrs Address details for Criminal Check, Last 10 Year employments, Highest Education and PAN / Passport Details, Current and Permanent Adress Details)
+                            </span>
+                        }
+                        @if (ViewBag.packagename == "VSSPL_Package G4 (7YrsCRC_7YrsEMP_2EDU-PG-UG)")
+                        {
+                            <span class="" style="color:#FC273F; font-size:.90rem;">
+                                Kindly Fill Details of 07 Yrs Address details for Criminal Check, Last 7 Year employments, Highest Education & Second EDU UG)
+                            </span>
+                        }
+                        @if (ViewBag.packagename == "VSSPL_Package G5 (7YrsCRC_10YrsEMP_5EDU_PG_UG_Diploma_12_10_PAN_Drug)")
+                        {
+                            <span class="" style="color:#FC273F; font-size:.90rem;">
+                                Kindly Fill Details of 07 Yrs Address details for Criminal Check, Last 10 Year employments, Education (PG_UG_Diploma_12_10) and PAN Details, Drug)
+                            </span>
+                        }
+                        @if (ViewBag.packagename == "VSSPL_Package G6 (7YrsCRC_1YrsEMP)")
+                        {
+                            <span class="" style="color:#FC273F; font-size:.90rem;">
+                                Kindly Fill Details of 07 Yrs Address details for Criminal Check, Last 1 Year employments
+                            </span>
+                        }
+
+
+                    </div>
+                </div>
+            }
+
+        }
+        if (clid == "1470" || clid == "1680")
+        {
+            if (isChecked == true)
+            {
+                <div class="row row-sm p-2 mt-2 ms-5" id="NADiv" style="background:#8D5FFF;">
+                    <label type="button" class="Na_btn d-flex w-100 mb-0 text-white fw-bold" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <input type="checkbox" id="notApplicableCheckbox" name="NotApplicable" value="true" checked />
+                        <b class="ms-2" style="color:white"> Not Applicable</b>
+                    </label>
+                </div>
+            }
+            else
+            {
+                <div class="row row-sm p-2 mt-2 ms-5" id="NADiv" style="background:#8D5FFF;">
+                    <label type="button" class="Na_btn d-flex w-100 mb-0 text-white fw-bold" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <input type="checkbox" id="notApplicableCheckbox" name="NotApplicable" value="true" />
+                        <b class="ms-2" style="color:white"> Not Applicable</b>
+                    </label>
+                </div>
+            }
+        }
+        foreach (var category in Model)
+        {
+            <div class="row row-sm ps-3">
+                @{
+                    string[] nm = category.Key.Split('_');
+
+                    if (nm[0] != "document")
+                    {
+                        if (@nm[2] == "textbox")
+                        {
+                            if (clientRowId.ToString() == "UitaN2JodDBFcWc9" || DateClientID == "992" || DateClientID == "993" || DateClientID == "994" || DateClientID == "1243" || DateClientID == "684")
+                            {
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                    <label class="form-label mg-b-0 fw-bolder">
+                                        @nm[1]
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <sup class="text-danger">*</sup>
+                                            }
+                                        }
+                                    </label>
+                                </div>
+
+                                if (@nm[0] == "36")
+                                {
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <input type="text" class="form-control" id="fromDate" placeholder="From" />
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        @if (clid == "559" || clid == "1470")
+                                                        {
+                                                            <div class="col-md-12 d-flex p-0 m-0">
+                                                                <p class="tilldatebtn" id="tilldatebtn">Till Date</p>
+                                                                <input type="text" class="form-control" id="ToDate" placeholder="To" />
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="text" class="form-control" id="ToDate" placeholder="To" />
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <span class="text-danger tx-13"> @nm[4] </span>
+                                                <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength='@nm[5]' readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                        <span class="text-danger tx-13"> @nm[4] </span>
+                                        @if (nm[0] == "504")
+                                        {
+                                            <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' readonly="readonly" maxlength="@nm[5]">
+                                        }
+                                        else
+                                        {
+
+
+                                            <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+
+
+                                        }
+                                    </div>
+
+                                }
+
+                            }
+                            else
+                            {
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                    <label class="form-label mg-b-0 fw-bolder">
+                                        @nm[1]
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <sup class="text-danger">*</sup>
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                    <span class="text-danger tx-13"> @nm[4] </span>
+                                    @if (nm[0] == "504")
+                                    {
+                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' readonly="readonly" maxlength="@nm[5]">
+                                    }
+                                    else
+                                    {
+                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+
+                                    }
+                                </div>
+                            }
+
+                        }
+                        if (@nm[2] == "dropdown")
+                        {
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    @nm[1]
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <sup class="text-danger">*</sup>
+                                        }
+                                    }
+                                </label>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                <span class="text-danger tx-14"> @nm[4] </span>
+                                @{
+                                    string[] nmOption = nm[7].Split(',');
+                                }
+                                <select class="form-select" name=@nm[0] id=@nm[0]>
+                                    @for (int i = 0; i < nmOption.Length; i++)
+                                    {
+                                        if (@nmOption[i].Trim() == @nm[6])
+                                        {
+                                            <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                        }
+                                        if (@nmOption[i].Trim() != @nm[6])
+                                        {
+                                            <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                        }
+                                    }
+                                </select>
+
+                                @Html.Hidden("HfCountryName")
+                                <input id="HfCountryName" type="hidden" value=@CountryName>
+
+                                @Html.Hidden("HfStateName")
+                                <input id="HfStateName" type="hidden" value=@StateName>
+
+                                @Html.Hidden("HfCityName")
+                                <input id="HfCityName" type="hidden" value=@CityName>
+                            </div>
+                        }
+                        if (@nm[2] == "checkbox")
+                        {
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    @nm[1]
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <sup class="text-danger">*</sup>
+                                        }
+                                    }
+                                </label>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                @{
+                                    if (@nm[6] == "TRUE")
+                                    {
+                                        <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value="checked" checked>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value=@nm[0]>
+                                    }
+                                }
+                            </div>
+                        }
+                        if (@nm[2] == "fileUpload")
+                        {
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    @nm[1]
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <sup class="text-danger">*</sup>
+                                        }
+                                    }
+                                </label>
+                            </div>
+                            <div class="col-75">
+                                <span class="text-danger tx-14"> @nm[4] </span>
+                                <input class="form-control dropify" type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                            </div>
+                        }
+
+                    }
+                }
+            </div>
+        }
+
+        if (clid != "1425" && clid != "1428" && clid != "1395" && clid != "1414" && clid != "1415" && clid != "1416" && clid != "1429" && clid != "1435" && clid != "1514" && clid != "559")
+        {
+            <div class="row m-auto">
+                <div class="col-md-12 ms-4 mb-2">
+                    <span style="color:#8D5FFF;">Fill the address above and then click on the correct location on the map as exact as possible.</span>
+                </div>
+                <div class="col-md-12">
+                    @*<button id="btnSearch" type="button" class="btn_refresh" value="Refresh">Click to get location on map</button>*@
+                    <div id="map_canvas" style="height:350px; margin-left:20px; border: 2px solid rgb(221, 226, 239); width:100%;"></div>
+                </div>
+            </div>
+        }
+
+        if (clid == "559")
+        {
+            <div class="row row-sm justify-content-center d-flex mt-3 mb-2">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 text-center mb-2">
+                    <input class="submit-btn ps-5 pe-5" type="submit" value="Save" />
+                </div>
+
+                @if (ViewBag.CheckInfoStatus != "Pending" && ViewBag.CheckInfoStatus != "" && ViewBag.CheckInfoStatus != null)
+                {
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 text-center mb-2">
+                        <!-- Button trigger modal -->
+                        <button type="button" class="submit-btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            Proceed with the geo mapping
+                        </button>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="row row-sm justify-content-center d-flex mt-3 mb-2">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 text-center mb-2">
+                    <input class="submit-btn ps-5 pe-5" type="submit" value="Save" />
+                </div>
+            </div>
+        }
+    }
+
+    @using (Html.BeginForm("AddAddressInfo", "Home", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+        @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+        <input id="SubCheckId" type="hidden" value=@SubCheckId>
+        @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+        <input id="clientRowId" type="hidden" value=@clientRowId>
+        @Html.Hidden("clientRowId", clientRowId.ToString())
+
+
+        <input id="Hfcountryid" type="hidden" value=@countryid>
+
+        @Html.Hidden("Hfcountryid", countryid.ToString())
+
+        <input id="HfStateId" type="hidden" value=@StateId>
+        @Html.Hidden("HfStateId", StateId.ToString())
+
+        <input id="HfCityId" type="hidden" value=@CityId>
+        @Html.Hidden("HfCityId", CityId.ToString())
+        <input id="latlng" name="latlng" type="hidden" value=''>
+
+        <input id="CheckFamilyId" type="hidden" value="2">
+        @Html.Hidden("CheckFamilyId", "2")
+        if (clid == "559")
+        {
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Geographic  Mapping</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-2">
+                            <div class="row m-auto">
+                                <div class="col-md-12 mb-2">
+                                    <span style="color:#8D5FFF;">Fill the address above and then click on the correct location on the map as exact as possible.</span>
+                                </div>
+                                <div class="col-md-12">
+                                    @*<button id="btnSearch" type="button" class="btn_refresh" value="Refresh">Click to get location on map</button>*@
+                                    <div id="map_canvas" style="height:350px; border: 2px solid rgb(221, 226, 239); width:100%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <div class="row row-sm">
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 text-center mb-2">
+                                    <input type="hidden" value="" name="GeoMapping" id="GeoMapping" />
+                                    <input class="submit-btn ps-5 pe-5" type="submit" value="Save" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+    @if (Candidatedocvisibilty == "true")
+    {
+        <div class="row row-sm d-flex justify-content-between ms-0">
+            @using (Html.BeginForm("UploadCandidateDocumentUpdated", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <div class="card h-auto" id="UploadCandidateDocumentUpdated">
+                    <div class="row row-sm ms-0 ps-2 pt-2 pe-5">
+
+                        <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+                        @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+                        <input id="SubCheckId" type="hidden" value=@SubCheckId>
+                        @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+                        <input id="clientRowId" type="hidden" value=@clientRowId>
+                        @Html.Hidden("clientRowId", clientRowId.ToString())
+
+                        <input id="CheckFamilyId" type="hidden" value="2">
+                        @Html.Hidden("CheckFamilyId", "2")
+
+                        <div class="row row-sm ps-3">
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3">
+                                <label class="form-label mg-b-0 fw-bolder mb-2">Select Document Type</label>
+                                @Html.DropDownList("ddlDocumentType",
+       new SelectList(ViewBag.DocumentList, "Value", "Text"),
+       "-- Select -- ",
+       new { @class = "form-control text-center", required = "required" })
+                            </div>
+                            <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 mt-3">
+                                <label class="form-label mg-b-0 fw-bolder mb-2">Upload Document</label>
+                                <input class='form-control dropify' data-val='true' name='UploadDoc' type='file' value=" + allData.Value + " id=" + allData.Value + " onchange='return file_Doc_Validation(this)' accept='.png, .jpg, .jpeg, .pdf, .doc, .zip, .msg' required>
+                            </div>
+                        </div>
+                        @Html.Hidden("UploadHid", null)
+                        <div class="row row-sm justify-content-center d-flex mt-3 mb-3">
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 text-center me-5">
+                                @if ((ViewBag.ErrorMsg == null || ViewBag.ErrorMsg == "") && (ViewBag.getviewbagerrormsg == null || ViewBag.getviewbagerrormsg == ""))
+                                {
+                                    if (Model.document != null && Model.document.Count > 0)
+                                    {
+                                        <input class="submit-btn ps-5 pe-5" type="submit" id="Submitbtn" value="Upload More Document" />
+                                    }
+                                    else
+                                    {
+                                        <input class="submit-btn ps-5 pe-5" type="submit" id="Submitbtn" value="Upload Document" />
+                                    }
+                                }
+                                else
+                                {
+                                    <input class="submit-btn ps-5 pe-5" type="submit" id="Submitbtn" value="Upload Document" disabled style="cursor:not-allowed;" data-bs-placement="right" data-bs-toggle="tooltip" title="First Fill the Information" />
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                    @if (Model.document != null && Model.document.Count > 0)
+                    {
+                        <div class="row">
+                            <div class="col-xl-12 mb-5 mt-1 ps-4 pe-4">
+                                <div class="card h-auto rounded-0 shadow-none" style="background: #ECF0FA !important;">
+                                    <div class="card-header p-2 rounded-0" style="background: #ECF0FA !important;">
+                                        <h5 class="tx-14">Uploded File List :</h5>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        @foreach (var item in Model.document)
+                                        {
+                                            <div class="row shadow p-3 mb-2 bg-body-tertiary rounded bg-white">
+                                                <div class="col-md-7 d-flex">
+                                                    <h4 class="fw-bold tx-12">@item.DocumentType : </h4>
+                                                    <h4 class="tx-12 ms-2">@item.FileName</h4>
+                                                </div>
+                                                <div class="col-md-2 d-flex">
+                                                    <!--  <a target="_blank" href='@Url.Content("~/Documents/CandidateDocuments/ProvidedDocuments/" + @item.FileName)'><i class="fa fa-eye tx-14" style="color:#8D5FFF;"></i></a> -->
+                                                    @*<td class="filename"><a target="_blank" href='@Url.Content("~/Documents/CandidateDocuments/ProvidedDocuments/"+@item.FileName)'>@item.FileName</a></td>*@
+                                                    @Html.ActionLink("download", "DownloadDocument", "Download", new { FileName = @item.FileName }, null) <i class="fa fa-eye tx-14" style="color:#8D5FFF;"></i>
+
+
+                                                    @Html.Raw(string.Format("<a href=\"#\" id=\"Delete_{0}_{1}\" class=\"deletetempdoc\"><i class='fa fa-trash tx-14 ms-3' style='color:#Fc273F;'></i></a>", @item.VerifiedUploadRowID, @item.SubCheckRowID))
+                                                </div>
+                                                <div class="col-md-3 d-flex">
+                                                    <h4 class="tx-12 ms-2">@item.UploadDate</h4>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                @*<div class="row d-flex justify-content-center">
+                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 text-center">
+                            <a href='@Url.Action("UpdateFormFill", "Home", new { subCheckId = SubCheckId.ToString(), ClientRowId = clsCommonMethods.PEncrypt(clientRowId.ToString()), PersonalRowID = PersonalRowid.ToString(), CheckFamilyId = "2" })' class="submit-btn ps-5 pe-5">SUBMIT</a>
+                        </div>
+                    </div>*@
+            }
+
+            @using (Html.BeginForm("UpdateFormFill", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <input type="hidden" value="@clid" id="clid" />
+                <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+                @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+                <input id="SubCheckId" type="hidden" value=@SubCheckId>
+                @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+                <input id="clientRowId" type="hidden" value=@clientRowId>
+                @Html.Hidden("clientRowId", clientRowId.ToString())
+
+                <input id="CheckFamilyId" type="hidden" value="2">
+                @Html.Hidden("CheckFamilyId", "2")
+
+                <div class="row d-flex justify-content-center">
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 text-center">
+                        @if (clid == "559")
+                        {
+                            if ((ViewBag.ErrorMsg == null || ViewBag.ErrorMsg == "") && (ViewBag.getviewbagerrormsg == null || ViewBag.getviewbagerrormsg == ""))
+                            {
+                                <input type="submit" class="submit-btn ps-5 pe-5" value="SUBMIT" id="finalsave">
+                            }
+                            else
+                            {
+                                <input type="submit" class="submit-btn ps-5 pe-5" value="SUBMIT" disabled style="cursor:not-allowed;" data-bs-placement="right" data-bs-toggle="tooltip" title="First Fill All the Information" />
+                            }
+                        }
+                        else
+                        {
+                            if ((ViewBag.ErrorMsg == null || ViewBag.ErrorMsg == "") && (ViewBag.getviewbagerrormsg == null || ViewBag.getviewbagerrormsg == ""))
+                            {
+                                if (Model.document != null && Model.document.Count > 0)
+                                {
+                                    <input type="submit" class="submit-btn ps-5 pe-5" value="SUBMIT" id="finalsave">
+                                }
+                                else
+                                {
+                                    string[] validIds = { "4", "5", "6", "7", "8", "9", "10", "11", "12", "689", "690", "691", "692" };
+
+                                    if (validIds.Contains(SubCheckId.ToString()))
+                                    {
+
+
+                                        <input type="submit" class="submit-btn ps-5 pe-5" value="SUBMIT" id="finalsave">
+                                    }
+                                    else
+                                    {
+                                        <input type="submit" class="submit-btn ps-5 pe-5" value="SUBMIT" disabled style="cursor:not-allowed;" data-bs-placement="right" data-bs-toggle="tooltip" title="First Fill All the Information and Document" />
+                                    }
+
+                                }
+                            }
+                            else
+                            {
+                                <input type="submit" class="submit-btn ps-5 pe-5" value="SUBMIT" disabled style="cursor:not-allowed;" data-bs-placement="right" data-bs-toggle="tooltip" title="First Fill All the Information and Document" />
+                            }
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    @if (clid == "559")
+    {
+        <div class="row row-sm d-flex justify-content-between ms-0">
+            @{
+                string[] NextPreviousButtonsURL = (string[])(Session["NextPreviousButtonsURL"]);
+                for (int I = 0; I < NextPreviousButtonsURL.Length; I++)
+                {
+                    if (NextPreviousButtonsURL[I] != null)
+                    {
+                        string[] Nenu1 = NextPreviousButtonsURL[I].Split('|');
+                        if (SubCheckId == Nenu1[4].ToString())
+                        {
+                            if (Nenu1[2] != "Start")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    <a href="@Nenu1[1]" class="previous_btn text-center">Previous<span></span></a>
+                                </div>
+                            }
+                            else if (Nenu1[2] == "Start")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    <a href="~/Candidate/Home/UpdateCandidateDetails/@PersonalRowid" class="previous_btn text-center">Previous<span></span></a>
+                                </div>
+                            }
+
+                            if (Nenu1[3] != "End")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    @if (ViewBag.CheckInfoStatus == "Pending" || ViewBag.CheckInfoStatus == "" || ViewBag.CheckInfoStatus == null)
+                                    {
+                                        <a href="#" class="next_btn text-center notmove not_movenext" id="nextss">Next<span></span></a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Nenu1[0]" class="next_btn text-center nextbtn" id="nextss">Next<span></span></a>
+                                    }
+                                </div>
+                            }
+                            else if (Nenu1[3] == "End")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    @if (ViewBag.CheckInfoStatus == "Pending" || ViewBag.CheckInfoStatus == "" || ViewBag.CheckInfoStatus == null)
+                                    {
+                                        <a id="rtr" href="#" class="next_btn text-center notmove not_movenext"><span>Next</span></a>
+                                    }
+                                    else
+                                    {
+                                        <a id="rtr" href="~/Candidate/Home/Digital_LOA/@PersonalRowid" class="next_btn text-center finalbtn"><span>Next</span></a>
+                                    }
+                                </div>
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+        </div>
+    }
+    else
+    {
+        <div class="row row-sm d-flex justify-content-between ms-0">
+            @{
+                string[] NextPreviousButtonsURL = (string[])(Session["NextPreviousButtonsURL"]);
+                for (int I = 0; I < NextPreviousButtonsURL.Length; I++)
+                {
+                    if (NextPreviousButtonsURL[I] != null)
+                    {
+                        string[] Nenu1 = NextPreviousButtonsURL[I].Split('|');
+                        string NextURL = Nenu1[0];
+                        if (Nenu1[0] == "End")
+                        {
+                            NextURL = Nenu1[1];
+                        }
+
+
+                        if (SubCheckId == Nenu1[4].ToString())
+                        {
+                            if (Nenu1[2] != "Start")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    <a href="@Nenu1[1]" class="previous_btn text-center">Previous<span></span></a>
+                                </div>
+                            }
+                            else if (Nenu1[2] == "Start")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    <a href="~/Candidate/Home/UpdateCandidateDetails/@PersonalRowid" class="previous_btn text-center">Previous<span></span></a>
+                                </div>
+                            }
+
+                            if (Nenu1[3] != "End")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+
+                                    <a href="@NextURL" class="next_btn text-center nextbtn" id="nextss">Next<span></span></a>
+                                </div>
+                            }
+                            else if (Nenu1[3] == "End")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    <a id="rtr" href="~/Candidate/Home/Digital_LOA/@PersonalRowid" class="next_btn text-center finalbtn"><span>Next</span></a>
+                                </div>
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+        </div>
+    }
+</div>
+
+<style>
+    .form-check-input {
+        width: 1.2em;
+        height: 1.2em;
+        accent-color: #031F30 !important;
+        margin-top: .25em;
+    }
+
+        .form-check-input:checked {
+            background-color: #031F30;
+            border-color: #031F30;
+        }
+
+        .form-check-input:focus {
+            border-color: #031F30;
+            outline: 0;
+            box-shadow: 0 0 0 .25rem rgba(3, 31, 48, 0.24);
+        }
+
+    .modal-dialog {
+        max-width: 80% !important;
+    }
+
+    .tilldatebtn {
+        position: absolute;
+        right: 0px;
+        background: #8d5fff;
+        color: #FFF;
+        border: 1px solid #8d5fff;
+        font-weight: bold;
+        padding: 3px 10px;
+        font-size: .80rem;
+        cursor: pointer;
+        transition: .3s ease-in-out;
+    }
+
+        .tilldatebtn:hover {
+            background: #FFF;
+            color: #8d5fff;
+        }
+</style>
+@section Scripts{
+    <script src="~/assets/plugins/jquery/jquery.min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    @*<link href="~/assets/plugins/jquery-ui/themes/base/datepicker.css" rel="stylesheet" />
+        <script src="~/assets/plugins/jquery-ui/ui/widgets/datepicker.js"></script>*@
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/assets/Client_Page_images/Forget Password_files/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/assets/css/bootstrap-datepicker.min.css" rel="stylesheet" />
+    <script src="~/assets/js/bootstrap-datepicker.min.js"></script>
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDMBV9yDKmBRy6QFLsEJMR9QTz2d5cO8f4&callback=initMap"></script>
+
+    <script>
+     $(document).ready(function () {
+         $(".not_movenext").on("click", function () {
+             var CheckInfoStatus = '@ViewBag.CheckInfoStatus';
+             if (CheckInfoStatus == 'Pending' || CheckInfoStatus =="") {
+                 Swal.fire({
+                     title: "Mandatory",
+                     icon: "info",
+                     text: "Please first fill all information and click on submit button!",
+                     //    showCloseButton: true,
+                 });
+             }
+         });
+        });
+
+        $("#27").AddressString();
+        $("#36").AddressString();
+    </script>
+    <script>
+        var map;
+        var markers = [];
+        function initMap(latlng = '28.51140252687881,77.08742339206746') {
+            debugger
+            if ($('#504').val().length > 2) {
+                latlng = $('#504').val();
+            }
+            var b = latlng.split(",");
+            var latitude = parseFloat(b[0]);
+            var longitude = parseFloat(b[1]);
+            var lat_lng = { lat: latitude, lng: longitude };
+            map = new google.maps.Map(document.getElementById('map_canvas'), {
+                zoom: 16,
+                center: lat_lng,
+                mapTypeId: google.maps.MapTypeId.TERRAIN
+            });
+            // This event listener will call addMarker() when the map is clicked.
+            map.addListener('click', function (event) {
+                deleteMarkers();
+                addMarker(event.latLng);
+                $('#latlng').val(event.latLng);
+                $('#504').val(event.latLng);
+                $('#GeoMapping').val(event.latLng);
+            });
+            let infoWindow = new google.maps.InfoWindow({
+                content: "Click the map to get Lat/Lng!",
+                position: lat_lng,
+            });
+
+            infoWindow.open(map);
+
+            map.addListener("click", (mapsMouseEvent) => {
+                // Close the current InfoWindow.
+                infoWindow.close();
+
+                // Create a new InfoWindow.
+                infoWindow = new google.maps.InfoWindow({
+                    position: mapsMouseEvent.latLng,
+                });
+                infoWindow.setContent(
+                    JSON.stringify(mapsMouseEvent.latLng.toJSON(), null, 2)
+                );
+                infoWindow.open(map);
+            });
+            // Adds a marker at the center of the map.
+
+            if ($('#504').val() != '') {
+                var loc = $('#504').val();
+                var b = loc.split(",");
+                var lat = parseFloat(b[0]);
+                var long = parseFloat(b[1]);
+                var latlong = { lat: lat, lng: long };
+                addMarker(latlong);
+
+                infoWindow = new google.maps.InfoWindow({
+                    position: lat_lng,
+                });
+                infoWindow.setContent(
+                    JSON.stringify(lat_lng.toJSON(), null, 2)
+                );
+                infoWindow.open(map);
+            }
+
+        }
+
+        // Adds a marker to the map and push to the array.
+        function addMarker(location) {
+            var marker = new google.maps.Marker({
+                position: location,
+                map: map
+            });
+            markers.push(marker);
+        }
+
+        function setMapOnAll(map) {
+            for (let i = 0; i < markers.length; i++) {
+                markers[i].setMap(map);
+            }
+        }
+        function hideMarkers() {
+            setMapOnAll(null);
+        }
+        function deleteMarkers() {
+            hideMarkers();
+            markers = [];
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            var address = $.trim($("[id*=27]").val());
+            var pincode = $.trim($("[id*=42]").val());
+            var fulladdress = address + " " + pincode;
+            if (address != "" && pincode != "") {
+                var url = "/Candidate/Home/getlatlong?add=" + encodeURIComponent(fulladdress);
+                $.ajax({
+                    url: url,
+                    dataType: 'json',
+                    type: 'GET',
+                    async: false,
+                    //data: { pass: pass },
+                    success: function (result) {
+                        $('#504').val((JSON.stringify(result.pass.Latitude)) + ',' + (JSON.stringify(result.pass.Longitude)));
+                        initMap((JSON.stringify(result.pass.Latitude)) + ',' + (JSON.stringify(result.pass.Longitude)));
+                    },
+                    error: function (result) {
+
+                    }
+                });
+            }
+
+            // add calender for valuemomentum
+            var id = $("#clientRowId").val();
+            if (id == 1680) {
+                $("#619").attr("placeholder", "DD-MM-YYYY");
+                $("#619").datepicker({
+                    dateFormat: 'MM-yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: 'c-100:c+100',
+                    startDate: new Date(),
+                    maxDate: 0,
+                    autoclose: true,
+                    onSelect: function () {
+                        updateDurationStay();
+                    }
+                });
+                $("#618").attr("placeholder", "DD-MM-YYYY");
+                $("#618").datepicker({
+                    dateFormat: 'MM-yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: 'c-100:c+100',
+                    startDate: new Date(),
+                    maxDate: 0,
+                    autoclose: true,
+                    onSelect: function () {
+                        updateDurationStay();
+                    }
+                });
+
+                function updateDurationStay() {
+                    var fromVal = $("#619").val();
+                    var toVal = $("#618").val();
+
+                    if (fromVal && toVal) {
+                        $("#36").val(fromVal + " to " + toVal);
+                    }
+                }
+            }
+        })
+    </script>
+    <script>
+        $('#42').change(function () {
+            debugger
+            var add = $.trim($("[id*=27]").val());
+            var pincode = $.trim($("[id*=42]").val());
+            var fulladdress = add + " " + pincode;
+            if (add == "" && pincode == "") {
+                alert("Please fill the address and Pincode!");
+                return false;
+            }
+            else {
+                var url = "/Candidate/Home/getlatlong?add=" + encodeURIComponent(fulladdress);
+                $.ajax({
+                    url: url,
+                    dataType: 'json',
+                    type: 'GET',
+                    async: false,
+                    //data: { pass: pass },
+                    success: function (result) {
+                        $('#504').val((JSON.stringify(result.pass.Latitude)) + ',' + (JSON.stringify(result.pass.Longitude)));
+                        initMap((JSON.stringify(result.pass.Latitude)) + ',' + (JSON.stringify(result.pass.Longitude)));
+                    },
+                    error: function (result) {
+
+                    }
+                });
+            }
+        });
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var CountryName = '@(ViewBag.CountryName)';
+            var StateName = '@(ViewBag.StateName)';
+            var CityName = '@(ViewBag.CityName)';
+
+            var Countryid = '@(ViewBag.countryid)';
+            var Stateid = '@(ViewBag.StateId)';
+            var Cityid = '@(ViewBag.CityId)';
+
+            if ($('#34').val() != null) {
+
+                $.getJSON('/Master/BindCountry/', function (data) {
+                    var items = '<option value="">-- Select Country --</option>';
+                    $.each(data, function (i, countries) {
+                        items += "<option value='" + countries.Value + "'>" + countries.Text + "</option>";
+                    });
+                    $('#34').html(items);
+                    $("#34 option").filter(function () {
+                        return this.text == CountryName;
+                    }).attr('selected', true);
+
+
+                });
+            }
+
+            if (StateName != null) {
+                $.getJSON('/Master/BindState/' + Countryid, function (data) {
+                    var items = '<option value="">-- Select State --</option>';
+                    $.each(data, function (i, States) {
+                        items += "<option value='" + States.Value + "'>" + States.Text + "</option>";
+                    });
+                    $('#44').html(items);
+                    $("#44 option").filter(function () {
+                        return this.text == StateName;
+                    }).attr('selected', true);
+
+                });
+            }
+
+            if (CityName != null) {
+                $.getJSON('/Master/BindDistrict/' + Stateid, function (data) {
+                    var items = '<option value="">-- Select District --</option>';
+                    $.each(data, function (i, Districts) {
+                        items += "<option value='" + Districts.Value + "'>" + Districts.Text + "</option>";
+                    });
+                    $('#32').html(items);
+                    $("#32 option").filter(function () {
+                        return this.text == CityName;
+                    }).attr('selected', true);
+
+                });
+            }
+
+
+        });
+
+        $(function () {
+
+            //Bind State base on CountryRowID
+            $('#34').change(function () {
+                $.getJSON('/Master/BindState/' + $('#34').val(), function (data) {
+                    var items = '<option value="">-- Select State --</option>';
+                    $.each(data, function (i, States) {
+                        items += "<option value='" + States.Value + "'>" + States.Text + "</option>";
+                    });
+                    $('#44').html(items);
+                    $('#HfCountryName').val($('#34 option:selected').html());
+                                    });
+            });
+
+            //Bind District base on StateRowID
+            $('#44').change(function () {
+                $.getJSON('/Master/BindDistrict/' + $('#44').val(), function (data) {
+                    var items = '<option value="">-- Select District --</option>';
+                    $.each(data, function (i, Districts) {
+                        items += "<option value='" + Districts.Value + "'>" + Districts.Text + "</option>";
+                    });
+                    $('#32').html(items);
+                    $('#HfStateName').val($('#44 option:selected').html());
+
+
+                });
+            });
+
+            $('#32').change(function () {
+
+                $('#HfCityName').val($('#32 option:selected').html());
+
+            });
+
+            //$("#27").on("input", function () {
+            //    var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+
+
+            //    if ($(this).val().match(regexp)) {
+            //        $(this).val($(this).val().replace(regexp, ''));
+            //    }
+            //})
+            //$("#27").on("input", function () {
+            //    $(this).val($(this).val().replace(/[^a-zA-Z0-9\s]/g, ''));
+            //})
+            //    .on("paste copy cut drop", function (e) {
+            //        e.preventDefault();
+            //    });
+
+            //$('#27').on('keypress', function () {
+            //    $(this).val($(this).val().replace(/[^a-zA-Z0-9\s]/g, ''));
+            //}).on('paste copy cut drop', function (e) {
+            //    e.preventDefault();
+            //    });
+
+            //$('#27').on('keydown', function (e) {
+            //    var key = e.which || e.keyCode;
+
+            //    // Allow: Backspace, Delete, Tab, Escape, Enter, Space, Arrow Keys
+            //    if (
+            //        key === 8 || key === 9 || key === 13 || key === 27 ||
+            //        key === 32 || key === 46 ||
+            //        (key >= 35 && key <= 40)
+            //    ) {
+            //        return true;
+            //    }
+
+            //    // Allow: A-Z, a-z, 0-9
+            //    if (
+            //        (key >= 48 && key <= 57) ||  // Numbers
+            //        (key >= 65 && key <= 90)     // Alphabets
+            //    ) {
+            //        return true;
+            //    }
+
+            //    e.preventDefault();
+            //}).on('paste copy cut drop', function (e) {
+            //    e.preventDefault();
+            //});
+
+            $("#40").on("input", function () {
+                var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+                if ($(this).val().match(regexp)) {
+                    $(this).val($(this).val().replace(regexp, ''));
+                }
+            })
+                .on("paste copy cut drop", function (e) {
+                    e.preventDefault();
+                });
+
+            $("#36").on("input", function () {
+                $(this).val($(this).val().replace(/[^a-zA-Z0-9\s]/g, ''));
+            })
+                //.on("paste copy cut drop", function (e) {
+                //    e.preventDefault();
+                //});
+
+                //.on("paste copy cut drop", function (e) {
+                //    e.preventDefault();
+                //});
+
+
+
+
+
+            $("#42")
+                .on("input", function () {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                })
+                .on("paste copy cut drop", function (e) {
+                    e.preventDefault();
+                });
+
+        });
+    </script>
+    <script>
+        //validation for candidatename
+        document.getElementById('30').onkeypress = function (e) {
+            if (!(/[a-z ]/i.test(String.fromCharCode(e.keyCode)))) {
+                e.preventDefault();
+                return false;
+            }
+        }
+
+        $("#42").keypress(function (e) {
+            $("42").attr("min", "10");
+            var valueLength = this.value.length;
+            if (valueLength == 10) {
+                return false;
+            }
+            var kk = e.which;
+            if (kk < 48 || kk > 57)
+                e.preventDefault();
+        });
+
+        $("#131").keypress(function (e) {
+            $("131").attr("min", "10");
+            var valueLength = this.value.length;
+            if (valueLength == 10) {
+                return false;
+            }
+            var kk = e.which;
+            if (kk < 48 || kk > 57)
+                e.preventDefault();
+        });
+        $("#132").keypress(function (e) {
+            $("132").attr("min", "10");
+            var valueLength = this.value.length;
+            if (valueLength == 10) {
+                return false;
+            }
+            var kk = e.which;
+            if (kk < 48 || kk > 57)
+                e.preventDefault();
+        });
+
+
+    </script>
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#OrganizationName").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/Candidate/Home/getEmployerlist",
+                        type: "POST",
+                        dataType: "json",
+                        data: { Prefix: request.term },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return { label: item.CompanyName, value: item.CompanyRowID };
+                            }))
+                        }
+                    })
+                },
+                minLength: 3,
+                select: function (event, ui) {
+                    event.preventDefault();
+                },
+                focus: function (event, ui) {
+                    event.preventDefault();
+                    var OrgName = ui.item.label;
+                    $("#OrganizationName").val(OrgName);
+                    $("#OrganizationNameTemp").val(OrgName);
+                    $('#OrganizationId').val(ui.item.value);
+
+                }
+            });
+        })
+
+        $("#OrganizationName").blur(function () {
+            if ($("#OrganizationName").val().trim() != $("#OrganizationNameTemp").val().trim()) {
+                //alert($("#OrganizationName").val());
+                //alert($("#OrganizationNameTemp").val());
+                $("#OrganizationName").val("");
+                $('#Addressofthecompany').val("");
+                $('#OrganizationId').val("0");
+            }
+        });
+
+        $(function () {
+            $('#OrganizationName').change(function () {
+                var CurOrg = $("#OrganizationName").val();
+                var url = "/ProvidedInfo/EmploymentAddress/" + $("#OrganizationId").val();
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+                    success: function (Address) {
+                        $('#Addressofthecompany').val(Address);
+                    }
+                });
+            });
+        });
+
+    </script>
+
+    <script type="text/javascript">
+$(document).on("click", ".deletetempdoc", async function (e) {
+    e.preventDefault();
+    const $btn = $(this);
+    const idParts = ($btn.attr("id") || "").split("_");
+    const id = idParts[1] || "";
+    const SubCheckRowID = idParts[2] || "";
+    const PersonalRowid = $("#PersonalRowid").val();
+    if (!id) {
+        Swal.fire({ icon: 'error', title: 'Invalid document id.', timer: 2000, showConfirmButton: false });
+        return;
+    }
+    const result = await Swal.fire({
+        title: 'Do you want to delete the document?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Delete it!',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+        focusCancel: true,
+        allowOutsideClick: () => !Swal.isLoading(),
+        allowEscapeKey: () => !Swal.isLoading()
+    });
+    if (!result.isConfirmed) {
+        return;
+    }
+
+    Swal.fire({
+        title: 'Deleting...',
+        didOpen: () => { Swal.showLoading(); },
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false
+    });
+
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("DeleteCandidateUploadedTempDocs", "Home")',
+        data: {
+            id: id,
+            SubCheckRowID: SubCheckRowID,
+            PersonalRowid: PersonalRowid
+        },
+        dataType: "json",
+        success: function (res) {
+            Swal.close();
+            if (res === true) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Document deleted successfully!',
+                    timer: 1800,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'There was an error deleting the document.',
+                    timer: 3500
+                });
+            }
+        },
+        error: function (xhr) {
+            Swal.close();
+            Swal.fire({
+                icon: 'error',
+                title: 'Request failed',
+                text: xhr.responseText || 'Please try again.',
+                timer: 3500
+            });
+        }
+    });
+});
+    </script>
+    <script>
+        $('#Notraised').change(function () {
+            debugger
+            if ($(this).is(":checked")) {
+                var ccc = "Copy";
+                var PRowID = $('#PersonalRowid').val();
+                var subId = $('#SubCheckId').val();
+                var CRId = $('#clientRowId').val();
+                window.location.replace("/Candidate/Home/AddAddressInfo?PersonalRowID=" + PRowID + "&subCheckId=" + subId + "&ClientRowId=" + CRId + "&pass=" + ccc);
+
+            }
+            else {
+                $('#30').val('');
+                $('#27').val('');
+                $('#42').val('');
+                $('#34').val('');
+                $('#44').val('');
+                $('#32').val('');
+                $('#131').val('');
+                $('#132').val('');
+                $('#504').val('');
+            }
+        });
+    </script>
+    <script>
+        $('#42').on('input', function () {
+            var Pincode = $(this).val();
+            if (Pincode.length == 6) {
+                var url = "/ProvidedInfo/GetLocationByPincode?Pincode=" + Pincode.trim();
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    async: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        // Clear the select tag before appending new options
+                        if (data.DistrictName != null || data.StateName != null || data.CountryName != null) {
+                            $('#32').empty();
+                            $('#44').empty();
+                            $('#34').empty();
+                            // Append options to the select tag
+                            $('#32').append("<option value='" + data.DistrictRowID + "'>" + data.DistrictName + "</option>");
+                            $('#44').append("<option value='" + data.StateRowID + "'>" + data.StateName + "</option>");
+                            $('#34').append("<option value='" + data.CountryRowID + "'>" + data.CountryName + "</option>");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        //console.error(xhr, status, error);
+                    }
+                });
+            }
+        });
+    </script>
+    <script>
+        //$("#132").keypress(function (e) {
+        //    $("132").attr("min", "10");
+        //    var valueLength = this.value.length;
+        //    if (valueLength == 10) {
+        //        return false;
+        //    }
+        //    var kk = e.which;
+        //    if (kk < 48 || kk > 57)
+        //        e.preventDefault();
+        //});
+
+
+        $("#132")
+            .on("input", function () {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            })
+            .on("paste copy cut drop", function (e) {
+                e.preventDefault();
+            });
+    </script>
+
+    <script>
+        var id =@DateClientID;
+        if (id == 1470) {
+            $(function () {
+                $("#619").attr("placeholder", "DD-MM-YYYY");
+                $("#619").datepicker({
+                dateFormat: 'dd-mm-yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: 'c-100:c+100',
+                //startDate: new Date(),
+                maxDate: 0,
+                autoclose: true,
+                });
+                $("#36").attr("placeholder", "DD-MM-YYYY");
+                $("#36").datepicker({
+                    dateFormat: 'dd-mm-yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: 'c-100:c+100',
+                    //startDate: new Date(),
+                    maxDate: 0,
+                    autoclose: true,
+                });
+                $("#618").attr("placeholder", "DD-MM-YYYY");
+                $("#618").datepicker({
+                dateFormat: 'dd-mm-yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: 'c-100:c+100',
+               // startDate: new Date(),
+                maxDate: 0,
+                autoclose: true,
+            });
+            });
+        }
+        else if (id == 992 || id == 993 || id == 994 || id == 1243) {
+            $(function () {
+                $("#fromDate").datepicker({
+                    format: 'mm-yyyy',
+                    changeMonth: true,
+                    changeYear: true,
+                    maxDate: 0,
+                    autoclose: true,
+                });
+
+                $("#ToDate").datepicker({
+                    format: 'mm-yyyy',
+                    changeMonth: true,
+                    changeYear: true,
+                    maxDate: 0,
+                    autoclose: true,
+
+                });
+                // Trigger calculation when either date is changed
+                $("#fromDate, #ToDate").on("change", function () {
+                    calculateDateDifference();
+                });
+            });
+            function calculateDateDifference() {
+                // Get the values from the datepickers
+                var fromDate = $("#fromDate").val();
+                var toDate = $("#ToDate").val();
+
+                // Check if both dates are selected
+                if (fromDate && toDate) {
+                    // Split the month and year parts from the input (mm-yy format)
+                    var fromDateParts = fromDate.split("-");
+                    var toDateParts = toDate.split("-");
+
+                    var fromMonth = parseInt(fromDateParts[0], 10);  // Get month (mm)
+                    var fromYear = parseInt(fromDateParts[1], 10);   // Get year (yyyy)
+
+                    var toMonth = parseInt(toDateParts[0], 10);      // Get month (mm)
+                    var toYear = parseInt(toDateParts[1], 10);       // Get year (yyyy)
+
+                    // Calculate the difference in years and months
+                    var yearsDifference = toYear - fromYear;
+                    var monthsDifference = toMonth - fromMonth;
+
+                    // Adjust if the month difference is negative (i.e., toMonth is earlier in the year than fromMonth)
+                    if (monthsDifference < 0) {
+                        yearsDifference--;
+                        monthsDifference += 12; // Add 12 months to the months difference
+                    }
+
+                    // Display the result in #60 (or wherever you want the result)
+                    $("#36").val(yearsDifference + " years " + monthsDifference + " months");
+                } else {
+                    // If either date is not selected, clear the result field
+                    $("#36").val('');
+                }
+            }
+        }
+        else if (id == 684) {
+            var subId = $('#decSubCheckId').val();
+            $(function () {
+                $("#fromDate").datepicker({
+                    format: 'mm-yyyy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: 'c-100:c+100',
+                    maxDate: 0,
+                    autoclose: true,
+                });
+
+                if (subId == "2" || subId =="178") {
+                    $("#ToDate").datepicker({
+                        format: 'mm-yyyy',
+                        changeMonth: true,
+                        changeYear: true,
+                        yearRange: 'c-100:c+100',
+                        startDate: new Date(),
+                        maxDate: 0,
+                        autoclose: true,
+                    });
+                }
+                else {
+                    $("#ToDate").datepicker({
+                        format: 'mm-yyyy',
+                        changeMonth: true,
+                        changeYear: true,
+                        yearRange: 'c-100:c+100',
+                        maxDate: 0,
+                        autoclose: true,
+                    });
+                }
+
+            });
+            $("#ToDate").on("change", function () {
+                var fromDate = $("#fromDate").val();
+                var toDate = $("#ToDate").val();
+                $("#36").val(fromDate + " To " + toDate);
+            });
+        }
+        else if (id == 559){
+            $(function () {
+                $("#fromDate").datepicker({
+                    format: 'dd-M-yyyy',
+                });
+
+                $("#ToDate").datepicker({
+                    format: 'dd-M-yyyy',
+                });
+                $('#591').prop('readonly', true);
+                $('#591').val('Current Address');
+            });
+            var today = new Date();
+            var eighteenYearsAgo = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+            $("#txtDate").attr("placeholder", "DD-MM-YYYY");
+            $('#txtDate').datepicker({
+                dateFormat: 'dd-mm-yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: 'c-100:c+100',
+                maxDate: eighteenYearsAgo,
+                autoclose: true,
+            });
+            $("#ToDate").on("change", function () {
+                var fromDate = $("#fromDate").val();
+                var toDate = $("#ToDate").val();
+                $("#36").val(fromDate + " To " + toDate);
+                //var days = (toDate - fromDate) / (1000 * 60 * 60 * 24);
+                var datef = moment($("#fromDate").val()).format("YYYY-MM-DD");
+                var datet = moment($("#ToDate").val()).format("YYYY-MM-DD");
+
+                var start = new Date(fromDate.toString('dd-MM-yy'));
+                var end = new Date(toDate.toString('dd-MM-yy'));
+
+                var diff = new Date(end - start);
+                // get days
+                var days = diff / 1000 / 60 / 60 / 24;
+                if (days <= 160) {
+                    $('#591').val('Permanent Address');
+                    //alert("Your duration of stay is less than 6 months, You need to Fill Permanent Address.")
+                    Swal.fire({
+                        icon: "Info",
+                        title: "Information",
+                        text: "Your duration of stay is less than 6 months, You need to Fill Permanent Address.",
+                        timer: 50000
+                    });
+                }
+                else {
+                    $('#591').val('Current Address');
+                }
+            });
+            $("#fromDate").on("change", function () {
+                var fromDate = $("#fromDate").val();
+                var toDate = $("#ToDate").val();
+                $("#36").val(fromDate + " To " + toDate);
+                //var days = (toDate - fromDate) / (1000 * 60 * 60 * 24);
+                var datef = moment($("#fromDate").val()).format("YYYY-MM-DD");
+                var datet = moment($("#ToDate").val()).format("YYYY-MM-DD");
+                var start = new Date(fromDate.toString('dd-MM-yy'));
+                var end = new Date(toDate.toString('dd-MM-yy'));
+
+                var diff = new Date(end - start);
+                // get days
+                var days = diff / 1000 / 60 / 60 / 24;
+                if (days <= 160) {
+                    $('#591').val('Permanent Address');
+                    //alert("Your duration of stay is less than 6 months, You need to Fill Permanent Address.")
+                    Swal.fire({
+                        icon: "Info",
+                        title: "Information",
+                        text: "Your duration of stay is less than 6 months, You need to Fill Permanent Address.",
+                        timer: 50000
+                    });
+                }
+                else
+                {
+                    $('#591').val('Current Address');
+                }
+            });
+        }
+    </script>
+    <script>
+        $("#tilldatebtn").on("click", function () {
+            var fromDate = $("#fromDate").val();
+            if (fromDate != "") {
+                $("#ToDate").val('Till Date')
+                var toDate = $("#ToDate").val();
+                $("#36").val(fromDate + " To " + toDate);
+                var toDatenew = new Date();
+                var start = new Date(fromDate.toString('dd-MM-yy'));
+                var end = new Date(toDatenew.toString('dd-MM-yy'));
+
+                var diff = new Date(end - start);
+                // get days
+                var days = diff / 1000 / 60 / 60 / 24;
+                if (days <= 160) {
+                    $('#591').val('Permanent Address');
+                    //alert("Your duration of stay is less than 6 months, You need to Fill Permanent Address.")
+                    Swal.fire({
+                        icon: "Info",
+                        title: "Information",
+                        text: "Your duration of stay is less than 6 months, You need to Fill Permanent Address.",
+                        timer: 50000
+                    });
+                }
+                else {
+                    $('#591').val('Current Address');
+                }
+            }
+            else {
+                Swal.fire({
+                    icon: "Info",
+                    title: "Information",
+                    text: "Please fill From Date",
+                    timer: 50000
+                });
+            }
+
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#notApplicableCheckbox').change(function () {
+                if (this.checked) {
+                    $('.form-control').val('Not Applicable');
+                } else {
+                    $('.form-control').val('');
+                }
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            var clids = $('#clid').val();
+            if (clids == 559) {
+                $('#finalsave').click(function () {
+                    var geovalue = $('#504').val();
+                    if (geovalue == "") {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Warning",
+                            text: "Please Complete First Geo mapping",
+                            timer: 50000
+                        });
+                        return false;
+                    }
+                });
+            }
+        });
+
+        function file_Doc_Validation(fileInput) {
+
+            var fileName = fileInput.value.split('\\').pop();
+
+            // Block dangerous double extensions
+            var doubleExtensionPattern = /\.(php|asp|aspx|jsp|exe|bat|cmd|sh)\./i;
+
+            if (doubleExtensionPattern.test(fileName)) {
+                alert('Double extension files are not allowed.');
+                fileInput.value = '';
+                return false;
+            }
+
+            if ((fileName.match(/\./g) || []).length > 1) {
+                alert("Double extension files are not allowed.");
+                fileInput.value = '';
+                return false;
+            }
+
+
+        }
+    </script>
+}
+
+

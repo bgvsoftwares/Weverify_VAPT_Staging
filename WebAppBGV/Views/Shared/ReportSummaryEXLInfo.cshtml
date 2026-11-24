@@ -1,0 +1,340 @@
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    var PP = Model.PersonalChecksBriefDetails.Take(8).ToList();
+
+    var notExcluded = Model.PersonalChecksBriefDetails.Except(PP).ToList();
+
+    var notExcluded1 = notExcluded.Take(8).ToList();
+
+    var notExcluded2 = notExcluded.Except(notExcluded1).ToList();
+}
+<page id="PrintSrc" size="A4">
+    <div style="page-break-after:always;"></div>
+    <table width="100%" height="1100" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; border-collapse:collapse;">
+        <tr>
+            <td valign="top">
+                <table style="width:98%; font-family: Calibri; margin: auto; border-collapse: collapse;">
+                    <tr>
+                        <td valign="top" style="width:100%; text-align:end;"><img src='@Url.Content("~/Content/images/Securitas-logo.png")' style="width:5rem; margin-top:10px; margin-right:10px;"></td>
+                    </tr>
+                </table>
+                <table border="1" style="width: 98%; font-family: Calibri; margin: auto; border-collapse: collapse; margin-top: 20px">
+                    <tr>
+                        <td colspan="4" style="padding: 8px 11px; background: #9FAFCD; text-align: center; font-size: 16px; font-family: 'Calibri', sans-serif; font-weight: bolder; ">Executive Summary</td>
+                    </tr>
+
+                </table>
+                <table border="1" style="padding: 5px 8px; width: 98%; font-family: Calibri; margin: auto; border-collapse: collapse; margin-top: 20px">
+
+                    <thead>
+                        <tr>
+                            <th style="padding: 5px 8px;width: 20%; text-align: center; border: 1px solid #000000;font-family:'Calibri', sans-serif; font-weight: bolder; font-size: 16px;padding: 5px; background-color: lightgray;">Type of Checks</th>
+                            <th style="padding: 5px 8px;width: 30%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-weight: bolder; font-size: 16px; padding: 5px; background-color: lightgray;">Particulars</th>
+                            <th style="padding: 5px 8px;width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-weight: bolder; font-size: 16px; padding: 5px; background-color: lightgray;">Status</th>
+                            <th style="padding: 5px 8px;width: 15%; text-align: center; border: 1px solid #000000;font-family:'Calibri', sans-serif; font-weight: bolder; font-size: 16px; padding: 5px; background-color: lightgray;">Date of Verification</th>
+                            <th style="padding: 5px 8px;width: 15%; text-align: center; border: 1px solid #000000;font-family:'Calibri', sans-serif; font-weight: bolder; font-size: 16px; padding: 5px; background-color: lightgray;">Color Code</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+
+                            string checkName = string.Empty;
+                            foreach (var item in PP)
+                            {
+                        <tr style="  padding:5px;">
+
+                            @if (Model.Address_currentPermanantSame.ToLower() == "yes" && (item.subCheckId == 2 || item.subCheckId == 13))
+                            {
+                                <td width="30%" align="center" style=" padding: 5px 8px; font-family: 'Calibri', sans-serif; font-size: 16px;"> Permanent/Current Address </td>
+                            }
+                            else if (Model.Address_currentPermanantSame.ToLower() == "yes" && (item.subCheckId == 1248 || item.subCheckId == 1249))
+                            {
+                                <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">Court Record Check through Law firm - New Permanent/Current Address</td>
+                            }
+                            else if (Model.Address_currentPermanantSame.ToLower() == "yes" && (item.subCheckId == 373))
+                            {
+                                <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">Court Record Check through Law firm - Permanent/Current Address</td>
+                            }
+                            else if (Model.Address_currentPermanantSame.ToLower() == "yes" && (item.subCheckId == 1386 || item.subCheckId == 1387))
+                            {
+                                <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">Criminal Check via Police (Permanent/Current)</td>
+                            }
+                            else if (Model.Address_currentPermanantSame.ToLower() == "yes" && (item.subCheckId == 1382 || item.subCheckId == 1383))
+                            {
+                                <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">Criminal Court Check via Law Firm (Permanent/Current)</td>
+                            }
+                            else if (Model.Address_currentPermanantSame.ToLower() == "yes" && (item.subCheckId == 23 || item.subCheckId == 24))
+                            {
+                                <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">Criminal Verification through E-Court - Permanent/Current Address</td>
+                            }
+                            else if (Model.Address_currentPermanantSame.ToLower() == "yes" && (item.subCheckId == 210 || item.subCheckId == 225))
+                            {
+                                <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">Criminal Verification through Police- Permanent/Current Address (Verbal)</td>
+                            }
+                            else
+                            {
+                                <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">@item.SubCheckFName</td>
+                            }
+                            <td style="padding: 5px 8px; width: 30%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">@item.SubCheckDetail</td>
+                            @if (item.ColorName == "Green")
+                            {
+                                <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">Positive</td>
+                            }
+                            else if (item.ColorName == "Red")
+                            {
+                                <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">Negative</td>
+                            }
+                            else if (item.ColorName == "Orange" || item.ColorName == "Yellow" || item.ColorName == "Amber")
+                            {
+                                <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">Unable to verify</td>
+                            }
+                            else if (item.ColorName == "YTR on Hold")
+                            {
+                                <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">YTR On Hold</td>
+                            }
+                            else
+                            {
+                                <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">Wip</td>
+                            }
+                            @if (item.ColorName == "YTR on Hold")
+                            {
+                                <td style="padding: 5px 8px; width: 15%; text-align: center; border: 1px solid rgb(0, 0, 0); text-align: center; font-family: 'Calibri', sans-serif; font-size: 16px; ">
+                                    YTR on Hold
+                                </td>
+                            }
+                            else
+                            {
+                                <td style="padding: 5px 8px; width: 15%; text-align: center; border: 1px solid rgb(0, 0, 0); text-align: center; font-family: 'Calibri', sans-serif; font-size: 16px; ">
+                                    @(item.CheckCompleteDate == null ? "" : Convert.ToDateTime(item.CheckCompleteDate).ToString("dd-MMM-yyyy"))
+                                </td>
+                            }
+
+                            <td style="padding: 5px 8px; width: 15%; text-align: center; border: 1px solid rgb(0, 0, 0); text-align: center; font-family: 'Calibri', sans-serif; font-size: 16px; background: @item.ColorCode"> @item.ColorName</td>
+                        </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+
+        <!--- Report Footer with Address Include -->
+        <tr>
+            <td>
+                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                        <tr>
+                            <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                                &nbsp;
+                            </td>
+                        </tr>
+
+                        <tr style="background-image: url('@Url.Content("~/Images/Footer-image-confident.jpg")'); background-repeat: no-repeat; background-size: cover;" >
+                            <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                            <td width="1%">&nbsp;</td>
+
+                            <td width="79%">
+                                <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                <p style="font-size:16px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                <p style="font-size:16px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</page>
+
+@if (notExcluded1 != null && notExcluded1.Count > 0)
+{
+    <page id="PrintSrc" size="A4">
+        <div style="page-break-after:always;"></div>
+        <table width="100%" height="1100" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; border-collapse:collapse;">
+            <tr>
+                <td valign="top">
+                    <table style="width:98%; font-family: Calibri; margin: auto; border-collapse: collapse;">
+                        <tr>
+                            <td valign="top" style="width:100%; text-align:end;"><img src='@Url.Content("~/Content/images/Securitas-logo.png")' style="width:5rem; margin-top:10px; margin-right:10px;"></td>
+                        </tr>
+                    </table>
+                    <table border="1" style="padding: 5px 8px; width: 98%; font-family: Calibri; margin: auto; border-collapse: collapse; margin-top: 20px">
+
+                        <tbody>
+                            @{
+
+                                foreach (var item in notExcluded1)
+                                {
+                                    <tr style="  padding:5px;">
+                                        <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">@item.SubCheckFName</td>
+                                        <td style="padding: 5px 8px; width: 30%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">@item.SubCheckDetail</td>
+                                        @if (item.ColorName == "Green")
+                                        {
+                                            <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">Positive</td>
+                                        }
+                                        else if (item.ColorName == "Red")
+                                        {
+                                            <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">Negative</td>
+                                        }
+                                        else if (item.ColorName == "Orange" || item.ColorName == "Yellow" || item.ColorName == "Amber")
+                                        {
+                                            <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">Unable to verify</td>
+                                        }
+                                        else if (item.ColorName == "YTR on Hold")
+                                        {
+                                            <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">YTR On Hold</td>
+                                        }
+                                        else
+                                        {
+                                            <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">Wip</td>
+                                        }
+                                        @if (item.ColorName == "YTR on Hold")
+                                        {
+                                            <td style="padding: 5px 8px; width: 15%; text-align: center; border: 1px solid rgb(0, 0, 0); text-align: center; font-family: 'Calibri', sans-serif; font-size: 16px; ">
+                                                YTR on Hold
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td style="padding: 5px 8px; width: 15%; text-align: center; border: 1px solid rgb(0, 0, 0); text-align: center; font-family: 'Calibri', sans-serif; font-size: 16px; ">
+                                                @(item.CheckCompleteDate == null ? "" : Convert.ToDateTime(item.CheckCompleteDate).ToString("dd-MMM-yyyy"))
+                                            </td>
+                                        }
+
+                                        <td style="padding: 5px 8px; width: 15%; text-align: center; border: 1px solid rgb(0, 0, 0); text-align: center; font-family: 'Calibri', sans-serif; font-size: 16px; background: @item.ColorCode"> @item.ColorName</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <!--- Report Footer with Address Include -->
+            <tr>
+                <td>
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                                    &nbsp;
+                                </td>
+                            </tr>
+
+                            <tr style="background-image: url('@Url.Content("~/Images/Footer-image-confident.jpg")'); background-repeat: no-repeat; background-size: cover;" >
+                                <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                <td width="1%">&nbsp;</td>
+
+                                <td width="79%">
+                                    <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                    <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                    <p style="font-size:16px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                    <p style="font-size:16px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </page>
+}
+
+@if (notExcluded2 != null && notExcluded2.Count > 0)
+{
+    <page id="PrintSrc" size="A4">
+        <div style="page-break-after:always;"></div>
+        <table width="100%" height="1100" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; border-collapse:collapse;">
+            <tr>
+                <td valign="top">
+                    <table style="width:98%; font-family: Calibri; margin: auto; border-collapse: collapse;">
+                        <tr>
+                            <td valign="top" style="width:100%; text-align:end;"><img src='@Url.Content("~/Content/images/Securitas-logo.png")' style="width:5rem; margin-top:10px; margin-right:10px;"></td>
+                        </tr>
+                    </table>
+                    <table border="1" style="padding: 5px 8px; width: 98%; font-family: Calibri; margin: auto; border-collapse: collapse; margin-top: 20px">
+
+                        <tbody>
+                            @{
+
+                                foreach (var item in notExcluded2)
+                                {
+                                    <tr style="  padding:5px;">
+                                        <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">@item.SubCheckFName</td>
+                                        <td style="padding: 5px 8px; width: 30%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">@item.SubCheckDetail</td>
+                                        @if (item.ColorName == "Green")
+                                        {
+                                            <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">Positive</td>
+                                        }
+                                        else if (item.ColorName == "Red")
+                                        {
+                                            <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">Negative</td>
+                                        }
+                                        else if (item.ColorName == "Orange" || item.ColorName == "Yellow" || item.ColorName == "Amber")
+                                        {
+                                            <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">Unable to verify</td>
+                                        }
+                                        else if (item.ColorName == "YTR on Hold")
+                                        {
+                                            <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">YTR On Hold</td>
+                                        }
+                                        else
+                                        {
+                                            <td style="padding: 5px 8px; width: 20%; text-align: center; border: 1px solid #000000; font-family: 'Calibri', sans-serif; font-size: 16px; ">Wip</td>
+                                        }
+                                        @if (item.ColorName == "YTR on Hold")
+                                        {
+                                            <td style="padding: 5px 8px; width: 15%; text-align: center; border: 1px solid rgb(0, 0, 0); text-align: center; font-family: 'Calibri', sans-serif; font-size: 16px; ">
+                                                YTR on Hold
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td style="padding: 5px 8px; width: 15%; text-align: center; border: 1px solid rgb(0, 0, 0); text-align: center; font-family: 'Calibri', sans-serif; font-size: 16px; ">
+                                                @(item.CheckCompleteDate == null ? "" : Convert.ToDateTime(item.CheckCompleteDate).ToString("dd-MMM-yyyy"))
+                                            </td>
+                                        }
+
+                                        <td style="padding: 5px 8px; width: 15%; text-align: center; border: 1px solid rgb(0, 0, 0); text-align: center; font-family: 'Calibri', sans-serif; font-size: 16px; background: @item.ColorCode"> @item.ColorName</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <!--- Report Footer with Address Include -->
+            <tr>
+                <td>
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                                    &nbsp;
+                                </td>
+                            </tr>
+
+                            <tr style="background-image: url('@Url.Content("~/Images/Footer-image-confident.jpg")'); background-repeat: no-repeat; background-size: cover;" >
+                                <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                <td width="1%">&nbsp;</td>
+
+                                <td width="79%">
+                                    <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                    <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                    <p style="font-size:16px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                    <p style="font-size:16px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </page>
+}

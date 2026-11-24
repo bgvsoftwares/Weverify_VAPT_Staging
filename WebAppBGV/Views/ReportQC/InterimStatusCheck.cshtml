@@ -1,0 +1,141 @@
+﻿
+
+@model ViewModels.ReportQCViewModel.DashboardInterimCaseCheckViewModel
+
+@{
+    ViewBag.Title = "Interim Status";
+}
+
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("InterimStatusCheck", "ReportQC", FormMethod.Post))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch search-frame">
+                                    <label class="col-md-2 control-label">CompanyRefNo :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex Enter CompanyRefNo..." ,@autocomplete = "off" })
+
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <input class="btn bun-bg btn-default" type="submit" value="Search" name="SaveWork" />
+                                    </div>
+
+
+                                </div>
+
+
+
+
+                            </div>
+                        }
+                    </div>
+
+
+                </div>
+                @if (Model != null && Model.InterimCaseCheckViewModel!= null)
+
+                {
+                    <div class="row">
+                        <div class="col-md-12">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.InterimCaseCheckViewModel, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                                                                                      htmlAttributes: new { id = "grid", @class = "table" },
+                                                                                                      headerStyle: "thead-inverse",
+                                                                                                      rowStyle: "ordertxt",
+                                                                                                      footerStyle: "custpaging",
+                                                                                                      mode: WebGridPagerModes.All,
+                                                                                                      columns: new[]
+                                                                                                     {
+
+
+                                                                                                                                                                                                                grid.Column(columnName: "RWQCTLName", header: "TLname", canSort: false, style:"col-md-2"),
+                                                                                                                                                                                                                grid.Column(columnName: "RWQCTMName", header: "RWQCTM", canSort: false, style:"col-md-2"),
+                                                                                                                                                                                                                grid.Column(columnName: "ReportType", header: "ReportType", canSort: false, style:"col-md-2"),
+                                                                                                                                                                                                                grid.Column(columnName: "ReportUploadStatus", header: "ReportStatus", canSort: false, style:"col-md-2")
+
+
+
+
+
+
+
+
+                                                                                                      }
+                                                                                               )
+
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @*<script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>*@
+    <script>
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+        });
+    </script>
+    <script>
+        function validateForm() {
+            $('#hdnSeverity').val($('#Severity').val());
+            $('#hdnColorName').val($('#ColorName').val());
+
+            if ($('#TextBoxMode').val() == '') {
+                alert("Please Fill remarks");
+                $('#TextBoxMode').focus();
+
+                return false;
+            }
+            var ddlcheck = $('#ddlcheck').val();
+
+            if ($('#ddlcheck').val() == '') {
+                alert("Please select Verification Type");
+                $('#ddlcheck').focus();
+                return false;
+            }
+
+            return true;
+
+        }
+        function myFunction1() {
+            var txt;
+            var r = confirm("Press a button!");
+            if (r == true) {
+                txt = "You pressed OK!";
+            } else {
+
+            }
+            document.getElementById("demo").innerHTML = txt;
+        }
+    </script>
+
+
+}
+
+
+

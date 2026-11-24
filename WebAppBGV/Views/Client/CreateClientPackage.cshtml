@@ -1,0 +1,301 @@
+﻿@model  ViewModels.ClientViewModel.AddClientPackageViewModel
+
+@{
+    ViewBag.Title = "Create Client Package (" + Convert.ToString(Session["ClientNameForContract"]) + ")";
+}
+
+@{
+    //@ViewBag.NavigationBtnBack
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManagePackages", "Client", new { CId = Request.QueryString["CId"] }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftClient") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@{
+    //For ClientTabs Section
+    ViewBag.ClientID = Request.QueryString["CId"];
+    ViewBag.PackageCssClass = "current";
+}
+@section ClientTabs{ @Html.Partial("_ClientTabs") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("CreateClientPackage", "Client", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="form-horizontal">
+                @*<div class="form-group branch row  search-frame">
+                                    @Html.Label("Select Package : ", htmlAttributes: new { @class = "col-md-2 control-label" })
+                                    <div class="col-md-6">
+                                        @Html.DropDownList("PackageNameVal",
+                    new SelectList(ViewBag.ClientPackages, "PackageNameVal", "PackageNameTxt"),
+                    "-- Select Package -- ",
+                    new { @class = "form-control" })
+                                    </div>
+                                </div>*@
+                <h2 style="color:red;">Please do not use any special character in Package Name like : ',&#38,etc.</h2>
+                <div class="form-group branch row  search-frame">
+                    @Html.LabelFor(model => model.ClientPackageName, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                    <div class="col-md-4">
+                        @Html.EditorFor(model => model.ClientPackageName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.ClientPackageName, "", new { @class = "text-danger" })
+                        <span id="lblError"></span>
+                    </div>
+                    @Html.LabelFor(model => model.ClientPackageShortName, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                    <div class="col-md-4">
+                        @Html.EditorFor(model => model.ClientPackageShortName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.ClientPackageShortName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="fancy-collapse-panel">
+                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                        <div id="dvPartialViewRefreshPackagePrice">
+                            @{Html.RenderAction("RefreshPackagePrice", "Client");}
+                        </div>
+                    </div>
+                </div>
+                <div class="table-frame-top">&nbsp;</div>
+                @Html.HiddenFor(model => model.ClientRowID)
+                @Html.HiddenFor(model => model.CheckFamilyID)
+                @Html.HiddenFor(model => model.AntecedentSelected)
+                @Html.HiddenFor(model => model.DispositionSelected)
+                @Html.HiddenFor(model => model.SubCheckID)
+                <div class="navbar-collapse collapse thead-inverse">
+                    <ul class="nav navbar-nav" style="width:100%">
+                        <li class="top-head" style="width:4%;">No.</li>
+                        <li class="top-head" style="width:19%;">Service Type*</li>
+                        <li class="top-head" style="width:15%;">Report Sequence*</li>
+                        <li class="top-head" style="width:16%;">TAT(Clientwise)</li>
+                        <li class="top-head" style="width:15%;">TAT(Internal)</li>
+                        <li class="top-head" style="width:15%;">Billing Per Check</li>
+                        <li class="top-head" style="width:11%;">Cost Per Check</li>
+                    </ul>
+                </div>
+                <!-- NAVBAR CODE END -->
+                <div class="accordion" id="accordionExample">
+                    <div id="dvPartialView">
+                        @{Html.RenderAction("RefreshPackageDetails", "Client");}
+                    </div>
+                </div>
+            </div>
+            <div class="all-button-bg">
+                @Html.ActionLink("Back", "ManagePackages", "Client", new { CId = Request.QueryString["CId"] }, new { @class = "btn bun-bg btn-default" })
+                <input class="btn bun-bg btn-default" type="submit" onclick="return validateForm()" value="Submit" />
+            </div>
+        }
+    </div>
+</div>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+
+    <script type="text/javascript" src="~/Scripts/AjaxLibsJQuery1.8.3Jquery.min.js"></script>
+
+    
+    <script type="text/javascript">
+        $(function () {
+            $("#ClientPackageName").keypress(function (e) {
+                var keyCode = e.keyCode || e.which;
+
+                $("#lblError").html("");
+
+                //Regex for Valid Characters i.e. Alphabets and Numbers.
+                var regex = /^[A-Za-z0-9()-]+$/;
+
+                //Validate TextBox value against the Regex.
+                var isValid = regex.test(String.fromCharCode(keyCode));
+                if (!isValid) {
+                    $("#lblError").html("Only Alphabets and Numbers allowed.");
+                }
+
+                return isValid;
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        function isCommaOrDashKeyBlock(e, string) {
+            var key;
+            var keychar;
+
+            if (window.event) {
+                key = window.event.keyCode;
+            }
+            else if (e) {
+                key = e.which;
+            }
+            else {
+                return true;
+            }
+            keychar = String.fromCharCode(key);
+
+            //if ((key == null) || (key == 0) || (key == 8) || (key == 9) || (key == 13) || (key == 27) || (key == 65) || (key == 97)) {
+            if ((key == null) || (key == 0) || (key == 8) || (key == 9) || (key == 13) || (key == 27)) {
+                return true;
+            }
+            else if ((("0123456789").indexOf(keychar) > -1) || (("abcdefghijklmnopqrstuvwxyz_()& ABCDEFGHIJKLMNOPQRSTUVWXYZ").indexOf(keychar) > -1)) {
+                return true;
+            }
+            else if (string && (keychar == ".")) {
+                return true;
+            }
+            else
+                return false;
+        }
+
+        function myFunction(allData) {
+            var Entrid = allData.id.split('_');
+
+            var id = "_" + Entrid[1] + "_" + Entrid[2];
+            var IntTatID = '';
+            var tat = 0;
+            var intTat = 0;
+            if (Entrid[0] == "txtClTat") {
+                IntTatID = "txtIntTat" + id;
+                tat = allData.value;
+                intTat = parseInt(tat - (tat * 20 / 100));
+                $("#" + IntTatID + "").val(intTat);
+            }
+        }
+        $(function () {
+            // Selected Spocs
+            $('input.chkFmly:checkbox').click(function () {
+                var CheckFamily = '';
+                $('input.chkFmly:checkbox').each(function (index, value) {
+                    if (this.checked) {
+                        CheckFamily += this.value + ',';
+                    }
+                });
+                if (CheckFamily.length > 0) {
+                    CheckFamily = CheckFamily.substring(0, CheckFamily.length - 1);
+                } else { CheckFamily = ''; }
+                $('#CheckFamilyID').val(CheckFamily.trim());
+            });
+
+            // Selected Subcheck Family
+            $('input.SubchkFmly:checkbox').click(function () {
+                var CheckFamily = '';
+                var chkdata = this.value.split('_');
+                if (false == $(this).prop("checked")) {
+                    $('input[name="' + chkdata[0] + '"]').prop('checked', false);
+                }
+                $('input.SubchkFmly:checkbox').each(function (index, value) {
+                    var data = this.value.split('_');
+                    if (this.checked) {
+                        CheckFamily += this.value + ',';
+                        $('input[name="' + data[0] + '"]').prop('checked', true);
+                    }
+                });
+                if (CheckFamily.length > 0) {
+                    CheckFamily = CheckFamily.substring(0, CheckFamily.length - 1);
+                } else { CheckFamily = ''; }
+                $('#SubCheckID').val(CheckFamily.trim());
+            });
+
+            //Bind Client Package Details
+            $('#PackageNameVal').change(function () {
+                var url = "/Client/RefreshPackageDetails?" + $.param({ PackageName: $("#PackageNameVal").val() });
+                var notifications = $("#dvPartialView");
+                notifications.load(url);
+            });
+
+            //Bind Client Package Details
+            $('#PackageNameVal').change(function () {
+                var url = "/Client/RefreshPackageDetails?" + $.param({ PackageName: $("#PackageNameVal").val() });
+                var notifications = $("#dvPartialView");
+                notifications.load(url);
+            });
+            //Bind Client Package Details
+            $('#PackageNameVal').change(function () {
+                var url = "/Client/RefreshPackagePrice?" + $.param({ PackageName: $("#PackageNameVal").val() });
+                var notifications = $("#dvPartialViewRefreshPackagePrice");
+                notifications.load(url);
+            });
+        });
+        function validateForm() {
+            var inputs = $(".ddlSelSeq"), similar = [], i, j;
+            for (i = 0; i < inputs.length; i += 1) {
+                for (j = i + 1; j < inputs.length; j += 1) {
+                    if (inputs[i].value === inputs[j].value) {
+                        similar.push([i, j]);
+                    }
+                }
+            }
+            if (similar.length > 0) {
+                alert('Report sequence cannot be duplicate!');
+                return false;
+            }
+
+            //Bind SubCheckFamily
+            var SubChk = '';
+            $('input.SubchkFmly:checkbox').each(function (index, value) {
+                if (this.checked) {
+                    SubChk += this.value + ',';
+                }
+            });
+            if (SubChk.length > 0) {
+                SubChk = SubChk.substring(0, SubChk.length - 1);
+            } else { SubChk = ''; }
+            $('#SubCheckID').val(SubChk.trim());
+
+            //var CheckFamily = '';
+            //$('input.SubchkFmly:checkbox').each(function (index, value) {
+            //    var data = this.value.split('_');
+            //    var id = "txtBprChk_" + data[0] + "_" + data[1] + "";
+            //    if (this.checked) {
+            //        CheckFamily = $("#" + id + "").val();
+            //    }
+            //});
+            //if (CheckFamily.length > 0) {
+            //    return false;
+            //    alert("Please Enter Valid Price");
+            //}
+            return true;
+        }
+    </script>
+    <style>
+        .package_size {
+            display: block;
+            width: 80px;
+            height: 27px;
+            padding: 0px 12px;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #555;
+            margin: 5px 0 5px 2px;
+            background-color: #fff;
+            background-image: none;
+            border: 1px solid #ccc;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s
+        }
+
+        .package_size1 {
+            display: block;
+            width: 100%;
+            height: 27px;
+            padding: 0px 12px;
+            font-size: 11px;
+            line-height: 1.42857143;
+            color: #555;
+            margin: 5px 0 5px 2px;
+            background-color: #fff;
+            background-image: none;
+            border: 1px solid #ccc;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s
+        }
+
+        .dvSubCheck {
+            margin-right: 10px;
+        }
+
+        .dvSubCheck1 {
+            margin-right: 0px
+        }
+    </style>
+}

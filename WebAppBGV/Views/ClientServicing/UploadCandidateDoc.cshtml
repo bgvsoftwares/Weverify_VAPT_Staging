@@ -1,0 +1,101 @@
+﻿
+@using WebAppBGV.CommonMethods;
+@model  ViewModels.TempViewModel.TempPQCheckdataListViewModel
+@{
+    ViewBag.Title = "Candidate Check Details Info";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <link href="~/Content/newcss/font-awesome.min.css" rel="stylesheet" />
+    <link href='@Url.Content("~/Content/bootstrap.min.css")' rel="stylesheet" type="text/css" />
+    <link href='@Url.Content("~/Content/bootstrap-theme.min.css")' rel="stylesheet" />
+    <link href='@Url.Content("~/Content/Site.css")' rel="stylesheet" type="text/css" />
+    <script src='@Url.Content("~/Scripts/modernizr-2.8.3.js")'></script>
+
+    <script src='@Url.Content("~/Scripts/jquery-3.7.1.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/DisableBackForwordBtn.js")'></script>
+</head>
+<body>
+
+    <div>
+        <div class="col-md-12 jumbotron">
+            <div class="col-md-6 text-right text-bold">Case  Document </div>
+            @if (@Model.caseDocumentName != null && @Model.caseDocumentName != "")
+            {
+                <div class="col-md-6"> @Html.ActionLink(@Model.caseDocumentName, "GetCaseDocNew", new { ImageName = @Model.caseDocumentName, ImagePath = @Model.caseDocumentPath, Pid = @Model.Pid })  </div>
+            }
+
+        </div>
+        @if (Model.CaseDetails != null)
+        {
+
+            foreach (var items in Model.CaseDetails)
+            {
+                if (items.caseResumeDocumentName != null && items.caseResumeDocumentName != "")
+                {
+                    <div class="col-md-12 jumbotron">
+
+                        <div class="col-md-6 text-right text-bold">Case  Document </div>
+                        <div class="col-md-6"> @Html.ActionLink(items.caseResumeDocumentName, "GetCaseDocNew", new { ImageName = items.caseResumeDocumentName, ImagePath = items.caseResumeDocumentPath, Pid = items.Pid2 })  </div>
+                    </div>
+                }
+            }
+
+        }
+        @*@using (Html.BeginForm("UploadCandidateCheckDoc", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {*@
+        @if (Model != null && Model.CheckDetails != null && Model.CheckDetails.Count() > 0)
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    @{
+                        WebGrid grid = new WebGrid(ajaxUpdateContainerId: "grid");
+                        grid.Bind(Model.CheckDetails, autoSortAndPage: false, rowCount: 0);
+                    }
+                    @grid.GetHtml(
+                                                                htmlAttributes: new { id = "grid", @class = "table" },
+                                                                headerStyle: "thead-inverse",
+                                                                rowStyle: "ordertxt",
+                                                                footerStyle: "custpaging",
+                                                                mode: WebGridPagerModes.All,
+                                                                columns: new[]
+                                                                {
+                            grid.Column(columnName: "CheckName", header: "Check Name", canSort: false, style:"col-md-2"),
+                            grid.Column(columnName: "DocumentType", header: "DocumentType", canSort: false, style:"col-md-2"),
+    @*grid.Column(format: @<a target="_blank" href='@Url.Content("~/Documents/CandidateDocuments/ProvidedDocuments/" + @item.FileName)'>View</a>),*@
+
+                  //grid.Column(header : "Document", format : (item) => {
+
+
+                  //                                                          return  Html.ActionLink("Download", "MoveLOADocUploadedByCandidate", new { PersonalRowID = item.PersonalRowID});
+
+
+
+
+
+                  //                                              }, style:"delete col-md-1"),
+                                                 grid.Column(header : "Report", format : (item) => {
+
+
+                                                                            return  Html.ActionLink("Download", "GetCandidatedoc", new { FileName =  clsCommonMethods.PEncrypt(item.FileName.ToString())});
+
+
+
+
+                                                                }, style:"delete col-md-1"),
+
+                                                                                            }
+                                                                                                )
+
+
+                </div>
+            </div>
+        }
+        @*//}*@
+    </div>
+</body>
+</html>

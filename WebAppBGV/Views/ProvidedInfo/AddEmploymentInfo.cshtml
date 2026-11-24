@@ -1,0 +1,1400 @@
+﻿@model dynamic
+
+
+@{
+    ViewBag.Title = "Add Employment Info (" + Convert.ToString(Session["CandidateName"]) + ")";
+    string Department = Convert.ToString(Session["Department"]);
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = string.Empty;
+    if (Request.QueryString["window"] == "TLDE")
+    {
+        hyperLink = Html.ActionLink("linkTitle", "ManageCandidateChecksForReportQCTM", "ProvidedInfo", new { PersonalRowID = @ViewBag.PersonalRowid, dispFor = "TeamMember" }, new { @class = "headerbacklink" }).ToString();
+        ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    }
+
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+    string checkstatusid = "";
+    string CaseStatus2 = "";
+
+    CaseStatus2 = Session["CaseStatus"].ToString();
+
+    PersonalRowid = @ViewBag.PersonalRowid;
+    SubCheckId = @ViewBag.SubCheckId;
+    clientRowId = @ViewBag.clientRowId;
+    checkstatusid = @ViewBag.checkstatusid;
+
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftDataEntryProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="container">
+    @using (Html.BeginForm("AddEmploymentInfo", "ProvidedInfo", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+        @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+        <input id="SubCheckId" type="hidden" value=@SubCheckId>
+        @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+        <input id="clientRowId" type="hidden" value=@clientRowId>
+        @Html.Hidden("clientRowId", clientRowId.ToString())
+
+        <input type="hidden" id="OrganizationNameTemp" name="OrganizationNameTemp" />
+
+        @Html.ValidationSummary()
+        @Html.Partial("_PersonalDetails")
+        @Html.Partial("_UploadedDocumentList")
+        @Html.Partial("_CaseDocumentList")
+        @Html.Partial("_ClientSpecialInstructionsDE")
+        //
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-2 col-md-2 col-sm-12">
+                    <label>Copy Paste Text</label>
+                </div>
+                <div class="col-lg-7 col-md-7 col-sm-12">
+                    <textarea class="form-control" id="CopyPaste_Text"></textarea>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-12">
+                    <input type="button" class="btn" value="Paste" id="btnCopyPaste" onclick="CopyPasteText()" style="border:1px solid #11c9b7; color: #FFF; background: #11c9b7;" />
+                </div>
+            </div>
+        </div>
+        //
+        //
+        //if (clientRowId != "1255")
+        //{
+            <div class="row row-sm p-2 mt-2 ms-5" id="NADiv" style="background:#11c9b7; margin:5px 20px 5px 20px;padding: 3px 0px;">
+                <div class="col-md-12 d-flex pr-0">
+                    @Html.CheckBox("Notraised", false, new { onchange = "NotRaised(this)", @class = "form-check-input", @style = "height: 20px;width:20px;margin: 0px 5px;" })<b style="color:white;padding-left:30px;font-size:1.3rem;">Not Applicable</b>
+                </div>
+            </div>
+       // }
+
+
+        //
+        <div class="container" id="container">
+            <div class="container-fluid mb-2 p-0" id="top_div">
+                @foreach (var category in Model)
+                {
+                    <div class="row row-sm mt-3">
+                        @{
+                            string[] nm = category.Key.Split('_');
+
+                            if (@nm[2] == "textbox")
+                            {
+                                if (@nm[1] == "Organisation Name")
+                                {
+                                    <div class="col-md-6 col-sm-6">
+                                        Organization Name
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <input type="text" id="OrganizationName" name="OrganizationName" value='@category.Value' class="form-control" />
+                                        <input type="hidden" id="OrganizationId" name="OrganizationId" value=@ViewBag.OrgId>
+                                    </div>
+                                }
+
+                                else if (@nm[1] == "Address of the company")
+                                {
+                                    <div class="col-md-6 col-sm-6">
+                                        Address of the company
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <input type="text" id="Addressofthecompany" name="Addressofthecompany" value='@category.Value' class="form-control" />
+                                    </div>
+
+                                }
+                                else
+                                {
+                                    <div class="col-md-6 col-sm-6">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7>*</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <span style="color:red;">@nm[4]</span>
+                                        @if (nm[0] == "89")
+                                        {
+                                            <div>
+                                                <div class="row">
+                                                    <div class="col-4"><span>Month</span></div>
+                                                    <div class="col-4"><span>Days</span></div>
+                                                    <div class="col-4"><span>Year</span></div>
+                                                </div>
+                                                <select id="month" style="width: 32.7%;">Month</select>
+                                                <select id="day" style="width: 32.7%;">Days</select>
+                                                <select id="year" style="width: 32.7%;">Year</select>
+                                            </div>
+                                            <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' readonly="readonly" maxlength="@nm[5]">
+                                        }
+                                        else if (nm[0] == "88")
+                                        {
+                                            if (clientRowId.ToString() == "679")
+                                            {
+                                                <div>
+                                                    <div class="row">
+                                                        <div class="col-4"><span>Month</span></div>
+                                                        <div class="col-4"><span>Days</span></div>
+                                                        <div class="col-4"><span>Year</span></div>
+                                                    </div>
+                                                    <select id="month88" style="width: 32.7%;">Month</select>
+                                                    <select id="day88" style="width: 32.7%;">Days</select>
+                                                    <select id="year88" style="width: 32.7%;">Year</select>
+                                                </div>
+                                                <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' readonly="readonly" maxlength="@nm[5]">
+                                            }
+                                            else
+                                            {
+                                                <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                        }
+
+                                    </div>
+                                }
+                            }
+                            if (@nm[2] == "dropdown")
+                            {
+                                <div class="col-md-6 col-sm-6">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <span style="color:red;">@nm[4]</span>
+                                    @{
+                                        string[] nmOption = nm[7].Split(',');
+                                    }
+                                    <select name=@nm[0] id=@nm[0]>
+                                        @for (int i = 0; i < nmOption.Length; i++)
+                                        {
+                                            if (@nmOption[i].Trim() == @nm[6])
+                                            {
+                                                <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                            }
+                                            if (@nmOption[i].Trim() != @nm[6])
+                                            {
+
+                                                <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                            }
+
+                                        }
+                                        }
+                                    </select>
+                                </div>
+                            }
+                            if (@nm[2] == "checkbox")
+                            {
+                                <div class="col-md-6 col-sm-6">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <span>@nm[4]</span>
+                                    @{
+                                        if (@nm[5] == "TRUE")
+                                        {
+                                            <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value="checked" checked>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value=@nm[0]>
+                                        }
+                                    }
+
+                                </div>
+                            }
+                            if (@nm[2] == "fileUpload")
+                            {
+                                <div class="col-md-6 col-sm-6">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <span>@nm[4]</span>
+                                    <input type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                                </div>
+                            }
+                        }
+
+                    </div>
+                }
+
+                @if ((clientRowId == "576" || clientRowId == "321" || clientRowId == "974" || clientRowId == "553" || clientRowId == "324" || clientRowId == "1218"@*|| clientRowId == "652" || clientRowId == "69"*@) && (checkstatusid == "8" && SubCheckId == "68"))
+{
+            <div class="row row-sm mt-3">
+                <div class="col-md-6 col-sm-6">Check Status</div>
+                <div class="col-md-6 col-sm-6">
+                    <select name="CheckStatus" id="CheckStatus">
+                        <option value="YTR">YTR</option>
+                        <option value="Research">Research</option>
+                    </select>
+                </div>
+            </div>
+        }
+            @*|| clientRowId == "249"*@
+            else if ((clientRowId == "1219") && (checkstatusid == "8" && SubCheckId == "68"))
+            {
+                <div class="row row-sm mt-3">
+                    <div class="col-md-6 col-sm-6">Check Status</div>
+                    <div class="col-md-6 col-sm-6">
+                        <select name="CheckStatus" id="CheckStatus">
+                            <option value="YTR">YTR</option>
+
+                        </select>
+                    </div>
+                </div>
+            }
+            else if ((clientRowId == "249") && (checkstatusid == "8" && SubCheckId == "68"))
+            {
+                <div class="row row-sm mt-3">
+                    <div class="col-md-6 col-sm-6">Check Status</div>
+                    <div class="col-md-6 col-sm-6">
+                        <select name="CheckStatus" id="CheckStatus">
+                            <option value="YTR">YTR</option>
+                            <option value="Not Applicable">Not Applicable</option>
+
+                        </select>
+                    </div>
+                </div>
+            }
+            else if ((clientRowId == "974") && (checkstatusid == "8" || checkstatusid == "69" && SubCheckId == "68"))
+            {
+                <div class="row row-sm mt-3">
+                    <div class="col-md-6 col-sm-6">Check Status</div>
+                    <div class="col-md-6 col-sm-6">
+                        <select name="CheckStatus" id="CheckStatus">
+                            <option value="Completed">Completed</option>
+                            <option value="Insufficent">Insufficent</option>
+                            <option value="Research">Research</option>
+                            <option value="Rejected">Rejected</option>
+                            <option value="Review Requested">Review Requested</option>
+                            <option value="WIP-Pending">WIP-Pending</option>
+                            <option value="YTR">YTR</option>
+                        </select>
+                    </div>
+                </div>
+            }
+            else if ((clientRowId == "1255"))
+            {
+                <div class="row row-sm mt-3">
+                    <div class="col-md-6 col-sm-6">Check Status</div>
+                    <div class="col-md-6 col-sm-6">
+                        <select name="CheckStatus" id="CheckStatus">
+                            <option value="Completed">Completed</option>
+                            <option value="Insufficent">Insufficent</option>
+                            <option value="Research">Research</option>
+                            <option value="Rejected">Rejected</option>
+                            <option value="Review Requested">Review Requested</option>
+                            <option value="WIP-Pending">WIP-Pending</option>
+                            <option value="YTR">YTR</option>
+                            <option value="Not Applicable">Not Applicable</option>
+                        </select>
+                    </div>
+                </div>
+                }
+                else if ((clientRowId == "268" || clientRowId == "3") && ( SubCheckId == "68" || SubCheckId == "69" || SubCheckId == "70" || SubCheckId == "71" || SubCheckId == "72" || SubCheckId == "73" || SubCheckId == "74" || SubCheckId == "75"))
+                {
+                <div class="row row-sm mt-3">
+                    <div class="col-md-6 col-sm-6">Check Status</div>
+                    <div class="col-md-6 col-sm-6">
+                        <select name="CheckStatus" id="CheckStatus">
+                            <option value="Completed">Completed</option>
+                            <option value="Insufficent">Insufficent</option>
+                            <option value="Research">Research</option>
+                            <option value="Rejected">Rejected</option>
+                            <option value="Review Requested">Review Requested</option>
+                            <option value="WIP-Pending">WIP-Pending</option>
+                            <option value="YTR">YTR</option>
+                            <option value="Irrelevant EMP">Irrelevant EMP</option>
+                            <option value="Not Applicable">Not Applicable</option>
+                            @*<option value="Oranage/No color">Oranage/No color</option>*@
+                        </select>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row row-sm mt-3">
+                    <div class="col-md-6 col-sm-6">Check Status</div>
+                    <div class="col-md-6 col-sm-6">
+                        <select name="CheckStatus" id="CheckStatus">
+                            <option value="Completed">Completed</option>
+                            <option value="Insufficent">Insufficent</option>
+                            <option value="Research">Research</option>
+                            <option value="Rejected">Rejected</option>
+                            <option value="Review Requested">Review Requested</option>
+                            <option value="WIP-Pending">WIP-Pending</option>
+                            <option value="YTR">YTR</option>
+                            <option value="Not Applicable">Not Applicable</option>
+                            @*<option value="Oranage/No color">Oranage/No color</option>*@
+                        </select>
+                    </div>
+                </div>
+            }
+                <div class="row row-sm mt-3">
+                    <div class="col-md-6 col-sm-6">
+                        @Html.Label("INFRemarks", htmlAttributes: new { @class = "col -md-4 control-label" })
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                        @Html.TextArea("INFRemarks", new { @class = "form-control ", @rows = "2", @disabled = "disabled" })
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12" style="text-align:center; justify-content:end; display:flex; margin-top:10px;">
+                        @if (CaseStatus2 != "Closed" && checkstatusid != "1")
+                        {
+                            <input id="WithQcval" name="WithQcval" value="" hidden />
+                            <input class="btn" type="submit" value="Submit" style="width:15rem!important; border-radius:.90rem; font-size:1.6rem!important;" onclick="validateForm()" />
+                            <div class="w-100 d-flex justify-content-end">
+                                <input class="btn" type="submit" id="SubmitWithQC" style="width: 19rem !important; margin-left: 15PX; border-radius: .90rem; font-size: 1.6rem !important" value="SubmitWithQC" onclick="validateFormWithQc()" disabled />
+                            </div>
+                        
+                            @*<div class="w-50 d-flex justify-content-end">
+
+                                <input class="btn btn-success" type="submit" value="Approve"
+                                       formaction="@Url.Action("UpdateEmploymentInfo", "ProvidedInfo")"
+                                       formmethod="post"
+                                       onclick="return validateApproveForm()" />
+                            </div>*@
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid mt-2 p-0" id="bottom_div">
+                <div class="row h-100">
+                    <div class="col-md-12">
+                        <img id="bigpic" src="" style="display:none;height:100%; width:100%;" />
+                        <iframe id="bigpdf" src="" style="display: none; height: 100%; width: 100%;"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    <script>
+
+        function showPicture(url) {
+            var sourceOfPicture = url + '?embedded = true';
+            var exe = getExtension(url);
+            //var url1 = Url.Content(url);
+            if (exe = 'pdf') {
+                var img = document.getElementById('bigpdf');
+                img.src = sourceOfPicture.replace('90x90', '225x225');
+                img.style.display = "block";
+            }
+            else {
+                var img = document.getElementById('bigpic')
+                img.src = sourceOfPicture.replace('90x90', '225x225');
+                img.style.display = "block";
+            }
+
+        }
+        function getExtension(path) {
+            var basename = path.split(/[\\/]/).pop(),  // extract file name from full path ...
+                // (supports `\\` and `/` separators)
+                pos = basename.lastIndexOf(".");       // get last position of `.`
+
+            if (basename === "" || pos < 1)            // if file name is empty or ...
+                return "";                             //  `.` not found (-1) or comes first (0)
+
+            return basename.slice(pos + 1);            // extract extension ignoring `.`
+        }
+
+
+    </script>
+    <script>
+        $('#CheckStatus').change(function () {
+            debugger
+            $("#datalist").empty();
+            var Curlist = $("#CheckStatus").val();
+
+            if (Curlist == "Insufficent") {
+                $('#vs').css('display', 'flex');
+                var url = "/ProvidedInfo/GetCandidatesRemarks/"
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    //dataType: 'json',
+                    success: function (data) {
+                        //$('#vs').css('display', 'flex');
+                        var items = '<option>--Select Team--</option>';
+                        $.each(data, function (Remarks, val) {
+                            items += "<option value='" + val.Remarks + "'>" + val.Remarks + "</option>";
+                        });
+                        items += '<option>Other</option>';
+                        $("#datalist").append(items);
+                    }
+                });
+
+            }
+            else {
+                $('#vs').css('display', 'none');
+            }
+        });
+    </script>
+    <script>
+        $('#datalist').change(function () {
+            if ($('#datalist').val() == 'Other') {
+                $('#INFRemarks').val('')
+                document.getElementById("INFRemarks").placeholder = "Write Other Remarks...";
+            }
+            else { $('#INFRemarks').val($('#datalist').val()); }
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#OrganizationName").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/Candidate/Home/getEmployerlistDE",
+                        type: "POST",
+                        dataType: "json",
+                        data: { Prefix: request.term },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return { label: item.CompanyName, value: item.CompanyRowID };
+                            }))
+                        }
+                    })
+                },
+                minLength: 3,
+                select: function (event, ui) {
+                    event.preventDefault();
+                },
+                focus: function (event, ui) {
+                    event.preventDefault();
+                    var OrgName = ui.item.label;
+                    $("#OrganizationName").val(OrgName);
+                    $("#OrganizationNameTemp").val(OrgName);
+                    $('#OrganizationId').val(ui.item.value);
+                }
+            });
+        })
+
+        $("#OrganizationName").blur(function () {
+            if ($("#OrganizationName").val().trim() != $("#OrganizationNameTemp").val().trim()) {
+
+                $("#OrganizationName").val("");
+                $('#Addressofthecompany').val("");
+                $('#OrganizationId').val("0");
+            }
+        });
+
+        $(function () {
+            $('#OrganizationName').change(function () {
+                var CurOrg = $("#OrganizationName").val();
+                var url = "/ProvidedInfo/EmploymentAddress/" + $("#OrganizationId").val();
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+                    success: function (Address) {
+                        $('#Addressofthecompany').val(Address);
+                    }
+                });
+            });
+        });
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if (($("#89").val().toString() == "Till Date") && (CaseStatus2 == "Received")) {
+                $("#CheckStatus").prop("disabled", true);
+                $("#CheckStatus").val("YTR");  
+            }
+            else {}
+            if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected" || $("#CheckStatus").val() == "Review Requested") {
+                $("#INFRemarks").prop("disabled", false);
+            }
+            else {
+                $("#INFRemarks").prop("disabled", true);
+            }
+
+
+            if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected" || $("#CheckStatus").val() == "Review Requested") {
+                $("#INFRemarks").prop("disabled", false);
+            }
+            else {
+                $("#INFRemarks").prop("disabled", true);
+            }
+
+
+
+            if ($("#CheckStatus").val() == "Completed") {
+                $("#SubmitWithQC").prop("disabled", false);
+
+            } else {
+                $("#SubmitWithQC").prop("disabled", true);
+            }
+        });
+
+        $(function () {
+
+
+
+            $("#CheckStatus").change(function () {
+                if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected" || $("#CheckStatus").val() == "Review Requested") {
+                    $("#INFRemarks").prop("disabled", false);
+                    $('#INFRemarks').focus();
+                }
+                else {
+                    $("#INFRemarks").prop("disabled", true);
+                }
+
+                if ($("#CheckStatus").val() == "Completed") {
+                    $("#SubmitWithQC").prop("disabled", false);
+                 
+                } else {
+                    $("#SubmitWithQC").prop("disabled", true);
+                }
+            });
+        });
+
+        function validateForm() {
+            if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected" || $("#CheckStatus").val() == "Review Requested") {
+                if ($("#INFRemarks").val().trim() == '') {
+                    alert("Please mention the reason!");
+                    $('#INFRemarks').focus();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function validateFormWithQc() {
+            $('#WithQcval').val('SubmitWithQCApprove')
+            return true;
+        }
+
+        function validateForm() {
+            if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected") {
+                if ($("#INFRemarks").val().trim() == '') {
+                    alert("Please mention the reason!");
+                    $('#INFRemarks').focus();
+                    event.preventDefault();
+                    return false;
+                }
+                else {
+                    const infRemarks = $("#INFRemarks").val().trim();
+                    if (infRemarks.length < 15) {
+                        alert("Please provide a reason that is at least 15 characters long!");
+                        $('#INFRemarks').focus();
+                        event.preventDefault();
+                        return false;
+                    }
+                    return true;
+                }
+            }
+        }
+
+        function validateApproveForm() {
+            if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected" || $("#CheckStatus").val() == "Review Requested") {
+                if ($("#INFRemarks").val().trim() == '') {
+                    alert("Please mention the reason!");
+                    $('#INFRemarks').focus();
+                    return false;
+                }
+            }
+            else {
+                $("#CheckStatus").val("Approve");
+                return true;
+            }
+            return true;
+        }
+    </script>
+    <script>
+        function NotRaised(element) {
+            if ($('#Notraised').is(':checked')) {
+                $("#382").attr('checked', true);
+                $("#OrganizationName").val('Not Applicable');
+                $("#142").val('Not Applicable');
+                $("#144").val('Not Applicable');
+                $("#146").val('Not Applicable');
+                $("#93").val('Not Applicable');
+                $("#143").val('Not Applicable');
+                $("#147").val('Not Applicable');
+                $("#95").val('Not Applicable');
+                $("#94").val('Not Applicable');
+                $("#87").val('Not Applicable');
+                $("#146").val('Not disclosed');
+                $("#149").val('Not Applicable');
+                $("#150").val('Not Applicable');
+                $("#148").val('Not Applicable');
+                $("#96").val('Not Applicable');
+                $("#147").val('Not Applicable');
+                $("#85").val('Not Applicable');
+                $("#91").val('Not Applicable');
+                $("#88").val('Not Applicable');
+                $("#89").val('Not Provided');
+                $("#CheckStatus").val('Not Applicable');
+
+            }
+            else {
+                $("#382").attr('checked', false);
+                $("#OrganizationName").val('');
+                $("#142").val('');
+                $("#144").val('');
+                $("#146").val('');
+                $("#93").val('');
+                $("#143").val('');
+                $("#147").val('');
+                $("#95").val('');
+                $("#94").val('');
+                $("#87").val('');
+                $("#85").val('');
+                $("#149").val('');
+                $("#150").val('');
+                $("#148").val('');
+                $("#96").val('');
+                $("#147").val('');
+                $("#CheckStatus").val('');
+                $("#91").val('');
+                $("#88").val('');
+                $("#89").val('');
+                $("#146").val('Pending from Self');
+            }
+
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            /*const monthNames = ["", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];*/
+            const monthNames = ('@clientRowId' === '268')
+            ? ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            : ["", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+            let qntYears = 40;
+            let selectYear = $("#year");
+            let selectMonth = $("#month");
+            let selectDay = $("#day");
+            let currentYear = new Date().getFullYear() + 1;
+            //let currentYear = new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+            var J = 0;
+            for (var y = 0; y < qntYears; y++) {
+                if (J == 0) {
+                    let yearElem1 = document.createElement("option");
+                    yearElem1.value = "";
+                    yearElem1.textContent = "";
+                    selectYear.append(yearElem1);
+
+                    let yearElem2 = document.createElement("option");
+                    yearElem2.value = "NA";
+                    yearElem2.textContent = "NA";
+                    selectYear.append(yearElem2);
+
+                    let yearElem3 = document.createElement("option");
+                    yearElem3.value = "Till Date";
+                    yearElem3.textContent = "Till Date";
+                    selectYear.append(yearElem3);
+
+                    let yearElem4 = document.createElement("option");
+                    yearElem4.value = "Not Provided";
+                    yearElem4.textContent = "Not Provided";
+                    selectYear.append(yearElem4);
+                }
+                let date = new Date(currentYear);
+                let yearElem = document.createElement("option");
+                yearElem.value = currentYear.toString();
+                yearElem.textContent = currentYear.toString();
+                selectYear.append(yearElem);
+                currentYear--;
+
+                J = J + 1;
+            }
+
+            for (var m = 0; m < 13; m++) {
+                let month = monthNames[m];
+                let monthElem = document.createElement("option");
+                monthElem.value = month.toString();
+                monthElem.textContent = month.toString();
+                selectMonth.append(monthElem);
+            }
+
+            var d = new Date();
+            var month = d.getMonth();
+            var year = d.getFullYear();
+            var day = d.getDate();
+
+            //selectYear.val('');
+            selectYear.on("change", AddDOL);
+            //selectMonth.val('');
+            selectMonth.on("change", AdjustDays);
+
+            //AdjustDays();
+            //selectDay.val('')
+
+            function AdjustDays() {
+                selectDay.empty();
+                var yr = 2020;
+                var Mnth = $("#month").val().toString();
+                var date1 = 31;
+                if (Mnth != "") {
+                    //date1 = Date(parseInt(yr), parseInt(Mnth) + 1, 0).getDate()
+                    /* var d = new Date(parseInt(yr), parseInt(Mnth), 0);*/
+                    var d = new Date(parseInt(yr), monthNames.indexOf(Mnth), 0);
+                    date1 = d.getDate();
+                }
+
+                for (var d = 0; d <= date1; d++) {
+                    if (d == 0) {
+                        var dayElem = document.createElement("option");
+                        dayElem.value = "";
+                        dayElem.textContent = "";
+                        selectDay.append(dayElem);
+                    }
+                    else if (d <= 9) {
+                        var dayElem2 = document.createElement("option");
+                        dayElem2.value = '0' + d.toString();
+                        dayElem2.textContent = '0' + d.toString();
+                        selectDay.append(dayElem2);
+
+                    }
+                    else {
+                        var dayElem1 = document.createElement("option");
+                        dayElem1.value = d.toString();
+                        dayElem1.textContent = d.toString();
+                        selectDay.append(dayElem1);
+                    }
+                }
+            }
+
+            function AddDOL() {
+                var Days = $("#day").val().toString();
+                var Year = $("#year").val().toString();
+                var Month = $("#month").val().toString();
+                var DOLDate = "";
+                if (Year != '') {
+                    if (Year.toString() == "NA") {
+                        DOLDate = Year.toString();
+                    }
+                    else if (Year.toString() == "Till Date") {
+                        DOLDate = Year.toString();
+                    }
+                    else if (Year.toString() == "Not Provided") {
+                        DOLDate = Year.toString();
+                    }
+                    else {
+                        if (Month.toString() != "") {
+                            if (Days.toString() != "") {
+                                DOLDate = Days.toString() + '-' + Month.toString() + '-' + Year.toString();
+                            }
+                            else {
+                                DOLDate = Month.toString() + '-' + Year.toString();
+                            }
+
+                        }
+                    }
+                }
+                else {
+                    DOLDate = Year.toString();
+                }
+
+
+                $("#89").val(DOLDate.toString());
+
+            }
+        });
+
+        $(document).ready(function () {
+            const monthNames = ["", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+            let qntYears = 40;
+            let selectYear = $("#year88");
+            let selectMonth = $("#month88");
+            let selectDay = $("#day88");
+            let currentYear = new Date().getFullYear();
+            var J = 0;
+            for (var y = 0; y < qntYears; y++) {
+                if (J == 0) {
+                    let yearElem1 = document.createElement("option");
+                    yearElem1.value = "";
+                    yearElem1.textContent = "";
+                    selectYear.append(yearElem1);
+
+                    let yearElem2 = document.createElement("option");
+                    yearElem2.value = "NA";
+                    yearElem2.textContent = "NA";
+                    selectYear.append(yearElem2);
+
+                    let yearElem3 = document.createElement("option");
+                    yearElem3.value = "Till Date";
+                    yearElem3.textContent = "Till Date";
+                    selectYear.append(yearElem3);
+
+                    let yearElem4 = document.createElement("option");
+                    yearElem4.value = "Not Provided";
+                    yearElem4.textContent = "Not Provided";
+                    selectYear.append(yearElem4);
+                }
+                let date = new Date(currentYear);
+                let yearElem = document.createElement("option");
+                yearElem.value = currentYear.toString();
+                yearElem.textContent = currentYear.toString();
+                selectYear.append(yearElem);
+                currentYear--;
+
+                J = J + 1;
+            }
+
+            for (var m = 0; m < 13; m++) {
+                let month = monthNames[m];
+                let monthElem = document.createElement("option");
+                monthElem.value = month.toString();
+                monthElem.textContent = month.toString();
+                selectMonth.append(monthElem);
+            }
+
+            var d = new Date();
+            var month = d.getMonth();
+            var year = d.getFullYear();
+            var day = d.getDate();
+
+            //selectYear.val('');
+            selectYear.on("change", AddDOL);
+            //selectMonth.val('');
+            selectMonth.on("change", AdjustDays);
+
+            //AdjustDays();
+            //selectDay.val('')
+
+            function AdjustDays() {
+                selectDay.empty();
+                var yr = 2020;
+                var Mnth = $("#month88").val().toString();
+                var date1 = 31;
+                if (Mnth != "") {
+                    //date1 = Date(parseInt(yr), parseInt(Mnth) + 1, 0).getDate()
+                    var d = new Date(parseInt(yr), parseInt(Mnth), 0);
+                    date1 = d.getDate();
+                }
+
+                for (var d = 0; d <= date1; d++) {
+                    if (d == 0) {
+                        var dayElem = document.createElement("option");
+                        dayElem.value = "";
+                        dayElem.textContent = "";
+                        selectDay.append(dayElem);
+                    }
+                    else if (d <= 9) {
+                        var dayElem2 = document.createElement("option");
+                        dayElem2.value = '0' + d.toString();
+                        dayElem2.textContent = '0' + d.toString();
+                        selectDay.append(dayElem2);
+
+                    }
+                    else {
+                        var dayElem1 = document.createElement("option");
+                        dayElem1.value = d.toString();
+                        dayElem1.textContent = d.toString();
+                        selectDay.append(dayElem1);
+                    }
+                }
+            }
+
+            function AddDOL() {
+                var Days = $("#day88").val().toString();
+                var Year = $("#year88").val().toString();
+                var Month = $("#month88").val().toString();
+                var DOLDate = "";
+                if (Year != '') {
+                    if (Year.toString() == "NA") {
+                        DOLDate = Year.toString();
+                    }
+                    else if (Year.toString() == "Till Date") {
+                        DOLDate = Year.toString();
+                    }
+                    else if (Year.toString() == "Not Provided") {
+                        DOLDate = Year.toString();
+                    }
+                    else {
+                        if (Month.toString() != "") {
+                            if (Days.toString() != "") {
+                                DOLDate = Days.toString() + '-' + Month.toString() + '-' + Year.toString();
+                            }
+                            else {
+                                DOLDate = Month.toString() + '-' + Year.toString();
+                            }
+
+                        }
+                    }
+                }
+                else {
+                    DOLDate = Year.toString();
+                }
+
+
+                $("#88").val(DOLDate.toString());
+
+            }
+        });
+
+    </script>
+
+
+    <script>
+        function CopyPasteText() {
+            var CopyPaste_Text = $('#CopyPaste_Text').val().replace(/[\n\r]+/g, "•");;
+            if (CopyPaste_Text != '') {
+                var url = "/ProvidedInfo/GetCopyPasteText?Copytext=" + CopyPaste_Text + "&CheckId=Employment";
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    async: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.NameofCompanyorEmployer != null) {
+                            $('#OrganizationName').val(data.NameofCompanyorEmployer);
+
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '92',
+                                    Value: data.NameofCompanyorEmployer,
+                                    CheckFamilyRowid: 12
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+
+
+
+
+                        }
+                        if (data.NatureofEmployment != null) {
+                            $('#142').empty();
+                            $('#142').append("<option value='" + data.NatureofEmployment + "'>" + data.NatureofEmployment + "</option>");
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '142',
+                                    Value: data.NatureofEmployment,
+                                    CheckFamilyRowid: 12
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+
+                        }
+                        if (data.Currentlyworkingforthecompany != null) {
+                            $('#144').empty();
+                            $('#144').append("<option value='" + data.Currentlyworkingforthecompany + "'>" + data.Currentlyworkingforthecompany + "</option>");
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '144',
+                                    Value: data.Currentlyworkingforthecompany,
+                                    CheckFamilyRowid: 12
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+
+                        }
+                        if (data.EmployeeCode) {
+                            $('#91').val(data.EmployeeCode);
+
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '91',
+                                    Value: data.EmployeeCode,
+                                    CheckFamilyRowid: 12
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+                        }
+                        if (data.FromDate) {
+                            $('#88').val(data.FromDate);
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '88',
+                                    Value: data.FromDate,
+                                    CheckFamilyRowid: 12
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+                        }
+                        if (data.ToDate) {
+                            $('#89').val(data.ToDate);
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '89',
+                                    Value: data.ToDate,
+                                    CheckFamilyRowid: 12
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+                        }
+                        if (data.OfficialJobTitleHeld) {
+                            $('#87').val(data.OfficialJobTitleHeld);
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '87',
+                                    Value: data.OfficialJobTitleHeld,
+                                    CheckFamilyRowid: 12
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+                        }
+                        if (data.UAN != null) {
+                            $('#507').val(data.UAN);
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '507',
+                                    Value: data.UAN,
+                                    CheckFamilyRowid: 12
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+
+                        }
+                        if (data.ReasonforLeaving != null) {
+                            $('#94').val(data.ReasonforLeaving);
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '94',
+                                    Value: data.ReasonforLeaving,
+                                    CheckFamilyRowid: 12
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+                        }
+                        if (data.GrossAnnualIncome != null) {
+                            $('#85').val(data.GrossAnnualIncome);
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '85',
+                                    Value: data.GrossAnnualIncome,
+                                    CheckFamilyRowid: 12
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        //console.error(xhr, status, error);
+                    }
+                });
+            }
+        }
+    </script>
+}
+<style>
+    .btn {
+        padding: 10px 40px 10px 40px !important;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 22px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    input[type=text], textarea {
+        width: 100%;
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 0px;
+        resize: vertical;
+    }
+
+    select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 0px;
+        resize: vertical;
+    }
+
+    label {
+        padding: 12px 12px 12px 0;
+        display: inline-block;
+    }
+
+    input[type=submit] {
+        background-color: #04AA6D;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        float: right;
+    }
+
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+
+    .container {
+        border-radius: 5px;
+        /*background-color: #f2f2f2;*/
+        padding: 8px;
+        font-size: 1.2rem !important;
+    }
+
+    .col-25 {
+        float: left;
+        width: 25%;
+        margin-top: 6px;
+    }
+
+    .col-75 {
+        float: left;
+        width: 40%;
+        margin-top: 6px;
+        margin-left: 90px;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+
+    /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+    @@media screen and (max-width: 600px) {
+        .col-25, .col-75, input[type=submit] {
+            width: 100%;
+            margin-top: 0;
+        }
+    }
+
+    .ui-menu {
+        height: 200px;
+        overflow: scroll;
+        z-index: 999;
+        width: 470px;
+    }
+
+    /*///////////////////////////*/
+
+    .topdiv {
+        height: 300px;
+        overflow-y: scroll;
+        border-bottom: 2px solid #11c9b7;
+    }
+
+    .bottomdiv {
+        height: 300px;
+    }
+</style>
+<script>
+    $(".docShow").click(function () {
+        $("#top_div").addClass("topdiv");
+        $("#bottom_div").addClass("bottomdiv");
+    });
+</script>

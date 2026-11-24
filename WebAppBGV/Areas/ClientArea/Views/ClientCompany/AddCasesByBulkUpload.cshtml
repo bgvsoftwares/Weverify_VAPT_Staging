@@ -1,0 +1,200 @@
+﻿@model ViewModels.TempViewModel.ClientByBulkUploadViewModel
+@{
+    ViewBag.Title = "Upload Client Documents";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManageClientCompany", "ClientCompany", new { area = "ClientArea" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    string clientRowId = "";
+    clientRowId = @ViewBag.clientRowId;
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="submit-progress hidden">
+    <i class="fa fa-2x fa-spinner fa-spin"></i>
+    @*<label>Please wait...</label>*@
+</div>
+<div class="container-fluid form_container pt-3" style="height:78vh;">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 ps-5 client-edit-form">
+            @using (Html.BeginForm("AddCasesByBulkUpload", "ClientCompany", new { area = "ClientArea" }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.HiddenFor(model => model.ClientRowID)
+
+                @Html.AntiForgeryToken()
+                <div class="row row-xs align-items-center mg-b-20">
+                    <div class="col-md-3">
+                        @Html.LabelFor(model => model.ExcelFileName, htmlAttributes: new { @class = "form-label mg-b-0 fw-bolder" })
+                    </div>
+                    <div class="col-md-7 mg-t-5 mg-md-t-0">
+                        @Html.TextBoxFor(model => model.IdentityExcel, new { type = "file", onchange = "return file_XLS_Validation(this)", @class = "form-control dropify" })
+                        @Html.ValidationMessageFor(model => model.IdentityExcel, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row row-xs align-items-center mg-b-20">
+                    <div class="col-md-3">
+                        @Html.LabelFor(model => model.AttachDocName, htmlAttributes: new { @class = "form-label mg-b-0 fw-bolder" })
+                    </div>
+                    <div class="col-md-7 mg-t-5 mg-md-t-0">
+                        @Html.TextBoxFor(model => model.IdentityDoc, new { type = "file", onchange = "return file_Doc_Validation(this)", accept = ".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg", @class = "form-control dropify" })
+                        @Html.ValidationMessageFor(model => model.IdentityDoc, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row row-xs align-items-center mg-b-20">
+                    <div class="col-md-3">
+                        <label class="form-label mg-b-0 fw-bolder">Captcha<sup>*</sup></label>
+                    </div>
+                    <div class="col-md-7 mg-t-5 mg-md-t-0">
+                        <div class="fs-15 fw-bolder text-center" style="position: absolute;
+top: 0px;
+height: 39px;
+padding: 10px;
+background: #ccc;
+width: 90px;
+color: #031f30;">
+                            <span class="uncopy">@Html.DisplayFor(t => t.CapImage)</span>
+                        </div>
+                        @Html.TextBoxFor(t => t.CaptchaCodeText, new { @class = "form-control", tabindex = "12", placeholder = "Enter Captcha", @style = "padding-left: 100px;" })
+                        @Html.ValidationMessageFor(model => model.CaptchaCodeText, "", new { @class = "text-danger fs-12" })
+                        <input type="hidden" value="@Model.CapImageText" id="CapImageText" name="CapImageText" />
+                    </div>
+                </div>
+                <div class="row row-xs align-items-center justify-content-center pb-3 mt-4">
+                    <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+                        <button class="submit-btn btn-block rounded-0 m-1" type="submit" onclick="return validateForm(this,'Saving...')">SUBMIT</button>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                        <a class="ManageClientCompany m-1" href='@Url.Action("ManageClientCompany", "ClientCompany")'><i class="fa fa-folder-open me-1"></i>Manage Uploaded Docs</a>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                        <a class="ManageClientCompany" target="_blank" href='@Url.Action("CandidateUploadTemplateNew", "ClientCompany", new { area = "ClientArea" })' style="padding: 0.35rem 0.8rem 0.35rem 0.8rem!important;"><i class="fa fa-file-excel me-2"></i>Excel Template</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<style>
+    .uncopy {
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        color: #031F30 !important;
+    }
+</style>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+
+    <script>
+        function file_XLS_Validation(fileInput) {
+            var filePath = fileInput.value;
+            var allowedExtensions = /(\.xls|\.xlsx|\.XLS|\.XLSX)$/i;
+            if (!allowedExtensions.exec(filePath)) {
+                swal.fire('Please upload file having extensions .xls/.xlsx only.');
+                fileInput.value = '';
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        function file_Doc_Validation(fileInput) {
+             var fileName = fileInput.value.split('\\').pop();
+
+            // Block dangerous double extensions
+            var doubleExtensionPattern = /\.(php|asp|aspx|jsp|exe|bat|cmd|sh)\./i;
+
+            if (doubleExtensionPattern.test(fileName)) {
+                alert('Double extension files are not allowed.');
+                fileInput.value = '';
+                return false;
+            }
+
+            if ((fileName.match(/\./g) || []).length > 1) {
+                alert("Double extension files are not allowed.");
+                fileInput.value = '';
+                return false;
+            }
+
+            var filePath = fileInput.value;
+            var allowedExtensions = /(\.gif|\.GIF\.doc|\.docx|\.xls|\.xlsx|\.pdf|\.rtf|\.txt|\.jpeg|\.jpg|\.png|\.eml|\.email|\.msg|\.DOC|\.DOCX|\.XLS|\.XLSX|\.PDF|\.RTF|\.TXT|\.JPEG|\.JPG|\.PNG|\.EML|\.EMAIL|\.MSG|\.zip|\.ZIP|\.rar|\.RAR)$/i;
+            if (!allowedExtensions.exec(filePath)) {
+                swal.fire('Please upload file having extensions .doc/.gif/.GIF/.docx/.xls/.xlsx/.pdf/.rtf/.txt/.jpeg/.jpg/.png/.eml/.email/.msg/.DOC/.DOCX/.XLS/.XLSX/.PDF/.RTF/.TXT/.JPEG/.JPG/.PNG/.EML/.EMAIL/.MSG/.ZIP.zip only.');
+                fileInput.value = '';
+                return false;
+            } else {
+                return true;
+            }
+        }
+    </script>
+
+    <script>
+        function validateForm(ctl, msg) {
+
+            event.preventDefault();           
+            $(ctl).prop("disabled", true).val(msg);         
+            $("body").addClass("submit-progress-bg");           
+            $(".submit-progress").removeClass("hidden");           
+            setTimeout(function () {
+                $("form").submit();
+            }, 1);
+
+            return true;
+        }
+    </script>
+    <style>
+        .submit-progress-bg {
+            background-color: lightgray;
+            opacity: .5;
+        }
+
+        .submit-progress {
+            position: fixed;
+            top: 45%;
+            left: 60%;
+            height: 5em;
+            padding-top: 2.3em;
+            z-index: 1;
+            /* The following properties are the ones most likely to change */
+            width: 20em;
+            /* Set 'margin-left' to a negative number that is 1/2 of 'width' */
+            margin-left: -10em;
+            padding-left: 1.1em;         
+            color: white;
+            -webkit-border-radius: 0.4em;
+            -moz-border-radius: 0.4em;
+            border-radius: 0.4em;           
+        }
+
+        /* Changing style for spinner */
+        .submit-progress {
+            padding-top: 0em;
+            width: 19em;
+            margin-left: -11.5em; /* Set to a negative number that is 1/2 of the width */
+        }
+
+            .submit-progress i {
+                margin-right: 0.5em;
+                color: black
+            }
+
+        .hidden {
+            display: none;
+        }
+
+        .fa-2x {
+            font-size: 4em;
+        }
+    </style>
+
+
+}
+
+

@@ -1,0 +1,399 @@
+﻿@{Layout = null; }
+@*@model IEnumerable<ViewModels.MonthelyProjection>*@
+@model ViewModels.ClientInfoListPagedModel
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/colorbox.css" rel="stylesheet" />
+<link href="~/Content/Site.css" rel="stylesheet" />
+
+<script src="~/Scripts/jquery-3.7.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/modernizr-2.8.3.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+
+@{
+    ViewBag.Title = "Invoice Updation";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+    //Layout = "~/Areas/ClientArea/Views/Shared/_LayoutWoutNav.cshtml";
+}
+
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitleWoutNav") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row"><div class="col-md-12">&nbsp;</div></div>
+<style>
+    .column {
+        float: left;
+        width: 50%;
+    }
+
+    .connected-sortable {
+        margin: 0 auto;
+        list-style: none;
+        width: 70%;
+    }
+
+    li.draggable-item {
+        width: inherit;
+        padding: 15px 20px;
+        background-color: #f5f5f5;
+        -webkit-transition: transform 0.25s ease-in-out;
+        -moz-transition: transform 0.25s ease-in-out;
+        -o-transition: transform 0.25s ease-in-out;
+        transition: transform 0.25s ease-in-out;
+        -webkit-transition: box-shadow 0.25s ease-in-out;
+        -moz-transition: box-shadow 0.25s ease-in-out;
+        -o-transition: box-shadow 0.25s ease-in-out;
+        transition: box-shadow 0.25s ease-in-out;
+    }
+
+        li.draggable-item:hover {
+            cursor: pointer;
+            background-color: #eaeaea;
+        }
+        /* styles during drag */
+        li.draggable-item.ui-sortable-helper {
+            background-color: #e5e5e5;
+            -webkit-box-shadow: 0 0 8px rgba(53, 41, 41, 0.8);
+            -moz-box-shadow: 0 0 8px rgba(53, 41, 41, 0.8);
+            box-shadow: 0 0 8px rgba(53, 41, 41, 0.8);
+            transform: scale(1.015);
+            z-index: 100;
+        }
+
+        li.draggable-item.ui-sortable-placeholder {
+            background-color: #ddd;
+            -moz-box-shadow: inset 0 0 10px #000000;
+            -webkit-box-shadow: inset 0 0 10px #000000;
+            box-shadow: inset 0 0 10px #000000;
+        }
+
+    #myInput {
+        background-image: url('/css/searchicon.png');
+        background-position: 10px 12px;
+        background-repeat: no-repeat;
+        width: 70%;
+        font-size: 16px;
+        padding: 5px 20px 12px 40px;
+        border: 1px solid #ddd;
+        margin-bottom: 12px;
+    }
+
+    .grid {
+        height: 400px;
+        overflow: scroll;
+    }
+
+    .btn-link {
+        color: rgba(53, 41, 41, 0.8);
+        font-size: 12px;
+        padding: 7.5% 4.5%;
+    }
+
+    .name {
+        width: 30px;
+    }
+
+    .num {
+        width: 10px;
+    }
+</style>
+<div class="panel panel-default">
+    <div class="panel-body">
+        @using (Html.BeginForm("InvoiceUpdation", "Billing", FormMethod.Get))
+        {
+            <div style="text-align:center" class="col-md-12">
+                <!--List bind backend-->
+
+                <div class="column col-md-4">
+                    @*<h4 class="text-center">Drag From Here</h4>*@
+                    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
+                    <ul class="connected-sortable droppable-area1" style="height:100px;overflow-y:scroll;" id="myUL">
+                        @if (ViewBag.ClientList != null)
+                        {
+                            foreach (var item in ViewBag.ClientList)
+                            {
+                                if (item.ClientName != null)
+                                {
+                                    <li class="draggable-item" id="@item.ClientId"><a href="#">@item.ClientName</a></li>
+                                }
+                            }
+                        }
+                    </ul>
+                </div>
+
+                <div class="col-md-2"></div>
+                @Html.Label("", "Month: ")
+                @Html.DropDownList("Month", new List<SelectListItem>
+{ new SelectListItem{Text="January", Value="January"},
+new SelectListItem{Text="February", Value="February"},
+new SelectListItem{Text="March", Value="March"},
+new SelectListItem{Text="April", Value="April"},
+ new SelectListItem{Text="May", Value="May"},
+  new SelectListItem{Text="June", Value="June"},
+   new SelectListItem{Text="July", Value="July"},
+    new SelectListItem{Text="August", Value="August"},
+     new SelectListItem{Text="September", Value="September"},
+     new SelectListItem{Text="October", Value="October"},
+     new SelectListItem{Text="November", Value="November"},
+     new SelectListItem{Text="December", Value="December"},
+                              },
+         "-- Select Month --",
+         new { @class = "ddlstatus" })
+                @Html.Label("", "Annexure No: ")
+                @Html.DropDownList("BillingAnnexureNo", new List<SelectListItem>
+{
+new SelectListItem{Text="1", Value="1"},
+new SelectListItem{Text="2", Value="2"},
+new SelectListItem{Text="3", Value="3"},
+new SelectListItem{Text="4", Value="4"}}, "-- Select --", new { @class = "ddlstatus" })
+                <div class="column col-md-4">                    
+                    <ul class="connected-sortable droppable-area2" style="height:100px;overflow-y:scroll;" id="myDiv"></ul>                  
+                    <input type="hidden" id="ClientIds" name="ClientIds" value="@Model.ClientRowId" />
+                    @if (Model.GetBillingCaseApproveDetail != null && Model.GetBillingCaseApproveDetail.Count() > 0)
+                    {                       
+                    }
+                    <input class="btn btn=info" id="getDetails" type="submit" name="Command" value="Get Detail" />
+                </div>
+
+                @if (Model.GetBillingCaseApproveDetail != null)
+                {
+                    <br />
+
+                    if (Model.GetBillingCaseApproveDetail.Count() > 0 && Enumerable.Count(ViewBag.BillingInvoiceNo) > 0)
+                    {
+                        @Html.DropDownList("ddlInvoiceNo",
+                 new SelectList(ViewBag.BillingInvoiceNo, "InvoiceId", "InvoiceNo"),
+                 "-- Select Invoice -- ",
+                 new { @class = "ddlInvoice" })
+                        <input class="btn btn=info" id="InvoiceUpdate" type="submit" name="Command" value="Invoice Update" />
+                    }
+
+                }
+
+
+            </div>
+        }
+    </div>
+</div>
+
+<div class="row">
+
+    <div style="text-align:center" class="col-md-12">
+       
+
+
+        <div class="col-md-2"></div>
+
+    </div>
+    <div class="row">
+        <div>
+
+            @if (Model.GetBillingCaseApproveDetail != null)
+            {
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div style="overflow-y:auto; margin-top:20px; width:100%">
+                                <input type="hidden" name="getID" id="getId" />
+                                @*<h3 class="text-center">Annexure Process</h3><hr/>*@
+                                @*@Html.Partial("MonthelyProjection", Model)*@
+                                @if (Model.GetBillingCaseApproveDetail != null)
+                                {
+                                    <div class="grid">
+
+                                        @{
+                                            WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                            grid.Bind(Model.GetBillingCaseApproveDetail, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                                        }
+                                        @grid.GetHtml(
+                                                     htmlAttributes: new { id = "grid", @class = "table" },
+                                                     headerStyle: "thead-inverse",
+                                                     rowStyle: "ordertxt",
+                                                     footerStyle: "custpaging",
+                                                     mode: WebGridPagerModes.All,
+                                                     columns: new[]
+                                                     {
+
+grid.Column(header: "No.", style:"name", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                    
+grid.Column(columnName: "BillingCaseStatus", header: "Case Status", canSort: false, style:"name"),
+
+grid.Column(columnName: "TotalPrice", header: "Total Price", canSort: false, style:"name"),
+                   
+grid.Column(columnName: "ManuallyModifiedRemarks", header: "Remark", canSort: false, style:"name"),
+grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"name"),
+grid.Column(columnName: "CompanyRefNo", header: "Securitas ID", canSort: false, style:"name"),
+grid.Column(columnName: "AnnexureNo", header: "AnnexureNo", canSort: false, style:"name"),
+grid.Column(columnName: "BillingStatus", header: "BillingStatus", canSort: false, style:"name")})
+
+
+                                    </div>
+                                }
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            }
+        </div>
+    </div>
+
+</div>
+
+<script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $(init);
+        function init() {
+            $(".droppable-area1, .droppable-area2")
+                .sortable({
+                    connectWith: ".connected-sortable",
+                    stack: ".connected-sortable ul"
+                })
+                .disableSelection();
+
+        };
+
+        //$("#getDetails").click(function () {
+        //    var ids = $("#myDiv")
+        //        .find("li") //Find the spans
+        //        .map(function () { return this.id; }) //Project Ids
+        //        .get().join(",");
+        //    $('#ClientIds').val(ids);
+
+        //});
+
+
+        $(".ddlstatus").change(function () {
+
+            var dataRow = $(this).closest("tr");
+            dataRow.find("td:eq(3)").find("textarea").attr("disabled", false);
+            dataRow.find("td:eq(2)").find("input").attr("disabled", false);
+            //var billedValue = dataRow.find("td:eq(2)").find("input").val();
+            //var BillingCaseDetailsID = dataRow.find("td:eq(1)").find("input").val();
+            //alert(BillingCaseDetailsID);
+            //var col5 = dataRow.find("td:eq(6)").text();
+            //alert(col5);
+            //$("#getId").val(col5);
+            //alert(billedValue);
+        });
+
+        $(".Update").click(function () {
+            var dataRow = $(this).closest("tr");
+            //dataRow.find("td:eq(4)").find("textarea").attr("disabled", false);
+            var billedValue = dataRow.find("td:eq(2)").find("input").val();
+            var BillingCaseDetailsID = dataRow.find("td:eq(1)").find("input").val();
+            var Remark = dataRow.find("td:eq(3)").find("textarea").val();
+            var BillingCaseStatus = dataRow.find("td:eq(1)").find("option:selected").text();
+            var CompanyRefNo = dataRow.find("td:eq(6)").text();
+            //alert(BillingCaseDetailsID);
+
+
+            $.ajax({
+                type: "Post",
+                data: { BillingCaseDetailsID: BillingCaseDetailsID, billedValue: billedValue, Remark: Remark, status: BillingCaseStatus },
+                url: "/Billing/UpdateBillingCaseDetails",
+                success: function (msg) {
+                    window.location.reload();
+                    dataRow.find("td:eq(4)").find("textarea").attr("disabled", true);
+                    dataRow.find("td:eq(2)").find("input").attr("disabled", true);
+
+                }
+            });
+        });
+    });
+
+
+    $("#getDetails").click(function () {
+        var ids = $("#myDiv")
+            .find("li") //Find the spans
+            .map(function () { return this.id; }) //Project Ids
+            .get().join(",");
+        $('#ClientIds').val(ids);
+        var month = $("#Month");
+        var clientId = $("#ClientIds").val();
+        alert(clientId);
+        //var year = $("#BillingInvoiceGenerated_Year");
+        //var ClientRowId = $("#BillingInvoiceGenerated_ClientRowId");
+        //var GST = $("#BillingInvoiceGenerated_GST");
+        //var InvoiceNo = $("#BillingInvoiceGenerated_InvoiceNo");
+        //var AnnexureNo = $("#BillingInvoiceGenerated_AnnexureNo");
+        //var InvoiceAmount = $("#BillingInvoiceGenerated_InvoiceAmount");
+        //var TotalAmount = $("#BillingInvoiceGenerated_TotalAmount");
+
+        //
+        //alert(AnnexureNo);
+
+
+        if (clientId == "") {
+
+            alert("Please select client and get detail!");
+            return false;
+        }
+
+
+        if (month.val() == "") {
+            //If the "Please Select" option is selected display error.
+            alert("Please select Month!");
+            return false;
+        }
+    });
+
+
+    $("#Export").click(function () {
+        var BillingAnnexureNo = $("#BillingAnnexureNo");
+        if (BillingAnnexureNo.val() == "") {
+            //If the "Please Select" option is selected display error.
+            alert("Please select Annexure No!");
+            return false;
+        }
+        return true;
+    });
+
+    $("#AnnexureClosed").click(function () {
+        var BillingAnnexureNo = $("#BillingAnnexureNo");
+        if (BillingAnnexureNo.val() == "") {
+            //If the "Please Select" option is selected display error.
+            alert("Please select Annexure No!");
+            return false;
+        }
+        return true;
+    });
+
+    function myFunction() {
+
+        var input, filter, ul, li, a, i, txtValue;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        ul = document.getElementById("myUL");
+        li = ul.getElementsByTagName("li");
+        for (i = 0; i < li.length; i++) {
+            a = li[i].getElementsByTagName("a")[0];
+            txtValue = a.innerHTML;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
+            }
+        }
+
+
+
+    }
+
+
+
+
+
+
+</script>

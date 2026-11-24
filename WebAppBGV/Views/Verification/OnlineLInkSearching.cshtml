@@ -1,0 +1,185 @@
+@{
+    ViewBag.Title = "Online Link Searching";
+
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+
+        <div class="row" style="margin-top:10px">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Add</button>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+            <div class="col-md-12">
+                @{
+
+                    WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                    grid.Bind(Model.onlineLinkSearching, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                }
+                @grid.GetHtml(
+                      htmlAttributes: new { id = "grid", @class = "table" },
+                      headerStyle: "thead-inverse",
+                      rowStyle: "ordertxt",
+                      footerStyle: "custpaging",
+                      mode: WebGridPagerModes.All,
+                      columns: new[]
+                          {
+                              grid.Column(header: "No.", style: "td-2", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                              grid.Column(columnName: "CollageName", header: "Collage Name", canSort: false, style: "td-2"),
+                              grid.Column(columnName: "UniversityName", header: "University Name", canSort: false, style: "td-2"),
+                              grid.Column(columnName: "CourseName", header: "Course Name", canSort: false, style: "td-2"),
+                              grid.Column(columnName: "YearOfPassing", header: "Year Of Passing", canSort: false, style: "td-2"),
+                              grid.Column(columnName: "RollNo", header: "Roll No", canSort: false, style: "td-2"),
+                              grid.Column(header: "URL",style: "td-2",format: item => new HtmlString(string.Format("<a href='{0}' class='link-primary' target='_blank'>View Link</a>", item.Link)) ),
+                              grid.Column(header: "Action", style: "td-2", format: item => new HtmlString(string.Format("<button data-id='{0}' type='button' class='edit-btn' data-toggle='modal' data-target='#exampleModal' style='text-decoration: none; background-color: transparent; border-style: hidden; color: #11C9B7; font-size: 13px; font-weight: 600;'>Edit</button>", item.Id))),
+
+                          }
+                      )
+                <div class="total-record">Total Records: @Model.TotalRecords</div>
+                <br />
+                <br />
+                <br />
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Detail</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @using (Html.BeginForm("OnlineLInkSearching", "Verification", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <div class="modal-body">
+                    @Html.AntiForgeryToken()
+
+                    <input id="collageid" type="hidden" value="" name="collageid">
+
+                    <div class="container">
+                        <div class="form-group row">
+                            <div class="col-4">
+                                <label class="control-label" for="collagename">Collage Name :</label>
+                                <input class="form-control" type="text" id="collagename" name="collagename" value="" />
+                            </div>
+                            <div class="col-4">
+                                <label class="control-label" for="universityname">Univarsity Name :</label>
+                                <input class="form-control" type="text" id="universityname" name="universityname" value="" />
+                            </div>
+                            <div class="col-4">
+                                <label class="control-label" for="coursename">Course Name :</label>
+                                <input class="form-control" type="text" id="coursename" name="coursename" value="" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-4">
+                                <label class="control-label" for="yearofpassing">Year Of Passing :</label>
+                                <input class="form-control" type="number" id="yearofpassing" name="yearofpassing" value="" />
+                            </div>
+                            <div class="col-4">
+                                <label class="control-label" for="rollno">Roll No :</label>
+                                <input class="form-control" type="text" id="rollno" name="rollno" value="" />
+                            </div>
+                            <div class="col-4">
+                                <label class="control-label" for="resultsource">Result Source :</label>
+                                <input class="form-control" type="text" id="resultsource" name="resultsource" value="" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-4">
+                                <label class="control-label" for="convocation">Convocation / FInal Sem. :</label>
+                                <input class="form-control" type="text" id="convocation" name="convocation" value="" />
+                            </div>
+                            <div class="col-4">
+                                <label class="control-label" for="year">Year :</label>
+                                <input class="form-control" type="number" id="year" name="year" value="" />
+                            </div>
+                            <div class="col-4">
+                                <label class="control-label" for="link">Link :</label>
+                                <input class="form-control" type="text" id="link" name="link" value="" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" type="submit" name="action">Save changes</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<style>
+    select {
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+    }
+
+        select:focus {
+            outline: none;
+        }
+</style>
+
+<script>
+    $(document).ready(function () {
+        $('button[data-target=".bd-example-modal-lg"]').on('click', function () {
+            $('#collageid').val('');
+            $('#collagename').val('');
+            $('#universityname').val('');
+            $('#coursename').val('');
+            $('#yearofpassing').val('');
+            $('#rollno').val('');
+            $('#resultsource').val('');
+            $('#convocation').val('');
+            $('#year').val('');
+            $('#link').val('');
+
+            $('#exampleModalLabel').text('Add Detail');
+        });
+
+        $('.edit-btn').on('click', function () {
+            var itemId = $(this).data("id");
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetOnlineLInkSearching", "Verification")',
+                data: { id: itemId },
+                success: function (response) {
+                    var data = response.Data;
+                    var isEdit = response.IsEdit;
+
+                    $('#collageid').val(data.Id);
+                    $('#collagename').val(data.CollageName);
+                    $('#universityname').val(data.UniversityName);
+                    $('#coursename').val(data.CourseName);
+                    $('#yearofpassing').val(data.YearOfPassing);
+                    $('#resultsource').val(data.ResultScore);
+                    $('#rollno').val(data.RollNo);
+                    $('#convocation').val(data.Convocation);
+                    $('#year').val(data.Year);
+                    $('#link').val(data.Link);
+
+                    if (isEdit) {
+                        $('#exampleModalLabel').text('Edit Detail');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('Error fetching item data. Please try again.');
+                }
+            });
+        });
+    });
+</script>

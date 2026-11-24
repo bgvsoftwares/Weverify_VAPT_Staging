@@ -1,0 +1,169 @@
+﻿@using WebAppBGV.CommonMethods;
+@{
+    string Clientrowid = Convert.ToString(ViewData["clientRowId"]);
+}
+
+
+<table width="100%">
+    <tr>
+        <td>
+            <div class="personal-details-head"><i class="fa fa-file-text-o" aria-hidden="true"></i> Case Document List :</div>
+            @if ((Session["ClientRowID"] == "317" || Session["ClientRowID"] == "327") || (Clientrowid == "317" || Clientrowid == "327"))
+            {
+                <button type="button" id="btnDownloadZipall" class="btn btn-default">
+                    Download Zip
+                </button>
+
+            }
+        </td>
+    </tr>
+    <tr>
+        <td height="2"></td>
+    </tr>
+    <tr>
+        <td valign="top">
+           
+            <table class="table">
+                <thead class="thead-inverse">
+                    <tr>
+                        <th class="top-head">Document Type</th>
+                        <th class="top-head">File Name</th>
+                        <th class="top-head">Upload From</th>
+                        <th class="top-head">Remarks</th>
+                        <th class="top-head">Upload Date</th>
+                        <th class="top-head">Delete</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @if (Convert.ToInt32(ViewBag.TempPersonalRowID) > 0)
+                    {
+                        <tr>
+                            <td class="name">BGV Candidate Details</td>
+                            <td class="filename"><a target="_blank" href='@Url.Content("~/ProvidedInfo/CandidateInformation?PersonalRowID="+@ViewBag.TempPersonalRowID)'>Candidate Details</a></td>
+                            <td class="name">Provided</td>
+                            <td class="name">-</td>
+                            <td class="name">-</td>
+                           
+                        </tr>
+                    }
+                    @if (ViewBag.CaseDocList != null)
+                    {
+
+                        foreach (var item in ViewBag.CaseDocList)
+                        {
+                        <tr>
+                            <td class="name">@item.DocumentType</td>
+                            @if (item.DocumentType == "Case Document by API")
+                            {
+                                <td class="filename"><a target="_blank" href='@Url.Content("https://api.weverifyglobal.com/CaseDocsFromAPI?fileName=" + @item.FileName)'>@item.FileName</a></td>
+                            }
+                            else if (item.DocumentType == "Uploaded By Client")
+                            {
+                                var prid = clsCommonMethods.PEncrypt(item.FileName.ToString());
+                                var CompanyRefNo = clsCommonMethods.PEncrypt(item.DocumentUploadFrom.ToString());
+                                var Status = clsCommonMethods.PEncrypt("Pending");
+                                <td class="filename"><a target="_blank" href='@Url.Content("~/ProvidedInfo/GetClientDoc?ImageName=" + prid+"&CompanyRefNo="+CompanyRefNo+"&Casestatus="+Status)'>@item.FileName</a></td>
+                            }
+                            else if (item.DocumentType == "Upload CV")
+                            {
+                                <td class="filename"><a target="_blank" href='~/Uploads/@item.FileName'>@item.FileName</a></td>
+                            }
+                            else if (item.DocumentType == "DOC Report")
+                            {
+                                <td class="filename"><a target="_blank" href='@Url.Content("~/Documents/CandidateReport/" + @item.FileName)'>@item.FileName</a></td>
+                            }
+                            else if (item.DocumentType == "Letter of Authorization (Handsigned)")
+                            {
+                                <td class="filename"><a target="_blank" href='~/Uploads/@item.FileName'>@item.FileName</a></td>
+                            }
+                            else if (item.DocumentType == "Upload Candidate Document")
+                            {
+                                <td class="filename"><a target="_blank" href='~/Uploads/@item.FileName'>@item.FileName</a></td>
+                            }
+                            else if (item.DocumentType == "Upload Aadhar card only")
+                            {
+                                <td class="filename"><a target="_blank" href='~/Uploads/@item.FileName'>@item.FileName</a></td>
+                            }
+                            else if (item.DocumentType == "Upload Pan card only")
+                            {
+                                <td class="filename"><a target="_blank" href='~/Uploads/@item.FileName'>@item.FileName</a></td>
+                            }
+                            else if (item.DocumentType == "Digital LOA")
+                            {
+                                <td class="filename"><a target="_blank" href='@Url.Content("~/ReportQC/GetDigitalLOAByPersonalRowID?PersonalRowID=" + item.PersonalRowID)'>@item.FileName</a></td>
+                            }
+
+                            else if (item.DocumentType == "Candidate Photo")
+                            {
+                                <td class="filename"><a target="_blank" href='@Url.Content(item.FileName)'>Candidate Photo</a></td>
+                            }
+
+                            else
+                            {
+                                if (item.VerifiedUploadRowID == 0)
+                                {
+                                    var prid = clsCommonMethods.PEncrypt(item.PersonalRowID.ToString());
+                                    <td class="filename"><a target="_blank" href='@Url.Content("~/ClientArea/Home/CandidateDetailsPdf?PID=" + prid)'>@item.FileName</a></td>
+                                }
+                                else
+                                {
+                                    <td class="filename"><a target="_blank" href='@Url.Content("~/Documents/CandidateDocuments/ProvidedDocuments/" + @item.FileName)'>@item.FileName</a></td>
+                                }
+                            }
+
+                            <td class="name">@item.DocumentUploadFrom</td>
+                            <td class="name">@item.Remarks</td>
+                            <td class="name">@item.UploadDate</td>
+
+                            @{
+                                if (item.VerifiedUploadRowID > 0)
+                                {
+                                    string DeleteLink = string.Format("<a href=\"#\" id=\"Delete_{0}\" class=\"delete\">{1}</a>", item.VerifiedUploadRowID, "Delete");
+                                    <td class="name">@Html.Raw(DeleteLink)</td>
+                                }
+
+                            }
+
+
+                        </tr>
+                        }
+                    }
+                    <tr>
+                        <td height="12" colspan="5"></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </td>
+    </tr>
+</table>
+
+<script>
+    $("#btnDownloadZipall").click(function () {
+
+        $.ajax({
+            url: '@Url.Action("DownloadZipAll", "Verification")',
+            type: 'GET',
+            data: {
+                PersonalRowID: '@ViewBag.PersonalRowid'
+            },
+            success: function (response) {
+
+                if (response.success === false) {
+                    alert(response.message);
+                }
+                else {
+                    window.location =
+                        '@Url.Action("DownloadZipAll", "Verification")'
+                    + '?PersonalRowID=@ViewBag.PersonalRowid';
+                }
+            },
+            error: function () {
+                alert("Error downloading zip file.");
+            }
+        });
+
+    });
+</script>

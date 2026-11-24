@@ -1,0 +1,375 @@
+﻿@using ViewModels.ProvidedInfoViewModel;
+@model ViewModels.ProvidedInfoViewModel.AddTempPQVerifiedUploadDocViewModel
+@using WebAppBGV.CommonMethods;
+
+@{
+    ViewBag.Title = "Upload Document ";
+    Layout = "~/Areas/Candidate/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    //string hyperLink = Html.ActionLink("linkTitle", "backtoAddCriminalInfo", "Home", new { PersonalRowIDs = Model.PersonalRowID, ChFamilRowIds = Model.CheckFamilyRowID , subCheckIds = Model.SubCheckRowID}, new { @class = "headerbacklink" }).ToString();
+    // ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    string msg = "";
+    if (Request.QueryString["ErrorMsg"] != null)
+    {
+        //hyperLink = Html.ActionLink("linkTitle", "AllocatedDataEntryJob", "ProvidedInfo", new { CaseStatus = Request.QueryString["Casestatus"].ToString() }, new { @class = "headerbacklink" }).ToString();
+        msg = Request.QueryString["ErrorMsg"].ToString();
+    }
+}
+
+@if (ViewBag.ErrorMsg != null)
+{
+    string err = @ViewBag.ErrorMsg.ToString();
+    string[] err2 = err.Split(',');
+    <script>
+        Swal.fire({
+                    icon: 'info',
+                    title: 'information',
+                    html: '<div class="errormsg" style="text-align:left;"><ol type="1">@foreach (String item in err2){<li> @item</li> }</ol></div>'
+                    })
+    </script>
+}
+
+@if (TempData["SuccessMsg"] != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'success',
+            html:'<div class="errormsg">@TempData["SuccessMsg"].ToString()</div>',
+        })
+    </script>
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftCandidateCaseInfoProvided") }
+
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="container-fluid form_container p-0">
+    <div class="row row-sm ms-0">
+        <div class="col-xl-12 col-lg-12 col-md-12 ps-0">
+            <div class="card-header white-text title_bg">
+                <div class="d-flex">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-xm-12">
+                        <p class="text-white m-0">@ViewBag.UploadPageHeader</p>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-xm-12 text-end">
+                        <p class="text-white m-0"> <a class="headerbacklink" href="/Candidate"><i class="fa fa-reply" aria-hidden="true"></i> Back</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row row-sm ms-0 ps-2 pt-2 pe-5">
+        @using (Html.BeginForm("UploadCandidateDocumentUpdated", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.PersonalRowID)
+            @Html.HiddenFor(model => model.SubCheckRowID)
+            @Html.HiddenFor(model => model.CheckFamilyRowID)
+            @Html.HiddenFor(model => model.ClientRowID)
+            <div class="form-horizontal">
+                @if (Model.ClientRowID == 679 && Model.CheckFamilyRowID == 12)
+                {
+                    <div class="row row-sm p-2 mb-3">
+                        <div class="col-md-12">
+                            <h6 class="fw-bold">
+                                Note:- Please upload supporting bank statement/ Form 16 for the respective employment duration to validate the employment.
+                            </h6>
+                        </div>
+                    </div>
+                }
+                <div class="row row-sm p-2 mb-3">
+                    <div class="col-md-12">
+                        <h6 class="fw-bold">
+                            Note:- All document to be clubbed and uploaded as one attachment. No multiple documents attached.
+                        </h6>
+                    </div>
+                </div>
+                <div class="container" id="dvUplodDoc">
+
+                </div>
+                @Html.Hidden("UploadHid", null)
+                <div class="row row-sm">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mt-3 d-flex align-items-center">
+                        @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "form-label mg-b-0 fw-bolder" })
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 mt-3">
+                        @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @rows = "3", placeholder = "description..." })
+                    </div>
+                </div>
+                <div class="row row-sm justify-content-center d-flex mt-3 mb-3">
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 text-center">
+                        <input class="submit-btn ps-5 pe-5" type="submit" id="Submitbtn" value="Submit" />
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 text-center">
+                        @Html.ActionLink("Back", "backtoAddCriminalInfo", "Home", new { PersonalRowIDs = clsCommonMethods.PEncrypt(Model.PersonalRowID.ToString()), ChFamilRowIds = clsCommonMethods.PEncrypt(Model.CheckFamilyRowID.ToString()), subCheckIds = clsCommonMethods.PEncrypt(Model.SubCheckRowID.ToString()), clientId = clsCommonMethods.PEncrypt(Model.ClientRowID.ToString()) }, new { @class = "ManageClientCompany" })
+                    </div>
+                </div>
+            </div>
+
+        }
+    </div>
+    @if (ViewBag.GetDocumentListCandidate != null && ViewBag.GetDocumentListCandidate.Count > 0)
+    {
+
+        <div class="row">
+            <div class="col-xl-12 mb-5 mt-1 ps-4 pe-4">
+                <div class="card h-auto rounded-0 shadow-none" style="background: #ECF0FA !important;">
+                    <div class="card-header p-2 rounded-0" style="background: #ECF0FA !important;">
+                        <h5 class="tx-14">Uploded File List :</h5>
+                    </div>
+                    <div class="card-body p-3">
+                        @foreach (var item in ViewBag.GetDocumentListCandidate)
+
+                        {
+                            <div class="row shadow p-3 mb-2 bg-body-tertiary rounded bg-white">
+                                <div class="col-md-7 d-flex">
+                                    <h4 class="fw-bold tx-12">@item.DocumentType : </h4>
+                                    <h4 class="tx-12 ms-2">@item.FileName</h4>
+                                </div>
+                                <div class="col-md-2 d-flex">
+                                    <a target="_blank" href='@Url.Content("~/Documents/CandidateDocuments/ProvidedDocuments/" + @item.FileName)'><i class="fa fa-eye tx-14" style="color:#8D5FFF;"></i></a>
+                                    @Html.Raw(string.Format("<a href=\"#\" id=\"Delete_{0}_{1}\" class=\"deletetempdoc\"><i class='fa fa-trash tx-14 ms-3' style='color:#Fc273F;'></i></a>", @item.VerifiedUploadRowID, @item.SubCheckRowID))
+                                </div>
+                                <div class="col-md-3 d-flex">
+                                    <h4 class="tx-12 ms-2">@item.UploadDate</h4>
+                                </div>
+                            </div>
+                        }
+                        @*<table class="table mb-0 js-serial table-striped m-auto">
+                                <thead class="thead-inverse">
+                                    <tr>
+                                        <th class="top-head">Document Type</th>
+                                        <th class="top-head">Remarks</th>
+                                        <th class="top-head">Upload Date</th>
+                                        <th class="top-head">Document</th>
+                                        <th class="top-head">Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in ViewBag.GetDocumentListCandidate)
+
+                                    {
+                                        <tr>
+                                            <td class="name document-name">@item.DocumentType</td>
+                                            <td class="name">@item.Remarks</td>
+                                            <td class="name">@item.UploadDate</td>
+                                            <td class="filename"><a target="_blank" href='@Url.Content("~/Documents/CandidateDocuments/ProvidedDocuments/" + @item.FileName)'>View</a></td>
+                                            <td class="delete col-md-1">
+                                                @Html.Raw(string.Format("<a href=\"#\" id=\"Delete_{0}_{1}\" class=\"deletetempdoc\">Delete</a>", @item.VerifiedUploadRowID, @item.SubCheckRowID))
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<style>
+    .form-check-input + label:after {
+        background-color: #031F30 !important;
+        color: #FFF;
+    }
+
+    .form-check-input {
+        width: 1.2em;
+        height: 1.2em;
+        accent-color: #031F30 !important;
+    }
+
+        .form-check-input:checked {
+            background-color: #031F30;
+            border-color: #031F30;
+        }
+
+        .form-check-input:focus {
+            border-color: #031F30;
+            outline: 0;
+            box-shadow: 0 0 0 .25rem rgba(3, 31, 48, 0.24);
+        }
+</style>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery-ui-1.14.1.min.js")'></script>
+    <script>
+        function fileValidation(fileInput) {
+            var filePath = fileInput.value;
+            var allowedExtensions = /(\.gif|\.GIF\.doc|\.docx|\.xls|\.xlsx|\.pdf|\.rtf|\.txt|\.jpeg|\.jpg|\.png|\.eml|\.email|\.msg|\.DOC|\.DOCX|\.XLS|\.XLSX|\.PDF|\.RTF|\.TXT|\.JPEG|\.JPG|\.PNG|\.EML|\.EMAIL|\.MSG|\.zip|\.ZIP|\.rar|\.RAR)$/i;
+            if (!allowedExtensions.exec(filePath)) {
+                alert('Please upload file having extensions .doc/.gif/.GIF/.docx/.xls/.xlsx/.pdf/.rtf/.txt/.jpeg/.jpg/.png/.eml/.email/.msg/.DOC/.DOCX/.XLS/.XLSX/.PDF/.RTF/.TXT/.JPEG/.JPG/.PNG/.EML/.EMAIL/.MSG/.ZIP.zip only.');
+                fileInput.value = '';
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+    </script>
+    <script type="text/javascript">
+
+        $(".deletetempdoc").on("click", function () {
+            // alert($('#hdnTeamMemberRowID').val());
+
+          var str = $(this).attr("id").split("_");
+          var id = str[1];
+          SubCheckRowID = str[2];
+            var flag = confirm('Do you want to Delete the Document ?');
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("DeleteCandidateUploadedTempDocs", "Home")',
+                    data: { "id": id, "SubCheckRowID": SubCheckRowID},
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (result) {
+                        if (result == true) {
+                            alert("Document Deleted Successfully!!");
+                             window.location.reload();
+                        }
+                        else
+                        {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+        });
+
+        @*$(".deletetempdoc").on("click", function () {
+             Swal.fire({
+                 title: 'Do you want to Delete the Document ?',
+                 //showDenyButton: true,
+                 showCancelButton: true,
+                 confirmButtonText: 'Yes, Delete it!',
+                 denyButtonText: 'Cancel !',
+             }).then((result) => {
+                 /* Read more about isConfirmed, isDenied below */
+                 if (result.isConfirmed) {
+                     var str = $(this).attr("id").split("_");
+                     var id = str[1];
+                     if (id != "") {
+                         $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("DeleteCandidateUploadedTempDocs", "Home")',
+                    data: { "id": id, "SubCheckRowID": SubCheckRowID},
+                    dataType: "json",
+                             success: function (data) {
+                                 if (data.result == true) {
+                                     Swal.fire("Document Deleted Successfully!!!");
+                                     setTimeout(function () { window.location.replace("ManageClientHrApprovalCases"); }, 3000);
+                                 }
+                                 else {
+                                     Swal.fire('There is some error');
+                                 }
+                             }
+                         });
+                     }
+                 }
+                 else if (result.isDenied) {
+                     Swal.fire('Changes are not saved', '', 'info')
+                 }
+             })
+         });*@
+    </script>
+    <script>
+        $(document).ready(function () {
+            debugger
+        if ($("#SubCheckRowID").val() != 0) {
+            var url1 = "/ProvidedInfo/GetDocumentTypeListBySubCheckID/" + $("#SubCheckRowID").val();
+            $.ajax({
+                url: url1,
+                type: 'GET',
+                async: false,
+                dataType: 'json',
+                success: function (allData) {
+                    if (allData != null && allData != "") {
+                        $('#dvChksPcks').show();
+                        var items = '';
+                        jQuery.each(allData, function (index, allData) {
+                            //items += "<div  class='col-sm-12'><div  class='col-sm-4'><label class='col-md-3 branch rowname control-label'>" + allData.Text + " :</label></div><div  class='col-sm-4'><input type='checkbox' name='chkPkgChks'  value=" + allData.Value + " ></div><div class='col-sm-4'><input data-val='true' name='UploadDoc' disabled='true' type='file' value=" + allData.Value + "  id=" + allData.Value + " onchange='return fileValidation(this)' > </div></div>";
+
+                            items += "<div class='row row-sm mb-2'><div class='col-md-3'><label class='form-label mg-b-0 fw-bolder'>" + allData.Text + " :</label></div><div class='col-md-1'><input class='form-check-input' type='checkbox' name='chkPkgChks'  value=" + allData.Value + " ></div><div class='col-md-8'><input class='form-control dropify' data-val='true' name='UploadDoc' disabled='true' type='file' value=" + allData.Value + "  id=" + allData.Value + " onchange='return fileValidation(this)' accept='.png, .jpg, .jpeg, .pdf, .doc, .zip, .msg' style='height:35px;'></div></div>";
+                            //tems += "<div class='row m-2'><div class='col-md-5'><select class='form-select'><option>--Select--</option><option value='" + allData.Text + "'>" + allData.Text + "</option></select></div></div> <div class='row m-2'><div class='col-md-5'><input class='form-control dropify' data-val='true' name='UploadDoc' disabled='true' type='file' value=" + allData.Value + " id=" + allData.Value + " onchange='return fileValidation(this)' accept='.png, .jpg, .jpeg, .pdf, .doc, .zip, .msg' style='height:35px;'></div></div>";
+
+                        });
+                        $('#dvUplodDoc').html(items);
+                    }
+                    else {
+                        $('#dvChksPcks').hide();
+                        alert("No Doc Selected");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("some error");
+                }
+            });
+        }
+        else {
+            $('#dvChksPcks').hide();
+        }
+    });
+    $(document).on('change', 'input[name="chkPkgChks"]', function (e) {// on change of state
+        var chkPkgChkss = '';
+        $('input[name="chkPkgChks"]').each(function (index, value) {
+            if (this.checked) {
+                chkPkgChkss += this.value + ',';
+                $("#" + this.value + "").removeAttr("disabled");
+            }
+            else {
+                $("#" + this.value + "").attr("disabled", "disabled");
+            }
+        });
+
+        if (chkPkgChkss.length > 0) {
+            chkPkgChkss = chkPkgChkss.substring(0, chkPkgChkss.length - 1);
+        } else { chkPkgChkss = ''; }
+        $('#UploadHid').val(chkPkgChkss.trim());
+    });
+
+
+    @*$(".deletetempdoc").on("click", function () {
+            // alert($('#hdnTeamMemberRowID').val());
+
+            var str = $(this).attr("id").split("_");
+          var id = str[1];
+          SubCheckRowID = str[2];
+            var flag = confirm('Do you want to Delete the Document ?');
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("DeleteCandidateUploadedTempDocs", "Home")',
+                    data: { "id": id, "SubCheckRowID": SubCheckRowID},
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (result) {
+                        if (result == true) {
+                            alert("Document Deleted Successfully!!");
+                             window.location.reload();
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+    });*@
+
+
+
+    // Reloadpage on click modal close button.
+    function reloadPage() {
+        location.reload(true);
+    }
+    </script>
+}
+

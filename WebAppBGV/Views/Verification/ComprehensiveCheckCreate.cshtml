@@ -1,0 +1,617 @@
+﻿@using WebAppBGV.CommonMethods;
+@model dynamic
+<head>
+    @{Layout = null; }
+
+
+</head>
+
+
+@{
+    string Designation = Session["Designation"].ToString();
+    ViewBag.Title = "Add National Info (" + Convert.ToString(Session["CandidateName"]) + ")";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = "";
+
+
+
+
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+    string CheckStatuss = "";
+    string checkStatusid = "";
+    string degreeid = "";
+    string degreeName = "";
+    string CandCheckRowid = "";
+    string TeamMemberRowID = "";
+
+    PersonalRowid = @ViewBag.PersonalRowid;
+    SubCheckId = @ViewBag.SubCheckId;
+    clientRowId = @ViewBag.clientRowId;
+    CheckStatuss = @ViewBag.CheckStatus;
+    checkStatusid = @ViewBag.checkStatusid;
+    CandCheckRowid = @ViewBag.CandCheckRowID;
+
+    TeamMemberRowID = Session["TeamMemberRowID"].ToString();
+    string Department = Session["Department"].ToString();
+
+}
+
+
+<link href='@Url.Content("~/Content/bootstrap.min.css")' rel="stylesheet" type="text/css" />
+<link href='@Url.Content("~/Content/bootstrap-theme.min.css")' rel="stylesheet" />
+<div class="container">
+    @if (ViewBag.ErrorMsg != null)
+    {
+        <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+    }
+    @if (ViewBag.Success != null)
+    {
+        <div class="errormsg">@ViewBag.Success.ToString()</div>
+    }
+    @using (Html.BeginForm("ComprehensiveCheckCreate", "Verification", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+        @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+        <input id="SubCheckId" type="hidden" value=@SubCheckId>
+        @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+        <input id="clientRowId" type="hidden" value=@clientRowId>
+        @Html.Hidden("clientRowId", clientRowId.ToString())
+
+        <input id="checkStatusid" type="hidden" value=@checkStatusid>
+        @Html.Hidden("checkStatusid", checkStatusid.ToString())
+
+        <input id="CheckStatuss" type="hidden" value=@CheckStatuss>
+        @Html.Hidden("CheckStatuss", CheckStatuss.ToString())
+
+        <input type="hidden" id="CollegeId" name="CollegeId" value=@ViewBag.CollgegIdn />
+        <input type="hidden" id="CollegeNameTemp" name="CollegeNameTemp" />
+
+        <input id="Hfdegreeid" type="hidden" value=@degreeid>
+        @Html.Hidden("Hfdegreeid", degreeid.ToString())
+
+        @Html.Hidden("HfdegreeName", degreeName.ToString())
+        foreach (var category in Model)
+        {
+            <div class="row">
+                @{
+                    string[] nm = category.Key.Split('_');
+                    string[] temp = category.Value.Split('_');
+
+
+                    if (@nm[2] == "textbox")
+                    {
+                <div class="col-md-4">
+                    @{
+                        if (@nm[3] == "mandatory")
+                        {
+                            <h7 style="color:red!important;">*</h7>
+                        }
+                        else
+                        {
+                            <h7>&nbsp;</h7>
+                        }
+                    }
+                    @nm[1]
+                </div>
+                        <div class="col-md-4">
+                            @if (@nm[0] == "69")
+                            {
+                                <a href='@Url.Action("CollegeDetailsName", "Master",  new { id = @temp[0]})' target="_blank">@temp[0]</a>
+                            }
+                            else
+                            {
+                                <p>@temp[0]</p>
+                            }
+                        </div>
+                        <div class="col-md-4">
+                            <p>@nm[4]</p>
+                            @if (temp.Count() > 1 && @temp[1] != "")
+                            {
+                                if (@nm[0] == "66")
+                                {
+                                    <textarea name="66" id="66">@temp[1]</textarea>
+                                }
+                                else
+                                {
+                                    <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@temp[1]' autocomplete="off" maxlength="@nm[5]">
+                                }
+
+                            }
+                            else
+                            {
+                                if (@nm[0] == "66")
+                                {
+                                    <textarea name="66" id="66">@temp[0]</textarea>
+                                }
+                                else
+                                {
+                                    <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@temp[0]' autocomplete="off" maxlength="@nm[5]">
+                                }
+
+                            }
+
+                        </div>
+                    }
+                    if (@nm[2] == "dropdown")
+                    {
+                        <div class="col-md-4">
+                            @{
+                                if (@nm[3] == "mandatory")
+                                {
+                                    <h7 style="color:red!important;">*</h7>
+                                }
+                                else
+                                {
+                                    <h7>&nbsp;</h7>
+                                }
+                            }
+                            @nm[1]
+                        </div>
+                        <div class="col-md-4">
+                            @if (temp.Count() > 1)
+                            {
+                                <p>@temp[0]</p>
+                            }
+                        </div>
+                        <div class="col-md-4">
+                            @nm[4]
+                            @{
+                                int lastindex = nm.Length;
+                                string[] nmOption = nm[lastindex - 1].Split(',');
+                                string Fvalue = "";
+                                Fvalue = nm[lastindex - 2].ToString();
+                                if (Fvalue == "")
+                                {
+                                    Fvalue = nm[lastindex - 3].ToString();
+                                }
+                            }
+                            <select name=@nm[0] id='@nm[0]' autocomplete="off">
+                                @for (int i = 0; i < nmOption.Length; i++)
+                                {
+
+
+
+                                    if (@nmOption[i].Trim() == Fvalue)
+                                    {
+                                        <option selected>@nmOption[i]</option>
+
+                                    }
+                                    else
+                                    {
+
+                                        <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                    }
+
+                                }
+                            </select>
+
+                            @Html.Hidden("HfdegreeName")
+                            <input id="HfdegreeName" type="hidden" value=@degreeName>
+
+
+                        </div>
+
+                    }
+                    if (@nm[2] == "checkbox")
+                    {
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-sm">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7 style="color:red!important;">*</h7>
+                                        }
+                                        else
+                                        {
+                                            <h7>&nbsp;</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-sm">
+
+                                    @{
+                                        if (@nm[6] == "TRUE")
+                                        {
+                                            <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value="checked" checked autocomplete="off">
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value=@nm[0] autocomplete="off">
+                                        }
+                                    }
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    }
+                    if (@nm[2] == "fileUpload")
+
+                    {
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-sm">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7 style="color:red!important;">*</h7>
+                                        }
+                                        else
+                                        {
+                                            <h7>&nbsp;</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-sm">
+                                    <input type="file" id=@nm[0] name='@nm[0]' autocomplete="off" accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                                </div>
+
+                            </div>
+                        </div>
+
+                    }
+                }
+
+            </div>
+
+        }
+        <div class="row">
+            <div class="col-sm-12 cytoscape-parent">
+                <div class="w-400 h-400 d-inline-block" id="cytoscape-container"></div>
+            </div>
+        </div>
+
+
+
+
+
+        if (Session["Designation"] != null)
+        {
+
+            if (Designation == "Team Member-Edu" || Designation == "Team Member Quality Check" || Designation == "Team Member-Emp")
+            {
+
+                @*@Html.ActionLink("Back", "ManageTeamMemberChecks", "Verification", new { }, new { @class = "btn btn-default VerEmailDetails" })*@
+
+                //else
+                //{
+                // @Html.ActionLink("Back", "ManageTeamMemberChecks", "Verification", null, new { @class = "btn btn-default VerEmailDetails" })
+
+                //if (checkStatusid == "18" || checkStatusid == "20" || checkStatusid == "21" || checkStatusid == "61" || checkStatusid == "56")
+                //{
+                <div class="container" style="margin-bottom:10px!important;">
+                    <div class="row">
+                        <div class="col-sm">
+                            <input class="btn" type="submit" value="Submit" style="width:13rem!important;border-radius:0rem; font-size:1.3rem!important;" />
+                        </div>
+                    </div>
+                </div>
+
+                // }
+
+            }
+            if (Designation.StartsWith("Manager"))
+            {
+                @Html.ActionLink("Back", "DepartmentManagerAllocation", "Verification", new { CheckStatus = Session["CheckStatus"].ToString(), version = "new" }, new { @class = "btn btn-default VerEmailDetails" })
+
+                if (Designation == "Manager-PV")
+                {
+                    <div class="container" style="margin-bottom:30px!important;">
+                        <div class="row">
+                            @*<div class="col-sm">
+                                    @Html.ActionLink("Back", "EducationManagerPVAllocated", "PVerification", null, new { @class = "btn btn-default VerEmailDetails" })
+                                </div>
+                                }
+                                else
+                                {*@
+                            <div class="col-sm">
+                                @Html.ActionLink("Back", "DepartmentManagerAllocation", "Verification", new { CheckStatus = Session["CheckStatus"].ToString(), version = "New" }, new { @class = "btn btn-default VerEmailDetails" })
+                            </div>
+                            @*}*@
+                            if (Designation == "Manager-Edu" && Model.CheckStatusId == 17)
+                            {
+                            @*@Html.HiddenFor(model => model.ApproveStatus, new { @id = "hdApproveStatus" })*@
+                            <div class="col-sm">
+                                <input class="btn bun-bg btn-default" onclick="return validateFormApprove()" type="submit" value="Approve" />
+                            </div>
+                            <div class="col-sm">
+                                <input class="btn bun-bg btn-default" onclick="return validateFormReject()" type="submit" value="Reject" />
+                            </div>
+                        </div>
+                    </div>
+                }
+
+
+            }
+
+        }
+
+    }
+
+</div>
+
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    @*<script src="~/Scripts/tinymce49.min.js"></script>
+        <script src="~/Scripts/tinymce.min.js"></script>*@
+    <script type="text/javascript">
+        // tinymce.init({ selector: '#66', width: 800 });
+    </script>
+    <script type="text/javascript">
+                $(document).ready(function () {
+                    var ErrorMsg = '@(ViewBag.ErrorMsg)';
+
+                    if (ErrorMsg=='')
+                    {
+
+                        //$('#VerificationCloserDetails').prop('disabled', false);
+                        $('#VerificationCloserDetails').css('visibility', 'visible');
+                    }
+                    else
+                    {
+
+                        $('#VerificationCloserDetails').css('visibility', 'hidden');
+                    }
+            $(".iframeUpdateStatus").colorbox({ iframe: true, width: "60%", height: "60%" });
+            $(".callbacks").colorbox({
+                //onOpen: function () { alert('onOpen: colorbox is about to open'); },
+                //onLoad: function () { alert('onLoad: colorbox has started to load the targeted content'); },
+                //onComplete: function () { alert('onComplete: colorbox has displayed the loaded content'); },
+                //onCleanup: function () { alert('onCleanup: colorbox has begun the close process'); },
+                onClosed: function () {
+                    //alert('onClosed: colorbox has completely closed');
+                    window.location.reload(false);
+                }
+            });
+
+            $(".iframeUpdateVerDoc").colorbox({ iframe: true, width: "60%", height: "60%" });
+            $(".callbacks").colorbox({
+                onClosed: function () {
+                    window.location.reload(true);
+                }
+            });
+
+                //var text1 = "@(ViewBag.degreeName)";
+                var text1 = $('#HfdegreeName').val();
+
+
+
+                //$('#HfdegreeName').val(text1);
+
+
+        if ($('#72').val() != null) {
+
+            $.getJSON('/Master/GetDegreeList/', function (data) {
+                var items = '<option value="">--Select--</option>';
+                $.each(data, function (i, degree) {
+                    items += "<option value='" + degree.Value + "'>" + degree.Text + "</option>";
+                });
+                $('#72').html(items);
+                $("#72 option").filter(function () {
+                    return this.text == text1;
+                }).attr('selected', true);
+
+
+
+            });
+             }
+
+            $("#CollegeName").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/Master/getAutoCollegelist",
+                        type: "POST",
+                        dataType: "json",
+                        data: { CollegeName: request.term },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return { label: item.CollegeName, value: item.CollegeId };
+                            }))
+                        }
+                    })
+                },
+                minLength: 2,
+                select: function (event, ui) {
+                    event.preventDefault();
+                },
+                focus: function (event, ui) {
+                    event.preventDefault();
+                    $("#CollegeName").val(ui.item.label);
+                    $("#CollegeNameTemp").val(ui.item.label);
+                    $('#CollegeId').val(ui.item.value);
+
+                }
+            });
+        })
+
+        $("#CollegeName").blur(function () {
+            if ($("#CollegeName").val() != $("#CollegeNameTemp").val()) {
+                $("#CollegeName").val("");
+                $('#CollegeId').val("0");
+                $('#CollegeAddress').val("");
+            }
+        });
+
+        $(function () {
+            $('#CollegeName').change(function () {
+                var CurOrg = $("#CollegeName").val();
+                var url = "/ProvidedInfo/CollegeAddress/" + $("#CollegeId").val();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+                    success: function (Address) {
+                        $('#CollegeAddress').val(Address);
+                    }
+                });
+            });
+
+            $('#72').change(function () {
+
+                $('#HfdegreeName').val($('#72 option:selected').text());
+
+            });
+                });
+
+
+
+    </script>
+
+}
+<style>
+
+    .mandatory-star {
+        color: red;
+    }
+
+    .btn {
+        padding: 5px 40px 5px 40px !important;
+    }
+
+    input[type=text], textarea {
+        width:20rem;
+        padding: 22px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    label {
+        padding: 12px 12px 12px 0;
+        display: inline-block;
+    }
+
+    input[type=submit] {
+        background-color: #04AA6D;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        float: right;
+    }
+
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+
+    .container {
+        border-radius: 5px;
+        /*background-color: #f2f2f2;*/
+        padding: 8px;
+        font-size: 1rem !important;
+        margin:0px!important;
+    }
+    .row{
+        padding-bottom:10px!important;
+    }
+
+    .col-25 {
+        float: left;
+        width: 25%;
+        margin-top: 6px;
+    }
+
+    .col-75 {
+        float: left;
+        width: 40%;
+        margin-top: 6px;
+        margin-left: 90px;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+
+    /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+    @@media screen and (max-width: 600px) {
+        .col-25, .col-75, input[type=submit] {
+            width: 100%;
+            margin-top: 0;
+        }
+    }
+</style>
+<style>
+    .ui-widget.ui-widget-content {
+        width: 20%;
+    }
+
+    img {
+        width: 50px;
+        height: 25px;
+    }
+</style>
+
+
+<script type="text/javascript">
+            $(document).ready(function () {
+                $('#172').datepicker({
+                    dateFormat: "dd-M-yy",
+                    changeMonth: true,
+                    changeYear: true,
+                    showButtonPanel: true,
+                    yearRange: "-66:+0",
+                });
+                var dNow = new Date();
+                var localdate = (dNow.getFullYear() + '-' + (dNow.getMonth() + 1) + '-' + dNow.getDate());
+                $('#OrderDate').val(localdate);
+                $('#goBack').click(function () {
+                    parent.history.back();
+                    return false;
+                });
+            });
+            //$('#172').bind('copy paste cut', function (e) {
+            //    e.preventDefault();
+            //    alert('cut,copy & paste options are disabled !!');
+            //});
+            $("#172").keypress(function (e) {
+                return false;
+            });
+            $("#172").keydown(function (e) {
+                return false;
+            });
+
+            @*if(@Session["Mode"].ToString() == '1')
+            {
+                $("#UplodVerificationDocs").css('pointer-events', ' ');
+                $("#EducationVerificationEmailDetails").css('pointer-events', '');
+                Session["Mode"]=null;
+            }
+           else
+            {
+                $("#UplodVerificationDocs").css('pointer-events', 'none');
+                $("#EducationVerificationEmailDetails").css('pointer-events', 'none');
+                Session["Mode"]=null;
+            }*@
+
+</script>

@@ -1,0 +1,95 @@
+﻿@model ViewModels.AddCaseFlowMappingViewModel
+
+@{
+    ViewBag.Title = "Add Case Flow Mapping (" + ViewBag.ClientName + "-" + ViewBag.ReportType + ")";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManageCaseFlowMappings", "Master", new { RCMRowID = Model.ReportCheckMappingRowID }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftMaster") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+
+        @using (Html.BeginForm())
+        //@using (Html.BeginForm("AddCaseFlowMapping", "Master", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.ReportCheckMappingRowID)
+
+            <div class="form-horizontal">
+                <div class="form-group branch row">
+                    @Html.LabelFor(model => model.ColorCode, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                    <div class="col-md-3">
+                        @Html.DropDownListFor(model => model.ColorCode, new SelectList(ViewBag.Color, "ColorId", "ColorName"),
+              "-- Select ColorCode -- ", new { @id = "ddlColorCode", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ColorCode, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-12"></div>
+                <div class="col-md-12">
+                    <fieldset class="scheduler-border">
+                        <legend class="scheduler-border">Assign Case Flow</legend>
+                        <div class="form-group col-md-12">
+                            <div class="form-group row ">
+                                @Html.LabelFor(model => model.MoveToRWQC, htmlAttributes: new { @class = "col-md-3 control-label" })
+                                <div class="col-md-3">
+                                    @Html.RadioButtonFor(model => model.MoveToRWQC, 1, new { @class = "rdoMoveToRWQC", @id = "rdoMoveToRWQCYes" }) Yes
+                                    <span class="client_radiobtncr">
+                                        @Html.RadioButtonFor(model => model.MoveToRWQC, 0, new { @class = "rdoMoveToRWQC", @id = "rdoMoveToRWQCNo", @checked = "checked" }) No
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group row ">
+                                @Html.LabelFor(model => model.ColorCodeReview, htmlAttributes: new { @class = "col-md-3 control-label" })
+                                <div class="col-md-3">
+                                    @Html.RadioButtonFor(model => model.ColorCodeReview, 1, new { @class = "rdoColorCodeReview", @id = "rdoColorCodeReviewYes" }) Yes
+                                    <span class="client_radiobtncr">
+                                        @Html.RadioButtonFor(model => model.ColorCodeReview, 0, new { @class = "rdoColorCodeReview", @id = "rdoColorCodeReviewNo", @checked = "checked" }) No
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group row ">
+                                @Html.LabelFor(model => model.SendToClient, htmlAttributes: new { @class = "col-md-3 control-label" })
+                                <div class="col-md-3">
+                                    @Html.RadioButtonFor(model => model.SendToClient, 1, new { @class = "rdoSendToClient", @id = "rdoSendToClientYes" }) Yes
+                                    <span class="client_radiobtncr">
+                                        @Html.RadioButtonFor(model => model.SendToClient, 0, new { @class = "rdoSendToClient", @id = "rdoSendToClientNo", @checked = "checked" }) No
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="all-button-bg">
+                    @Html.ActionLink("Back", "ManageCaseFlowMappings", "Master", new { RCMRowID = Model.ReportCheckMappingRowID }, new { @class = "btn bun-bg btn-default" })
+                    <input class="btn bun-bg btn-default" type="submit" value="Submit" />
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div id="ManageSction" class="product-frame1"></div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script type="text/javascript">
+        
+
+    </script>
+
+}

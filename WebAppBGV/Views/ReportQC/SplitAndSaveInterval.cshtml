@@ -1,0 +1,163 @@
+﻿@model ViewModels.SplitFileModel
+    @{
+    ViewBag.Title = "SplitAndSaveInterval";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "ReportQC", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+  @if (ViewBag.ErrorMsg != null)
+    {
+        <script>
+         Swal.fire({
+         icon: 'warning',
+         html:' <div class="errormsg" style="color:red;">@ViewBag.ErrorMsg.ToString()</div>',
+         showConfirmButton: false,
+         timer: 1500
+         })
+        </script>
+     }
+   @if (ViewBag.Success != null)
+    {
+        <script>
+         Swal.fire({
+         icon: 'success',
+         html:'<div class="errormsg">@ViewBag.Success.ToString()</div>',
+         showConfirmButton: false,
+         timer: 1500
+         })
+        </script>
+    }
+        <div class="container-fluid">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-2"></div>
+                    <div class="card  col-sm-8">
+                        <div class="card-body">
+                            @using (Html.BeginForm("SplitAndSaveInterval", "ReportQC", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <h3 style="margin-top:10px;">Upload Pdf file<sup style="color:red;">*</sup>:</h3>
+                                        </div>
+                                        <div class="col-md-6">
+                                            @Html.TextBox("upfile", "", new { type = "file", @class = "btn bun-bg btn-default", @accept = "pdf", @onchange = "return fileValidation(this)", @style = "padding: 5px 10px 5px 10px;font-weight: bold;" })
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input id="pdfupload" type="submit" name="btnSubmit" style="padding: 10px 0px 10px 0px; font-weight: bold; width: 150px!important;font-weight: bold;" class="btn bun-bg btn-default" value="Upload Pdf" />
+
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"><br /></div>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <h3 style="margin-top:10px;">File Name :</h3>
+                                        </div>
+                                        <div class="col-md-6" id="dvFileName" style="font-size:large">
+                                            @Model.Name
+                                        </div>
+                                        <div class="col-md-3">
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"><br /></div>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <h3 style="margin-top:10px;">Page From:</h3>
+                                        </div>
+                                        <div class="col-md-2">
+                                            @Html.TextBox("pageform", "", new { type = "text", @class = "form-control", style = "width:68px !important;", @id = "txtFm", @onkeypress = "return onlyNumericValue(event);", @oninput = "process(this)", @maxlength = "3", @autocomplete = "off" })
+                                        </div>
+                                        <div class="col-md-2">
+                                            <h3 style="margin-top:10px;">Page To:</h3>
+                                        </div>
+                                        <div class="col-md-2">
+                                            @Html.TextBox("pageto", "", new { type = "text", @class = "form-control", style = "width:68px !important;", @id = "txtTo", @onkeypress = "return onlyNumericValue(event);", @oninput = "process(this)", @maxlength = "3", @autocomplete = "off" })
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input id="pdfsplit" type="button" name="btnSubmit"  style="padding: 10px 0px 10px 0px; font-weight: bold; width: 150px!important;  background: #11c9b7;color:white" value="Split Pdf" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <br />
+                                <br />
+                            }
+                        </div>
+                    </div>
+                    <div class="col-sm-2"></div>
+                </div>
+            </div>
+        </div>
+        @section Scripts{
+            <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+            <script type="text/javascript">
+                function onlyNumericValue(event) {
+                    var charCode = (event.which) ? event.which : event.keyCode
+                    if (charCode > 31 && (charCode < 48 || charCode > 57))
+                        return false;
+                        return true;
+                }
+                function process(input) {
+                    let value = input.value;
+                    let numbers = value.replace(/[^0-9]/g, "");
+                    input.value = numbers;
+                }
+               
+            </script>
+            
+            <script type="text/javascript">
+                $('#pdfsplit').click(function () {  
+                    var pfm = $("#txtFm").val() || 0;
+                    var pft = $("#txtTo").val() || 0;
+                    var fn = $.trim($("#dvFileName").html());               
+                    if (fn == '') {
+                            Swal.fire('', 'Please upload file');                         
+                            return false;
+                            
+                        }
+                   
+                  
+                    if (pfm == '' || pfm == '0') {
+                        Swal.fire('', 'Please enter page from');
+                        $("#txtFm").val('');
+                        $("#txtFm").focus();
+                       
+                        return false;
+                    }
+                    if (pft == '') {
+                        Swal.fire('', 'Please enter page to');                   
+                        $("#txtTo").focus();                      
+                        return false;
+                    }
+                    if (parseInt(pfm) > parseInt(pft)) {
+                        $("#txtfm").focus();
+                        Swal.fire('', 'Page from cant greater than page to');                       
+                        return false;
+                    }
+                                      
+                    $.ajax({
+                        url: '@Url.Action("SplitMargePdf", "ReportQC")',
+                        type: 'POST',
+                        dataType: 'JSON',
+                        data: { pfm: pfm, pft: pft},
+                        success: function (result) {
+                            if (result != '') {
+                               window.location = "/ReportQC/DownloadFile" + "?fName=" + result;
+                            }
+                        },
+                        error: function () {
+                            alert("Error");
+                        }
+                    });
+
+
+                });
+            </script>
+ }
+
+
+
+

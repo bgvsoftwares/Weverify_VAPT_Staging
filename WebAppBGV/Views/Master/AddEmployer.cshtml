@@ -1,0 +1,949 @@
+﻿@model ViewModels.AddEmployerViewModel
+
+@{
+    string EmploymentRowId = "";
+    if (Request.QueryString["EmploymentRowId"] != null)
+    {
+        EmploymentRowId = @Request.QueryString["EmploymentRowId"].ToString();
+    }
+    ViewBag.Title = "Add New Employer";
+    int ClientRowId = ViewBag.ClientRowId != null ? (int)ViewBag.ClientRowId : 0;
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManageEmployers", "Master", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftMaster") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("AddEmployer", "Master", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <div id="docToast" style="display:none; position:fixed; top:20px; right:20px; z-index:9999;
+     min-width:280px; max-width:360px; padding:14px 18px; border-radius:8px;
+     background-color:#0c7a6f; color:#ffffff; font-size:14px; font-weight:500;
+     box-shadow:0 4px 12px rgba(0,0,0,0.25);">
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.CompanyName, htmlAttributes: new { @class = "col-md-2 control-label colonsymbl required" })
+                <div class="col-md-8">
+                    @Html.TextAreaFor(model => model.CompanyName, new { @class = "form-control", @rows = "2" })
+                    @Html.ValidationMessageFor(model => model.CompanyName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.Other1, htmlAttributes: new { @class = "col-md-2 control-label colonsymbl required" })
+                <div class="col-md-8">
+                    <span class="text-danger" style="font-size:14px;">Company name is mandatory to fill in key name to fetch fake compnay.</span>
+                    @Html.TextAreaFor(model => model.Other1, new { @class = "form-control", @rows = "2", @style = "border:3px solid #11C9B7;" })
+                    @Html.ValidationMessageFor(model => model.Other1, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.CompanyStatus, htmlAttributes: new { @class = "col-md-2 control-label colonsymbl required" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.CompanyStatus,
+                  new SelectList(ViewBag.CompanyStatusList, "Value", "Text"),
+                  "-- Select -- ",
+                  new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.CompanyStatus, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.COtherStatus, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                <div class="col-md-3">
+                    @Html.TextAreaFor(model => model.COtherStatus, new { @class = "form-control", @rows = "2", @disabled = "disabled" })
+                    @Html.ValidationMessageFor(model => model.COtherStatus, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.CompanyLegalStatus, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.CompanyLegalStatus,
+                  new SelectList(ViewBag.CompanyLegalStatusList, "Value", "Text"),
+                  "-- Select -- ",
+                  new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.CompanyLegalStatus, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.COtherLegalStatus, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                <div class="col-md-3">
+                    @Html.TextAreaFor(model => model.COtherLegalStatus, new { @class = "form-control", @rows = "2", @disabled = "disabled" })
+                    @Html.ValidationMessageFor(model => model.COtherLegalStatus, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.CompanyAddress, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-8">
+                    @Html.TextAreaFor(model => model.CompanyAddress, new { @class = "form-control", @rows = "2" })
+                    @Html.ValidationMessageFor(model => model.CompanyAddress, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.CountryRowID, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.CountryRowID,
+                  new SelectList(ViewBag.Countries, "CountryRowID", "CountryName"),
+                  "-- Select Country -- ",
+                  new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.CountryRowID, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.StateRowID, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.StateRowID,
+             new SelectList(string.Empty, "Value", "Text"),
+             "-- Select State --",
+             new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.StateRowID, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.DistrictRowID, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.DistrictRowID,
+             new SelectList(string.Empty, "Value", "Text"),
+             "-- Select District --",
+             new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.DistrictRowID, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.LocationRowID, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.LocationRowID,
+             new SelectList(string.Empty, "Value", "Text"),
+             "-- Select Location --",
+             new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.LocationRowID, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.PinCode, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                <div class="col-md-3">
+                    @Html.EditorFor(model => model.PinCode, new { htmlAttributes = new { @class = "form-control", @onkeypress = "return isNumberKey(event,false)", @disabled = "disabled" } })
+                    @Html.ValidationMessageFor(model => model.PinCode, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.PinCode, new { @id = "hdnPinCode" })
+                </div>
+                @Html.LabelFor(model => model.Website, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.EditorFor(model => model.Website, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Website, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.CINNumber, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.EditorFor(model => model.CINNumber, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.CINNumber, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.PaidUpCapital, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.EditorFor(model => model.PaidUpCapital, new { htmlAttributes = new { @class = "form-control", @onkeypress = "return isNumberKey(event,true)" } })
+                    @Html.ValidationMessageFor(model => model.PaidUpCapital, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.ModeOfInitiation, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.ModeOfInitiation,
+                  new SelectList(ViewBag.InitiationList, "Value", "Text"),
+                  "-- Select -- ",
+                  new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ModeOfInitiation, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.OtherInitiation, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.TextAreaFor(model => model.OtherInitiation, new { @class = "form-control", @rows = "2", @disabled = "disabled" })
+                    @Html.ValidationMessageFor(model => model.OtherInitiation, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                <div class="col-md-2 control-label required"><strong>Document/Information</strong></div>
+                @Html.HiddenFor(model => model.MandatoryDocument)
+                <div class="col-md-10">
+                    @foreach (var item in ViewBag.MandatoryDocumentList)
+                    {
+                        <div class="col-md-4">
+                            <input type="checkbox" class="chkDocs" value="@item.Value" />
+                            <label class="control-label">@item.Text</label>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.OtherDocumentDetail, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-8">
+                    @Html.TextAreaFor(model => model.OtherDocumentDetail, new { @class = "form-control", @rows = "2", @disabled = "disabled" })
+                    @Html.ValidationMessageFor(model => model.OtherDocumentDetail, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.SpecialInstruction, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-8">
+                    @Html.TextAreaFor(model => model.SpecialInstruction, new { @class = "form-control", @rows = "2" })
+                    @Html.ValidationMessageFor(model => model.SpecialInstruction, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.AdditionalCosting, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.AdditionalCosting,
+                  new SelectList(ViewBag.AdditionalCostingList, "Value", "Text"),
+                  "-- Select -- ",
+                  new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.AdditionalCosting, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.AdditionalCost, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                <div class="col-md-3">
+                    @Html.EditorFor(model => model.AdditionalCost, new { htmlAttributes = new { @class = "form-control", @onkeypress = "return isNumberKey(event,true)", @disabled = "disabled" } })
+                    @Html.ValidationMessageFor(model => model.AdditionalCost, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.ModeOfPayment, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.ModeOfPayment,
+                  new SelectList(ViewBag.ModeOfPaymentList, "Value", "Text"),
+                  "-- Select -- ",
+                  new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ModeOfPayment, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.PayableAT, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.EditorFor(model => model.PayableAT, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
+                    @Html.ValidationMessageFor(model => model.PayableAT, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div id="dvFavourOf" class="form-group branch row">
+                @Html.LabelFor(model => model.FavourOf, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                <div class="col-md-8">
+                    @Html.TextAreaFor(model => model.FavourOf, new { @class = "form-control", @rows = "2" })
+                    @Html.ValidationMessageFor(model => model.FavourOf, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div id="dvAcIfceCode" class="form-group branch row">
+                @Html.LabelFor(model => model.AccountNumber, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.EditorFor(model => model.AccountNumber, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.AccountNumber, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.IFSCCode, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.EditorFor(model => model.IFSCCode, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.IFSCCode, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.ConcernPersonName, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.EditorFor(model => model.ConcernPersonName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ConcernPersonName, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.DesigConcernPerson, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.EditorFor(model => model.DesigConcernPerson, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.DesigConcernPerson, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.OfficialLandlineNo, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.EditorFor(model => model.OfficialLandlineNo, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.OfficialLandlineNo, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.MobileNo, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.EditorFor(model => model.MobileNo, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.MobileNo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.OfficialEmailId, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.OfficialEmailId, new { htmlAttributes = new { @class = "form-control" } })
+                    <span class="short text-info">(Enter Multiple Email Separated By Comma)</span>
+                    @Html.ValidationMessageFor(model => model.OfficialEmailId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.PVInitiated, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.PVInitiated,
+                  new SelectList(ViewBag.AdditionalCostingList, "Value", "Text"),
+                  "-- Select -- ",
+                  new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.PVInitiated, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.InitAddProofImage, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.TextBoxFor(model => model.InitAddProofImage, new { @disabled = "disabled", @accept = "image/gif, image/jpeg, image/png , image/jpg", type = "file" })
+                    @Html.ValidationMessageFor(model => model.InitAddProofImage, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.PVInitAtAddress, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-8">
+                    @Html.TextAreaFor(model => model.PVInitAtAddress, new { @class = "form-control", @disabled = "disabled", @rows = "2" })
+                    @Html.ValidationMessageFor(model => model.PVInitAtAddress, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.RegisteredOnMCA, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.RegisteredOnMCA,
+                  new SelectList(ViewBag.AdditionalCostingList, "Value", "Text"),
+                  "-- Select -- ",
+                  new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.RegisteredOnMCA, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.MCARegProofImage, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.TextBoxFor(model => model.MCARegProofImage, new { @disabled = "disabled", @accept = "image/gif, image/jpeg, image/png , image/jpg", type = "file" })
+                    @Html.ValidationMessageFor(model => model.MCARegProofImage, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            @*///////////////////////////////////////////////*@
+
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.JustDial, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.JustDial,
+                  new SelectList(ViewBag.AdditionalCostingList, "Value", "Text"), "-- Select -- ", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.JustDial, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.JustDialImage, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-4">
+                    @Html.TextBoxFor(model => model.JustDialImage, new { @accept = "image/gif, image/jpeg, image/png , image/jpg", type = "file" })
+                    @Html.ValidationMessageFor(model => model.JustDialImage, "", new { @class = "text-danger" })
+                </div>
+
+            </div>
+
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.Whois, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.Whois,
+                  new SelectList(ViewBag.AdditionalCostingList, "Value", "Text"), "-- Select -- ", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Whois, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.WhoisImage, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-4">
+                    @Html.TextBoxFor(model => model.WhoisImage, new { @accept = "image/gif, image/jpeg, image/png , image/jpg", type = "file" })
+                    @Html.ValidationMessageFor(model => model.WhoisImage, "", new { @class = "text-danger" })
+                </div>
+
+            </div>
+
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.Domain, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.Domain,
+                  new SelectList(ViewBag.AdditionalCostingList, "Value", "Text"), "-- Select -- ", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Domain, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.DomainImage, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-4">
+                    @Html.TextBoxFor(model => model.DomainImage, new { @accept = "image/gif, image/jpeg, image/png , image/jpg", type = "file" })
+                    @Html.ValidationMessageFor(model => model.DomainImage, "", new { @class = "text-danger" })
+                </div>
+
+            </div>
+
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.InternetWeb, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.InternetWeb,
+                  new SelectList(ViewBag.AdditionalCostingList, "Value", "Text"), "-- Select -- ", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.InternetWeb, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.InternetWebImage, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.TextBoxFor(model => model.InternetWebImage, new { @accept = "image/gif, image/jpeg, image/png , image/jpg", type = "file" })
+                    @Html.ValidationMessageFor(model => model.InternetWebImage, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.EPFO, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.EPFO,
+                  new SelectList(ViewBag.AdditionalCostingList, "Value", "Text"), "-- Select -- ", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.EPFO, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.EPFOImage, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-4">
+                    @Html.TextBoxFor(model => model.EPFOImage, new { @accept = "image/gif, image/jpeg, image/png , image/jpg", type = "file" })
+                    @Html.ValidationMessageFor(model => model.EPFOImage, "", new { @class = "text-danger" })
+                </div>
+
+            </div>
+
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.GST, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.GST,
+                  new SelectList(ViewBag.AdditionalCostingList, "Value", "Text"), "-- Select -- ", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.GST, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.GSTImage, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.TextBoxFor(model => model.GSTImage, new { @accept = "image/gif, image/jpeg, image/png , image/jpg", type = "file" })
+                    @Html.ValidationMessageFor(model => model.GSTImage, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.BSE, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.BSE,
+                  new SelectList(ViewBag.AdditionalCostingList, "Value", "Text"), "-- Select -- ", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.BSE, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.BSEImage, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-4">
+                    @Html.TextBoxFor(model => model.BSEImage, new { @accept = "image/gif, image/jpeg, image/png , image/jpg", type = "file" })
+                    @Html.ValidationMessageFor(model => model.BSEImage, "", new { @class = "text-danger" })
+                </div>
+
+            </div>
+
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.NSE, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.NSE,
+                  new SelectList(ViewBag.AdditionalCostingList, "Value", "Text"), "-- Select -- ", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.NSE, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.NSEImage, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-4">
+                    @Html.TextBoxFor(model => model.NSEImage, new { @accept = "image/gif, image/jpeg, image/png , image/jpg", type = "file" })
+                    @Html.ValidationMessageFor(model => model.NSEImage, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            @*////////////////////////////////////////////*@
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.OtherDocumentAdded, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.OtherDocumentAdded,
+                 new SelectList(ViewBag.AdditionalCostingList, "Value", "Text"), "-- Select -- ", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.OtherDocumentAdded, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.OtherDocumentNo, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.EditorFor(model => model.OtherDocumentNo, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.OtherDocumentNo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.OtherDocProofImage, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.TextBoxFor(model => model.OtherDocProofImage, new { @accept = "image/gif, image/jpeg, image/png , image/jpg", type = "file" })
+                    @Html.ValidationMessageFor(model => model.OtherDocProofImage, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.Snapshot, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.TextBoxFor(model => model.PostedImage, new { @accept = "image/gif, image/jpeg, image/png , image/jpg", type = "file", multiple = "multiple" })
+                    @Html.ValidationMessageFor(model => model.PostedImage, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.VerificationTATLevel1, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.VerificationTATLevel1,
+                  new SelectList(ViewBag.VarificationTATLevel1, "Value", "Text"),
+                  "-- Select --",
+                   new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.VerificationTATLevel1, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.VerificationTATLevel2, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.VerificationTATLevel2,
+                  new SelectList(ViewBag.VarificationTATLevel2, "Value", "Text"),
+                  "-- Select --",
+                   new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.VerificationTATLevel2, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.AdditionalComments, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-8">
+                    @Html.TextAreaFor(model => model.AdditionalComments, new { @class = "form-control", @rows = "2" })
+                    @Html.ValidationMessageFor(model => model.AdditionalComments, "", new { @class = "text-danger" })
+                </div>
+                @*@Html.LabelFor(model => model.Other1, htmlAttributes: new { @class = "col-md-2 control-label" })
+            <div class="col-md-3">
+                @Html.TextAreaFor(model => model.Other1, new { @class = "form-control", @rows = "2" })
+                @Html.ValidationMessageFor(model => model.Other1, "", new { @class = "text-danger" })
+            </div>*@
+            </div>
+            @*<div class="form-group branch row">
+            @Html.LabelFor(model => model.Other2, htmlAttributes: new { @class = "col-md-2 control-label" })
+            <div class="col-md-3">
+                @Html.TextAreaFor(model => model.Other2, new { @class = "form-control", @rows = "2" })
+                @Html.ValidationMessageFor(model => model.Other2, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.Other3, htmlAttributes: new { @class = "col-md-2 control-label" })
+            <div class="col-md-3">
+                @Html.TextAreaFor(model => model.Other3, new { @class = "form-control", @rows = "2" })
+                @Html.ValidationMessageFor(model => model.Other3, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group branch row">
+            @Html.LabelFor(model => model.Other4, htmlAttributes: new { @class = "col-md-2 control-label" })
+            <div class="col-md-3">
+                @Html.TextAreaFor(model => model.Other4, new { @class = "form-control", @rows = "2" })
+                @Html.ValidationMessageFor(model => model.Other4, "", new { @class = "text-danger" })
+            </div>*@
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.Other5, htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @*@Html.TextAreaFor(model => model.Other5, new { @class = "form-control", @rows = "2" })
+                @Html.ValidationMessageFor(model => model.Other5, "", new { @class = "text-danger" })*@
+
+                    @Html.DropDownListFor(model => model.Other5, new List<SelectListItem>
+{ new SelectListItem{Text="Centralize", Value="Centralize"},
+new SelectListItem{Text="Uncentralize", Value="Uncentralize"},
+new SelectListItem{Text="Other", Value="Other"},
+},
+"-- Select --",
+ new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Other5, "", new { @class = "text-danger" })
+
+                </div>
+                @if (ClientRowId == 722)
+                {
+                    @Html.LabelFor(model => model.GenuineEmployerProved, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+                        @Html.DropDownListFor(model => model.GenuineEmployerProved, new List<SelectListItem>
+                   { new SelectListItem{Text="Yes", Value="Yes"},new SelectListItem{Text="No", Value="No"},}, "-- Select --", new { @class = "form-control", required = "required" })
+
+                        @Html.ValidationMessageFor(model => model.GenuineEmployerProved, "", new { @class = "text-danger" })
+
+                    </div>
+                }
+            </div>
+            @if (ClientRowId == 722)
+            {
+                <div class="form-group branch row">
+                    @Html.LabelFor(model => model.AnyNegativeComment, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-8">
+                        @Html.TextAreaFor(model => model.AnyNegativeComment, new { @class = "form-control", @rows = "2", required = "required" })
+                        @Html.ValidationMessageFor(model => model.AnyNegativeComment, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group branch row">
+                    @Html.LabelFor(model => model.Companyname_Logo_Address, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-3">
+
+                        @Html.DropDownListFor(model => model.Companyname_Logo_Address, new List<SelectListItem>
+                       { new SelectListItem{Text="Yes", Value="Yes"},new SelectListItem{Text="No", Value="No"},}, "-- Select --", new { @class = "form-control", required = "required" })
+
+                        @Html.ValidationMessageFor(model => model.Companyname_Logo_Address, "", new { @class = "text-danger" })
+
+                    </div>
+                </div>
+            }
+            <div class="all-button-bg">
+                @{
+                    if (Request.QueryString["EmploymentRowId"] != null)
+                    {
+                        @Html.Hidden("EmploymentRowId", Request.QueryString["EmploymentRowId"].ToString())
+                    }
+
+
+                }
+                @Html.ActionLink("Back", "ManageEmployers", "Master", null, new { @class = "btn bun-bg btn-default" })
+                <input class="btn bun-bg btn-default" type="submit" onclick="return validateForm()" value="Submit" />
+            </div>
+            <br />
+            <br />
+        </div>
+        }
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dvAcIfceCode').hide();
+            $('#dvFavourOf').hide();
+        });
+        $(function () {
+            //Bind State base on CountryRowID
+            $('#CountryRowID').change(function () {
+                $.getJSON('/Master/BindState/' + $('#CountryRowID').val(), function (data) {
+                    var items = '<option>-- Select State --</option>';
+                    $.each(data, function (i, States) {
+                        items += "<option value='" + States.Value + "'>" + States.Text + "</option>";
+                    });
+                    $('#StateRowID').html(items);
+                });
+            });
+            //Bind District base on StateRowID
+            $('#StateRowID').change(function () {
+                $.getJSON('/Master/BindDistrict/' + $('#StateRowID').val(), function (data) {
+                    var items = '<option>-- Select District --</option>';
+                    $.each(data, function (i, Districts) {
+                        items += "<option value='" + Districts.Value + "'>" + Districts.Text + "</option>";
+                    });
+                    $('#DistrictRowID').html(items);
+                });
+            });
+            //Bind City base on DistrictRowID
+            $('#DistrictRowID').change(function () {
+                $.getJSON('/Master/BindLocation/' + $('#DistrictRowID').val(), function (data) {
+                    var items = '<option>-- Select Location --</option>';
+                    $.each(data, function (i, Locations) {
+                        items += "<option value='" + Locations.Value + "'>" + Locations.Text + "</option>";
+                    });
+                    $('#LocationRowID').html(items);
+                });
+            });
+            //PinCode Bind
+            $('#LocationRowID').change(function () {
+                var url = "/Master/GetPinCodeByLocationId/" + $("#LocationRowID").val();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+                    success: function (pinCode) {
+                        $('#PinCode').val(pinCode);
+                        $('#hdnPinCode').val(pinCode);
+                    }
+                });
+            });
+
+            //FavourOf enable disable
+            $('#ModeOfPayment').change(function () {
+                var PaymentMode = $('#ModeOfPayment').val();
+                if (PaymentMode == 'DD' || PaymentMode == 'Cheque') {
+                    $('#dvFavourOf').show();
+                    $('#PayableAT').prop("disabled", false);
+                    $('#PayableAT').focus();
+                    $('#dvAcIfceCode').hide();
+                }
+                if (PaymentMode == 'Online') {
+                    $('#dvAcIfceCode').show();
+                    $('#PayableAT').prop("disabled", false);
+                    $('#PayableAT').focus();
+                    $('#dvFavourOf').hide();
+                }
+                if (PaymentMode == 'Others' || PaymentMode == 'Prepaid') {
+                    $('#dvFavourOf').show();
+                    $('#PayableAT').prop("disabled", true);
+                    $('#FavourOf').focus();
+                }
+            });
+            //AdditionalCost enable disable
+            $('#AdditionalCosting').change(function () {
+                var AdditionalCosting = $('#AdditionalCosting').val();
+                if (AdditionalCosting == 'Yes') {
+                    $('#AdditionalCost').prop("disabled", false);
+                    $('#AdditionalCost').focus();
+                } else {
+                    $('#AdditionalCost').prop("disabled", true);
+                }
+            });
+            //RegisteredOnMCA MCA Reg Snapshot Enable Desable
+            $('#RegisteredOnMCA').change(function () {
+                var RegisteredOnMCA = $('#RegisteredOnMCA').val();
+                if (RegisteredOnMCA == 'Yes') {
+                    $('#MCARegProofImage').prop("disabled", false);
+                    $('#MCARegProofImage').focus();
+                } else {
+                    $('#MCARegProofImage').prop("disabled", true);
+                }
+            });
+            //JustDial Reg Snapshot Enable Desable
+            $('#JustDial').change(function () {
+                var JustDial = $('#JustDial').val();
+                if (JustDial == 'Yes') {
+                    $('#JustDialImage').prop("disabled", false);
+                    $('#JustDialImage').focus();
+                } else {
+                    $('#JustDialImage').prop("disabled", true);
+                }
+            });
+            //InternetWeb Reg Snapshot Enable Desable
+            $('#InternetWeb').change(function () {
+                var InternetWeb = $('#InternetWeb').val();
+                if (InternetWeb == 'Yes') {
+                    $('#InternetWebImage').prop("disabled", false);
+                    $('#InternetWebImage').focus();
+                } else {
+                    $('#InternetWebImage').prop("disabled", true);
+                }
+            });
+            //EPFOImages Reg Snapshot Enable Desable
+            $('#EPFO').change(function () {
+                var EPFO = $('#EPFO').val();
+                if (EPFO == 'Yes') {
+                    $('#EPFOImage').prop("disabled", false);
+                    $('#EPFOImage').focus();
+                } else {
+                    $('#EPFOImage').prop("disabled", true);
+                }
+            });
+            //GST Reg Snapshot Enable Desable
+            $('#GST').change(function () {
+                var GST = $('#GST').val();
+                if (GST == 'Yes') {
+                    $('#GSTImage').prop("disabled", false);
+                    $('#GSTImage').focus();
+                } else {
+                    $('#GSTImage').prop("disabled", true);
+                }
+            });
+            //BSE Reg Snapshot Enable Desable
+            $('#BSE').change(function () {
+                var BSE = $('#BSE').val();
+                if (BSE == 'Yes') {
+                    $('#BSEImage').prop("disabled", false);
+                    $('#BSEImage').focus();
+                } else {
+                    $('#BSEImage').prop("disabled", true);
+                }
+            });
+            //NSE Reg Snapshot Enable Desable
+            $('#NSE').change(function () {
+                var NSE = $('#NSE').val();
+                if (NSE == 'Yes') {
+                    $('#NSEImage').prop("disabled", false);
+                    $('#NSEImage').focus();
+                } else {
+                    $('#NSEImage').prop("disabled", true);
+                }
+            });
+            //Domain Reg Snapshot Enable Desable
+            $('#Domain').change(function () {
+                var Domain = $('#Domain').val();
+                if (Domain == 'Yes') {
+                    $('#DomainImage').prop("disabled", false);
+                    $('#DomainImage').focus();
+                } else {
+                    $('#DomainImage').prop("disabled", true);
+                }
+            });
+            //Whois Reg Snapshot Enable Desable
+            $('#Whois').change(function () {
+                var Whois = $('#Whois').val();
+                if (Whois == 'Yes') {
+                    $('#WhoisImage').prop("disabled", false);
+                    $('#WhoisImage').focus();
+                } else {
+                    $('#WhoisImage').prop("disabled", true);
+                }
+            });
+            //Other Doc Snapshot Snapshot Enable Desable
+            $('#OtherDocumentAdded').change(function () {
+                var OtherDocumentAdded = $('#OtherDocumentAdded').val();
+                if (OtherDocumentAdded == 'Yes') {
+                    $('#OtherDocProofImage').prop("disabled", false);
+                    $('#OtherDocProofImage').focus();
+                } else {
+                    $('#OtherDocProofImage').prop("disabled", true);
+                }
+            });
+            //
+            $('#PVInitiated').change(function () {
+                var PVInitAtAddress = $('#PVInitiated').val();
+                if (PVInitAtAddress == 'Yes') {
+                    $('#PVInitAtAddress,#InitAddProofImage').prop("disabled", false);
+                    $('#PVInitAtAddress').focus();
+                } else {
+                    $('#PVInitAtAddress,#InitAddProofImage').prop("disabled", true);
+                }
+            });
+            // ModeOfInitiation
+            $('#ModeOfInitiation').change(function () {
+                var ModeOfInitiation = $('#ModeOfInitiation').val();
+                if (ModeOfInitiation == 'Others') {
+                    $('#OtherInitiation').prop("disabled", false);
+                    $('#OtherInitiation').focus();
+                }
+                else { $('#OtherInitiation').prop("disabled", true); }
+            });
+            // COtherStatus CompanyStatus
+            $('#CompanyStatus').change(function () {
+                var CompanyStatus = $('#CompanyStatus').val();
+                if (CompanyStatus == 'Others') {
+                    $('#COtherStatus').prop("disabled", false);
+                    $('#COtherStatus').focus();
+                }
+                else { $('#COtherStatus').prop("disabled", true); }
+            });
+            // CompanyLegalStatus COtherLegalStatus
+            $('#CompanyLegalStatus').change(function () {
+                var CompanyLegalStatus = $('#CompanyLegalStatus').val();
+                if (CompanyLegalStatus == 'Others') {
+                    $('#COtherLegalStatus').prop("disabled", false);
+                    $('#COtherLegalStatus').focus();
+                }
+                else { $('#COtherLegalStatus').prop("disabled", true); }
+            });
+            //
+            $('input.chkDocs:checkbox').click(function () {
+                var MandatoryDocs = '';
+                var OtherDocDetail = false;
+                $('input.chkDocs:checkbox').each(function (index, value) {
+                    if (this.checked) {
+                        MandatoryDocs += this.value + ',';
+                        if (this.value == 'Others') {
+                            OtherDocDetail=true;
+                        }
+                    }
+                });
+                if (MandatoryDocs.length > 0) {
+                    MandatoryDocs = MandatoryDocs.substring(0, MandatoryDocs.length - 1);
+                } else { MandatoryDocs = ''; }
+
+                $('#MandatoryDocument').val(MandatoryDocs.trim());
+                if (OtherDocDetail) {
+                    $('#OtherDocumentDetail').prop("disabled", false);
+                    $('#OtherDocumentDetail').focus();
+                }
+                else { $('#OtherDocumentDetail').prop("disabled", true); }
+            });
+        });
+
+        var docToastTimer;
+        function showDocError(message, focusId) {
+            var toast = $('#docToast');
+            toast.html(message);
+            toast.fadeIn(200);
+            if (focusId) { $('#' + focusId).focus(); }
+            clearTimeout(docToastTimer);
+            docToastTimer = setTimeout(function () {
+                toast.fadeOut(400);
+            }, 3000);
+        }
+        function validateForm() {
+            var PaymentMode = $('#ModeOfPayment').val();
+            var DDFavourOf = $('#DDFavourOf').val();
+            var AdditionalCosting = $('#AdditionalCosting').val();
+            var AdditionalCost = $('#AdditionalCost').val();
+            if (PaymentMode == 'DD' || PaymentMode == 'Cheque') {
+                if (DDFavourOf == '' || $('#PayableAT').val() == '') {
+                    alert("Please enter " + PaymentMode + " Payment Details.");
+                    return false;
+                }
+            }
+            if (PaymentMode == 'Others' || PaymentMode == 'Prepaid') {
+                if (DDFavourOf == '') {
+                    alert("Please enter " + PaymentMode + " Payment Details.");
+                    return false;
+                }
+            }
+            if (PaymentMode == 'Online') {
+                if ($('#PayableAT').val() == '' || $('#IFSCCode').val() == '' || $('#AccountNumber').val() == '') {
+                    alert("Please enter '" + PaymentMode + "' Payment.");
+                    $('#PayableAT').focus();
+                    return false;
+                }
+            }
+            if (AdditionalCosting == 'Yes') {
+                if (AdditionalCost == '') {
+                    alert("Please enter Additional Cost.");
+                    return false;
+                }
+            }
+
+            var ModeOfInitiation = $('#ModeOfInitiation').val();
+            if (ModeOfInitiation == 'Others') {
+                if ($('#OtherInitiation').val() == '') {
+                    alert("Please enter Other Initiation");
+                    $('#OtherInitiation').focus();
+                    return false;
+                }
+            }
+
+            var CompanyStatus = $('#CompanyStatus').val();
+            if (CompanyStatus == 'Others') {
+                if ($('#COtherStatus').val() == '') {
+                    alert("Please enter Other Initiation");
+                    $('#COtherStatus').focus();
+                    return false;
+                }
+            }
+
+            var CompanyLegalStatus = $('#CompanyLegalStatus').val();
+            if (CompanyLegalStatus == 'Others') {
+                if ($('#COtherLegalStatus').val() == '') {
+                    alert("Please enter Other Initiation");
+                    $('#COtherLegalStatus').focus();
+                    return false;
+                }
+            }
+
+            $('input.chkDocs:checkbox').each(function (index, value) {
+                if (this.checked) {
+                    if (this.value == 'Others') {
+                        if ($('#OtherDocumentDetail').val() == '') {
+                            $('#OtherDocumentDetail').focus();
+                           return false;
+                        }
+                    }
+                }
+            });
+
+
+            var Other5 = $('#Other5').val();
+
+            if ($('#Other5').val() == '')
+            {
+                alert("Please select Verification Type");
+                $('#Other5').focus();
+                return false;
+            }
+            var clientRowId = parseInt('@(ViewBag.ClientRowId ?? 0)');
+            var snapshotOnlyClients = [3, 268, 1074, 1127, 1193, 1202, 1622, 1671, 1696, 1697, 1756, 1757, 446, 950, 1221, 1704, 619, 1606,990];
+
+            if (snapshotOnlyClients.indexOf(clientRowId) !== -1) {
+                if ($('#PostedImage').val() == '') {
+                    showDocError("Company Snapshot is mandatory. Please attach the document.", "PostedImage");
+                    return false;
+                }
+            } else {
+                var missingDocs = [];
+
+                if ($('#RegisteredOnMCA').val() == '' || $('#RegisteredOnMCA').val() == null) {
+                    missingDocs.push("MCA");
+                } else if ($('#RegisteredOnMCA').val() == 'Yes' && $('#MCARegProofImage').val() == '') {
+                    missingDocs.push("MCA document");
+                }
+
+                if ($('#GST').val() == '' || $('#GST').val() == null) {
+                    missingDocs.push("GST");
+                } else if ($('#GST').val() == 'Yes' && $('#GSTImage').val() == '') {
+                    missingDocs.push("GST document");
+                }
+
+                if ($('#Whois').val() == '' || $('#Whois').val() == null) {
+                    missingDocs.push("Whois");
+                } else if ($('#Whois').val() == 'Yes' && $('#WhoisImage').val() == '') {
+                    missingDocs.push("Whois document");
+                }
+
+                if ($('#Domain').val() == '' || $('#Domain').val() == null) {
+                    missingDocs.push("Domain/Website");
+                } else if ($('#Domain').val() == 'Yes' && $('#DomainImage').val() == '') {
+                    missingDocs.push("Domain/Website document");
+                }
+
+                if (missingDocs.length > 0) {
+                    showDocError("Please complete the following: " + missingDocs.join(", "), "RegisteredOnMCA");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    </script>
+}

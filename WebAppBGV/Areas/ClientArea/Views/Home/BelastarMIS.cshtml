@@ -1,0 +1,183 @@
+﻿
+@{
+    ViewBag.Title = "BelastarMIS";
+}
+
+
+
+@{
+    ViewBag.Title = "BelastarMIS";
+    //Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+}
+
+
+@*@section DisplayTitle{ @Html.Partial("_DisplayTitleWoutNav") }*@
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="container-fluid ps-0 bg_gradient_CaseWise mt-2">
+    <div class="row row-sm">
+        @section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+    </div>
+    <div class="row row-sm ms-2">
+
+        @using (Html.BeginForm("BelastarMIS", "Home", new { area = "ClientArea" }, FormMethod.Post))
+        {
+            @Html.AntiForgeryToken();
+
+            <div class="form-horizontal">
+                @*<div class="row row-xs align-items-center mg-b-20">
+                    <div class="col-md-2">
+                        <label class="form-label mg-b-0 fw-bolder">Status :</label>
+                    </div>
+                    <div class="col-md-8 mg-t-5 mg-md-t-0">
+                        <div class="SumoSelect" tabindex="0" role="button" aria-expanded="true">
+                            @Html.DropDownList("SearchType", new List<SelectListItem>
+                                     { new SelectListItem{Text="--- Select ---", Value="--- Select ---", Selected = true,},
+                                       new SelectListItem{Text="Date Wise", Value="Date Wise"},
+                                       new SelectListItem{Text="All Open", Value="All Open"},
+                                       new SelectListItem{Text="All Closed", Value="All Closed" }
+                                     }, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>*@
+                <div class="row row-xs align-items-center mg-b-20">
+                    <div class="col-md-2">
+                        <label class="form-label mg-b-0 fw-bolder">Created date From :</label>
+                    </div>
+                    <div class="col-md-3 mg-t-5 mg-md-t-0">
+                        <div class="SumoSelect" tabindex="0" role="button" aria-expanded="true">
+                            @Html.TextBox("CompletedFromDate", null, new { @class = "form-control", @id = "CompletedFromDate", @placeholder = "dd-mm-yyyy" })
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label mg-b-0 fw-bolder">Created date To :</label>
+                    </div>
+                    <div class="col-md-3 mg-t-5 mg-md-t-0">
+                        <div class="SumoSelect" tabindex="0" role="button" aria-expanded="true">
+                            @Html.TextBox("CompletedToDate", null, new { @class = "form-control", @id = "CompletedToDate", @placeholder = "dd-mm-yyyy" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row row-xs align-items-center mt-4 justify-content-center">                 
+                    
+                        <div class="col-md-2">
+                            <input type="submit" id="btnE2EMIS" name="btnProccess" value="Export to Excel" class="submit-btn btn-block rounded-0" />
+                        </div>
+                    
+                </div>
+            </div>
+
+        }
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script type="text/javascript">
+            $(document).ready(function () {
+
+                $('#CompletedToDate').datepicker({
+                    dateFormat: "d-M-yy",
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "-66:+0",
+                });
+
+                $('#CompletedFromDate').datepicker({
+                    dateFormat: "d-M-yy",
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "-66:+0",
+                });
+
+                $('#btnE2EMIS').click(function () {
+
+                    var fromdate = $('#CompletedFromDate').val();
+                    var Todate = $('#CompletedToDate').val();
+                    var status = $('#SearchType').val();
+                    if (status == '--- Select ---') {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Info',
+                            html: '<div class="errormsg" style="text-align:center;">Please select search type</div>'
+                        });
+                        return false;
+                    }
+
+                    if (status == 'Date Wise') {
+                        if (fromdate == '') {
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Info',
+                                html: '<div class="errormsg" style="text-align:center;">Please select from date</div>'
+                            });
+                            return false;
+                        }
+                        else if (Todate == '') {
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Info',
+                                html: '<div class="errormsg" style="text-align:center;">Please select to date</div>'
+                            });
+                            return false;
+                        }
+
+                    }
+
+                });
+
+                $('#btnSearch').click(function () {
+
+                    var fromdate = $('#CompletedFromDate').val();
+                    var Todate = $('#CompletedToDate').val();
+                    var status = $('#SearchType').val();
+                    if (status == '--- Select ---') {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Info',
+                            html: '<div class="errormsg" style="text-align:center;">Please select search type</div>'
+                        });
+                        return false;
+                    }
+
+                    if (status == 'Date Wise') {
+                        if (fromdate == '') {
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Info',
+                                html: '<div class="errormsg" style="text-align:center;">Please select from date</div>'
+                            });
+                            return false;
+                        }
+                        else if (Todate == '') {
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Info',
+                                html: '<div class="errormsg" style="text-align:center;">Please select to date</div>'
+                            });
+                            return false;
+                        }
+
+                    }
+
+
+                });
+            });
+
+            $('#SearchType').change(function (e) {
+                $('#CompletedToDate').val("");
+                $('#CompletedFromDate').val("")
+            });
+
+    </script>
+}
+

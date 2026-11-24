@@ -1,0 +1,274 @@
+﻿@{
+    ViewBag.Title = "Manage Candidate List For Report QC Team Member";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "ReportQC", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+@{
+    string version = "";
+    version = ViewBag.version;
+    string tatHours1 = "";
+    string CaseStatus1 = "";
+    string AllocatedToTL1 = "";
+    if (Request.QueryString["tatHours"] != null)
+    {
+        tatHours1 = Request.QueryString["tatHours"].ToString();
+    }
+    if (Request.QueryString["AllocatedToTL"] != null)
+    {
+        AllocatedToTL1 = Request.QueryString["AllocatedToTL"].ToString();
+    }
+    if (Request.QueryString["CaseStatus"] != null)
+    {
+        CaseStatus1 = @Request.QueryString["CaseStatus"].ToString();
+    }
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    string hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportAddressMge", "ReportQC", new { CaseStatus = CaseStatus1, tatHours = tatHours1 }, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+}
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@*@section LeftNavigation{ @Html.Partial("_NavLeftReportQC") }*@
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("ManageInterimRequestTM", "ReportQC", FormMethod.Get))
+                        {
+
+
+                            <div class="container mb-3 mt-3">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <label class="control-label">Client Name :</label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        @Html.DropDownList("ClientRowID", new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"), "-- Select Client -- ", new { @class = "form-control", @style = "width:350px!important;" })
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="control-label">Keyword :</label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, Securitas Id...", @style = "width:350px!important;" })
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="container mb-3">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <label class="control-label">Recieving Date :</label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        @Html.TextBox("RecievingDate", null, new { @class = "form-control", @id = "RecievingDate", @placeholder = "yyyy-mm-dd", @style = "width:350px!important;" })
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <label class="control-label">Completed Date :</label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        @Html.TextBox("CompletedDate", null, new { @class = "form-control", @id = "CompletedDate", @placeholder = "yyyy-mm-dd",  @style = "width:350px!important;" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container mb-3 mt-3">
+                                <div class="row">
+                                    @{ if (Request.QueryString["CaseStatus"] != null)
+                                        { @Html.Hidden("CaseStatus", Request.QueryString["CaseStatus"].ToString()) }
+
+                                    }
+
+                                    <div class="col-md-12 text-center">                                        <input class="btn bun-bg btn-default" type="submit" onclick="SearchFunction()" value="Search" />                                    </div>
+                                </div>
+                            </div>
+
+
+
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.DashboardDetailsRWQC != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.DashboardDetailsRWQC, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                        htmlAttributes: new { id = "grid", @class = "table table-striped table-bordered nowrap" },
+                                        headerStyle: "thead-inverse",
+                                        rowStyle: "ordertxt",
+                                        footerStyle: "custpaging",
+                                        mode: WebGridPagerModes.All,
+                                        columns: new[]
+                                        {
+                               grid.Column(header: "No.",  format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                               grid.Column(header : "Client Name", format : (item) => {
+                                   string ClientName=item.ClientName;
+                                   if (item.ClientRowID==317 || item.ClientRowID==327 )
+                                   {
+                                       var link = Html.ActionLink(ClientName, "ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type="CDN" }, new { @target="_blank", @class="edit" });
+                                       return link;
+                                   }
+                                   else
+                                   {
+                                       return ClientName;
+                                   }
+                               }),
+                               grid.Column(header : "Securitas ID", format : (item) => {
+                                   string CompanyRefNo=item.CompanyRefNo;
+                                   var link = Html.ActionLink(CompanyRefNo, "ManageCandidateChecksForReportQCTM", "ReportQC", new { PersonalRowID = item.PersonalRowID, dispFor="TeamMember"  }, new { @class="edit" });
+                                   return link;
+                               }),
+                               grid.Column(header : "Interim", format : (item) => {
+                                   var link = Html.ActionLink("Report","ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type=item.Report_Type,CaseStatus=CaseStatus1,ClientRowId=item.ClientRowid }, new { @target="_blank", @class="edit" });
+                                   var AutoUploadReportLink = Html.ActionLink(
+                                         "Auto_Upload_Interim",
+                                         "AutoGenerateReportSingle",
+                                         "ReportQC",
+                                         new { companyRefNo = item.CompanyRefNo, RptGenerateType="Interim" }, new { @class="edit"  }
+                                     );
+
+                                    //return link;
+                                    return new HtmlString(link + "<br/><br/> " + AutoUploadReportLink.ToString());
+                               }),
+                                            grid.Column(columnName: "CandidateName", header: "Candidate Name", canSort: false),
+                                            grid.Column("reatedDate", "Created-Date", format: (item) => item.CreatedDate != DateTime.MinValue ? item.CreatedDate.ToString("dd/MM/yyyy") : "", canSort: false),
+                                            grid.Column(columnName: "CaseStatus", header: "Status", canSort: false ),
+                                            grid.Column(header : "Action", format : (item) =>
+                                            {
+                                                var link = Html.ActionLink("History", "CaseActionHistories", "ReportQC", new { pid = item.PersonalRowID }, new { @class = "iframeActionHistories cboxElement" });
+                                                return link;
+                                                }, style:"edit"),
+
+                                                 grid.Column(header : "Penalty amount ", format : (item) => {
+                                                    if (item.ClientRowId==3)
+                                                     {
+
+                                                          var link=@Html.ActionLink("Penalty amount", "AddPenaltyamount", "ReportQC", new { PersonalRowID=item.PersonalRowID,ClientRowId=item.ClientRowId  },  new { @class = "Remindermail  callbacks"});
+                                                        return link;
+                                                      }
+                                                 return "";
+                                                }),
+
+                                                  grid.Column(header : "Check SOW", format : (item) => {
+                                                      if (item.ClientRowId==317 || item.ClientRowId==327)
+                                                     {
+                                                          var link=@Html.ActionLink("Check SOW", "InsertSOWCheck", "ReportQC", new { PersonalRowID=item.PersonalRowID,ClientRowId=item.ClientRowId  },  new { @class = "Remindermail  callbacks"});
+                                                          return link;
+                                                      }
+                                                      return "";
+                                                  }),
+                               grid.Column(header : "Map", format : (item) => {
+                                   var link = Html.ActionLink("Artifacts", "UpdateReportArtifactsCaseDocByRWQCTM", "ReportQC", new { Pid = item.PersonalRowID}, new { @class="edit iframeRptArtifactCaseDoc cboxElement" });
+                                   return link;
+                               }),
+                               grid.Column(header : "Report Edit", format : (item) => {
+                                   var link = Html.ActionLink("Edit/Update", "UpdateAllChecksDetails", "ReportQC", new { id = item.PersonalRowID,CaseStatus = CaseStatus1,version=version}, new { @class="edit" });
+                                   return link;
+                               }),
+                              grid.Column(header : "Scop Edit", format : (item) => {
+
+                                                var link = Html.ActionLink("Update", "UpdateScopOfVerificationDetails", "ReportQC", new { id = item.PersonalRowID,CaseStatus = CaseStatus1,version=version}, new { @class="edit" });
+                                            return link;
+
+                                    }),
+                              grid.Column("Comperative Sheet", canSort: false, format: (item) =>
+                                    {
+                                        if ((item.ClientRowID==1219))
+                                         {
+                                            var link=@Html.ActionLink("Comperative", "Comperative_Tiger", "Verification", new {PersonalRowID=item.PersonalRowID}, new {@class = "Remindermail  callbacks"});
+                                             return link;
+                                              }
+                                           return null;
+                                           }, style:"td-1" )
+                                        }
+                                        )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @*<script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+        <link href="~/Content/colorbox.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery.colorbox-min.js"></script>*@
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+            $(".iframeRptArtifactCaseDoc").colorbox({ iframe: true, width: "80%", height: "65%" });
+            $(".Remindermail").colorbox({ iframe: true, width: "80%", height: "100%" });
+            $("#grid th").each(function () {
+                if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                    $(this).text('');
+                    $("<input/>", { type: "checkbox", id: "select_all", value: "" }).appendTo($(this));
+                    //$(this).append("<span>Select All</span>");
+                }
+            });
+
+            $('#RecievingDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                //showButtonPanel: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+        });
+    </script>
+}
+
+<script>
+    $(document).ready(function () {
+        var table = $('#grid').DataTable({ responsive: true, });
+
+        new $.fn.dataTable.FixedHeader(table);
+    });
+</script>
+<style>
+    @@media screen and (max-width: 1450px) and (min-width: 600px) {
+        #grid {
+            font-size: 1.2rem !important;
+            width: 100%;
+        }
+
+        .table td, .table th {
+            padding: .55rem !important;
+        }
+
+        .thead-inverse {
+            font-size: 1.2rem !important;
+        }
+
+        table, td, .edit {
+            font-size: 1.2rem !important;
+        }
+    }
+    .control-label {
+        font-size: 1.3rem !important;
+    }
+</style>
+
+
+

@@ -1,0 +1,190 @@
+﻿@model ViewModels.ReportQCViewModel.AddFordRemarkInfoListPagedModel
+
+<!doctype html>
+<html lang="en">
+<head>
+       @{
+         Layout = null; 
+        }
+    <meta charset="UTF-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=0'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta name="Description" content="Bootstrap Responsive Admin Web Dashboard HTML5 Template">
+    <meta name="Author" content="Spruko Technologies Private Limited">
+    <meta name="Keywords" content="admin,admin dashboard,admin dashboard template,admin panel template,admin template,admin theme,bootstrap 4 admin template,bootstrap 4 dashboard,bootstrap admin,bootstrap admin dashboard,bootstrap admin panel,bootstrap admin template,bootstrap admin theme,bootstrap dashboard,bootstrap form template,bootstrap panel,bootstrap ui kit,dashboard bootstrap 4,dashboard design,dashboard html,dashboard template,dashboard ui kit,envato templates,flat ui,html,html and css templates,html dashboard template,html5,jquery html,premium,premium quality,sidebar bootstrap 4,template admin bootstrap 4" />
+    <!-- Title -->
+    <title>BGV Client - @ViewBag.Title</title>
+
+    <!-- Favicon -->
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <!-- Icons css -->
+    <link href="../../assets/css/icons.css" rel="stylesheet">
+
+    <!-- Bootstrap css -->
+    <link href="~/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!--  Owl-carousel css-->
+    <link href="~/assets/plugins/owl-carousel/owl.carousel.css" rel="stylesheet" />
+
+    <!-- P-scroll bar css-->
+    <link href="~/assets/plugins/perfect-scrollbar/p-scrollbar.css" rel="stylesheet" />
+
+    <!--  Right-sidemenu css -->
+    <link href="~/assets/plugins/sidebar/sidebar.css" rel="stylesheet">
+
+    <!-- Sidemenu css -->
+    <link rel="stylesheet" href="~/assets/css/sidemenu.css">
+
+    <!-- style css -->
+    <link href="~/assets/css/style.css" rel="stylesheet">
+    <link href="~/assets/css/style-dark.css" rel="stylesheet">
+    <link href="~/assets/css/boxed.css" rel="stylesheet">
+    <link href="~/assets/css/dark-boxed.css" rel="stylesheet">
+
+    <!---Skinmodes css-->
+    <link href="~/assets/css/skin-modes.css" rel="stylesheet" />
+
+    <!---datatable css-->
+    <link href="~/assets/plugins/datatable/datatables.min.css" rel="stylesheet" />
+    <link href="~/assets/plugins/datatable/responsive.dataTables.min.css" rel="stylesheet">
+    <link href="~/assets/plugins/datatable/responsive.bootstrap5.css" rel="stylesheet">
+    <link href="~/assets/plugins/datatable/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/assets/plugins/datatable/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="~/assets/plugins/select2/css/select2.min.css" rel="stylesheet">
+
+    <link href="~/assets/plugins/fortawesome/fontawesome-free/css/fontawesome.min.css" rel="stylesheet" />
+    <!--- Internal Sweet-Alert css-->
+    <link href="../../assets/plugins/sweet-alert/sweetalert.css" rel="stylesheet">
+
+    <!---Internal Fileupload css-->
+    <link href="../../assets/plugins/fileuploads/css/fileupload.css" rel="stylesheet" type="text/css" /><!--- Internal Select2 css-->
+    <link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="row">
+        <div class="col-md-12">
+            @if (ViewBag.SuccessMsg != null)
+            {
+                <div class="successmsg" id="divsucc">@ViewBag.SuccessMsg.ToString()</div>
+            }
+
+            @if (ViewBag.ErrorMsg != null)
+            {
+                <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+            }
+        </div>
+    </div>
+    <div class="row row-sm ms-2">
+        <div class="col-xl-12 ps-0">
+            <div class="card-header white-text title_bg mb-1 m-0" style="width:975px!important;">
+                <div class="d-flex">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-xm-12">
+                        <p class="text-white m-0">Action Remark</p>
+                    </div>
+                </div>
+            </div>
+            @if (Model != null)
+            {
+                using (Html.BeginForm("AddFordRemark", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.AddFordRemark.ClientRowID)
+                    //@Html.HiddenFor(model => model.subject)
+
+                    @Html.HiddenFor(model => model.AddFordRemark.PersonalRowID)
+
+                    <div class="row row-xs align-items-center mg-b-20">
+                        <div class="col-md-2">
+                            <label class="form-label mg-b-0 fw-bolder">
+                                <h7 style="color:red;">*</h7>
+                                Remark :
+                            </label>
+                        </div>
+                        <div class="col-md-7 mg-t-5 mg-md-t-0">
+                            @Html.TextAreaFor(model => model.AddFordRemark.ActionRemark, new { @class = "form-control " })
+                        </div>
+                    </div>
+                    <div class="row row-xs align-items-center mb-2">
+                        <div class="col-md-2 m-auto">
+                            <input id="btnsend" type="submit" value="Submit" class="submit-btn btn-block rounded-0" />
+                        </div>
+                    </div>
+
+                }
+
+            }
+        </div>
+        </div>
+            <div class="row row-sm ms-2">
+                <div class="col-xl-12 ps-0">
+                    @if (Model != null && Model.AddFordRemarkList != null)
+                    {
+                        <table class="table mb-0 text-md-nowrap fl-table js-serial" style="border:none; cursor:grab;">
+                            <thead>
+                                <tr>
+                                    <th class="top-head">Action Remark</th>
+                                    <th class="top-head">Created Date</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-start tx-10">
+                                @foreach (var a in Model.AddFordRemarkList)
+                                {
+                                    <tr>
+                                        <td class="name">@a.ActionRemark</td>
+                                        <td class="name">@a.CreatedDate</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="errormsg">No Action Performed!</div>
+                    }
+                </div>
+            </div>
+            <!-- JQuery min js -->
+            <script src="~/assets/plugins/jquery/jquery.min.js"></script>
+
+            <!--Internal  Perfect-scrollbar js -->
+            <script src="~/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+            <script src="~/assets/plugins/perfect-scrollbar/p-scroll.js"></script>
+
+            <!-- Eva-icons js -->
+            <script src="~/assets/js/eva-icons.min.js"></script>
+
+            <!-- Internal Data tables -->
+            <script src="~/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
+            <script src="~/assets/plugins/datatable/datatables.min.js"></script>
+            <script src="~/assets/plugins/datatable/js/dataTables.bootstrap5.js"></script>
+            <script src="~/assets/plugins/datatable/js/dataTables.buttons.min.js"></script>
+            <script src="~/assets/plugins/datatable/js/buttons.bootstrap5.min.js"></script>
+            <script src="~/assets/js/tableslider.js"></script>
+            <script src="~/assets/js/table-data.js"></script>
+            <script src="~/Scripts/normalizePlugin.js"></script>
+            <script src="~/assets/js/table-serialNo.js"></script>
+            <script src="~/Scripts/jquery.colorbox-min.js"></script>
+            <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+            <!--Internal Client Page Script-->
+
+            <style>
+                .title_bg {
+                    background: #42638C !important;
+                    border-radius: 0px !important;
+                    padding: 0px !important;
+                    font-weight: 600;
+                    font-size: 1.4rem;
+                }
+
+                #cboxWrapper {
+                    height: 425px !important;
+                    width: 1011px;
+                }
+            </style>
+
+</body>
+</html>
+
+

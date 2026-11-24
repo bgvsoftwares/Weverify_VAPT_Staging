@@ -1,0 +1,127 @@
+﻿@model dynamic
+@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Stop Checks Verification";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+}
+
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+
+<div class="container-fluid ps-0 bg_gradient_CaseWise mt-2">
+    <div class="row row-sm">
+        @section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+    </div>
+    <div class="row row-sm ms-2">
+        @using (Html.BeginForm("StopChecksCaseVerification", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row g-3 align-items-center">
+                <div class="col-md-2 text-end">
+                    <label for="inputPassword6" class="col-form-label">Company Ref No :</label>
+                </div>
+                <div class="col-md-8">
+                    @Html.TextBox("CompanyRefNo", null, new { @class = "form-control", placeholder = "Company Ref No", @autocomplete = "off", @maxLength = "100" })
+                </div>
+            </div>
+            <div class="row g-3 align-items-center justify-content-center mt-2 mb-2">
+                @Html.Hidden("CaseStatus", (string)ViewBag.CaseStatus)
+                @Html.Hidden("ClientUserRowId", (string)ViewBag.ClientUserRowId)
+                @Html.Hidden("ClientRowID", (string)ViewBag.ClientRowID)
+                @Html.Hidden("PersonalIds", null)
+                <div class="col-md-2">
+                    <input class="submit-btn btn-block rounded-0" type="submit" value="Search" id="btnSearch" name="action" autofocus />
+                </div>
+                @*<div class="col-md-2">
+                    <input class="ManageClientCompany m-1" type="submit" value="Stop Case" id="btnStopCheck" name="action" autofocus />
+                </div>*@
+            </div>
+        }
+    </div>
+
+    <div class="col-xl-12 mb-5">
+        <span>@ViewBag.NavigationBtnExportExcel</span>
+            <table class="table mb-0 text-md-nowrap fl-table table-responsive table-scroll js-serial items" id="example1" style="border:none; cursor:all-scroll;">
+                <thead>
+                    <tr>
+                        <th class="top-head" style="width:15%;">Candidate Name</th>
+                        <th class="top-head" style="width:15%;">Company Ref No</th>
+                        <th class="top-head" style="width:30%;">Client Name</th>
+                        <th class="top-head" style="width:30%;">Check Name</th>
+                        <th class="top-head" style="width:10%;">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="text-start tx-10">
+                    @if (Model != null && Model.CheckVerificationList != null)
+                    {
+                        foreach (var item in Model.CheckVerificationList)
+                        {
+                            var CCRid = clsCommonMethods.PEncrypt(item.CandCheckRowId.ToString());
+                            string HoldLink = "";
+                            <tr>
+                                <td class="name">@item.CandidateFullName</td>
+                                <td class="name">@item.CompanyRefNo</td>
+                                <td class="name">@item.ClientName</td>
+                                <td class="name">@item.CheckName</td>
+                                <td class="filename"><a href="#" id="StopCheck_@item.CandCheckRowId" class="StopCheck">Stop Check</a></td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script type="text/javascript">
+        $("#btnSearch").click(function () {
+            var obj = $('form input[type="text"]').NormalizedString();
+            if (obj == false) {
+                return false;
+            }
+        });
+        $("#Search").SearchString();
+    </script>
+
+
+    <script type="text/javascript">
+        $(".StopCheck").on("click", function () {
+             Swal.fire({
+                 title: 'Are you sure do you want to stop check ?',
+                 showCancelButton: true,
+                 confirmButtonText: 'Yes, Stop it!',
+                 denyButtonText: 'No, cancel!',
+             }).then((result) => {
+                 if (result.isConfirmed) {
+                     var str = $(this).attr("id").split("_");
+                     id = str[1];
+                     if (id != "") {
+                         $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                     url: '@Url.Action("UpdateCheckVerification", "Home")',
+                    data: { "id": id },
+                    dataType: "json",
+                             success: function (data) {
+                                 if(data.result == true) {
+                                     swal.fire("Check Stoped Successfully !");
+                                     setTimeout(function () { window.location.replace("ManageClientHrApprovalCases"); }, 3000);                                 }
+                                 else {
+                                     Swal.fire('There is some error');
+                                 }
+                             }
+                         });
+                     }
+                 } else if (result.isDenied) {
+                     Swal.fire('Changes are not saved', '', 'info')
+                 }
+             })
+         });
+    </script>
+
+
+}

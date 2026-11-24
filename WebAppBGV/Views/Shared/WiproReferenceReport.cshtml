@@ -1,0 +1,462 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    /**/
+
+    /**/
+
+    var list = Model.ReferenceInfoModel.GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+
+
+}
+
+@if (Model != null && Model.ReferenceInfoModel != null && Model.ReferenceInfoModel.Count > 0)
+{
+    if (Model.ReferenceInfoModel != null)
+    {
+        int i = 0;
+        int j = 0;
+        double annuxureno = Convert.ToDouble(Session["AnnexureNo"]);
+        int k = Convert.ToInt32(annuxureno);
+        foreach (var a in list)
+        {
+            var Anticident = Model.ReferenceInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+
+            var ReportComment = a.ReportComment;
+            if (j == 0)
+            {
+                annuxureno = k + 1;
+            }
+            else
+            {
+                annuxureno = annuxureno + .1;
+            }
+            j = 2;
+            Session["AnnexureNo"] = annuxureno.ToString();
+
+
+            <page id="PrintSrc" size="A4">
+                <div style="page-break-after:always ;"></div>
+
+                <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; width:100%; border-collapse:collapse;">
+                    <tr>
+                        <td valign="top" align="center" style="height:60rem;">
+                            <table border="0" cellpadding="2" cellspacing="5" id="tblDemo" style="border-collapse: collapse; font-family: Calibri; width: 95%; margin: auto;">
+                                <tr>
+                                    <td style="border: none!important; -webkit-print-color-adjust: exact;" colspan="4" align="right" height="20"><img src='@Url.Content("~/Images/Securitas-logo.png")' style="width:75px; margin-top:10px; margin-right: 20px;"></td>
+                                </tr>
+                                <tr>
+                                    <td height="30">&nbsp;</td>
+                                </tr>
+                                <tr>
+
+                                    @if (Model.ReferenceCheckCount > 1)
+                                    {
+                                        if (a.SubcheckRowID == 150)
+                                        {
+                                            <td style="font-weight:bolder; font-size:12pt!important;font-family:Calibri,sans-serif;">Section  @annuxureno : Professional Reference Verification  1    </td>
+                                        }
+
+                                        else if (a.SubcheckRowID == 151)
+                                        {
+                                            <td style="font-weight:bolder; font-size:12pt!important;font-family:Calibri,sans-serif;">Section  @annuxureno : Professional Reference Verification  2    </td>
+                                        }
+
+                                        else if (a.SubcheckRowID == 152)
+                                        {
+                                            <td style="font-weight:bolder; font-size:12pt!important;font-family:Calibri,sans-serif;">Section  @annuxureno : Professional Reference Verification  3   </td>
+                                        }
+                                    }
+                                    else if (Model.ReferenceCheckCount == 1)
+                                    {
+                                        if (a.SubcheckRowID == 150)
+                                        {
+                                            <td style="font-weight:bolder; font-size:12pt!important;font-family:Calibri,sans-serif;">Section  @annuxureno : Professional Reference Verification      </td>
+                                        }
+
+                                        else if (a.SubcheckRowID == 151)
+                                        {
+                                            <td style="font-weight:bolder; font-size:12pt!important;font-family:Calibri,sans-serif;">Section  @annuxureno : Professional Reference Verification      </td>
+                                        }
+
+                                        else if (a.SubcheckRowID == 152)
+                                        {
+                                            <td style="font-weight:bolder; font-size:12pt!important;font-family:Calibri,sans-serif;">Section  @annuxureno : Professional Reference Verification      </td>
+                                        }
+                                    }
+
+                                </tr>
+                                <tr>
+                                    <td style="padding-top:10px;" valign="top" align="center">
+                                        <table width="100%" border="1" cellspacing="5" cellpadding="2" style="border-collapse:collapse;border-collapse:collapse;font-family:Calibri;font-size:17px">
+
+                                            @foreach (var item in Anticident)
+                                            {
+
+                                                if (item.AntecedentRowID == "107" || item.AntecedentRowID == "160" || item.AntecedentRowID == "251")
+                                                {
+                                                    <tr>
+                                                        @if (item.AntecedentRowID == "107")
+                                                        {
+
+                                                            <td style="width:5%;font-size:10pt!important;font-family:Calibri,sans-serif;">1</td>
+                                                            <td style="width:35%;font-size:10pt!important;font-family:Calibri,sans-serif;">@item.DisplayNameRep</td>
+
+
+                                                            <td style="width:30%;font-size:10pt!important;font-family:Calibri,sans-serif;">@item.DataEntryValue</td>
+                                                            <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;">
+
+                                                                @if (item.comment.ToLower() == "na")
+                                                                {
+                                                                    <p>Not Confirmed</p>
+                                                                }
+                                                                else if (item.OpsValue != "")
+
+                                                                {
+                                                                    <p> Confirmed</p>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <p>
+                                                                    </p>
+                                                                }
+
+
+                                                            </td>
+                                                            if (item.OpsValue.ToLower().Trim() == item.DataEntryValue.ToLower().Trim())
+                                                            {
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;">NA</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;">@item.OpsValue</td>
+                                                            }
+
+                                                        }
+                                                        else if (item.AntecedentRowID == "160")
+                                                        {
+
+                                                            <td style="width:5%;font-size:10pt!important;font-family:Calibri,sans-serif;">2</td>
+                                                            <td style="width:35%;font-size:10pt!important;font-family:Calibri,sans-serif;">@item.DisplayNameRep</td>
+
+
+                                                            <td style="width:30%;font-size:10pt!important;font-family:Calibri,sans-serif;">@item.DataEntryValue</td>
+                                                            <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;">
+
+                                                                @if (item.comment.ToLower() == "na")
+                                                                {
+                                                                    <p>Not Confirmed</p>
+                                                                }
+                                                                else if (item.OpsValue != "")
+
+                                                                {
+                                                                    <p> Confirmed</p>
+                                                                }
+
+                                                                else
+                                                                {
+                                                                    <p>
+                                                                    </p>
+                                                                }
+
+                                                            </td>
+                                                            if (item.OpsValue.ToLower().Trim() == item.DataEntryValue.ToLower().Trim())
+                                                            {
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;">NA</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;">@item.OpsValue</td>
+                                                            }
+
+                                                        }
+                                                        else if (item.AntecedentRowID == "251")
+                                                        {
+                                                            <td style="width:5%;font-size:10pt!important;font-family:Calibri,sans-serif;">3</td>
+                                                            <td style="width:35%;font-size:10pt!important;font-family:Calibri,sans-serif;">@item.DisplayNameRep</td>
+
+
+                                                            <td style="width:30%;font-size:10pt!important;font-family:Calibri,sans-serif;">@item.DataEntryValue</td>
+                                                            <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;">
+
+                                                                @if (item.comment.ToLower() == "na")
+                                                                {
+                                                                    <p>Not Confirmed</p>
+                                                                }
+                                                                else if (item.OpsValue != "")
+
+                                                                {
+                                                                    <p> Confirmed</p>
+                                                                }
+
+                                                                else
+                                                                {
+                                                                    <p>
+                                                                    </p>
+                                                                }
+
+                                                            </td>
+                                                            if (item.OpsValue.ToLower().Trim() == item.DataEntryValue.ToLower().Trim())
+                                                            {
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;">NA</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;">@item.OpsValue</td>
+                                                            }
+                                                        }
+                                                    </tr>
+                                                }
+
+                                                else if (item.AntecedentRowID == "167" || item.AntecedentRowID == "174" || item.AntecedentRowID == "252")
+                                                {
+                                                    <tr>
+
+                                                        <td colspan="2" style="width:35%;font-size:10pt!important;font-family:Calibri,sans-serif;">@item.DisplayNameRep</td>
+
+
+                                                        <td colspan="3" style="font-size:10pt!important;font-family:Calibri,sans-serif;">@item.OpsValue</td>
+
+
+
+                                                    </tr>
+                                                }
+
+                                                else if (item.AntecedentRowID == "105")
+                                                {
+                                                    <tr>
+
+                                                        <td colspan="2" style="width:35%;font-size:10pt!important;font-family:Calibri,sans-serif;">@item.DisplayNameRep</td>
+
+
+                                                        <td colspan="3" style="font-size:10pt!important;font-family:Calibri,sans-serif;">@Html.Raw(item.OpsValue)</td>
+
+
+
+                                                    </tr>
+                                                }
+
+                                                @*else if (item.AntecedentRowID == "252")
+                                                    {
+                                                        <tr>
+
+                                                            <td colspan="2" style="width:35%;font-size:10pt!important;font-family:Calibri,sans-serif;">@item.DisplayNameRep</td>
+
+
+                                                            <td colspan="3" style="font-size:10pt!important;font-family:Calibri,sans-serif;">Written</td>
+
+
+
+                                                        </tr>
+                                                    }*@
+                                                else
+                                                {
+                                                    <tr>
+                                                        <td colspan="2" style="width:40%;font-size:10pt!important;font-family:Calibri,sans-serif;">@item.DisplayNameRep</td>
+
+                                                        @if (item.AntecedentRowID == "189")
+                                                        {
+                                                            <td style="width:30%;font-size:10pt!important;font-family:Calibri,sans-serif;">@item.OpsValue</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td style="width:30%;font-size:10pt!important;font-family:Calibri,sans-serif;">@item.DataEntryValue</td>
+                                                        }
+
+                                                        @if (item.AntecedentRowID == "109")
+                                                        {
+                                                            if (item.comment.ToLower().Trim() == "na")
+                                                            {
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;"> Not Validated </td>
+                                                            }
+                                                            else if (item.OpsValue != "")
+                                                            {
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;">Validated</td>
+                                                            }
+
+                                                            else
+                                                            {
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;">Not Validated</td>
+                                                            }
+
+                                                            if (item.OpsValue.ToLower().Trim() == item.DataEntryValue.ToLower().Trim())
+                                                            {
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;">NA</td>
+                                                            }
+                                                            else if (item.comment.ToLower().Trim() == "na")
+                                                            {
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;">Not Validated</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;">@item.OpsValue</td>
+                                                            }
+
+                                                        }
+                                                        else if (item.AntecedentRowID == "189")
+                                                        {
+
+                                                            if (item.OpsValue != "")
+                                                            {
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;">Yes</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;"></td>
+                                                            }
+                                                            if (item.OpsValue.ToLower().Trim() == item.DataEntryValue.ToLower().Trim())
+                                                            {
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;">NA</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;">NA</td>
+                                                            }
+                                                        }
+                                                        else if (item.AntecedentRowID == "158")
+                                                        {
+                                                            if (item.OpsValue != "")
+                                                            {
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;"> </td>
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;"></td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;"></td>
+                                                                <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;"></td>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;"></td>
+                                                            <td style="width:15%;font-size:10pt!important;font-family:Calibri,sans-serif;"></td>
+                                                        }
+                                                    </tr>
+                                                }
+
+
+                                            }
+
+                                            @*<tr>
+                                                    <td colspan="2" style="width:35%;font-size:10pt!important;font-family:Calibri,sans-serif;">Additional Remarks</td>
+                                                    <td colspan="3" style="font-size:10pt!important;font-family:Calibri,sans-serif;">@Html.Raw(ReportComment)</td>
+                                                </tr>*@
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="bottom">
+                            <table border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                                <tbody>
+                                    <tr>
+                                        <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                                            &nbsp;
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                        <td width="1%">&nbsp;</td>
+                                        <td width="79%">
+                                            <p style="font-size: 16px!important; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                            <p style="font-size: 16px!important; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                            <p style="font-size: 15px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                            <p style="font-size: 15px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+            </page>
+
+            if (Model.CandidateDocList != null)
+            {
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                {
+                    if (Doc.SubCheckRowID == a.SubcheckRowID)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                            <page id="PrintSrc" size="A4">
+                                <div style="page-break-after:always ;"></div>
+
+                                <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; width:100%; border-collapse:collapse;">
+                                    <tr>
+                                        <td valign="top" align="center" style="height:60rem;">
+                                            <table border="0" cellpadding="2" cellspacing="5" id="tblDemo" style="width:100%;">
+                                                <tr>
+                                                    <td style="font-size:10px; font-family:Calibri;">
+                                                        <table style="width:100%;" border="0" cellspacing="0" cellpadding="0">
+                                                            <tr>
+                                                                <td style="font-size: 20px!important; border: none!important; font-family: Calibri; -webkit-print-color-adjust: exact;" colspan="4" align="right" height="20"><span style="font-family: Calibri, sans-serif;"><strong><img src='@Url.Content("~/Images/Securitas-logo.png")' style="width:75px; margin-top:10px; margin-right: 20px;"></strong></span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td width="100%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px; text-align:center;">@a.SubCheckName (@Doc.DocumentType)</p></td>
+                                                            </tr>
+                                                            <tr><td colspan="2">&nbsp;</td></tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr style="text-align:center">
+                                                    <td valign="top">
+                                                        @{
+                                                            FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                            System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                            if (image.Height > 600)
+                                                            {
+                                                                <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" style="width:100%; height:55rem;" />
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" style="width:100%; height:55rem;" />
+                                                            }
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td valign="bottom">
+                                            <table border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                                                            &nbsp;
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                                        <td width="1%">&nbsp;</td>
+                                                        <td width="79%">
+                                                            <p style="font-size: 16px!important; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                                            <p style="font-size: 16px!important; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                                            <p style="font-size: 15px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                                            <p style="font-size: 15px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </page>
+                        }
+                    }
+                }
+            }
+            i++;
+        }
+    }
+}

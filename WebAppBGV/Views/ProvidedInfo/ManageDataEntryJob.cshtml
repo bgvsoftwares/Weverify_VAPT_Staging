@@ -1,0 +1,52 @@
+﻿@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Welcome Case Information Provided For  (" + Convert.ToString(Session["CandidateName"]) + ")";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    
+    string hyperLink = string.Empty;
+    if (Session["CaseStatus"].ToString() != null)
+    {
+        hyperLink = Html.ActionLink("linkTitle", "AllocatedDataEntryJob", "ProvidedInfo", new { CaseStatus = clsCommonMethods.PEncrypt( Session["CaseStatus"].ToString()),version= clsCommonMethods.PEncrypt("New") }, new { @class = "headerbacklink" }).ToString();
+    }
+    else if (Request.QueryString["tatHours"] != null)
+    {
+        hyperLink = Html.ActionLink("linkTitle", "AllocatedDataEntryJob", "ProvidedInfo", new { tatHours = Request.QueryString["tatHours"].ToString() }, new { @class = "headerbacklink" }).ToString();
+    }
+    else
+    {
+        hyperLink = Html.ActionLink("linkTitle", "AllocatedDataEntryJob", "ProvidedInfo", null, new { @class = "headerbacklink" }).ToString();
+    }
+
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    //End Added 10-08-2017
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftDataEntryProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12 padremove">
+        <div class="row">
+            @Html.Partial("_CaseDocumentList")
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                @Html.Partial("_CaseActionHistories")
+            </div>
+        </div>
+        @*<div class="detail-change"><a href="#">Welcome to Case Upload Module By Data Entry Operator!</a></div>*@
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+
+    <script type="text/javascript">
+
+    </script>
+}
+

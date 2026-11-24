@@ -1,0 +1,273 @@
+﻿
+@{
+    ViewBag.Title = "Report Visibility Management";
+    //Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitleWoutNav") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("ClientManagment", "ClientServicing", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch search-frame">
+                                    <label class="col-md-2 control-label">Client Name :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex Enter Client Name..." })
+                                   
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <input class="btn bun-bg btn-default" type="submit" value="Search" name="SaveWork" />
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        }
+                    </div>
+
+
+                </div>
+                @if (Model != null && Model.GetClientDetails != null)
+
+                {
+                    <div class="row">
+                        <div class="col-md-12">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.GetClientDetails, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                           htmlAttributes: new { id = "grid", @class = "table table-striped table-bordered nowrap" },
+                           headerStyle: "thead-inverse",
+                           rowStyle: "ordertxt",
+                           footerStyle: "custpaging",
+                           mode: WebGridPagerModes.All,
+                           columns: new[]
+                           {
+                               grid.Column(header: "No.", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                               grid.Column(columnName: "UserID", header: "UserID", canSort: false),
+                               grid.Column(header: "Active", canSort: false, format: (item) => {
+                                   string strActive=string.Empty;
+                                   if (item.Status == 1)
+                                   {
+                                       strActive += "<input name="+ item.ClientUserRowID +" id="+ item.ClientUserRowID +" checked='true' type='checkbox' onchange='adchange(this)' />";
+                                   }
+                                   else  if (item.Status == 3)
+                                   {
+                                       strActive += "<input name="+ item.ClientUserRowID +" id="+ item.ClientUserRowID +"  type='checkbox' onchange='adchange(this)' />";
+                                   }
+                                   return new HtmlString(strActive);
+                               }),
+                               grid.Column(header: "Interim Report Visible", canSort: false, format: (item) => {
+                                   string strActive=string.Empty;
+                                   if (item.ReportVisibilityInterim == 1)
+                                   {
+                                       strActive += "<input name="+ item.ClientUserRowID +" id="+ item.ClientUserRowID +" checked='true' type='checkbox' onchange='InterimReportchange(this)' />";
+                                   }
+                                   else
+                                   {
+                                       strActive += "<input name="+ item.ClientUserRowID +" id="+ item.ClientUserRowID +" type='checkbox' onchange='InterimReportchange(this)' />";
+                                   }
+                                   return new HtmlString(strActive);
+                               }),
+                               grid.Column(header: "Final Report Visible", canSort: false, format: (item) => {
+                                   string strActive=string.Empty;
+                                   if (item.ReportVisibilityFinal == 1)
+                                   {
+                                       strActive += "<input name="+ item.ClientUserRowID +" id="+ item.ClientUserRowID +" checked='true' type='checkbox' onchange='Reportchange(this)' />";
+                                   }
+                                   else
+                                   {
+                                       strActive += "<input name="+ item.ClientUserRowID +" id="+ item.ClientUserRowID +" type='checkbox' onchange='Reportchange(this)' />";
+                                   }
+                                   return new HtmlString(strActive);
+                               }),
+                                grid.Column(header : "Update EmailID", format : (item) =>
+                                    {
+                                        var link = Html.ActionLink("Update", "UpdateClientEmailId", "ClientServicing", new { pid = item.ClientUserRowID }, new { @class = "iframeUpdateClientEmailId cboxElement" });
+                                        return link;
+                                    })
+                           })
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeUpdateClientEmailId").colorbox({ iframe: true, width: "60%", height: "40%" });
+
+        });
+    </script>
+
+  
+    <script type="text/javascript">        
+        function adchange(ChkData)
+        {
+
+            var id = ChkData.id;
+            var checkeds = ChkData.checked;
+            var flag = "";
+            if (ChkData.checked == true) {
+                flag = confirm('Are you sure to Enable this Record ?');
+            }
+            if (ChkData.checked == false)
+            {
+                flag = confirm('Are you sure to Disable this Record ?');
+            }
+            if (id != "" && flag) 
+            {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("ClientUserActive", "ClientServicing")',
+                    data: { "id": id, "checkeds": checkeds },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Record Update Successfully!!");
+                            //setTimeout(function () { window.location.replace("ClientManagment"); }, 500);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+            else {
+                if (ChkData.checked == false) {
+                    ChkData.checked = true;
+                }
+                else {
+                    ChkData.checked = false;
+                }
+            }
+        }
+
+        function Reportchange(ChkData)
+        {
+
+            var id = ChkData.id;
+            var checkeds = ChkData.checked;
+            var flag = "";
+            if (ChkData.checked == true) {
+                flag = confirm('Are you sure to Enable this Record ?');
+            }
+            if (ChkData.checked == false)
+            {
+                flag = confirm('Are you sure to Disable this Record ?');
+            }
+            if (id != "" && flag)
+            {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("ClientUserReportVisible", "ClientServicing")',
+                    data: { "id": id, "checkeds": checkeds },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Record Update Successfully!!");
+                            //setTimeout(function () { window.location.replace("ClientManagment"); }, 500);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+            else {
+                if (ChkData.checked == false) {
+                    ChkData.checked = true;
+                }
+                else {
+                    ChkData.checked = false;
+                }
+            }
+        }
+
+        function InterimReportchange(ChkData)
+        {
+
+            var id = ChkData.id;
+            var checkeds = ChkData.checked;
+            var flag = "";
+            if (ChkData.checked == true) {
+                flag = confirm('Are you sure to Enable this Record ?');
+            }
+            if (ChkData.checked == false)
+            {
+                flag = confirm('Are you sure to Disable this Record ?');
+            }
+            if (id != "" && flag)
+            {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("ClientUserIntrimReportVisible", "ClientServicing")',
+                    data: { "id": id, "checkeds": checkeds },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Record Update Successfully!!");
+                            //setTimeout(function () { window.location.replace("ClientManagment"); }, 500);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+            else {
+                if (ChkData.checked == false) {
+                    ChkData.checked = true;
+                }
+                else {
+                    ChkData.checked = false;
+                }
+            }
+        }
+    </script>
+}
+
+
+<style>
+    @@media screen and (max-width: 1450px) and (min-width: 600px) {
+        #grid {
+            font-size: 1.2rem !important;
+            width: 100%;
+        }
+
+        .table td, .table th {
+            padding: .55rem !important;
+        }
+
+        .thead-inverse {
+            font-size: 1.2rem !important;
+        }
+
+        table, td, .edit {
+            font-size: 1.2rem !important;
+        }
+    }
+</style>

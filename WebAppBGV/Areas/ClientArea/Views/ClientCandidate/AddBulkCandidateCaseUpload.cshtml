@@ -1,0 +1,332 @@
+﻿@model ViewModels.TempViewModel.AddTempPQPersonalForBulkUpViewModel
+
+@{
+    ViewBag.Title = "Create bulk cases";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManageClientCandidate", "ClientCandidate", new { area = "ClientArea" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    string clientRowId = "";
+    clientRowId = @ViewBag.clientRowId;
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="container-fluid form_container" style="height:78vh;">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 ps-4">
+            <div class="main-content-label mg-b-5 pt-3 ps-2">
+                NOTE: All document to be clubbed and uploaded as one attachment. No multiple documents to be attached.
+            </div>
+            <div class="mt-4">
+                <div class="row row-xs align-items-center mg-b-20">
+                    @using (Html.BeginForm("AddBulkCandidateCaseUpload", "ClientCandidate", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input id="Savebtn" name="Savebtn" type="hidden" value=''>
+                        if (clientRowId == "1209")
+                        {
+                            <div class="row row-xs align-items-center mg-b-20">
+                                @{
+                                    if (Enumerable.Count(ViewBag.ClientList) > 0)
+                                    //if (ViewBag.ClientList != null && ViewBag.ClientList.count() > 0)
+                                    {
+                                        <div class="col-md-2 mg-t-5 mg-md-t-0">
+                                            @Html.Label("Select Client", htmlAttributes: new { @class = "control-label required control-label text-right fw-bolder" })
+                                        </div>
+                                        <div class="col-md-7 mg-t-5 mg-md-t-0">
+                                            @Html.DropDownList("ClientRowID", new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                                                                    "-- Select Client -- ",
+                                                                    new { @id = "ClientRowID", @class = "form-control" })
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(model => model.ClientRowID)
+                            @Html.HiddenFor(model => model.ClientUserRowID)
+                        }
+
+                        <div class="row row-xs align-items-center mg-b-20">
+                            <div class="col-md-2">
+                                <label class="form-label mg-b-0 fw-bolder">Uplod Docs</label>
+                            </div>
+                            <div class="col-md-7 mg-t-5 mg-md-t-0">
+                                @Html.TextBoxFor(model => model.UploadDoc, new { type = "file", @accept = "xls, xlsx", @class = "form-control dropify" })
+                                @Html.ValidationMessageFor(model => model.UploadDoc, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-2 mg-t-5 mg-md-t-0">
+                                <a class="ManageClientCompany" target="_blank" href='@Url.Action("CandidateUploadTemplate", "ClientCandidate", new { area = "ClientArea" })' style="padding: 0.35rem 0.8rem 0.35rem 0.8rem!important;"><i class="fa fa-file-excel me-2"></i>Excel Template</a>
+                            </div>
+                        </div>
+                        <div class="form-horizontal mt-2">
+                            <div class="row row-xs align-items-center">
+                                <div class="col-md-2 mg-t-5 mg-md-t-0">
+                                    @if (Session["ClientRowID"].ToString() == "1470")
+                                    {
+                                        <label class="control-label text-right fw-bolder"><span style="color:red;">*</span>Package : </label>
+                                    }
+                                    else
+                                    {
+                                        <label class="control-label text-right fw-bolder"><span style="color:red;">*</span>Pricing Type : </label>
+                                    }
+                                </div>
+                                <div class="col-md-7 mg-t-5 mg-md-t-0">
+                                    @if (Session["ClientRowID"].ToString() == "1680")
+                                    {
+
+
+                                        @Html.DropDownList("PricingType", new List<SelectListItem>
+        { new SelectListItem { Text = "-- Select --", Value = "0" },
+        new SelectListItem { Text = "Package", Value = "1" },
+        new SelectListItem { Text = "Check", Value = "2" },
+        new SelectListItem { Text = "Package & Check", Value = "4" }},
+        new { @class = "form-control" })
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownList("PricingType", new List<SelectListItem>
+                        { new SelectListItem { Text = "-- Select --", Value = "0" },
+                        new SelectListItem { Text = "Package", Value = "1" },
+                        new SelectListItem { Text = "Check", Value = "2" }},
+                    new { @class = "form-control" })
+                                    }
+
+                                    <div class="row row-xs align-items-center">
+                                        <div id="dvChksPcks" class="col-md-12" style="background:#fff;">
+                                            <label class="scheduler-border m-2"> Selected Checks And Package<em style="color:red;">*</em></label>
+                                            <div class="input-group mb-2">
+                                                <input type="text" class="form-control" placeholder="Search" onkeyup="myFunction()" id="myInput">
+                                                <span class="input-group-text" style="background: #FC273F;color: #fff;position: relative;right: 39px;height: 40px; transition:ease-in-out 0.5s;">
+                                                    <i class="bx bx-search-alt"></i>
+                                                </span>
+                                            </div>
+                                            <ul id="dvChecksPackages" style="list-style-type:none!important;"></ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @Html.HiddenFor(model => model.CandidateCheckOrPackage)
+                            @*<div class="row row-xs align-items-center mt-4 justify-content-center">
+                    <div class="col-md-2">
+                        <input class="submit-btn btn-block rounded-0" type="submit" onclick="return validateForm()" value="Submit" />
+                    </div>
+                </div>*@
+
+                            <div class="row row-xs align-items-center mt-4 justify-content-center">
+                                @if (Convert.ToInt32(Session["ClientRowID"]) == 940)
+                                {
+                                    <div class="col-md-2">
+                                        <input class="submit-btn btn-block rounded-0" type="submit" onclick="return validateForm(this,'Force Submit')" id="btnFSubmit" name="btnSave" value="Force Submit" />
+                                    </div>
+                                }
+                                <div class="col-md-2">
+                                    <input class="submit-btn btn-block rounded-0" type="submit" onclick="return validateForm(this,'Submit')" id="btnNSubmit" name="btnSave" value="Submit" />
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#ClientRowID').change(function () {
+                $('#PricingType').val(0);
+                $('#dvChksPcks').hide();
+            })
+            $('#dvChksPcks').hide();
+            $('#PricingType').change(function () {
+                var url1 = "/ClientArea/Home/GetChecksAndPackageByClientId?id=" + $("#ClientRowID").val() + "&pt=" + $("#PricingType").val();
+                $.ajax({
+                    url: url1,
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+                    success: function (allData) {
+                        if (allData != null && allData != "") {
+                            $('#dvChksPcks').show();
+                            var items = '';
+                            jQuery.each(allData, function (index, allData) {
+                                if (allData.CheckFamilyRowID != 0) {
+                                    if (allData.CheckFamilyRowID == 0903) {
+                                        items += "<li  class='paackage_li' style='padding: .30rem; list-style-type: none;'><a><input type='checkbox' class='chkPkgChks' onClick='ckChange1(this)' value='" + allData.PackageorCheckRowid + "' /> " + allData.CheckOrPackageName + "</a></li>";
+
+                                    } else {
+                                        items += "<li class='paackage_li' style='padding: .30rem; list-style-type: none;'><a><input type='checkbox' class='chkPkgChks' value='Check-" + allData.ClientCheckRowID + "' /> " + allData.CheckOrPackageName + "</a></li>";
+
+                                    }
+                                }
+                                else {
+                                    items += "<li class='paackage_li' style='padding: .30rem; list-style-type: none;'><a><input type='checkbox' class='chkPkgChks' name='checkbox1' onClick='ckChange(this)' value='Package-" + allData.CheckOrPackageName + "' /> " + allData.CheckOrPackageName + "</a></li>";
+                                }
+                            });
+                            $('#dvChecksPackages').html(items);
+                        }
+                        else {
+                            $('#dvChksPcks').hide();
+                            swal.fire("No Checks And Packages Selected");
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        swal.fire("some error");
+                    }
+                });
+            });
+        });
+
+        $(document).on('change', 'input[class="chkPkgChks"]', function (e) {
+            var selectedIds = '';
+            $('input[class="chkPkgChks"]').each(function (index, value) {
+                if (this.checked) { selectedIds += this.value + ','; }
+            });
+            if (selectedIds.length > 0) {
+                selectedIds = selectedIds.substring(0, selectedIds.length - 1);
+            } else { selectedIds = ''; }
+
+            $('#CandidateCheckOrPackage').val(selectedIds.trim());
+        });
+        //function validateForm() {
+        //    if ($('#PricingType').val() == 0) {
+        //        swal.fire("Please Select Pricing Type");
+        //        $('#PricingType').focus();
+        //        return false;
+        //    }
+
+        //    var chkCount = 0;
+        //    $('input.chkPkgChks:checkbox').each(function (index, value) {
+        //        if (this.checked) {
+        //            chkCount += 1;
+        //        }
+        //    });
+        //    if (chkCount == 0) {
+        //        alert("Please select atleast one Check or Package.");
+        //        return false;
+        //    }
+        //    return true;
+        //}
+        function validateForm(ctl, btn) {
+            if ($('#PricingType').val() == 0) {
+                swal.fire("Please Select Pricing Type");
+                $('#PricingType').focus();
+                return false;
+            }
+
+            var chkCount = 0;
+            $('input.chkPkgChks:checkbox').each(function (index, value) {
+                if (this.checked) {
+                    chkCount += 1;
+                }
+            });
+            if (chkCount == 0) {
+                alert("Please select atleast one Check or Package.");
+                return false;
+            }
+            $("#Savebtn").val(btn);
+            return true;
+        }
+        function ckChange(el) {
+            var ckName = document.getElementsByName(el.name);
+            for (var i = 0, c; c = ckName[i]; i++) {
+                c.disabled = !(!el.checked || c === el);
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input[type=datetime]').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: "-66:+10",
+                //onClose: function (dateText, inst) {
+                //    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
+                //}
+            });
+            var dNow = new Date();
+            var localdate = (dNow.getFullYear() + '-' + (dNow.getMonth() + 1) + '-' + dNow.getDate());
+            $('#OrderDate').val(localdate);
+        });
+    </script>
+    <script type="text/javascript">
+        $(
+            function () {
+
+                $('#clientRowId').change(function ()
+            {
+
+                    var url = "/ClientCandidate/AddBulkCandidateCaseUpload/" + $("#clientRowId").val();
+                $('#HfClientRowId').val(this.value);
+                window.location.href = '@Url.Action("AddBulkCandidateCaseUpload", "ClientCandidate")' + '?id=' + this.value;
+
+
+                });
+            });
+    </script>
+    <script>
+        function myFunction() {
+            var input, filter, ul, li, a, i, txtValue;
+            input = document.getElementById("myInput");
+            filter = input.value.toUpperCase();
+            ul = document.getElementById("dvChecksPackages");
+            li = ul.getElementsByTagName("li");
+            for (i = 0; i < li.length; i++) {
+                a = li[i].getElementsByTagName("a")[0];
+                txtValue = a.textContent || a.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    li[i].style.display = "";
+                } else {
+                    li[i].style.display = "none";
+                }
+            }
+        }
+
+        function ckChange1(el) {
+
+            if (el.value.toLowerCase().includes("check-")) {
+                return;
+            }
+
+
+            var allCheckboxes = document.getElementsByClassName('chkPkgChks');
+
+            for (var i = 0; i < allCheckboxes.length; i++) {
+                var currentItem = allCheckboxes[i];
+
+
+                if (currentItem.value.toLowerCase().includes("package")) {
+
+
+                    if (el.checked) {
+                        if (currentItem !== el) {
+                            currentItem.disabled = true;
+                        }
+                    } else {
+                        currentItem.disabled = false;
+                    }
+                }
+            }
+        }
+    </script>
+}
+
+
+
+
+

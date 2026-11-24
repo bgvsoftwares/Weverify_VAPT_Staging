@@ -1,0 +1,364 @@
+﻿
+@{
+    ViewBag.Title = "Manage Partner Allocated Checks";
+    Layout = "~/Areas/Partner/Views/Shared/_Layout.cshtml";
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+@{
+    if (Request.QueryString["CaseStatus"] != null)
+    {
+
+        <div class="all-button-bg">
+            @Html.ActionLink("Export Excel", "ExportChecksReport", new { CaseStatus = Request.QueryString["CaseStatus"] }, new { @class = "btn bun-bg btn-default" })
+        </div>
+    }
+
+
+}
+@{
+    bool isUserAllocated = Request.QueryString["CaseStatus"] == "UserAllocated";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("ManagePartnerAllocatedChecks", "Home", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch search-frame row">
+                                    <label class="col-md-2 control-label font-weight-bold text-right">State Name :</label>
+                                    <div class="col-md-4">
+                                        @Html.DropDownList("StateRowID", new SelectList(ViewBag.VendorStatesList, "StateRowID", "StateName"), "-- Select State -- ", new { @class = "form-control" })
+                                    </div>
+                                    <label class="col-md-2 control-label font-weight-bold text-right">Keyword :</label>
+                                    <div class="col-md-4">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, Ref No..." })
+                                    </div>
+                                </div>
+                                @{
+                                    if (Request.QueryString["CaseStatus"] != null)
+                                    {
+                                        @Html.Hidden("CaseStatus", Request.QueryString["CaseStatus"].ToString())
+                                    }
+                                }
+
+                                @if (Request.QueryString["CaseStatus"] == "UserAllocated"  && (Session["VendorRowID"].ToString()=="141" || Session["VendorRowID"].ToString() == "140" || Session["VendorRowID"].ToString() == "1"))
+                                {
+                                    <div class="form-group row">
+                                        <label class="col-md-2 control-label font-weight-bold text-right">Partner Name :</label>
+                                        <div class="col-md-4">
+                                            @Html.DropDownList("VendorRowID", new SelectList(ViewBag.VendorNameList, "VendorRowID", "VendorName"), "-- Select Partner -- ", new { @class = "form-control", id = "vendorDropdown" })
+                                        </div>
+                                        <input type="hidden" name="CheckData" id="CheckData" value="" />
+
+
+                                    </div>
+                                    <center>
+                                        <div id="Warningmessage" style="display:none; font-weight:bold; color:red">Please select Partner/Checks Before Submission</div>
+                                    </center>
+
+                                }
+
+                                <div class="all-button-bg">
+                                    <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                                    @if (Request.QueryString["CaseStatus"] == "UserAllocated" && (Session["VendorRowID"].ToString() == "141" || Session["VendorRowID"].ToString() == "140" || Session["VendorRowID"].ToString() == "1"))
+                                    {
+                                        <button type="button" class="btn bun-bg btn-default" id="allocateButton" style="margin-left: 10px;">Allocate</button>
+                                    }
+
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @*@if (Model != null && Model.PQVerificationInfo != null)
+                        {
+                            <div class="row">
+                                <div class="col-md-12 table">
+                                    @{
+
+                                        WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                        grid.Bind(Model.PQVerificationInfo, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                                    }
+                                    @grid.GetHtml(
+                                            htmlAttributes: new { id = "grid", @class = "table" },
+                                            headerStyle: "thead-inverse",
+                                            rowStyle: "ordertxt",
+                                            footerStyle: "custpaging",
+                                            mode: WebGridPagerModes.All,
+                                            columns: new[]
+                                            {
+
+                                               isUserAllocated
+                                                ? grid.Column(header: "{checkall}", format: @<text> <input type="checkbox" value="@(item.PersonalRowID+"_"+item.SubCheckFamilyId)" name="verificationId" class="verificationId" /> </text>, style: "checkbox-column")
+        : null,
+        grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+        grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-2"),
+        grid.Column(columnName: "CompanyRefNo", header: "CompanyRefNo", canSort: false, style:"td-2"),
+        grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-2"),
+        grid.Column(columnName: "PersonalName", header: "Candidate Name", canSort: false, style:"td-1"),
+        grid.Column(columnName: "StateName", header: "State", canSort: false, style:"td-1"),
+
+
+        grid.Column("Ageing", format: (item) => item.ModifiedDate != null ? (DateTime.Now - item.ModifiedDate).Days : "", canSort: false,style:"td-1"),
+        grid.Column(columnName: "Remarks", header: "Remarks", canSort: false, style:"td-2"),
+        grid.Column(columnName: "PartnerUserName", header: "Alloc Part User", canSort: false, style:"td-1"),
+
+        grid.Column(header : "Verification", format : (item) => {
+        if(item.CheckFamilyRowID==12)
+        {
+        return Html.ActionLink("Complete", "AddEmploymentInfoByPTR", "Home", new { PersonalRowID=item.PersonalRowID,subCheckId=item.SubCheckRowID,ClientRowId=item.ClientRowID }, null);
+        }
+        else if(item.CheckFamilyRowID==11)
+        {
+        return Html.ActionLink("Complete", "AddEducationInfoByPTR", "Home", new { PersonalRowID=item.PersonalRowID,subCheckId=item.SubCheckRowID,ClientRowID=item.ClientRowID }, null);
+        }
+        else
+        {
+        return Html.ActionLink("Complete", "AddAddressInfoByPTRTeamMember", "Home", new { id = item.VerificationRowID,PersonalRowID=item.PersonalRowID,subCheckId=item.SubCheckRowID,ClientRowID=item.ClientRowID }, null);
+        }
+
+        }, style:"edit td-1"),
+        })
+                                    <div class="total-record">Total Records: @Model.TotalRecords</div><br />
+                                </div>
+                            </div>
+                        }*@
+
+
+                @if (Model != null && Model.PQVerificationInfo != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12 table">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+
+
+                                var columns = new List<WebGridColumn>();
+
+
+                                if (isUserAllocated && (Session["VendorRowID"].ToString() == "141" || Session["VendorRowID"].ToString() == "140" || Session["VendorRowID"].ToString() == "1"))
+                                {
+                                    columns.Add(grid.Column(header: "{checkall}", format: @<text> <input type="checkbox" value="@(item.PersonalRowID + "_" + item.SubCheckFamilyId)" name="verificationId" class="verificationId" /> </text>, style: "checkbox-column"));
+                                }
+
+                                // Always add these columns
+                                columns.Add(grid.Column(header: "No.", style: "", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex));
+                                columns.Add(grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style: "td-2"));
+                                columns.Add(grid.Column(columnName: "CompanyRefNo", header: "CompanyRefNo", canSort: false, style: "td-2"));
+                                columns.Add(grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style: "td-2"));
+                                columns.Add(grid.Column(columnName: "PersonalName", header: "Candidate Name", canSort: false, style: "td-1"));
+                                columns.Add(grid.Column(columnName: "StateName", header: "State", canSort: false, style: "td-1"));
+                                columns.Add(grid.Column("Ageing", format: (item) => item.ModifiedDate != null ? (DateTime.Now - item.ModifiedDate).Days.ToString() : "", canSort: false, style: "td-1"));
+                                columns.Add(grid.Column(columnName: "Remarks", header: "Remarks", canSort: false, style: "td-2"));
+                                columns.Add(grid.Column(columnName: "PartnerUserName", header: "Alloc Part User", canSort: false, style: "td-1"));
+                                grid.Column(columnName: "VendorMobileNo", header: "Candidate Mobile No.", canSort: false, style: "td-1");
+columns.Add(grid.Column(header: "Verification", format: (item) =>
+{
+    if (item.CheckFamilyRowID == 12)
+    {
+        return Html.ActionLink("Complete", "AddEmploymentInfoByPTR", "Home", new { PersonalRowID = item.PersonalRowID, subCheckId = item.SubCheckRowID, ClientRowId = item.ClientRowID }, null);
+    }
+    else if (item.CheckFamilyRowID == 11)
+    {
+        return Html.ActionLink("Complete", "AddEducationInfoByPTR", "Home", new { PersonalRowID = item.PersonalRowID, subCheckId = item.SubCheckRowID, ClientRowID = item.ClientRowID }, null);
+    }
+    else
+    {
+        return Html.ActionLink("Complete", "AddAddressInfoByPTRTeamMember", "Home", new { id = item.VerificationRowID, PersonalRowID = item.PersonalRowID, subCheckId = item.SubCheckRowID, ClientRowID = item.ClientRowID }, null);
+    }
+}, style: "edit td-1"));
+
+                                // Bind the WebGrid with columns
+                                grid.Bind(Model.PQVerificationInfo, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+
+                            @grid.GetHtml(
+                                htmlAttributes: new { id = "grid", @class = "table" },
+                                headerStyle: "thead-inverse",
+                                rowStyle: "ordertxt",
+                                footerStyle: "custpaging",
+                                mode: WebGridPagerModes.All,
+                                columns: columns.ToArray()  // Convert List to Array
+                            )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div><br />
+                        </div>
+                    </div>
+                }
+               
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+
+    <script type="text/javascript">
+        $(".Complete").on("click", function () {
+            var str = $(this).attr("id").split("_");
+            id = str[1];
+            pid = str[2];
+            subid = str[3];
+
+            var flag = confirm('Are you sure to completed this check ?');
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("CompletedByPRTMgr", "Home")',
+                    data: { "id": id,"pid":pid,"subid":subid },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("This Check is Completed Successfully!");
+                            setTimeout(function () { window.location.replace("ManagePartnerAllocatedChecks"); }, 500);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+        });
+
+        //===========================================
+
+                   $(document).ready(function () {
+               // 1st replace first column header text with checkbox
+               $("#grid th").each(function () {
+                   if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                       $(this).text('');
+                       $("<input/>", { type: "checkbox", id: "select_all", value: "" }).appendTo($(this));
+                       //$(this).append("<span>Select All</span>");
+                   }
+               });
+
+               //2nd click event for header checkbox for select /deselect all
+               $('#select_all').change(function () {
+                   $('input[class="verificationId"]').prop('checked', $(this).prop('checked'));
+                   var VerificationIds = '';
+                   var OCVerIDs = '';
+                   $('input[class="verificationId"]').each(function (index, value) {
+                       if (this.checked) {
+                           var id = this.value.split('_');
+                           VerificationIds += id[0] + ',';
+                           OCVerIDs += this.value + ',';
+                       }
+                   });
+                   if (VerificationIds.length > 0 && OCVerIDs.length > 0) {
+                       VerificationIds = VerificationIds.substring(0, VerificationIds.length - 1);
+                       OCVerIDs = OCVerIDs.substring(0, OCVerIDs.length - 1);
+                   } else {
+                       VerificationIds = '';
+                       OCVerIDs = '';
+                   }
+
+               });
+           });
+           $(document).on('change', 'input[class="verificationId"]', function (e) {// on change of state
+               var VerificationIds = '';
+               var OCVerIDs = '';
+               $('input[class="verificationId"]').each(function (index, value) {
+                   if (this.checked) {
+                       var id = this.value.split('_');
+                       VerificationIds += id[0] + ',';
+                       OCVerIDs += this.value + ',';
+                   }
+               });
+
+               if (false == $(this).prop("checked")) { //if this item is unchecked
+                   $("#select_all").prop('checked', false); //change "select all" checked status to false
+               }
+               //check "select all" if all checkbox items are checked
+               if ($('.verificationId:checked').length == $('.verificationId').length) {
+                   $("#select_all").prop('checked', true);
+               }
+
+               if (VerificationIds.length > 0 && OCVerIDs.length > 0) {
+                   VerificationIds = VerificationIds.substring(0, VerificationIds.length - 1);
+                   OCVerIDs = OCVerIDs.substring(0, OCVerIDs.length - 1);
+               } else {
+                   VerificationIds = '';
+                   OCVerIDs = '';
+               }
+
+           })
+
+
+
+
+
+             document.getElementById('allocateButton').addEventListener('click', function() {
+
+
+                 var selectedChecks = $('input[class="verificationId"]:checked');
+                 var checkData = [];
+
+                 selectedChecks.each(function () {
+                     var id = $(this).val().split('_');
+                     if (id.length > 1) {
+                         checkData.push({
+                             SubCheckRowID: id[1],
+                             PersonalRowID: id[0]
+                         });
+                     }
+                 });
+
+                 var VendorLoginRowID = document.getElementById('vendorDropdown').value;
+
+                 if (VendorLoginRowID.length === 0) {
+                     /*alert('Please select a Partner before submitting.');*/
+                     $('#Warningmessage').show();
+                     e.preventDefault();
+                     return;
+                 }
+
+                 if (checkData.length === 0) {
+                     //alert('Please select at least one check before submitting.');
+                     $('#Warningmessage').show();
+                     e.preventDefault();
+                     return;
+                 }
+
+
+                 $('#CheckData').val(JSON.stringify(checkData));
+
+                  var form = document.createElement('form');
+                  form.method = 'POST';
+                  form.action = '@Url.Action("PartnerCheckMovement", "Home")';
+
+
+                 var VendorLoginRowID = document.getElementById('vendorDropdown').value;
+                  var checkData = document.getElementById('CheckData').value;
+
+                  var inputVendorRowID = document.createElement('input');
+                  inputVendorRowID.type = 'hidden';
+                  inputVendorRowID.name = 'VendorRowID';
+                 inputVendorRowID.value = VendorLoginRowID;
+
+                  var inputCheckData = document.createElement('input');
+                  inputCheckData.type = 'hidden';
+                  inputCheckData.name = 'CheckData';
+                  inputCheckData.value = checkData;
+
+                  form.appendChild(inputVendorRowID);
+                  form.appendChild(inputCheckData);
+
+                  // Append the form to the body and submit
+                  document.body.appendChild(form);
+                  form.submit();
+               });
+        //==========================================
+    </script>
+
+}

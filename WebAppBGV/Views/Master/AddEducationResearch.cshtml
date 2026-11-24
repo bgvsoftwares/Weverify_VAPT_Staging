@@ -1,0 +1,108 @@
+﻿@model ViewModels.AddCollegeViewModel
+
+@{
+    string EducationRowId = "";
+    if (Request.QueryString["EducationRowId"] != null)
+    {
+        EducationRowId = @Request.QueryString["EducationRowId"].ToString();
+    }
+    ViewBag.Title = "Add New College";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManageColleges", "Master", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftMaster") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("AddEducationResearch", "Master", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        
+        <div class="form-horizontal">
+            <div class="form-group branch">
+                @Html.LabelFor(model => model.CollegeName, htmlAttributes: new { @class = "col-md-2 control-label colonsymbl required" })
+                <div class="col-md-8">
+                    @*@Html.TextAreaFor(model => model.CompanyName, new { @class = "form-control", @rows = "2" })*@
+                    @Html.EditorFor(model => model.CollegeName, new { autocomplete = "on", htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.CollegeName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+
+            <div class="all-button-bg">
+                @{
+                if (Request.QueryString["EducationRowId"] != null)
+                {
+                    @Html.Hidden("EducationRowId", Request.QueryString["EducationRowId"].ToString())
+            }
+
+
+                }
+                @Html.ActionLink("Back", "ManageResearchEducationChecks", "ProvidedInfo", null, new { @class = "btn bun-bg btn-default" })
+                <input class="btn bun-bg btn-default" type="submit" onclick="return validateForm()" value="Complete" />
+            </div>
+        </div>
+}
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    @*<script src = "//code.jquery.com/jquery-1.11.2.min.js" > </script> <script src = "//code.jquery.com/ui/1.11.2/jquery-ui.js" > </script>*@
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="//code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+
+    <script type="text/jscript">
+        $(document).ready(function () {
+            $('#dvAcIfceCode').hide();
+            $('#dvFavourOf').hide();
+            $("#CollegeName").autocomplete({
+                //minLength: 3,
+                source: function (request, response) {
+
+                    $.ajax({
+                        url: "/Master/getCollegelist",
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                            CollegeName: request.term
+                        },
+                        success: function (data) {
+
+                            response($.map(data, function (item) {
+
+                                return {
+
+                                    label: item.CollegeName,
+                                    value: item.CollegeName
+                                };
+                            }))
+                        },
+                        error: function () {
+                            alert('something went wrong !');
+                        }
+                    })
+                },
+                messages: {
+                    noResults: "",
+                    results: ""
+                }
+            });
+        });
+
+
+
+
+    </script>
+}
+

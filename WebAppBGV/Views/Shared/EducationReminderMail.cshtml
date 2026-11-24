@@ -1,0 +1,290 @@
+﻿@model ViewModels.VerificationViewModel.ReminderMail
+<html>
+<head>
+    @{Layout = null; }
+
+
+</head>
+<body>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    <script src="~/Scripts/multiemail.js"></script>
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/modernizr-2.8.3.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    @*<script type="text/javascript" src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>*@
+    <script src="https://cloud.tinymce.com/stable/tinymce.min.js"></script>
+
+    <script src="~/Scripts/tinymce.min.js"></script>
+    @*<script type="text/javascript" src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>*@
+
+    <script type="text/javascript">
+        tinymce.init({ selector: '#Body', width: 800 });
+    </script>
+    <table>
+        <tr>
+            <td style="text-align:center" colspan="3">
+                <h4 class=" font-weight-bolder color:#000!important;">Reminder Mail</h4>
+                @if (ViewBag.SuccessMsg != null)
+                {
+                    <div class="successmsg" id="divsucc">@ViewBag.SuccessMsg.ToString()</div>
+                }
+
+                @if (ViewBag.ErrorMsg != null)
+                {
+                    <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+                }
+                <hr />
+            </td>
+        </tr>
+        <tr>
+            <td width="5%" style="margin-top:10px">&nbsp;</td>
+            <td width="76%">
+                @if (Model != null)
+                {
+                    using (Html.BeginForm("EducationReminderMail", "Verification", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(model => model.ClientRowID)
+                        //@Html.HiddenFor(model => model.subject)
+                        @Html.HiddenFor(model => model.SubCheckRowID)
+                        @Html.HiddenFor(model => model.PersonalRowID)
+                        @Html.HiddenFor(model => model.ReminderStatus)
+                        @Html.HiddenFor(model => model.UniqueComponentId)
+                        @Html.HiddenFor(model => model.CheckStatusId)
+                        @Html.HiddenFor(model => model.GroupId)
+                        @Html.HiddenFor(model => model.CandCheckRowID)
+                        @Html.HiddenFor(model => model.CompanyName)
+
+
+
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+
+                    <tr>
+                        <td align="right"><label style="font-size:13px !important; width:100px">To mail : </label></td>
+                        <td style="border:groove">
+                            @Html.TextBoxFor(model => model.Tomail, new { @class = "form-control multiemail ", @rows = "2" })
+                            @Html.ValidationMessageFor(model => model.Tomail, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr><td height="20px"></td></tr>
+                    <tr>
+                        <td align="right"><label style="font-size:13px !important; width:100px">cc mail : </label></td>
+                        <td style="border:groove">
+                            @Html.TextBoxFor(model => model.ccmail, new { @class = "form-control multiemail ", @rows = "2" })
+                            @Html.ValidationMessageFor(model => model.ccmail, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                    <tr><td height="20px"></td></tr>
+                    <tr>
+                        <td align="right"><label style="font-size:13px !important;">Subject : </label></td>
+
+                        <td style="border:groove">
+
+
+                            @Html.TextBoxFor(model => model.subject, new { @class = "form-control ", @rows = "2" })
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><label style="font-size:13px !important;">Reminder Interval : </label></td>
+
+                        <td >
+
+
+                            
+
+                            @Html.DropDownListFor(model => model.ReminderInterval,
+    new SelectList(new List<SelectListItem> {
+                new SelectListItem { Text = "1", Value = "1"},
+                new SelectListItem { Text = "2", Value = "2"},
+             new SelectListItem { Text = "3", Value = "3"},
+             new SelectListItem { Text = "5", Value = "5"},
+             new SelectListItem { Text = "7", Value = "7"}
+         }, "Value", "Text"),
+    "Select status",
+     new { @class = "" })
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.UploadDocedu, htmlAttributes: new { @class = "col-md-2 control-label" })
+                        </td>
+                        <td>
+
+                            @Html.TextBoxFor(model => model.UploadDocedu, new { @accept = "image/gif, image/jpeg, image/png, image/jpg", type = "file", multiple = "multiple" })
+                            @Html.ValidationMessageFor(model => model.UploadDocedu, "", new { @class = "text-danger" })
+
+                        </td>
+                        @*<td>
+                <input id="btnAddAttach" type="submit" value="Add" class="btn btn-default" />
+            </td>*@
+                    </tr>
+                    <tr><td height="20px"></td></tr>
+                    <tr>
+                        <td align="right"><label style="font-size:13px !important;">Body : </label></td>
+
+                        <td style="border:groove">
+                            @*@Html.HiddenFor(model => model.Body, new { @class = "form-control ", @rows = "2", @id = "HFMailBody" })*@
+                            @*<div id="MailBody" style="height:200px; width:100%; border-color:antiquewhite; background-color:aliceblue;  overflow-y:scroll;"></div>*@
+                            @Html.TextAreaFor(m => m.Body, 10, 8, new { HtmlAttributes = new { @id = "MailBody", @readonly = false } })
+                        </td>
+                    </tr>
+                    @*<tr><td>@Html.Partial("_DocumentList")</td></tr>*@
+
+                    <tr> <td colspan="3" align="center"><input id="btnsend" type="submit" value="Send Mail" class="btn btn-default" /></td></tr>
+                    @*@if (Model.CheckstatusId != 61)
+        {
+            <tr>
+                <td colspan="3" align="center"><input type="submit" value="Update Remark" class="btn btn-default" /></td>
+            </tr>
+        }*@
+
+                </table>
+                    }
+                    // @Scripts.Render("~/bundles/jquery")
+                }
+            </td>
+
+        </tr>
+
+
+    </table>
+
+</body>
+</html>
+
+<script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+<script>
+
+
+    $(document).ready(function () {
+        var Succ = $("#divsucc").text();
+        if (Succ =='Mail Sent Successfully!')
+        {
+            $('#btnsend').attr('disabled', 'disabled');
+        }
+        //alert("Text: " + $("#divsucc").text());
+        jQuery.validator.addMethod("multiemail", function (value, element) {
+            if (this.optional(element)) {
+                return true;
+            }
+
+            var emails = value.split(/[;,]+/);
+                valid = true;
+
+            for (var i = 0, limit = emails.length; i < limit; i++) {
+                value = emails[i];
+                valid = valid && jQuery.validator.methods.email.call(this, value, element);
+            }
+
+            return valid;
+        }, "Invalid email format: please use a comma to separate multiple email addresses.");
+
+        //successmsg
+
+
+
+        $('#btnsend').click(function () {
+            var Tomail = $('#Tomail').val();
+            var ccmail = $('#ccmail').val();
+            var Subject = $('#subject').val();
+            var Body = $('#Body').val();
+            var interval = $('#ReminderInterval').val();
+            
+            
+            if (interval == '') {
+                alert('Reminder Interval can not be blank');
+                $('#ReminderInterval').focus();
+                return false;
+            }
+
+            if (Tomail=='')
+            {
+                alert('To mail can not be blank');
+                $('#Tomail').focus();
+                return false;
+            }
+
+            if (Subject == '') {
+                alert('Subject can not be blank');
+                $('#subject').focus();
+                return false;
+            }
+
+
+            //if (Body == '') {
+            //    alert('Body can not be blank');
+            //    $('#Body').focus();
+            //    return false;
+            //}
+        })
+        ////subject
+        //var CheckStatusId = $('#CheckStatusId').val();
+        //alert(CheckStatusId);
+        //if (CheckStatusId == 82) {
+        //    alert('Hi');
+        //    //$("#subject").prop("readonly", true);
+        //    ('#subject').prop('readonly', 'false');
+        //    //$('#subject').attr("disabled", true);
+        //    //$("#subject").prop("readonly", true);
+        //}
+        //else {
+        //    $("#subject").prop("readonly", false);
+        //}
+       // $('#MailBody').html($('#HFMailBody').val());
+    });
+
+
+
+    @*function validateEmail(sEmail) {
+	    var filter = /^[w-.+]+@[a-zA-Z0-9.-]+.[a-zA-z0-9]{2,4}$/;
+
+	    if (filter.test(sEmail)) {
+	        return true;
+	    }
+
+	    else {
+	        return false;
+
+	    }
+
+    }​*@
+
+
+
+    //function ValidateForm() {
+    //    if ($("#CheckStatus").val() == "Funds Pending") {
+    //        var flag = false;
+    //        if ($("#ClientRowID").val() > 0) {
+    //            var url = "/Verification/GetClientExtraExpensesAllowed/" + $("#ClientRowID").val();
+    //            $.ajax({
+    //                url: url,
+    //                type: 'GET',
+    //                async: false,
+    //                dataType: 'json',
+    //                success: function (allowed) {
+    //                    if (allowed.ExtraExpenses == 1) {
+    //                        alert("Extra Expenses Already Accepted By Client. Please Select Another Option!");
+    //                        flag = false;
+    //                    }
+    //                    else {
+    //                        flag = true;
+    //                    }
+    //                }
+    //            });
+    //        }
+    //        else {
+    //            alert("ClientId is missing please close the popup!");
+    //            return false;
+    //        }
+    //        return flag;
+    //    }
+    //}
+</script>
+

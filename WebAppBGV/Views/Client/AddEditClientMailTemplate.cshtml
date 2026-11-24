@@ -1,0 +1,192 @@
+﻿@model ViewModels.ClientViewModel.AddEditClientTemplateViewModel
+@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Add New Mail Template";
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ClientMailTemplateList", "Client", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="container">
+        @using (Html.BeginForm("AddEditClientMailTemplate", "Client", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            string MailTemplate = Model.MailTemplate;
+            @Html.HiddenFor(model => model.MailTemplate, new { @id = "MailTemplate" })
+            @Html.HiddenFor(model => model.PackageName, new { @id = "packageName" })
+            @Html.HiddenFor(model => model.AutoRowId, new { @id = "packageName" })
+
+            <div class="row" style="margin-bottom:10px;margin-top:10px;">
+                <div class="col-md-2">
+                    Client Name
+                </div>
+                <div class="col-md-5">
+                    @Html.DropDownListFor(model => model.ClientRowID, new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"), "-- Select Client -- ", new { @class = "form-control", @Required = "false" })
+                </div>
+                <div class="col-md-2">
+                    Alert Type
+                </div>
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.AutoAlertId, new SelectList(ViewBag.AlertType, "AutoAlertId", "AlertTypeName"), "-- Select Alert Type -- ", new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="row" style="margin-bottom:10px;margin-top:10px;">
+                <div class="col-md-2">
+                    Mail Subject
+                </div>
+                <div class="col-md-5">
+                    @Html.EditorFor(model => model.MailSubject, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+                <div class="col-md-2">
+                    Template Name
+                </div>
+                <div class="col-md-3">
+                    @Html.EditorFor(model => model.TemplateName, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+
+            </div>
+            <div class="row" style="margin-bottom:10px;">
+                <div class="col-md-2">
+                    Package Name
+                </div>
+                <div class="col-md-5">
+                    @Html.DropDownListFor(model => model.PackageID, new SelectList(ViewBag.PackageName, "PackageID", "PackageName"), "-- Select Package -- ", new { @class = "form-control Packageid" })
+                </div>
+                <div class="col-md-2">
+                    Mail Type
+                </div>
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.AutoMailId, new SelectList(ViewBag.MailType, "AutoMailId", "MailTypeName"), "-- Select Mail Type -- ", new { @class = "form-control" })
+                </div>
+
+
+            </div>
+
+            <div class="row" style="margin-bottom:10px;">
+                <div class="col-md-2">
+                    Status
+                </div>
+                <div class="col-md-3">
+                    @Html.EditorFor(model => model.Status, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+
+            </div>
+            <div class="row" style="margin-bottom:10px;">
+                <div class="col-md-6">
+                    <input data-val='true' type="file" id=UploadDoc name=UploadDoc style="border-radius:3px!important; height:32px; background-color:#ffffff;" accept=".html">
+                </div>
+                <div class="col-md-6">
+                    <input class="btn bun-bg btn-default" type="submit" value="Submit" id="btnSubmit" />
+                </div>
+
+            </div>
+            <div class="row" style="margin-bottom:10px;">
+                <textarea id="emailTemplate" type="text" name="emailTemplate">@MailTemplate</textarea>
+            </div>
+            <div class="row" style="margin-bottom:20px;">
+                <div class="container">
+                    <div class="row" style="text-align:center">
+
+                    </div>
+                </div>
+
+            </div>
+
+        }
+
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    <script src="~/Scripts/tinymceNew.min.js"></script>
+    <script src="~/Scripts/tinymce-jquery.min.js"></script>
+
+    <script>
+        $('textarea').tinymce({
+            height: 500,
+            plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+            ],
+            toolbar: 'undo redo | blocks | bold italic backcolor | ' +
+                'alignleft aligncenter alignright alignjustify | ' +
+                'bullist numlist outdent indent | removeformat | help'
+        });
+        // Prevent jQuery UI dialog from blocking focusin
+        $(document).on('focusin', function (e) {
+            if ($(e.target).closest(".tox-tinymce, .tox-tinymce-aux, .moxman-window, .tam-assetmanager-root").length) {
+                e.stopImmediatePropagation();
+            }
+        });
+    </script>
+    <style>
+        .tox-tinymce {
+            margin-top: 10px !important;
+        }
+
+        .tox-editor-header {
+            box-shadow: none !important;
+            z-index: 0 !important;
+            border-bottom: 0.5px solid #000 !important;
+        }
+
+        .tox-statusbar__branding {
+            display: none !important;
+        }
+    </style>
+    <script>
+        $('#btnSubmit').click(function () {
+
+            $("#UploadDoc").val() = $("#Uploadfile").val()
+            document.getElementsByName("MailTemplate")[0].value = $("#emailTemplate").val();
+        });
+    </script>
+}
+<script>
+    $(document).ready(function () {
+        var Package='@Model.PackageName'
+        $("#PackageID").val() = Package;
+    });
+
+
+    $('#ClientRowID').change(function () {
+        var ClientID = $("#ClientRowID").val()
+        $('.Packageid').empty();
+   $.ajax({
+            url: "@Url.Action("PackageNameList", "Client")",
+       data: { ClientRowId: ClientID},
+            dataType: "json",
+            type: "GET",
+            error: function () {
+                alert(" An error occurred.");
+            },
+            success: function (data) {
+                var optionhtml1 = '<option value="' +
+                    0 + '">' + "--Select Package--" + '</option>';
+                $(".Packageid").append(optionhtml1);
+
+                $.each(data, function (i) {
+                    var optionhtml = '<option value="' +
+                data[i].Value + '">' +data[i].Text + '</option>';
+                    $(".Packageid").append(optionhtml);
+                });
+
+            }
+        });
+
+    });
+</script>
+

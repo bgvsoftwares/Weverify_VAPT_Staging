@@ -1,0 +1,213 @@
+@{
+    ViewBag.Title = "Ageing Wise";
+    string CaseStatus1 = "";
+    string ClientRowID1 = "";
+    if (Request.QueryString["CaseStatus"] != null)
+    {
+        CaseStatus1 = @Request.QueryString["CaseStatus"].ToString();
+    }
+    if (Request.QueryString["cr"] != null)
+    {
+        ClientRowID1 = @Request.QueryString["cr"].ToString();
+    }
+    string hyperLinkExportExcel = "";
+    string faIconExportExcel = "";
+    faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    if (Session["Designation"].ToString() == "Team Member-MIS")
+    {
+        hyperLinkExportExcel = Html.ActionLink("Excel", "ExportMISDataEntryQCAgeing", "ClientServicing", new { ClientId = 0, CaseStatus = "", teamMemberRowID = Convert.ToInt16(Session["TeamMemberRowID"]), search = "", FromDate = "", ToDate = "", TypeOfOption= Convert.ToString(Session["typeOfOption"]) }, new { @class = "btn bun-bg btn-default" }).ToString();
+    }
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        @using (Html.BeginForm("MISDataEntryQCAgeing", "ClientServicing", FormMethod.Get, new { id = "ageingForm" }))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch row search-frame">
+                                    <label class="control-label required">Ageing For :</label>
+                                    <div class="col-md-4">
+                                        @Html.DropDownList("TypeOfOption", new List<SelectListItem>
+                                            {
+                                            new SelectListItem{Text="Pre Data Entry Scanning",Value="Scanning"},
+                                            new SelectListItem{Text="Data Entry", Value="DataEntry"},
+                                            new SelectListItem{Text="Data Entry QC", Value="QC"},
+                                            new SelectListItem{Text="Research (Education and Employment)", Value="Research"},
+                                            new SelectListItem{Text="Insufficiency", Value="Insufficiency"},
+                                            new SelectListItem{Text="YTR Hold", Value="YTRHold"},
+                                        new SelectListItem{Text="Fund Approval Pending", Value="FundRequestRaised"},
+                                            new SelectListItem{Text="Verifications", Value="Verification"},
+                                            new SelectListItem{Text="Verifications QC", Value="VerificationQC"},
+                                            new SelectListItem{Text="SPOC Review", Value="SPOC"}
+                                            }, "-- Select -- ", new { @class = "form-control", @id = "idTypeOfOption" })
+                                    </div>
+                                </div>
+                                @*<div class="form-group branch row search-frame">
+                                        <label class="col-md-2 control-label">Keyword :</label>
+                                        <div class="col-md-8">
+                                            @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Securitas ID, Dept Name, Final Status..." })
+                                        </div>
+                                    </div>*@
+                                @*<div class="form-group branch row search-frame">
+                                        <label class="col-md-2 control-label">From Date :</label>
+                                        <div class="col-md-3">
+                                            @Html.TextBox("FromDate", null, new { @class = "form-control", @id = "FromDate", @placeholder = "yyyy-mm-dd" })
+                                        </div>
+                                        <label class="col-md-2 control-label">To Date :</label>
+                                        <div class="col-md-3">
+                                            @Html.TextBox("ToDate", null, new { @class = "form-control", @id = "ToDate", @placeholder = "yyyy-mm-dd" })
+                                        </div>
+                                    </div>*@
+                                <div class="form-group branch row search-frame">
+                                    @*@{
+                                            if (Request.QueryString["CaseStatus"] != null)
+                                            {
+                                                @Html.Hidden("CaseStatus", Request.QueryString["CaseStatus"].ToString())
+                                            }
+                                        }*@
+                                    <div style="text-align:center;" class="col-md-12">
+                                        <input class="btn bun-bg btn-default" type="submit" value="Submit" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="row"></div>
+                <div class="row">
+                    @if (Model != null && Model.DashboardClientCandidates != null)
+                    {
+                        <div class="row">
+                            <div class="col-md-12 table">
+                                @{
+
+                                    WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                    grid.Bind(Model.DashboardClientCandidates, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                                }
+                                @grid.GetHtml(
+                                         htmlAttributes: new { id = "grid", @class = "table table-striped table-bordered nowrap" },
+                                      headerStyle: "thead-inverse",
+                                      rowStyle: "ordertxt",
+                                      footerStyle: "custpaging",
+                                      mode: WebGridPagerModes.All,
+                                      columns: new[]
+                                      {
+                                             grid.Column(header: "No.",format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                             grid.Column(columnName: "AgeingFor", header: "Ageing For", canSort: false, style:"td-1"),
+                                             //grid.Column(columnName: "todayPending", header: "todayPending", canSort: false, style:"td-1"),
+                                             grid.Column(columnName: "ZeroToSixHour", header: "ZeroToSixHours", canSort: false, style:"td-1"),
+                                             grid.Column(columnName: "SevenToTwelveHour", header: "SevenToTwelveHours", canSort: false, style:"td-1"),
+                                             grid.Column(columnName: "ThirteenToEighteenHour", header: "ThirteenToEighteenHours", canSort: false, style:"td-1"),
+                                             grid.Column(columnName: "NineteenToTwnetyFourHour", header: "NineteenToTwentyFourHours", canSort: false, style:"td-1"),
+                                             //grid.Column(columnName: "NextTwoDays", header: "NextTwoDays", canSort: false, style:"td-1"),
+                                             //grid.Column(columnName: "WithinTAT", header: "WithinTAT", canSort: false, style:"td-1"),
+                                             grid.Column(columnName: "OneToTwodaysBT", header: "OneToTwoDays", canSort: false, style:"td-1"),
+                                             //grid.Column(columnName: "ThreeToFivedaysBT", header: "ThreeToFivedaysBT", canSort: false, style:"td-1"),
+                                             grid.Column(columnName: "TwoPlusDays", header: "TwoPlusDays", canSort: false, style:"td-1"),
+                                             grid.Column(columnName: "Total", header: "Total", canSort: false, style:"td-1")
+                                             //grid.Column(columnName: "TodayClosureUnit", header: "Today's Closure Unit", canSort: false, style:"td-1")
+                                      }
+                                      )
+                                <div class="total-record">Total Records: @Model.TotalRecords</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); z-index:9999; text-align:center;">
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:white;">
+            <i class="fa fa-spinner fa-spin fa-3x"></i>
+            <div style="margin-top:10px;">Loading, please wait...</div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $("#ageingForm").on("submit", function () {
+                $("#loadingOverlay").show();
+            });
+            $(window).on("load", function () {
+                $("#loadingOverlay").hide();
+            });
+
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "60%", height: "80%" });
+            $(".iframeFundPendingApprove").colorbox({ iframe: true, width: "60%", height: "80%" });
+            $(".callbacks").colorbox({
+                onClosed: function () {
+                    window.location.reload(false);
+                }
+            });
+            $(".Remindermail").colorbox({ iframe: true, width: "40%", height: "50%" });
+            $('#FromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                //showButtonPanel: true,
+                yearRange: "-66:+0",
+            });
+            $('#ToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+        });
+    </script>
+}
+<script>
+    $(document).ready(function () {
+        var table = $('#grid').DataTable({
+            responsive: true,
+        });
+        new $.fn.dataTable.FixedHeader(table);
+    });
+</script>
+<style>
+    .total-record {
+        margin-bottom: 30px;
+        font-size: 1.4rem;
+    }
+
+    #select_all {
+        width: 30px !important;
+    }
+
+    .personalId {
+        width: 30px !important;
+    }
+
+    @@media screen and (max-width: 1450px) and (min-width: 600px) {
+        #grid {
+            font-size: .90rem;
+            width: 100%;
+        }
+
+        .table td, .table th {
+            padding: .60rem !important;
+        }
+
+        .thead-inverse {
+            font-size: .90rem !important;
+        }
+
+        .table, td, .edit {
+            font-size: .95rem !important;
+        }
+    }
+</style>
+

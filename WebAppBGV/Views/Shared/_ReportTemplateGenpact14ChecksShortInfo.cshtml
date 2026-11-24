@@ -1,0 +1,776 @@
+﻿
+
+@model ViewModels.ReportQCViewModel.ReportViewModel
+
+<page id="PrintSrc" size="A4">
+
+    <div style="page-break-after:always ;"></div>
+
+    <table width="793" align="center">
+        <tbody>
+            <tr>
+                <td valign="top" colspan="2"></td>
+            </tr>
+            <tr>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top:20px; border-collapse:collapse; border:3px solid #999999;">
+                        <tr>
+                            <td valign="top">
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+
+                                    <tr>
+                                        <td width="94%" style="padding-top: 4%;"><p style="font-size:32px; color:black; text-decoration:underline; text-align:center; margin:0px 0px 0px 0px; font-weight:bold;"></p> </td>
+                                        @*<td width="6%" align="right"><img src='@Url.Content("~/Images/logo.jpg")' width="45" height="auto"></td>*@
+                                        <td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="60" height="auto" style="margin:5px;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                    <tr>
+
+                                        <td colspan="2"></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" align="left" height="15px" style="padding-top:20px; text-align:center; font-size:20px; font-weight:bold;  font-family:Calibri; ">
+                                <strong>
+                                    <p class="western" align="center" style="font-weight: normal; line-height: 100%">
+                                        <font face="Calibri, sans-serif">
+                                            <font size="2" style="font-size: 11pt">
+                                                <font color="#0000ff">
+                                                    <font size="4" style="font-size: 14pt">
+                                                        <u>
+                                                            <b>
+                                                                Executive
+                                                                Summary
+                                                            </b>
+                                                        </u>
+                                                    </font>
+                                                </font>
+                                            </font>
+                                        </font>
+                                    </p>
+                                    <p class="western" align="center" style="line-height: 100%">
+                                        <br />
+                                    </p>
+                                </strong>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td valign="top">
+                                <table width="95%" border="1" cellpadding="2" cellspacing="5" style="margin:auto; font-family:Calibri; font-size:16px">
+                                    @{
+                                        <tr>
+                                            <td colspan="6" style=" font-family:Calibri; color-adjust:exact; background:#dbe5f1; text-align:center; padding-left:5px;"><strong>CANDIDATE SUMMARY</strong></td>
+
+                                        </tr>
+                                        <tr>
+                                            <td width="15%" style=" font-family:Calibri; color-adjust:exact; background:#dbe5f1; padding-left:5px;"><strong>VERIFIED DETAILS</strong></td>
+                                            <td width="30%" style=" font-family:Calibri; color-adjust:exact; background:#dbe5f1; text-align:center;"><strong>PARTICULARS</strong></td>
+                                            <td width="35%" style=" font-family:Calibri; color-adjust:exact; background:#dbe5f1; text-align:center;"><strong>Details</strong></td>
+                                            <td width="10%" style=" font-family:Calibri; color-adjust:exact; background:#dbe5f1; text-align:center;"><strong>Mode of Verification </strong></td>
+                                            <td width="10%" style=" font-family:Calibri; color-adjust:exact; background:#dbe5f1; text-align:center;"><strong>Completion Date </strong></td>
+                                            <td width="10%" style=" font-family:Calibri; color-adjust:exact; background:#dbe5f1; text-align:center;">
+                                                <strong>
+                                                    COLOR CODE
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        string checkName = string.Empty;
+                                        foreach (var item in Model.PersonalChecksBriefDetails)
+                                        {
+                                            if (checkName != item.CheckFName)
+                                            {
+                                                @*<tr>
+                                                        <td colspan="4" bgcolor="#c0c0c0" style=" font-family:Calibri; color-adjust:exact; background:#c0c0c0; padding:5px; text-align:center;"> <strong> @item.CheckFName</strong></td>
+                                                    </tr>*@
+
+                                                checkName = item.CheckFName;
+                                            }
+                                            if (item.subCheckId == 201)
+                                            {
+                                                <tr>
+                                                    <td width="40%" style="padding-left:5px;  font-family:Calibri;">Criminal Watch List Check</td>
+                                                    <td width="30%" align="center" style=" font-family:Calibri;">@Model.PersonalName  </td>
+                                                    <td width="30%" align="center" style=" font-family:Calibri;">Online</td>
+                                                    <td width="20%" style="color-adjust:exact;  font-family:Calibri;" align="center">@item.ModeOfVerification</td>
+                                                    <td width="20%" style="color-adjust:exact;  font-family:Calibri;" align="center">
+                                                        @try
+                                                        {
+                                                            @item.CheckCompleteDate.Value.ToString("dd MMMM yyyy")
+                                                        }
+                                                        catch
+                                                        {
+                                                            @item.CheckCompleteDate
+                                                        }
+
+                                                    </td>
+                                                    <td width="15%" style="color-adjust:exact;   font-family:Calibri; background:@item.ColorCode; border-color:black;" align="center">Green</td>
+
+
+                                                </tr>
+
+                                            }
+
+                                <tr style="  padding:5px;">
+
+
+                                    @if (item.subCheckId == 56 || item.subCheckId == 67 || item.subCheckId == 57)
+                                    {
+                                        if (Model.EducationCount == 1)
+                                        {
+                                            if (item.subCheckId == 56)
+                                            {
+                                                <td width="40%" style="padding-left:5px;  font-family:Calibri;"> Education Check </td>
+                                            }
+                                            if (item.subCheckId == 67)
+                                            {
+                                                <td width="40%" style="padding-left:5px;  font-family:Calibri;"> Education Check </td>
+                                            }
+                                            if (item.subCheckId == 57)
+                                            {
+                                                <td width="40%" style="padding-left:5px;  font-family:Calibri;"> Education Check </td>
+                                            }
+                                        }
+                                        else if (Model.EducationCount > 1)
+                                        {
+                                            if (item.subCheckId == 56)
+                                            {
+                                                <td width="40%" style="padding-left:5px;  font-family:Calibri;"> Education Check 1 </td>
+                                            }
+                                            else if (item.subCheckId == 67)
+                                            {
+                                                <td width="40%" style="padding-left:5px;  font-family:Calibri;">Education Check 2 </td>
+                                            }
+                                            else if (item.subCheckId == 57)
+                                            {
+                                                <td width="40%" style="padding-left:5px;  font-family:Calibri;">Education Check 3 </td>
+                                            }
+                                        }
+
+                                    }
+
+                                    @{
+                                        if (item.CheckFamilyRowID == 12)
+                                        {
+                                            var Emp = Model.PersonalChecksBriefDetails.Where(T => T.CheckFamilyRowID == 12).ToList();
+                                            if (Emp.Count > 1)
+                                            {
+                                                if (item.subCheckId == 68)
+                                                {
+                                                    <td width="40%" style="padding-left:5px;  font-family:Calibri;">Employment Check HR 1        </td>
+                                                }
+                                                else if (item.subCheckId == 69)
+                                                {
+                                                    <td width="40%" style="padding-left:5px;  font-family:Calibri;">Employment Check HR 2        </td>
+                                                }
+                                                else if (item.subCheckId == 70)
+                                                {
+                                                    <td width="40%" style="padding-left:5px;  font-family:Calibri;">Employment Check HR 3        </td>
+                                                }
+                                                else if (item.subCheckId == 71)
+                                                {
+                                                    <td width="40%" style="padding-left:5px;  font-family:Calibri;">Employment Check HR 4        </td>
+                                                }
+                                                else if (item.subCheckId == 72)
+                                                {
+                                                    <td width="40%" style="padding-left:5px;  font-family:Calibri;">Employment Check HR 5        </td>
+                                                }
+                                                else if (item.subCheckId == 73)
+                                                {
+                                                    <td width="40%" style="padding-left:5px;  font-family:Calibri;">Employment Check HR 6        </td>
+                                                }
+                                                else if (item.subCheckId == 74)
+                                                {
+                                                    <td width="40%" style="padding-left:5px;  font-family:Calibri;">Employment Check HR 7        </td>
+                                                }
+                                                else if (item.subCheckId == 75)
+                                                {
+                                                    <td width="40%" style="padding-left:5px;  font-family:Calibri;">Employment Check HR 8       </td>
+                                                }
+                                                else if (item.subCheckId == 76)
+                                                {
+                                                    <td width="40%" style="padding-left:5px;  font-family:Calibri;">Employment Check HR 9      </td>
+                                                }
+
+                                                else if (item.subCheckId == 77)
+                                                {
+                                                    <td width="40%" style="padding-left:5px;  font-family:Calibri;">Employment Check HR 10      </td>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <td width="40%" style="padding-left:5px;  font-family:Calibri;">Employment Check HR        </td>
+
+                                            }
+                                        }
+
+                                        if (item.CheckFamilyRowID == 30)
+                                        {
+                                            var reference = Model.PersonalChecksBriefDetails.Where(T => T.CheckFamilyRowID == 30).ToList();
+                                            if (reference.Count > 1)
+                                            {
+                                                if (item.subCheckId == 150)
+                                                {
+                                                    <td width="40%" style="padding-left:5px;  font-family:Calibri;"> Employment Check Supervisor 1 </td>
+                                                }
+                                                else if (item.subCheckId == 151)
+                                                {
+                                                    <td width="40%" style="padding-left:5px;  font-family:Calibri;"> Employment Check Supervisor 2 </td>
+                                                }
+                                                else if (item.subCheckId == 152)
+                                                {
+                                                    <td width="40%" style="padding-left:5px;  font-family:Calibri;"> Employment Check Supervisor 3 </td>
+                                                }
+                                                else if (item.subCheckId == 153)
+                                                {
+                                                    <td width="40%" style="padding-left:5px;  font-family:Calibri;"> Employment Check Supervisor 4 </td>
+                                                }
+
+                                                else if (item.subCheckId == 154)
+                                                {
+                                                    <td width="40%" style="padding-left:5px;  font-family:Calibri;"> Employment Check Supervisor 5 </td>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <td width="40%" style="padding-left:5px;  font-family:Calibri;"> Employment Check Supervisor  </td>
+                                            }
+                                        }
+                                    }
+
+
+
+
+                                    @if (item.subCheckId == 201)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">Database Check</td>
+                                    }
+                                    else if (item.subCheckId == 324)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">Financial Regulatory Check</td>
+                                    }
+                                    else if (item.subCheckId == 366)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">Credit Check</td>
+                                    }
+                                    else if (item.subCheckId == 365)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">Directorship Search</td>
+                                    }
+                                    else if (item.subCheckId == 224)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">Civil Litigation </td>
+                                    }
+                                    else if (item.subCheckId == 105)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">Bankruptcy Check</td>
+                                    }
+                                    else if (item.subCheckId == 273)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">National Sex Offender Search</td>
+                                    }
+                                    else if (item.subCheckId == 206)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">CIBIL Check</td>
+                                    }
+                                    else if (item.subCheckId == 203)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">Social Media Check</td>
+                                    }
+                                    else if (item.subCheckId == 205)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">OFAC</td>
+                                    }
+                                    else if (item.subCheckId == 416)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">UAN Validation</td>
+                                    }
+                                    else if (item.subCheckId == 267)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">Right to Work</td>
+                                    }
+                                    else if (item.subCheckId == 912)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">UAN Validation</td>
+                                    }
+                                    else if (item.subCheckId == 232)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">FACIS Check</td>
+                                    }
+                                    else if (item.subCheckId == 223)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">Eligibility to work check</td>
+                                    }
+                                    else if (item.subCheckId == 136 || item.subCheckId == 138)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">Identity Check       </td>
+                                    }
+                                    else if (item.subCheckId == 29 || item.subCheckId == 226 || item.subCheckId == 352 || item.subCheckId == 353 || item.subCheckId == 354 || item.subCheckId == 355 || item.subCheckId == 356)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">Criminal Police Record Check</td>
+                                    }
+                                    else if (item.subCheckId == 23 || item.subCheckId == 24 || item.subCheckId == 317 || item.subCheckId == 318 || item.subCheckId == 319 || item.subCheckId == 343 || item.subCheckId == 344 || item.subCheckId == 345 || item.subCheckId == 503 || item.subCheckId == 1081 || item.subCheckId == 1082 || item.subCheckId == 1415)
+                                    {
+                                        <td width="40%" style="padding-left:5px; font-family:Calibri;">Criminal Court Check (E-Court)</td>
+                                    }
+                                    else if (item.subCheckId == 2 || item.subCheckId == 13 || item.subCheckId == 337 || item.subCheckId == 338 || item.subCheckId == 339 || item.subCheckId == 340 || item.subCheckId == 341 || item.subCheckId == 359 || item.subCheckId == 360 || item.subCheckId == 361 || item.subCheckId == 901 || item.subCheckId == 902)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">Address Check</td>
+                                    }
+                                    else if (item.subCheckId == 304)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">Gap Check</td>
+                                    }
+                                    else if (item.subCheckId == 213 || item.subCheckId == 214 || item.subCheckId == 215 || item.subCheckId == 218)
+                                    {
+                                        <td width="40%" style="padding-left:5px;  font-family:Calibri;">Drug</td>
+                                    }
+                                    else if (item.subCheckId == 351 || item.subCheckId == 402)
+                                    {
+                                        if (Model.EligibletoWork > 1)
+                                        {
+                                            if (item.subCheckId == 351)
+                                            {
+                                                <td width="40%" style="padding-left:5px;  font-family:Calibri;">Eligibility to Work Check 1</td>
+                                            }
+                                            else if (item.subCheckId == 402)
+                                            {
+                                                <td width="40%" style="padding-left:5px;  font-family:Calibri;">Eligibility to Work Check 2</td>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <td width="40%" style="padding-left:5px;  font-family:Calibri;">Eligibility to Work Check</td>
+                                        }
+                                    }
+
+                                    @*else
+        {
+        <td width="40%" style="padding-left:5px;  font-family:Calibri;">@item.SubCheckFName         </td>
+        }*@
+
+
+
+
+
+
+
+                                    @if (item.Particilars == "No" || item.Particilars == null || item.Particilars == "" || item.Particilars == "" || item.Particilars == "Wip On Hold")
+                                    {
+
+                                        if (Model.Address_currentPermanantSame.ToLower() == "yes" && (item.subCheckId == 2 || item.subCheckId == 13))
+                                        {
+                                            <td width="30%" align="center" style=" font-family:Calibri;"> Current & Permanent </td>
+                                        }
+                                        else if (Model.Criminal_currentPermanantSame.ToLower().Trim() == "yes" && (item.subCheckId == 23 || item.subCheckId == 24 || item.subCheckId == 29 || item.subCheckId == 226))
+                                        {
+                                            <td width="30%" align="center" style=" font-family:Calibri;"> Current & Permanent </td>
+
+                                        }
+                                        else if ((Model.Address_currentPermanantSame == "" || Model.Address_currentPermanantSame.ToLower().Trim() == "no") && item.CheckFamilyRowID == 2)
+                                        {
+                                            if (item.subCheckId == 13)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Permanent </td>
+
+                                            }
+                                            else if (item.subCheckId == 2)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Current </td>
+                                            }
+
+                                            else if (item.subCheckId == 337)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate1 </td>
+                                            }
+
+                                            else if (item.subCheckId == 338)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate2 </td>
+                                            }
+
+                                            else if (item.subCheckId == 339)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate3 </td>
+                                            }
+                                            else if (item.subCheckId == 340)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate4 </td>
+                                            }
+                                            else if (item.subCheckId == 341)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate5 </td>
+                                            }
+                                            else if (item.subCheckId == 359)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate6 </td>
+                                            }
+                                            else if (item.subCheckId == 360)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate7 </td>
+                                            }
+                                            else if (item.subCheckId == 361)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate8 </td>
+                                            }
+                                            else if (item.subCheckId == 901)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate9 </td>
+                                            }
+                                            else if (item.subCheckId == 902)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate10 </td>
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            if (item.subCheckId == 13)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Permanent </td>
+
+                                            }
+                                            else if (item.subCheckId == 2)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Current </td>
+                                            }
+                                            else if (item.subCheckId == 337)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate1  </td>
+                                            }
+                                            else if (item.subCheckId == 338)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate2 </td>
+                                            }
+                                            else if (item.subCheckId == 339)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate3 </td>
+                                            }
+
+                                            else if (item.subCheckId == 340)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate4 </td>
+                                            }
+                                            else if (item.subCheckId == 341)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate5 </td>
+                                            }
+                                            else if (item.subCheckId == 359)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate6 </td>
+                                            }
+                                            else if (item.subCheckId == 360)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate7 </td>
+                                            }
+                                            else if (item.subCheckId == 361)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate8 </td>
+                                            }
+                                            else if (item.subCheckId == 901)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate9 </td>
+                                            }
+                                            else if (item.subCheckId == 902)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate10 </td>
+                                            }
+
+
+
+                                        }
+
+                                        if ((Model.Criminal_currentPermanantSame == "" || Model.Criminal_currentPermanantSame.ToLower() == "no") && item.CheckFamilyRowID == 5)
+                                        {
+                                            if (item.subCheckId == 29 || item.subCheckId == 23)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Permanent </td>
+                                            }
+                                            else if (item.subCheckId == 24 || item.subCheckId == 226)
+                                            {
+                                                <td width="30%" align="center" style=" font-family:Calibri;"> Current </td>
+                                            }
+                                            else if (item.subCheckId == 317 || item.subCheckId == 352 || item.subCheckId == 353 || item.subCheckId == 355 || item.subCheckId == 356 || item.subCheckId == 337 || item.subCheckId == 338 || item.subCheckId == 339 || item.subCheckId == 318 || item.subCheckId == 319 || item.subCheckId == 343 ||
+                                                item.subCheckId == 344 || item.subCheckId == 345 || item.subCheckId == 354 || item.subCheckId == 503 || item.subCheckId == 1081 || item.subCheckId == 1082 || item.subCheckId == 1415)
+                                            {
+                                                if (item.subCheckId == 317)
+                                                {
+                                                    <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate1 </td>
+                                                }
+                                                else if (item.subCheckId == 318)
+                                                {
+                                                    <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate2 </td>
+                                                }
+                                                else if (item.subCheckId == 319)
+                                                {
+                                                    <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate3 </td>
+                                                }
+                                                else if (item.subCheckId == 343)
+                                                {
+                                                    <td width="30%" align="center" style=" font-family:Calibri;"> Intermediates4 </td>
+                                                }
+                                                else if (item.subCheckId == 344)
+                                                {
+                                                    <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate5 </td>
+                                                }
+                                                else if (item.subCheckId == 345)
+                                                {
+                                                    <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate6 </td>
+                                                }
+                                                else if (item.subCheckId == 503)
+                                                {
+                                                    <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate7 </td>
+                                                }
+                                                else if (item.subCheckId == 1081)
+                                                {
+                                                    <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate8 </td>
+                                                }
+                                                else if (item.subCheckId == 1082)
+                                                {
+                                                    <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate9 </td>
+                                                }
+                                                else if (item.subCheckId == 1415)
+                                                {
+                                                    <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate10 </td>
+                                                }
+                                                else
+                                                {
+                                                    <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate</td>
+                                                }
+
+                                            }
+                                        }
+
+
+
+                                        @*if (item.subCheckId == 2)
+            {
+            <td width="30%" align="center" style=" font-family:Calibri;">Current</td>
+            }
+            else if (item.subCheckId == 13)
+            {
+            <td width="30%" align="center" style=" font-family:Calibri;">Permanent</td>
+            }*@
+                                        @*else if (item.subCheckId == 29 || item.subCheckId == 23)
+            {
+            <td width="30%" align="center" style=" font-family:Calibri;">Permanent</td>
+            }
+            else if (item.subCheckId == 24 || item.subCheckId == 226)
+            {
+            <td width="30%" align="center" style=" font-family:Calibri;">Current</td>
+            }*@
+                                        else if (item.subCheckId == 317)
+                                        {
+                                            <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate1</td>
+                                        }
+                                        else if (item.subCheckId == 318)
+                                        {
+                                            <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate2</td>
+                                        }
+                                        else if (item.subCheckId == 319)
+                                        {
+                                            <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate3</td>
+                                        }
+                                        else if (item.subCheckId == 343)
+                                        {
+                                            <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate4</td>
+                                        }
+                                        else if (item.subCheckId == 344)
+                                        {
+                                            <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate5</td>
+                                        }
+                                        else if (item.subCheckId == 345)
+                                        {
+                                            <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate6</td>
+                                        }
+
+                                        @*else if (item.subCheckId == 317 || item.subCheckId == 352 || item.subCheckId == 337 || item.subCheckId == 338 || item.subCheckId == 339 || item.subCheckId == 344 || item.subCheckId == 343 || item.subCheckId == 318 || item.subCheckId == 319)
+            {
+                <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate </td>
+            }*@
+                                        else if (item.subCheckId == 352 || item.subCheckId == 353 || item.subCheckId == 355 || item.subCheckId == 356  /*|| item.subCheckId == 338 || item.subCheckId == 339 */ || item.subCheckId == 354)
+                                        {
+                                            <td width="30%" align="center" style=" font-family:Calibri;"> Intermediate </td>
+                                        }
+                                        else if (item.subCheckId == 150 || item.subCheckId == 151 || item.subCheckId == 152 || item.subCheckId == 153 || item.CheckFamilyRowID == 11 || item.subCheckId == 201)
+                                        {
+                                            <td width="30%" align="center" style=" font-family:Calibri;"> @item.Particilars </td>
+                                        }
+                                    }
+                                    else if (item.Particilars == "Yes")
+                                    {
+                                        <td width="30%" align="center" style=" font-family:Calibri;">Current & Permanent</td>
+                                    }
+
+
+                                    else
+                                    {
+                                        <td width="30%" align="center" style=" font-family:Calibri;"> @item.Particilars </td>
+                                    }
+
+
+
+
+                                    <td width="30%" align="center" style=" font-family:Calibri;">@item.SubCheckDetail</td>
+
+                                    <td width="30%" align="center" style=" font-family:Calibri;">@item.ModeOfVerification</td>
+                                    @if (!string.IsNullOrEmpty(item.CheckCompleteDate.ToString()))
+                                    {
+                                        <td width="30%" align="center" style=" font-family:Calibri;">@item.CheckCompleteDate.Value.ToString("dd MMMM yyyy")</td>
+
+                                    }
+                                    else
+                                    {
+                                        <td width="30%" align="center" style=" font-family:Calibri;"></td>
+
+                                    }
+
+
+
+
+                                    @*@if (item.ColorName.ToUpper() == "GREEN")
+        {
+        <td width="20%" style="color-adjust:exact;  font-family:Calibri; " align="center">Positive</td>
+        }
+        else if (item.ColorName.ToUpper() == "ORANGE" || item.ColorName.ToUpper() == "YTR ON HOLD")
+        {
+        if ((item.CheckFName == "Employment Verification" && item.subCheckId == 68) || (item.CheckFName == "Reference Verification" && item.subCheckId == 150))
+        {
+        if (item.ColorName.ToUpper() == "YTR ON HOLD")
+        {
+        <td width="20%" style="color-adjust:exact;  font-family:Calibri; " align="center">
+            Still Active
+        </td>
+        }
+        else if (item.ColorName.ToUpper() == "ORANGE")
+        {
+        <td width="20%" style="color-adjust:exact;  font-family:Calibri; " align="center">Unable to verify </td>
+
+        }
+
+
+        }
+        else
+        {
+        <td width="20%" style="color-adjust:exact;  font-family:Calibri; " align="center">Unable to verify </td>
+        }
+
+        }
+
+        else if (item.Particilars.ToUpper() == "WIP ON HOLD")
+        {
+        <td width="20%" style="color-adjust:exact;  font-family:Calibri; " align="center"> WIP </td>
+
+        }
+        else if (item.ColorName.ToUpper() == "RED")
+        {
+        <td width="20%" style="color-adjust:exact;  font-family:Calibri; " align="center">Negative </td>
+        }
+        else if (item.SubCheckDetail.ToUpper() == "NOT APPLICABLE")
+        {
+        <td width="20%" style="color-adjust:exact;  font-family:Calibri; " align="center">
+            Not
+            Applicable
+        </td>
+        }
+        else if (item.ColorName.ToUpper() == "WIP")
+        {
+        <td width="20%" style="color-adjust:exact;  font-family:Calibri; " align="center">WIP</td>
+        }
+        else if (item.ColorName.ToUpper() == "NO COLOR-STOP")
+        {
+        <td width="20%" style="color-adjust:exact;  font-family:Calibri; " align="center">STOP</td>
+        }
+
+
+        else
+        {
+        <td width="20%" style="color-adjust:exact;  font-family:Calibri; " align="center"></td>
+        }*@
+
+                                    @if (@item.Status == "Not Applicable")
+                                    {
+                                        <td width="15%" style="color-adjust:exact;  font-family:Calibri; background:@item.ColorCode;" align="center">Not Applicable</td>
+                                    }
+                                    @*else if (item.ColorName.ToUpper() == "WIP")
+        {
+        <td width="15%" style="color-adjust:exact;  font-family:Calibri; " align="center">On-Hold</td>
+        }*@
+                                    else if ((item.CheckFName == "Employment Verification" && item.subCheckId == 68 && item.ColorName.ToUpper() == "YTR ON HOLD"))
+                                    {
+                                        <td width="15%" style="color-adjust:exact;   font-family:Calibri;background:#FF9933; border-color:black;" align="center">Orange</td>
+                                    }
+                                    else if ((item.CheckFName == "Address Verification" && item.Particilars.ToUpper() == "WIP ON HOLD"))
+                                    {
+                                        <td width="15%" style="color-adjust:exact;   font-family:Calibri; border-color:black;" align="center">On- Hold</td>
+                                    }
+                                    else
+                                    {
+                                        <td width="15%" style="color-adjust:exact;   font-family:Calibri;background:@item.ColorCode; border-color:black;" align="center">@item.ColorName</td>
+                                    }
+                                </tr>
+                                            if (item.CheckFName == "Education Verification" && Model.EmpNoteRemark == "true")
+                                            {
+                                                <tr>
+                                                    <td width="40%" style="padding-left:5px;  font-family:Calibri;">Employment Check (HR)        </td>
+                                                    <td width="30%" align="center" style=" font-family:Calibri;">Fresher </td>
+                                                    <td width="30%" align="center" style=" font-family:Calibri;">Not Applicable</td>
+                                                    <td width="20%" style="color-adjust:exact;  font-family:Calibri;" align="center">Not Applicable</td>
+                                                    <td width="20%" style="color-adjust:exact;  font-family:Calibri;" align="center">Not Applicable</td>
+                                                    <td width="15%" style="color-adjust:exact;   font-family:Calibri; background:'#FF9933'; border-color:black;" align="center">Not Applicable</td>
+                                                </tr>
+                                            }
+
+                                        }
+                                        <tr>
+                                            <td> <b>Report Status<b /></td>
+                                            <td colspan="5" style="color-adjust:exact; text-align:center;background:@Model.FinalColorCode;">@Model.FinalColor</td>
+                                        </tr>
+
+
+
+                                        Session["Annexure"] = 1;
+
+
+                                    }
+                                </table>
+                            </td>
+                        </tr>
+                        <p><br></p>
+                        <tr>
+                            <td valign="bottom">
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:15rem;">
+                                    <tbody>
+                                        <tr>
+                                            <td style="border-top:2px solid rgb(190, 190, 190);" colspan="3">
+                                                &nbsp;
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                            <td width="1%">&nbsp;</td>
+                                            <td width="79%">
+                                                <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                                <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                                <p style="font-size:16px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                                <p style="font-size:16px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+        </tbody>
+    </table>
+</page>
+

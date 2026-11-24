@@ -1,0 +1,223 @@
+﻿
+@{
+    ViewBag.Title = "Casewise Summary";
+    Layout = "~/Areas/ClientArea/Views/Shared/_LayoutWoutNav.cshtml";
+}
+
+@{
+    ////@ViewBag.NavigationBtnExportExcel
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    string hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportClientArea", "Home", "ClientArea", new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+    ////@ViewBag.NavigationBtnExportWord
+    //string faIconExportWord = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Word");
+    //string hyperLinkExportWord = Html.ActionLink("linkTitle", "ExportCountryInWord", "Client", null, new { @class = "btn bun-bg btn-default" }).ToString();
+    //ViewBag.NavigationBtnExportWord = new HtmlString(hyperLinkExportWord.ToString().Replace("linkTitle", faIconExportWord));
+
+    ////@ViewBag.NavigationBtnBackExportPDF
+    //string faIconExportPDF = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export PDF");
+    //string hyperLinkExportPDF = Html.ActionLink("linkTitle", "ExportCountryInPDF", "Client", null, new { @class = "btn bun-bg btn-default" }).ToString();
+    //ViewBag.NavigationBtnBackExportPDF = new HtmlString(hyperLinkExportPDF.ToString().Replace("linkTitle", faIconExportPDF));
+}
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@*@section LeftNavigation{ @Html.Partial("_NavLeftClientHomePage") }*@
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-12">
+                    @using (Html.BeginForm("ClientDashboardCaseSummaryDetail", "Home", FormMethod.Get))
+                    {
+                        <div class="form-horizontal">
+                            <div class="form-group branch search-frame">
+                                <label class="col-md-2 control-label">Keyword :</label>
+                                <div class="col-md-8">
+                                    @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, SecuritasID..." })
+                                </div>
+                            </div>
+                            <div class="form-group branch search-frame">
+                                <label class="col-md-2 control-label">Recieving From Date :</label>
+                                <div class="col-md-3">
+                                    @Html.TextBox("RecievingfromDate", null, new { @class = "form-control", @id = "RecievingToDate", @placeholder = "yyyy-mm-dd" })
+                                </div>
+                                <label class="col-md-2 control-label">Recieving To Date :</label>
+                                <div class="col-md-3">
+                                    @Html.TextBox("RecievingToDate", null, new { @class = "form-control", @id = "RecievingFromDate", @placeholder = "yyyy-mm-dd" })
+                                </div>
+                            </div>
+                            <div class="form-group branch search-frame">
+                                <label class="col-md-2 control-label">Completed From Date :</label>
+                                <div class="col-md-3">
+                                    @Html.TextBox("CompletedFromDate", null, new { @class = "form-control", @id = "CompletedToDate", @placeholder = "yyyy-mm-dd" })
+                                </div>
+                                <label class="col-md-2 control-label">Completed To Date :</label>
+                                <div class="col-md-3">
+                                    @Html.TextBox("CompletedToDate", null, new { @class = "form-control", @id = "CompletedFromDate", @placeholder = "yyyy-mm-dd" })
+                                </div>
+                            </div>
+                            <div class="form-group branch search-frame">
+                                <div style="text-align:center;">
+                                    <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                                </div>
+                            </div>
+
+                        </div>
+                        <div>
+                            @*<table width="98%" border="1" bordercolor="#595c5a" align="center">
+                                <tr class="green_bg">
+                                    <td>Pending with Candiadte</td>
+                                    <td>Case Approval Pending</td>
+                                    <td>WIP</td>
+                                    <td>Completed</td>
+                                    <td>Insufficiency</td>
+                                    <td>Other Than Green</td>
+                                </tr>
+                                <tr class="links">
+                                    <td><a href='@Url.Action("ClientDashboardCaseSummaryDetail", "Home",new { CaseStatus="Pendingcandidate"})'>@Model.totPendingwithcandidate</a></td>
+                                    <td><a href='@Url.Action("ClientDashboardCaseSummaryDetail", "Home",new { CaseStatus = "ApprovalPending"})'>@Model.totCaseApprovalpending</a></td>
+                                    <td><a href='@Url.Action("ClientDashboardCaseSummaryDetail", "Home",new { CaseStatus = "WIP"})'>@Model.totWIP</a></td>
+                                    <td><a href='@Url.Action("ClientDashboardCaseSummaryDetail", "Home",new { CaseStatus="Completed"})'>@Model.totComplete</a></td>
+                                    <td><a href='@Url.Action("ClientDashboardCaseSummaryDetail", "Home",new { CaseStatus="Insuff"})'>@Model.totInsuff</a></td>
+                                    <td><a href='@Url.Action("ClientDashboardCaseSummaryDetail", "Home",new { CaseStatus="OtherThanGreen"})'>@Model.totOtherthanGreen</a></td>
+                                </tr>
+                            </table>*@
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="x_panel" style="background-color:#eeeeee;text-align:center;color:#283747">
+                                        <div class="x_content">
+                                            <div class="row tile_count">
+                                                <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count" style="width:19% !important">
+                                                    <span class="count_top"><b>Pending with Candidate</b></span>
+                                                    <div class="count"><a href='@Url.Action("ClientDashboardCaseSummaryDetail", "Home",new { CaseStatus="Pendingcandidate"})'>@Model.totPendingwithcandidate</a></div>
+                                                </div>
+                                                <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count" style="width:19% !important">
+                                                    <span class="count_top"><b>Case Approval Pending</b></span>
+                                                    <div class="count"><a href='@Url.Action("ClientDashboardCaseSummaryDetail", "Home",new { CaseStatus = "ApprovalPending"})'>@Model.totCaseApprovalpending</a></div>
+                                                </div>
+                                                <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count" style="width:14% !important">
+                                                    <span class="count_top"><b>WIP</b></span>
+                                                    <div class="count"><a href='@Url.Action("ClientDashboardCaseSummaryDetail", "Home",new { CaseStatus = "WIP"})'>@Model.totWIP</a></div>
+                                                </div>
+                                                <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count" style="width:14% !important">
+                                                    <span class="count_top"><b>Completed</b></span>
+                                                    <div class="count"><a href='@Url.Action("ClientDashboardCaseSummaryDetail", "Home",new { CaseStatus="Completed"})'>@Model.totComplete</a></div>
+
+                                                </div>
+                                                <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count" style="width:14% !important">
+                                                    <span class="count_top"><b>Insufficiency</b></span>
+                                                    <div class="count"><a href='@Url.Action("ClientDashboardCaseSummaryDetail", "Home",new { CaseStatus="Insuff"})'>@Model.totInsuff</a></div>
+                                                </div>
+                                                <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count" style="width:14% !important">
+                                                    <span class="count_top"><b>Other Than Green</b></span>
+                                                    <div class="count"><a href='@Url.Action("ClientDashboardCaseSummaryDetail", "Home",new { CaseStatus="OtherThanGreen"})'>@Model.totOtherthanGreen</a></div>
+                                                </div>
+                                             
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    }
+                </div>
+
+            </div>
+            @if (Model != null)
+            {
+                <div class="row">
+                    <div class="col-md-12" style="padding:0 25px 0 25px">
+                        @*@{
+                              WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                              grid.Bind(Model.PQPersonalInfo, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }*@
+
+
+                        @{
+
+                            WebGrid grid = new WebGrid(rowsPerPage: 11, ajaxUpdateContainerId: "grid");
+                            grid.Bind(Model.DashboardClientCaseDetails, autoSortAndPage: false, rowCount: 20);
+                        }
+                        @grid.GetHtml(
+                                       htmlAttributes: new { id = "grid", @class = "table" },
+                                       headerStyle: "thead-inverse",
+                                       rowStyle: "ordertxt",
+                                       footerStyle: "custpaging",
+                                       mode: WebGridPagerModes.All,
+                                       columns: new[]
+                                       {
+                                    //grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                    grid.Column(columnName: "SNumber", header: "No.", canSort: false, style:"col-md-1"),
+                                    grid.Column(columnName: "CandidateName", header: "Candidate Name", canSort: false, style:"col-md-1"),
+                                    //grid.Column(columnName: "CandidateCode", header: "Candidate Code", canSort: false, style:"col-md-2"),
+
+                                    //  grid.Column(header : "Securitas ID", format : (item) => {
+                                    //      string compnayRefId= item.CompanyRefNo;
+                                    //      var link = Html.ActionLink(compnayRefId, "CheckListForClientByPersonalID", "Home", new { PersonalId = item.PersonalRowID }, new { @class = "iframeCheckList cboxElement" });
+                                    //    return link;
+                                    //}, style:"edit col-md-1"),
+
+                                    grid.Column(columnName: "SecuritasID", header: "Securitas ID", canSort: false, style:"col-md-1"),
+                                    grid.Column(columnName: "DetailsEnteredBy", header: "DetailsEntered", canSort: false, style:"col-md-1"),
+                                    grid.Column(columnName: "CaseStatus", header: "Status", canSort: false, style:"col-md-1"),
+                                    grid.Column(columnName: "OrderDate", header: "Order Date", canSort: false, style:"col-md-1"),
+                                    grid.Column(columnName: "OutDate", header: "Due Date", canSort: false, style:"col-md-1"),
+                                    grid.Column(columnName: "CreatedDate", header: "CreatedOn", canSort: false, style:"col-md-1"),
+                                           //grid.Column("CreatedDate", "Created Date", format: (item) => item.CreatedDate != null ? item.CreatedDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"col-md-1"),
+                                       }
+                                                    )
+                        @* <div class="total-record">Total Records: @Model.TotalRecords</div>*@
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    @section Scripts{
+        <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+        <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+        <link href="~/Content/colorbox.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery.colorbox-min.js"></script>
+
+        <script type="text/javascript">
+    $(document).ready(function () {
+        $(".iframeCheckList").colorbox({ iframe: true, width: "80%", height: "65%" });
+
+        $('#RecievingToDate').datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-66:+0",
+        });
+        $('#RecievingFromDate').datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-66:+0",
+        });
+        $('#CompletedToDate').datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-66:+0",
+        });
+        $('#CompletedFromDate').datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-66:+0",
+        });
+    });
+        </script>
+
+    }
+
+

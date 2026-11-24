@@ -1,0 +1,630 @@
+﻿
+@model ViewModels.ReportQCViewModel.InterimReportGenerateViewModel
+
+@if (Model != null && Model.AddressProvidedList != null && Model.AddressProvidedList.Count() > 0 && Model.AntecedentList != null && Model.AntecedentList.Count() > 0)
+{
+    foreach (var ProvidedInfo in Model.AddressProvidedList)
+    {
+        var AddressVerInfo = Model.AddressVerifiedList.Where(ver => ver.AddressRowID == ProvidedInfo.AddressRowID).FirstOrDefault();
+        var antecentList = Model.AntecedentList.Where(a => a.CheckFamilyRowID == ProvidedInfo.CheckFamilyRowID && a.SubCheckRowID == ProvidedInfo.SubCheckRowID).ToList();
+        <style>
+            .padding-td >td{
+                height:40px;
+                vertical-align:middle;
+                padding-left:10px;
+                
+            }
+            .sd tr >td{
+                border:2px solid #000;
+                border-collapse:collapse !important;
+            }
+            .sd{
+                border-collapse:collapse !important;
+            }
+        </style>
+        <page id="PrintSrc" size="A4">
+            <div style="page-break-after:always ;"></div>
+            <table width="793" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:hidden">
+                <!--- Report Header Include -->
+                @*@Html.Partial("_ReportHeader")*@
+                <!--- Report Header Include -->
+
+
+                <tr>
+                    <td width="2%" align="left" valign="bottom" @*style="border-left:2px solid #999999;"*@>&nbsp;</td>
+                    <td valign="top">
+                        <table width="100%" style="border-left:hidden; border-right:hidden" cellpadding="0" cellspacing="0">
+
+                            <tr>
+                                <td valign="top">
+                                    <table width="100%" cellspacing="0" cellpadding="0">
+                                        <tr><td width="20%" align="right"><img src='@Url.Content("/Images/footer-logo.jpg")' height="60"></td></tr>
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@ProvidedInfo.SubCheckName</p></td>
+
+                                        </tr>
+
+                                        <tr>
+                                            <td valign="top">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top" align="center"></td>
+                                        </tr>
+                                        <tr>
+                                            <td height="30">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top" align="center">
+                                                <table class="sd" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">TCS APPLICANT ID </td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for=""></label>@Model.ApplicationId</td>
+                                                        <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">VENDOR RF-ID</td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;">@Model.CompanyRefNo</td>
+                                                    </tr>
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">RECRUITMENT BRANCH </td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for="">@Model.Location</label></td>
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">NSR IT_PIN</td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;">NIL</td>
+                                                    </tr>
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">NAME OF CANDIDATE</td>
+                                                        <td colspan="3" style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for="">@Model.PersonalName</label></td>
+
+
+                                                    </tr>
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">DATE OF BIRTH</td>
+                                                        @if (Model.DOB != null)
+                                                        {
+                                                            <td style="padding-left:5px; font-size:12px; font-family:Calibri;">@Model.DOB.Value.ToString("dd-MM-yyyy")</td>
+                                                        }
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">
+                                                            FINAL BGC STATUS
+                                                            (RED/GREEN)
+                                                        </td>
+                                                        @if (AddressVerInfo != null)
+                                                        {
+                                                            <td style="padding-left:5px; font-size:12px; font-family:Calibri; color:@AddressVerInfo.ColorCode"><label for="">@ProvidedInfo.CheckStatus</label></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for=""></label></td>
+                                                        }
+
+                                                    </tr>
+
+
+
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">CATEGORY (CAMPUS/DT/ EP/EP From CAMPUS)</td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for="">@Model.VerticalLocation</label></td>
+                                                        @*<td colspan="2" style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; ">*@
+                                                        <td colspan="2" align="left">
+                                                            <img src='@Url.Content("~/Images/TCS_IT_TwoColor.JPG")' width="265" />
+
+                                                        </td>
+
+
+                                                    </tr>
+                                                    <tr class="padding-td">
+                                                        <td colspan="4" style="border:0;">
+                                                            <p></p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="4" style="border:0">
+                                                            <table width="100%">
+                                                                <tr class="padding-td">
+                                                                    <td width="10%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Sl. No</td>
+                                                                    <td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">PARTICULARS</td>
+                                                                    <td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Provided by the Applicant</td>
+                                                                    <td width="30%" style="font-size:12px;  margin-top:20px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Verified and Confirmed by BGC Agency</td>
+                                                                </tr>
+
+                                                                @{
+                                                                    if (AddressVerInfo != null)
+                                                                    {
+                                                                <tr class="padding-td">
+                                                                    <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">1 </td>
+                                                                    <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Address Provided </td>
+                                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">@ProvidedInfo.AV_Add</td>
+                                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">@AddressVerInfo.AV_Add</td>
+                                                                    @*@if (!string.IsNullOrEmpty(ProvidedInfo.AV_Add))
+        {
+            if (@ProvidedInfo.AV_Add.ToLower() == AddressVerInfo.AV_Add.ToLower())
+            {
+                <td style="font-size:12px; font-family:Calibri; text-align:center;">Correct</td>
+            }
+            else
+            {
+                <td style="font-size:12px; font-family:Calibri; text-align:center;">@AddressVerInfo.AV_Add</td>
+            }
+        }
+        else
+        {
+            <td style="font-size:12px; font-family:Calibri; text-align:center;"></td>
+
+
+        }*@
+
+                                                                </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">2 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Period of Stay (Date: From/To) </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center;">@ProvidedInfo.AV_Dur_of_Stay</td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center;">@AddressVerInfo.AV_Dur_of_Stay</td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; border-bottom:0; text-align:center; font-family:Calibri;font-weight:bold;">3 </td>
+                                                                            <td style="font-size:12px; border-bottom:0; font-family:Calibri;font-weight:bold;">Residential Status (Rental/ Ownership, hostel or paying guest)</td>
+                                                                            <td style="font-size:12px; border-bottom:0; border:0; color-adjust:exact; background:#c0c0c0; font-family:Calibri;"></td>
+                                                                            @if (!string.IsNullOrEmpty(AddressVerInfo.AV_Add_Type))
+                                                                            {
+                                                                                if (AddressVerInfo.AV_Add_Type.ToLower() == "rented")
+                                                                                {
+                                                                                    <td style="font-size:12px; border-bottom:0; font-family:Calibri; text-align:center;">Rental</td>
+                                                                                }
+                                                                                else if (AddressVerInfo.AV_Add_Type.ToLower() == "own")
+                                                                                {
+                                                                                    <td style="font-size:12px; border-bottom:0; font-family:Calibri; text-align:center;">Ownership</td>
+                                                                                }
+                                                                                else if (AddressVerInfo.AV_Add_Type.ToLower() == "pg")
+                                                                                {
+                                                                                    <td style="font-size:12px; border-bottom:0; font-family:Calibri; text-align:center;">paying guest</td>
+                                                                                }
+                                                                                else if (AddressVerInfo.AV_Add_Type.ToLower() == "company provide")
+                                                                                {
+                                                                                    <td style="font-size:12px; border-bottom:0; font-family:Calibri; text-align:center;">company provide</td>
+                                                                                }
+                                                                            }
+
+                                                                            else
+                                                                            {
+                                                                                <td style="font-size:12px; border-bottom:0; font-family:Calibri; text-align:center;">@AddressVerInfo.AV_Add_Type</td>
+                                                                            }
+
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">4 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Name& contact number of the Respondent </td>
+                                                                            @*<td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.AV_Resp_Name</td>*@
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0; font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center;">@AddressVerInfo.AV_Resp_Name  (@AddressVerInfo.AV_Resp_ConDet)</td>
+
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">5 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Signature of Respondent Obtained (Yes / No)</td>
+                                                                            <td style="font-size:12px; border:0;color-adjust:exact; background:#c0c0c0; font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center;">@AddressVerInfo.AV_House_Photo_taken</td>
+
+
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">6 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Relationship of Applicant to Respondent </td>
+                                                                            <td style="font-size:12px;   border:0; color-adjust:exact; background:#c0c0c0; font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center;">@AddressVerInfo.AV_Resp_Relation_With_Cand</td>
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">7 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Nature of Location</td>
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0;  font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center; ">@AddressVerInfo.NatureofLocation</td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">8 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Mode of verification (Digital or Manual)</td>
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0;  font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center; ">@AddressVerInfo.ModeOfVerification</td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">9 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Digital Geo tagging detail</td>
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0;  font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center; ">@AddressVerInfo.GeoCoordinate</td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">10 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Address Proximity to the given address</td>
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0;  font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center; ">@AddressVerInfo.AddressProximity</td>
+                                                                        </tr>
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">11 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Selfie of the respondent obtained (Yes or No)</td>
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0;  font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center; ">@AddressVerInfo.SelfieOfRespObt</td>
+                                                                        </tr>
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">12 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Respondent ID Proof obtained (Yes or No)</td>
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0;  font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center; ">@AddressVerInfo.RespIDProof</td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">13 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">House photo of the respondent obtained (Yes or No)</td>
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0;  font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center; ">@AddressVerInfo.HousePhotoOfResp</td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">14 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Address proof of the respondent obtained (Yes or No)</td>
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0;  font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center; ">@AddressVerInfo.AddProofOfTheResp</td>
+                                                                        </tr>
+
+
+                                                                        @*<tr class="padding-td">
+                    <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">12 </td>
+                    <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">TCS Confidential Page No.-3 -12Respondent ID Proof obtained (Yes or No)</td>
+                    <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0;  font-family:Calibri;"></td>
+                    <td style="font-size:12px; font-family:Calibri; text-align:center; ">Residential</td>
+                </tr>*@
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">15 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; font-weight:bold;">Date of verification conducted </td>
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0; font-family:Calibri;"></td>
+                                                                            @if (AddressVerInfo.AV_Date_Verification != null)
+                                                                            {
+                                                                                <td colspan="2" style="font-size:12px; font-family:Calibri;  ;text-align:center; ">@AddressVerInfo.AV_Date_Verification.Value.ToString("dd-MMM-yyyy")</td>
+
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td colspan="2" style="font-size:12px; font-family:Calibri;  "></td>
+
+                                                                            }
+                                                                        </tr>
+
+
+                                                                    }
+
+
+                                                                    else
+                                                                    {
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">1 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Address Provided </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center;">@ProvidedInfo.AV_Add</td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">2 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Period of Stay (Date: From/To) </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center;">@ProvidedInfo.AV_Dur_of_Stay</td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; border-bottom:0; text-align:center; font-family:Calibri;font-weight:bold;">3 </td>
+                                                                            <td style="font-size:12px; border-bottom:0; font-family:Calibri;font-weight:bold;">Residential Status (Rental/ Ownership, hostel or paying guest)</td>
+                                                                            <td style="font-size:12px;  border:0; color-adjust:exact; background:#c0c0c0; font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; border-bottom:0; font-family:Calibri; text-align:center;">@ProvidedInfo.AV_Add_Type</td>
+                                                                        </tr>
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">4 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Name& contact number of the Respondent </td>
+                                                                            @*<td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.AV_Resp_Name</td>*@
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0; font-family:Calibri;"></td>
+                                                                            @if (ProvidedInfo.AV_Resp_Name != null)
+                                                                            {
+                                                                                <td style="font-size:12px; font-family:Calibri; text-align:center;">@ProvidedInfo.AV_Resp_Name (@ProvidedInfo.AV_Resp_ConDet)</td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                            }
+
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">5 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Signature of Respondent Obtained (Yes / No)</td>
+                                                                            <td style="font-size:12px; border:0;color-adjust:exact; background:#c0c0c0; font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+
+
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">6 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Relationship of Applicant to Respondent </td>
+                                                                            <td style="font-size:12px;   border:0; color-adjust:exact; background:#c0c0c0; font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center;">@ProvidedInfo.AV_Resp_Relation_With_Cand</td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">7 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Nature of Location</td>
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0;  font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center; ">@ProvidedInfo.AV_Sec_field_Exe_Name</td>
+                                                                        </tr>
+
+
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">8 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Mode of verification (Digital or Manual)</td>
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0;  font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center; ">@ProvidedInfo.AV_OtherDetails14</td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">9 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Digital Geo tagging detail</td>
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0;  font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center; "></td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">10 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Address Proximity to the given address</td>
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0;  font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center; "></td>
+                                                                        </tr>
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">11 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Selfie of the respondent obtained (Yes or No)</td>
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0;  font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center; "></td>
+                                                                        </tr>
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">12 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Respondent ID Proof obtained (Yes or No)</td>
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0;  font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center; "></td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">13 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">House photo of the respondent obtained (Yes or No)</td>
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0;  font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center; "></td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">14 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Address proof of the respondent obtained (Yes or No)</td>
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0;  font-family:Calibri;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center; "></td>
+                                                                        </tr>
+
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">15 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; font-weight:bold;">Date of verification conducted </td>
+                                                                            <td style="font-size:12px; border:0; color-adjust:exact; background:#c0c0c0; font-family:Calibri;"></td>
+                                                                            @if (ProvidedInfo.AV_Date_Verification != null)
+                                                                            {
+                                                                                <td colspan="2" style="font-size:12px; font-family:Calibri;  ;text-align:center; ">@ProvidedInfo.AV_Date_Verification.Value.ToString("dd-MM-yyyy")</td>
+
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td colspan="2" style="font-size:12px; font-family:Calibri;  "></td>
+
+                                                                            }
+                                                                        </tr>
+
+
+
+
+
+
+                                                                    }
+                                                                }
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    
+
+                                                    @*<tr class="padding-td">
+                                                    <td colspan="4" style="font-weight:bold">Additional Comments by BGC agency. If Respondent’s signature is not obtained on this page, please give the reasons for the same here: Nil</td>
+                                                </tr>*@
+                                                    @if (AddressVerInfo != null)
+                                                    {
+                                                    <tr class="padding-td"><td colspan="4" style="font-weight:bold">Additional Comments by BGC agency-   @AddressVerInfo.ReportComment</td></tr>
+                                                    }
+                                                    <tr>
+                                                        <td colspan="4" style="border:0; text-align:left;"><img src='@Url.Content("~/Images/Signature.JPG")'></td>
+                                                    </tr>
+                                                    <tr class="padding-td">
+                                                        <td colspan="4" style="padding-left:25px; font-size:12px; font-family:Calibri; border:hidden">
+                                                            <label for="">
+                                                                Date:
+                                                                @if (Model.ReportDate != null)
+                                                                {<span>@Model.ReportDate.Value.ToString("dd-MMM-yyyy")</span> }
+                                                            else
+                                                            { <span>N/A</span>}
+                                                            </label>
+                                                        </td>
+                                                    </tr>
+
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td @*style="border-right:2px solid #999999;"*@ align="left" valign="top">&nbsp;</td>
+                </tr>
+
+                <!--- Report Footer Address Include -->
+                @* @Html.Partial("_ReportFooterAddress")*@
+                <!--- Report Footer Address Include -->
+                <!--- Report Footer Include -->
+                @*@Html.Partial("_ReportFooter")*@
+
+                <!--- Report Footer Include -->
+            </table>
+            
+        </page>
+
+                                                                    if (Model.CandidateDocList != null)
+                                                                    {
+                                                                        string DocumentType = string.Empty;
+                                                                        foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == ProvidedInfo.SubCheckRowID))
+                                                                        {
+                                                                            if (Doc.SubCheckRowID == ProvidedInfo.SubCheckRowID)
+                                                                            {
+                                                                                FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                                                                                if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                                                                                {
+        <page id="PrintSrc" size="A4">
+            <div style="page-break-after:always ;"></div>
+            <table width="100%" cellspacing="0" cellpadding="0" align="center" border="0">
+                <!--- Report Header Include -->
+                @*@Html.Partial("_ReportHeader")*@
+                <!--- Report Header Include -->
+                <tr>
+                    @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                    <td valign="top" colspan="2" align="center" valign="bottom">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td valign="top">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                        <tr><td align="right"><img src='@Url.Content("/Images/footer-logo.jpg")' height="60"></td></tr>
+                                        <tr>
+                                            <td>
+                                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                    <tr>
+                                                        @if (DocumentType != Doc.DocumentType)
+                                                        {
+                                                            
+                                                                if (Doc.DocumentType == "Signature")
+                                                                {
+
+                                                                    <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">ADDRESS ARTIFACT (Present Address)</p></td>
+                                                                }
+                                                                else if (Doc.DocumentType == "IDProof")
+                                                                {
+                                                                    <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">ID Proof</p></td>
+
+                                                                }
+
+                                                                else if (Doc.DocumentType == "HousePhoto")
+                                                                {
+                                                                    <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">Photograph</p></td>
+
+                                                                }
+
+                                                                else if (Doc.DocumentType == "LandmarkPhoto")
+                                                                {
+                                                                    <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">Land Mark Photograph</p></td>
+
+                                                                }
+
+                                                                else if (Doc.DocumentType == "AdhaarCard")
+                                                                {
+                                                                    <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">ID Proof (Aadhar Card)</p></td>
+                                                                }
+
+                                                                else if (Doc.DocumentType == "Photograph")
+                                                                {
+                                                                    <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">House Photograph </p></td>
+                                                                }
+
+                                                                else if (Doc.DocumentType == "House Photo with Add Plate")
+                                                                {
+                                                                    <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">House Photograph with Address Plate Details</p></td>
+                                                                }
+                                                                else if (Doc.DocumentType == "AddressProof")
+                                                                {
+                                                                    <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">ID Proof (Address Proof)</p></td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@Doc.DocumentType</p></td>
+
+                                                            }
+
+
+
+                                                            DocumentType = Doc.DocumentType;
+
+
+                                                        }
+                                                            <td width="20%" valign="top"></td>
+                                                            <td width="20%" valign="top"></td>
+                                                        </tr>
+                                                    <tr><td colspan="2">&nbsp;</td></tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top">&nbsp;</td>
+                                        </tr>
+                                        <tr style="text-align:center">
+                                            <td valign="top" style="border:2px solid #000;padding:5px;">
+                                                @{
+                                                    FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                    System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                    if (image.Height > 600)
+                                                    {
+                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                </tr>
+                <!--- Report Footer Address Include -->
+                @*@Html.Partial("_ReportFooterAddress")*@
+                <!--- Report Footer Address Include -->
+                <!--- Report Footer Include -->
+                @*@Html.Partial("_ReportFooter")*@
+                <!--- Report Footer Include -->
+            </table>
+            
+        </page>
+                    }
+                }
+            }
+        }
+    }
+}

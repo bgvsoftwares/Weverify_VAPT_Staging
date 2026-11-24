@@ -1,0 +1,216 @@
+﻿
+@model ViewModels.ProvidedInfoViewModel.PQEmploymentYTRClearViewModel
+@{
+    ViewBag.Title = "Employment YTR Checks Clear by Client";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManageClientYTRCases", "Home", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+    var clid = "";
+    clid = Model.ClientRowId.ToString();
+    var isRequired = Model.DOLisRequired;
+    int cli = Model.ClientRowId;
+    int subcheckid = Model.SubCheckRowID;
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") } 
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-lg-12 col-md-12" style="background:#EAEAEA!important;">
+        <div class="card" style="height:auto!important;box-shadow: none; border-radius: 0px; background:#EAEAEA!important;">
+            <div class="card-body ps-0 pt-0">
+                    <div class="col-md-9">
+                        <div class="pd-30 pd-sm-20">
+
+                            @if (cli == 193 && (subcheckid == 136 || subcheckid == 2 || subcheckid == 13))
+                            {
+                                using (Html.BeginForm("YTRChecksClearByClient", "Home", new { Ares = "ClientArea" }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                {
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden" value="@Model.EmploymentRowID" id="EmploymentRowID" name="EmploymentRowID" />
+                                    <input type="hidden" value="@Model.SubCheckRowID" id="SubCheckRowID" name="SubCheckRowID" />
+                                    <input type="hidden" value="@Model.CheckFamilyRowID" id="CheckFamilyRowID" name="CheckFamilyRowID" />
+                                    <input type="hidden" value="@Model.PersonalRowID" id="PersonalRowID" name="PersonalRowID" />
+
+                                    <div class="row row-xs align-items-center mg-b-20">
+                                        <div class="col-md-4">
+                                            @Html.LabelFor(model => model.DOJ, htmlAttributes: new { @class = "form-label mg-b-0" })
+                                        </div>
+                                        <div class="col-md-8 mg-t-5 mg-md-t-0">
+                                            @*@Html.EditorFor(model => model.DOL, new { htmlAttributes = new { @class = "date-picker form-control", @placeholder = "YYYY-MM-DD", type="date" , required = "required" } })*@
+                                           
+                                                @Html.EditorFor(model => model.DOJ, new
+                                                {
+                                                htmlAttributes = new
+                                                {
+                                                @class = "date-picker form-control",
+                                                @placeholder = "yyyy-MM-dd",
+                                                required = "required"
+                                                }
+                                                })
+                                           
+                                        </div>
+                                    </div>
+                                    
+
+                                    <div class="row row-xs align-items-center mg-b-20">
+                                        <div class="col-md-4">
+                                            @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "form-label mg-b-0" })
+                                        </div>
+                                        <div class="col-md-8 mg-t-5 mg-md-t-0">
+                                            @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control" })
+                                        </div>
+                                    </div>
+
+                                 
+                                    <div class="row row-xs align-items-center mg-b-20 justify-content-center">
+                                        <div class="col-md-4">
+                                            <input class="submit-btn btn-block rounded-0 m-1" type="submit" onclick="return validateForm()" value="Submit" />
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                using (Html.BeginForm("EmploymentYTRChecksClearByClient", "Home", new { Ares = "ClientArea" }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                {
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden" value="@Model.EmploymentRowID" id="EmploymentRowID" name="EmploymentRowID" />
+                                    <input type="hidden" value="@Model.SubCheckRowID" id="SubCheckRowID" name="SubCheckRowID" />
+                                    <input type="hidden" value="@Model.CheckFamilyRowID" id="CheckFamilyRowID" name="CheckFamilyRowID" />
+                                    <input type="hidden" value="@Model.PersonalRowID" id="PersonalRowID" name="PersonalRowID" />
+
+                                    <div class="row row-xs align-items-center mg-b-20">
+                                        <div class="col-md-4">
+                                            @Html.LabelFor(model => model.DOL, htmlAttributes: new { @class = "form-label mg-b-0" })
+                                        </div>
+                                        <div class="col-md-8 mg-t-5 mg-md-t-0">
+                                            @*@Html.EditorFor(model => model.DOL, new { htmlAttributes = new { @class = "date-picker form-control", @placeholder = "YYYY-MM-DD", type="date" , required = "required" } })*@
+                                            @if (isRequired)
+                                            {
+                                                @Html.EditorFor(model => model.DOL, new
+                                                {
+                                                htmlAttributes = new
+                                                {
+                                                @class = "date-picker form-control",
+                                                @placeholder = "yyyy-MM-dd",
+                                                required = "required"
+                                                }
+                                                })
+                                            }
+                                            else
+                                            {
+                                                @Html.EditorFor(model => model.DOL, new
+                                                {
+                                                htmlAttributes = new
+                                                {
+                                                @class = "date-picker form-control",
+                                                @placeholder = "yyyy-MM-dd"
+                                                }
+                                                })
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="row row-xs align-items-center mg-b-20">
+                                        <div class="col-md-4">
+                                            @Html.LabelFor(model => model.EmployeeID, htmlAttributes: new { @class = "form-label mg-b-0" })
+                                        </div>
+                                        <div class="col-md-8 mg-t-5 mg-md-t-0">
+                                            @Html.TextAreaFor(model => model.EmployeeID, new { @class = "form-control" })
+                                        </div>
+                                    </div>
+
+                                    <div class="row row-xs align-items-center mg-b-20">
+                                        <div class="col-md-4">
+                                            @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "form-label mg-b-0" })
+                                        </div>
+                                        <div class="col-md-8 mg-t-5 mg-md-t-0">
+                                            @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control" })
+                                        </div>
+                                    </div>
+
+                                    <div class="row row-xs align-items-center mg-b-20">
+                                        <div class="col-md-4">
+                                            @Html.LabelFor(model => model.UploadDoc, htmlAttributes: new { @class = "form-label mg-b-0" })
+                                        </div>
+                                        <div class="col-md-8 mg-t-5 mg-md-t-0">
+                                            @Html.TextBoxFor(model => model.UploadDoc, new { type = "File", @accept = ".jpg, .jpeg, .gif, .png", @onchange = "return fileValidation(this)", @class = "form-control dropify" })
+
+                                        </div>
+                                    </div>
+                                    <div class="row row-xs align-items-center mg-b-20 justify-content-center">
+                                        <div class="col-md-4">
+                                            <input class="submit-btn btn-block rounded-0 m-1" type="submit" onclick="return validateForm()" value="Submit" />
+                                        </div>
+                                    </div>
+                                }
+                            }
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#DOL').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: "-66:+00",
+            });
+        });
+
+        $(document).ready(function () {
+            $('#DOJ').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: "-66:+00",
+            });
+        });
+
+        function fileValidation(fileInput) {
+            //var fileInput = document.getElementById('file');
+            var filePath = fileInput.value;
+            var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.pdf\.JPG|\.JPEG|\.PNG|\.GIF|\.PDF)$/i;
+            if (!allowedExtensions.exec(filePath)) {
+                swal.fire('Please upload file having extensions .jpeg/.jpg/.png/.gif/.pdf only.');
+                fileInput.value = '';
+                return false;
+            } else {
+                return true;
+            }
+        }
+        function validateForm() {
+            var Remarks = $("#Remarks");
+            if (Remarks.val() == "") {
+                //If the "Please Select" option is selected display error.
+                swal.fire("Please Fill Remarks !");
+                return false;
+            }
+        }
+
+        $("#EmployeeID").AlphaNumericWithMinus();
+        $("#Remarks").RemarksString();
+
+    </script>
+}

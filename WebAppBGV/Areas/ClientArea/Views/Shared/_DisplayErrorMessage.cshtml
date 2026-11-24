@@ -1,0 +1,113 @@
+﻿<div class="row">
+    @*<div class="col-md-12">
+            @{
+                if (ViewBag.ErrorMsg != null)
+                {
+                    <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+                }
+                else if (TempData["ErrorMsg"] != null)
+                {
+                    <div class="errormsg">@TempData["ErrorMsg"].ToString()</div>
+                }
+
+                if (ViewBag.SuccessMsg != null)
+                {
+                    <div class="successmsg">@ViewBag.SuccessMsg.ToString()</div>
+                }
+                else if (TempData["SuccessMsg"] != null)
+                {
+                    <div class="successmsg">@TempData["SuccessMsg"].ToString()</div>
+                }
+                <div class="errormsg">@Html.ValidationMessage("")</div>
+            }
+        </div>*@
+    <div class="col-md-12" style="position:absolute;">
+        @if (ViewBag.ErrorMsg != null && ViewBag.ErrorMsg != "")
+        {
+            string err = @ViewBag.ErrorMsg.ToString();
+            string[] err2 = err.Split(',');
+            <script>
+           Swal.fire({
+            icon: 'info',
+            //title: 'Mandatory Fields.',
+               html: '<div class="errormsg" style="text-align:left;"><ol type="1">@foreach (String item in err2){<li>@item</li>}</ol></div>',
+               timer: 20000
+       })
+            </script>
+        }
+
+        else if (TempData["ErrorMsg"] != null && TempData["ErrorMsg"].ToString() != "")
+        {
+            <script>
+            Swal.fire({
+            html:'<div class="errormsg">@TempData["ErrorMsg"].ToString()</div>',
+            showConfirmButton: false,
+                timer: 20000
+            })
+            </script>
+        }
+        @if (ViewBag.Success != null && ViewBag.Success != "")
+        {
+            <script>
+            Swal.fire({
+            icon: 'success',
+            html:'<div class="errormsg">@ViewBag.Success.ToString()</div>',
+            showConfirmButton: false,
+                timer: 20000
+            })
+            </script>
+        }
+        else if (TempData["SuccessMsg"] != null && TempData["SuccessMsg"].ToString() != "")
+        {
+            <script>
+            Swal.fire({
+            icon: 'success',
+            html:'<div class="errormsg">@TempData["SuccessMsg"].ToString()</div>',
+            showConfirmButton: false,
+                timer: 20000
+            })
+            </script>
+        }
+        else if (ViewBag.SuccessMsg != null && ViewBag.SuccessMsg != "")
+        {
+            <script>
+            Swal.fire({
+            icon: 'success',
+            html:'<div class="errormsg">@ViewBag.SuccessMsg.ToString()</div>',
+            showConfirmButton: false,
+                timer: 20000
+            })
+            </script>
+        }
+        <div class="errormsg">@Html.ValidationMessage("")</div>
+
+    </div>
+</div>
+
+<style>
+    .successmsg {
+        margin: 10px 10px 10px 10px !important;
+    }
+
+    .swal2-container.swal2-center > .swal2-popup {
+        width: 35% ;
+    }
+
+    ol {
+        list-style: none;
+        counter-reset: my-awesome-counter;
+    }
+
+        ol li {
+            counter-increment: my-awesome-counter;
+            font-size: .90rem;
+            color: #031F30;
+        }
+
+            ol li::before {
+                content: counter(my-awesome-counter) ". ";
+                color:#031F30;
+                font-weight: bold;
+                font-size:.90rem;
+            }
+</style>

@@ -1,0 +1,1031 @@
+﻿@model dynamic
+@{
+
+
+    ViewBag.Title = "Invite Single Candidate For BGV";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManageClientCandidate", "ClientCandidate", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+    string msg = "";
+    if (Request.QueryString["ErrorMsg"] != null)
+    {
+        //hyperLink = Html.ActionLink("linkTitle", "AllocatedDataEntryJob", "ProvidedInfo", new { CaseStatus = Request.QueryString["Casestatus"].ToString() }, new { @class = "headerbacklink" }).ToString();
+        msg = Request.QueryString["ErrorMsg"].ToString();
+    }
+
+    string clientRowId = "";
+
+
+
+    clientRowId = @ViewBag.clientRowId;
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="submit-progress hidden">
+    <i class="fa fa-2x fa-spinner fa-spin"></i>
+    @*<label>Please wait...</label>*@
+</div>
+
+<div class="container-fluid form_container">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 pt-3">
+            @if (msg != "")
+            {
+                <div class="errormsglogin" style="font-size: 22px;">@msg.ToString()</div>
+            }
+            @if (Enumerable.Count(ViewBag.ClientList) > 0)
+            {
+            }
+        <div class="">
+            @using (Html.BeginForm("AddSingleCandidateCaseUpload", "ClientCandidate", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <input id="Savebtn" name="Savebtn" type="hidden" value=''>
+                if (clientRowId == "1209")
+                {
+                    <div class="row row-xs align-items-center mg-b-20 mt-4">
+                        @{
+                            if (Enumerable.Count(ViewBag.ClientList) > 0)
+                            {
+                                <div class="col-md-3">
+                                    @Html.Label("Select Client", htmlAttributes: new { @class = "control-label required form-label mg-b-0 fw-bolder" })
+                                </div>
+                                <div class="col-md-7 mg-t-5 mg-md-t-0">
+                                    @Html.DropDownList("ClientRowID", new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                                          "-- Select Client -- ",
+                                          new { @id = "ClientRowID", @class = "form-control" })
+                                </div>
+                            }
+                        }
+                    </div>
+
+                }
+
+                else
+                {
+                    <input id="ClientRowID" type="hidden" value=@clientRowId>
+                    @Html.Hidden("ClientRowID", clientRowId.ToString())
+
+                }
+
+                @Html.ValidationSummary();
+
+                foreach (var category in Model)
+                {
+                    <div class="row row-xs align-items-center mg-b-20">
+
+                        @{
+                            string[] nm = category.Key.Split('_');
+
+                            if (@nm[2] == "textbox")
+                            {
+                                <div class="col-md-3">
+                                    <label class="form-label mg-b-0 fw-bolder">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7 style="color:red;">*</h7>
+                                            }
+                                            else
+                                            {
+                                                <h7>&nbsp;</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </label>
+                                </div>
+                                <div class="col-md-7 mg-t-5 mg-md-t-0">
+                                    <span style="color:red;"> @nm[4]</span>
+                                    @if (Convert.ToInt32(nm[0]) == 19)
+                                    {
+                                        <input type="text" class="form-control" name=@nm[0] id="m_@nm[0].Trim()" value='@category.Value' maxlength="@nm[5]" autocomplete="off" onkeypress="return onlyNumericValue(event);" oninput="process(this)">
+                                    }
+                                    else
+                                    {
+                                        if (Convert.ToInt32(nm[0]) == 8)
+                                        {
+                                            <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' autocomplete="off" maxlength="@nm[5]" onChange="Validate()">
+                                        }
+                                        else if (Convert.ToInt32(nm[0]) == 208)
+                                        {
+                                            if (clientRowId == "684")
+                                            {
+                                                <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' autocomplete="off" maxlength="@nm[5]">
+                                            }
+                                            else
+                                            {
+                                                <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' autocomplete="off" maxlength="@nm[5]" disabled>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' autocomplete="off" maxlength="@nm[5]">
+                                        }
+                                    }
+
+                                </div>
+                            }
+                            if (@nm[2] == "dropdown")
+                            {
+                                <div class="col-md-3">
+                                    <label class="form-label mg-b-0 fw-bolder">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7 style="color:red;">*</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </label>
+
+                                </div>
+                                if (nm[0] == "380")
+                                {
+                                    if (clientRowId == "1430")
+                                    {
+                                        <div class="col-md-7 mg-t-5 mg-md-t-0">
+                                            @Html.DropDownList("380", new SelectList(ViewBag.BusinessUnitList, "BURowID", "BUName"),
+                                                  "-- Select-- ",
+                                                  new { @id = "380", @class = "form-control" })
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-7 mg-t-5 mg-md-t-0">
+                                            <span style="color:red;"> @nm[4]</span>
+                                            @{
+                                                string[] nmOption = nm[7].Split(',');
+                                            }
+                                            <select name=@nm[0] id=@nm[0] class="form-control">
+                                                @for (int i = 0; i < nmOption.Length; i++)
+                                                {
+                                                    if (@nmOption[i].Trim() == @nm[6])
+                                                    {
+                                                        <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                                    }
+                                                    if (@nmOption[i].Trim() != @nm[6])
+                                                    {
+                                                        <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                                    }
+                                                }
+                                            </select>
+
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-md-7 mg-t-5 mg-md-t-0">
+                                        <span style="color:red;"> @nm[4]</span>
+                                        @{
+                                            string[] nmOption = nm[7].Split(',');
+                                        }
+                                        <select name=@nm[0] id=@nm[0] class="form-control">
+                                            @for (int i = 0; i < nmOption.Length; i++)
+                                            {
+                                                if (@nmOption[i].Trim() == @nm[6])
+                                                {
+                                                    <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                                }
+                                                if (@nmOption[i].Trim() != @nm[6])
+                                                {
+                                                    <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                                }
+                                            }
+                                        </select>
+
+                                    </div>
+                                }
+
+
+                            }
+                            if (@nm[2] == "checkbox")
+                            {
+                                <div class="col-md-3">
+                                    <label class="form-label mg-b-0 fw-bolder">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7 style="color:red;">*</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </label>
+
+                                </div>
+
+                                <div class="col-md-7 mg-t-5 mg-md-t-0">
+
+                                    <span style="color:red;"> @nm[4]</span>
+                                    @{
+                                        if (@nm[6] == "TRUE")
+                                        {
+                                            <input type="checkbox" id=@nm[0] name=@nm[0] value="checked" checked>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id=@nm[0] name=@nm[0] value=@nm[0]>
+                                        }
+                                    }
+
+                                </div>
+                            }
+                            if (@nm[2] == "fileUpload")
+                            {
+                                <div class="col-md-3">
+                                    <label class="form-label mg-b-0 fw-bolder">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7 style="color:red;">*</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </label>
+
+                                </div>
+
+                                <div class="col-md-7 mg-t-5 mg-md-t-0">
+
+                                    <input class="form-control dropify" type="file" id=@nm[0] name=@nm[0] onchange="return fileValidation(this)" accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+
+                                </div>
+                            }
+                        }
+                    </div>
+               
+            }
+            <div class="row row-xs align-items-center">
+                <div class="col-md-3 mg-t-5 mg-md-t-0">
+                    @if (clientRowId == "1470")
+                    {
+                        <label class="control-label fw-bolder text-right"><span style="color:red;">*</span>Package : </label>
+                    }
+                    else
+                    {
+                        <label class="control-label fw-bolder text-right"><span style="color:red;">*</span>Pricing Type : </label>
+                    }
+                </div>
+                <div class="col-md-7 mg-t-5 mg-md-t-0">
+                    @if (clientRowId == "1680")
+                    {
+
+
+                        @Html.DropDownList("PricingType", new List<SelectListItem>
+{ new SelectListItem { Text = "-- Select --", Value = "0" },
+new SelectListItem { Text = "Package", Value = "1" },
+new SelectListItem { Text = "Check", Value = "2" },
+new SelectListItem { Text = "Package & Check", Value = "4" }},
+new { @class = "form-control" })
+                    }
+                    else
+                    {
+                        @Html.DropDownList("PricingType", new List<SelectListItem>
+        { new SelectListItem { Text = "-- Select --", Value = "0" },
+        new SelectListItem { Text = "Package", Value = "1" },
+        new SelectListItem { Text = "Check", Value = "2" }},
+    new { @class = "form-control" })
+                    }
+
+                    <div class="row row-xs align-items-center">
+                        <div id="dvChksPcks" class="col-md-12" style="background:#fff;">
+                            <label class="scheduler-border m-2"> Selected Checks And Package<em style="color:red;">*</em></label>
+                            <div class="input-group mb-2">
+                                <input type="text" class="form-control" placeholder="Search" onkeyup="myFunction()" id="myInput">
+                                <span class="input-group-text" style="background: #FC273F;color: #fff;position: relative;right: 39px;height: 40px; transition:ease-in-out 0.5s;">
+                                    <i class="bx bx-search-alt"></i>
+                                </span>
+                            </div>
+                            <ul id="dvChecksPackages" style="list-style-type:none!important; height:300px!important; overflow:scroll!important;"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            @Html.Hidden("CandidateCheckOrPackage")
+
+            <div class="row row-xs align-items-center mt-4 justify-content-center">
+                @if (Convert.ToInt32(clientRowId) == 576 || Convert.ToInt32(clientRowId) == 570 || Convert.ToInt32(clientRowId) == 861 || Convert.ToInt32(clientRowId) == 130 || Convert.ToInt32(clientRowId) == 940)
+                {
+                    <div class="col-md-2">
+                        <input class="submit-btn btn-block rounded-0" type="submit" onclick="return validateForm(this,'Force Submit')" id="btnFSubmit" name="btnSave" value="Force Submit" />
+                    </div>
+                }
+                @if (Convert.ToInt32(clientRowId) == 1680)
+                {
+                    <div class="col-md-2">
+                        <input class="submit-btn btn-block rounded-0" type="submit" onclick="return validatevalueForm(this,'Submit')" id="btnNSubmit" name="btnSave" value="Submit" />
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-2">
+                        <input class="submit-btn btn-block rounded-0" type="submit" onclick="return validateForm(this,'Submit')" id="btnNSubmit" name="btnSave" value="Submit" />
+                    </div>
+                }
+            </div>
+            }
+
+        </div>
+        </div>
+    </div>
+    <div class="row m-auto">
+        <div class="col-xl-12 mt-5 mb-4 client-table-responsive">
+            <table class="mb-0 client--table-responsive table-striped m-auto table" style="border:none; cursor:grab;">
+                <thead>
+                    <tr>
+                        <th class="top-head">Candidate Name</th>
+                        <th class="top-head">Mobile</th>
+                        <th class="top-head">Email ID</th>
+                        <th class="top-head">Creation Date</th>
+                    </tr>
+                </thead>
+                <tbody class="tx-14 text-start">
+                    @foreach (var item in ViewBag.LastFiveCases)
+
+                    {
+                        <tr>
+                            <td class="name">@item.Name</td>
+                            <td class="name">@item.MobileNo</td>
+                            <td class="name">@item.EmailID</td>
+                            <td class="name">@item.CreationDate</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script>
+
+        function Validate() {
+            var email = document.getElementById('8');
+              var filter = /^(([^<>()\[\]\\.,;:\s@@"]+(\.[^<>()\[\]\\.,;:\s@@"]+)*)|(".+"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            if (!filter.test(email.value)) {
+                //('Please provide a valid email address');
+                Swal.fire({
+                    icon: 'info',
+                    title: '<p class="fs-12">Mandatory Fields</p>',
+                    html: 'Please provide a valid email address',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            }
+        }
+
+        function onlyNumericValue(event) {
+            var charCode = (event.which) ? event.which : event.keyCode
+            if (charCode > 31 && (charCode < 48 || charCode > 57))
+                return false;
+
+            return true;
+
+        }
+
+        function process(input) {
+            let value = input.value;
+            let numbers = value.replace(/[^0-9]/g, "");
+            input.value = numbers;
+        }
+
+        var crid = $("#ClientRowID").val();
+        if (crid == 576 || crid == 570) {
+            if ('@Convert.ToInt32(TempData["Exists"])' != '0') {
+                $("#btnFSubmit").prop('disabled', false);
+                $("#btnNSubmit").prop('disabled', true);
+            }
+                  else {
+               $("#btnFSubmit").prop('disabled', true);
+                $("#btnNSubmit").prop('disabled', false);
+                                        }
+                                    }
+
+        $("#121").AlphabetWithSpace();
+        $("#8").EmailString();
+
+    </script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            var ClientRowID = $('#ClientRowID').val();
+            if (ClientRowID == 249) {
+
+                $("#ClientRefID").attr('maxlength', '9');
+            }
+            else if (ClientRowID == 1071)
+            {
+                $("#208").val('GCoE');
+            }
+            else {
+
+                $("#ClientRefID").attr('maxlength', '50');
+            }
+
+            $('#ClientRowID').change(function () {
+                $('#PricingType').val(0);
+                $('#dvChksPcks').hide();
+            })
+            $('#dvChksPcks').hide();
+            $('#PricingType').change(function () {
+                var url1 = "/ClientArea/Home/GetChecksAndPackageByClientId?id=" + $("#ClientRowID").val() + "&pt=" + $("#PricingType").val() + "&Des=" + $("#7").val() + "&Entity=" + $("#208").val();
+                $.ajax({
+                    url: url1,
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+                    success: function (allData) {
+                        if (allData != null && allData != "") {
+                            $('#dvChksPcks').show();
+                            var items = '';
+                            jQuery.each(allData, function (index, allData) {
+                                if (allData.CheckFamilyRowID != 0) {
+                                    if (allData.CheckFamilyRowID == 0903)
+                                    {
+                                        items += "<li  class='paackage_li' style='padding: .30rem; list-style-type: none;'><a><input type='checkbox' class='chkPkgChks' onClick='ckChange1(this)' value='" + allData.PackageorCheckRowid + "' /> " + allData.CheckOrPackageName + "</a></li>";
+
+                                    }
+                                    else
+                                    {
+                                        items += "<li class='paackage_li' style='padding: .30rem; list-style-type: none;'><a><input type='checkbox' class='chkPkgChks' value='Check-" + allData.ClientCheckRowID + "' /> " + allData.CheckOrPackageName + "</a></li>";
+
+                                    }
+                                }
+                                else {
+                                    items += "<li class='paackage_li' style='padding: .30rem; list-style-type: none;'><a><input type='checkbox' class='chkPkgChks' name='checkbox1' onClick='ckChange(this)' value='Package-" + allData.CheckOrPackageName + "' /> " + allData.CheckOrPackageName + "</a></li>";
+                                }
+                            });
+                            $('#dvChecksPackages').html(items);
+                        }
+                        else {
+                            $('#dvChksPcks').hide();
+                            //alert("No Checks And Packages Selected");
+                            Swal.fire({
+                                icon: 'info',
+                                html: 'No Checks And Packages Selected',
+                                showConfirmButton: false,
+                                timer: 2000
+                            });
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        //alert("some error");
+                        Swal.fire({
+                            icon: 'warning',
+                            html: 'Some error',
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
+                    }
+                });
+            });
+        });
+
+        $(document).on('change', 'input[class="chkPkgChks"]', function (e) {
+            var selectedIds = '';
+            $('input[class="chkPkgChks"]').each(function (index, value) {
+                if (this.checked) { selectedIds += this.value + ','; }
+            });
+            if (selectedIds.length > 0) {
+                selectedIds = selectedIds.substring(0, selectedIds.length - 1);
+            } else { selectedIds = ''; }
+
+            $('#CandidateCheckOrPackage').val(selectedIds.trim());
+        });
+        $(function () {
+            var crid = $("#ClientRowID").val();
+
+            if (crid == 8) {
+                $("#MobileNo").focusout(function () {
+                    $("#ClientRefID").val($(this).val());
+                });
+            }
+        })
+
+
+
+        function validateForm(ctl,btn) {
+
+            var obj = $('form input[type="text"]').NormalizedString();
+            if (obj == false) {
+                return false;
+            }
+
+            var mnd = '@ViewBag.Mandatory';
+            if (mnd == 'mandatory') {
+                var mb = $("#m_19").val();
+                if (mb == '') {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Mandatory Fields.',
+                        html: '<div class="errormsg" style="text-align:left;">Please enter Mobile Number</div>'
+                    });
+                    $("#m_19").focus();
+                    return false;
+                }
+                else {
+                    if (mb.length < 10) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Mandatory Fields.',
+                            html: '<div class="errormsg" style="text-align:left;">Please enter 10-digit Mobile Number</div>'
+                        });
+                        $("#m_19").focus();
+                        return false;
+                    }
+                }
+            }
+            // ── Client 684 (Allegis TEKsystems) mandatory fields ──
+            //var crid684 = $("#ClientRowID").val();
+            //if (crid684 == 684) {
+            //    if ($('#208').val() == null || $('#208').val().trim() == '') {
+            //        $('#208').focus();
+            //        Swal.fire({
+            //            icon: 'info',
+            //            title: 'Mandatory Fields.',
+            //            html: '<div class="errormsg" style="text-align:left;">Entity Name is mandatory for this client.</div>'
+            //        });
+            //        return false;
+            //    }
+            //    if ($('#OfferType').val() == '') {
+            //        $('#OfferType').focus();
+            //        Swal.fire({
+            //            icon: 'info',
+            //            title: 'Mandatory Fields.',
+            //            html: '<div class="errormsg" style="text-align:left;">Please select Offer Type.</div>'
+            //        });
+            //        return false;
+            //    }
+            //}
+            // ── end 684 ──
+
+            var chkCount = 0;
+            $('input.chkPkgChks:checkbox').each(function (index, value) {
+                if (this.checked) {
+                    chkCount += 1;
+                }
+            });
+
+            if (chkCount == 0) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Mandatory Fields.',
+                    html: '<div class="errormsg" style="text-align:left;">Please select atleast one Check or Package.</div>'
+                });
+                return false;
+            }
+
+            if (chkCount == 2 && $('#PricingType').val() == 1) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Mandatory Fields.',
+                    html: '<div class="errormsg" style="text-align:left;">Please select  one  Package.</div>'
+                });
+                return false;
+            }
+            if ($("#UploadDoc").val() == "") {
+                alert("Upload Candidate ducument");
+                $('#UploadDoc').focus();
+                return false;
+                }
+
+
+                $("#Savebtn").val(btn) ;
+                event.preventDefault();
+                // Turn off the "Save" button and change text
+                $(ctl).prop("disabled", true).val('Saving...');
+                // Gray out background on page
+                $("body").addClass("submit-progress-bg");
+                // Wrap in setTimeout so the UI can update the spinners
+                $(".submit-progress").removeClass("hidden");
+                //submit the form.
+                setTimeout(function () {
+                    $("form").submit();
+                }, 1);
+
+
+            return true;
+
+
+            var crid = $("#ClientRowID").val();
+            if (crid==8)
+            {
+                if ($('#ddlBand').val() == 0)
+                {
+                    alert("Please Select Band");
+                    $('#ddlBand').focus();
+                    return false;
+                }
+
+                if ($('#ddlDepartment').val() == 0) {
+                    alert("Please Select Department");
+                    $('#ddlDepartment').focus();
+                    return false;
+                }
+            }
+
+
+            if ($("#UploadDoc").val()=="") {
+                alert("Upload Candidate ducument");
+                $('#UploadDoc').focus();
+                return false;
+            }
+        }
+
+        function validatevalueForm(ctl, btn) {
+
+        	var obj = $('form input[type="text"]').NormalizedString();
+        	if (obj == false) {
+        		return false;
+        	}
+
+        	var mnd = '@ViewBag.Mandatory';
+        	if (mnd == 'mandatory') {
+        		var mb = $("#m_19").val();
+        		if (mb == '') {
+        			Swal.fire({
+        				icon: 'info',
+        				title: 'Mandatory Fields.',
+        				html: '<div class="errormsg" style="text-align:left;">Please enter Mobile Number</div>'
+        			});
+        			$("#m_19").focus();
+        			return false;
+        		} else {
+        			if (mb.length < 10) {
+        				Swal.fire({
+        					icon: 'info',
+        					title: 'Mandatory Fields.',
+        					html: '<div class="errormsg" style="text-align:left;">Please enter 10-digit Mobile Number</div>'
+        				});
+        				$("#m_19").focus();
+        				return false;
+        			}
+        		}
+        	}
+        	var chkCount = 0;
+        	$('input.chkPkgChks:checkbox').each(function(index, value) {
+        		if (this.checked) {
+        			chkCount += 1;
+        		}
+        	});
+
+        	if (chkCount == 0) {
+        		Swal.fire({
+        			icon: 'info',
+        			title: 'Mandatory Fields.',
+        			html: '<div class="errormsg" style="text-align:left;">Please select atleast one Check or Package.</div>'
+        		});
+        		return false;
+        	}
+
+        	if (chkCount == 2 && $('#PricingType').val() == 1) {
+        		Swal.fire({
+        			icon: 'info',
+        			title: 'Mandatory Fields.',
+        			html: '<div class="errormsg" style="text-align:left;">Please select  one  Package.</div>'
+        		});
+        		return false;
+        	}
+        	if ($("#UploadDoc").val() == "") {
+        		alert("Upload Candidate ducument");
+        		$('#UploadDoc').focus();
+        		return false;
+            }
+                        
+            $("#Savebtn").val(btn);
+        	event.preventDefault();
+        	// Turn off the "Save" button and change text
+        	$(ctl).prop("disabled", true).val('Saving...');
+        	// Gray out background on page
+        	$("body").addClass("submit-progress-bg");
+        	// Wrap in setTimeout so the UI can update the spinners
+        	$(".submit-progress").removeClass("hidden");
+            //submit the form.
+            checkDuplicate(function (isDuplicate) {
+                if (!isDuplicate) {
+                    $("form").submit();
+                } else {
+                    // Re-enable button if duplicate found
+                    $(ctl).prop("disabled", false).val("Submit");
+                    $("body").removeClass("submit-progress-bg");
+                    $(".submit-progress").addClass("hidden");
+                }
+            });
+
+        	return true;
+
+
+        	var crid = $("#ClientRowID").val();
+        	if (crid == 8) {
+        		if ($('#ddlBand').val() == 0) {
+        			alert("Please Select Band");
+        			$('#ddlBand').focus();
+        			return false;
+        		}
+
+        		if ($('#ddlDepartment').val() == 0) {
+        			alert("Please Select Department");
+        			$('#ddlDepartment').focus();
+        			return false;
+        		}
+        	}
+
+
+        	if ($("#UploadDoc").val() == "") {
+        		alert("Upload Candidate ducument");
+        		$('#UploadDoc').focus();
+        		return false;
+        	}
+        }
+
+
+        function checkDuplicate(callback) {
+        	var mobile = $("#m_19").val();
+        	var email = $("#8").val();
+
+        	$.ajax({
+        		url: '@Url.Action("CheckDuplicate", "ClientCandidate")',
+        		type: 'POST',
+        		data: {
+        			MobileNo: mobile,
+        			EmailId: email
+        		},
+        		success: function(res) {
+                    if (res.isDuplicate) {
+                        showDuplicatePopup(res);
+                        callback(true);
+                    }
+                    else {
+                        callback(false);
+                    }
+        		},
+        		error: function() {
+                    callback(false);
+        		}
+        	});
+        }
+
+        function showDuplicatePopup(res) {
+        	Swal.fire({
+        		icon: 'warning',
+        		title: 'Duplicate Data Found',
+        		html: '<b>Company Ref No:</b> ' + res.companyRefNo + '<br/>' +
+        			'<b>Name:</b> ' + res.name,
+        		showCancelButton: true,
+        		confirmButtonText: 'Approve',
+        		cancelButtonText: 'Not Approve'
+        	}).then((result) => {
+        		if (result.isConfirmed) {
+        			setTimeout(function() {
+                        $("form").submit();
+        			}, 1);
+        		} else if (result.dismiss === Swal.DismissReason.cancel) {
+        			location.reload();
+        		}
+        	});
+        }
+
+
+        function ForcevalidateForm() {
+
+            var crid = $("#ClientRowID").val();
+            if (crid == 636 || crid == 644 || crid == 645) {
+
+                if ($('#ddlDepartment').val() == 0) {
+                    alert("Please Select Department");
+                    $('#ddlDepartment').focus();
+                    return false;
+                }
+            }
+
+            if (crid == 8) {
+                if ($('#ddlBand').val() == 0) {
+                    alert("Please Select Band");
+                    $('#ddlBand').focus();
+                    return false;
+                }
+
+                if ($('#ddlDepartment').val() == 0) {
+                    alert("Please Select Department");
+                    $('#ddlDepartment').focus();
+                    return false;
+                }
+            }
+
+            var chkCount = 0;
+            $('input.chkPkgChks:checkbox').each(function (index, value) {
+                if (this.checked) {
+                    chkCount += 1;
+                }
+            });
+
+            //if (chkCount == 0) {
+            //    alert("Please select atleast one Check or Package.");
+            //    return false;
+            //}
+            //var chkCount = 0;
+            //if (chkCount == 2) {
+            //    alert("Please select  one  Package.");
+            //    return false;
+            //}
+            //if ($("#UploadDoc").val() == "") {
+            //    alert("Upload Candidate ducument");
+            //    $('#UploadDoc').focus();
+            //    return false();
+            //}
+            return true;
+        }
+
+
+        function ckChange(el) {
+            debugger;
+            var ckName = document.getElementsByName(el.name);
+            for (var i = 0, c; c = ckName[i]; i++) {
+                c.disabled = !(!el.checked || c === el);
+            }
+        }
+        function ckChange1(el) {
+          
+            if (el.value.toLowerCase().includes("check-")) {
+                return;
+            }
+
+         
+            var allCheckboxes = document.getElementsByClassName('chkPkgChks');
+
+            for (var i = 0; i < allCheckboxes.length; i++) {
+                var currentItem = allCheckboxes[i];
+
+             
+                if (currentItem.value.toLowerCase().includes("package")) {
+
+                
+                    if (el.checked) {
+                        if (currentItem !== el) {
+                            currentItem.disabled = true;
+                        }
+                    } else {
+                        currentItem.disabled = false;
+                    }
+                }
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input[type=datetime]').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: "-66:+10",
+                //onClose: function (dateText, inst) {
+                //    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
+                //}
+            });
+            var dNow = new Date();
+            var localdate = (dNow.getFullYear() + '-' + (dNow.getMonth() + 1) + '-' + dNow.getDate());
+            $('#OrderDate').val(localdate);
+
+        });
+
+        $(document).ready(function () {
+            $("#6").datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: "-66:+10",
+                //onClose: function (dateText, inst) {
+                //    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
+                //}
+            });
+
+            $("#671").datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: "-66:+10",
+                //onClose: function (dateText, inst) {
+                //    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
+                //}
+            });
+            var dNow = new Date();
+            var localdate = (dNow.getFullYear() + '-' + (dNow.getMonth() + 1) + '-' + dNow.getDate());
+            $('#OrderDate').val(localdate);
+
+        });
+
+
+        $(function () {
+            $('#ddlClientRowID').change(function () {
+                $("#ClientRowID").val($("#ddlClientRowID").val());
+                //alert($("#ClientRowID").val());
+                $('#PricingType').val(0);
+                $('#dvChksPcks').hide();
+                //alert($("#ClientRowID").val());
+            });
+        });
+    </script>
+    <script>
+        function myFunction() {
+            var input, filter, ul, li, a, i, txtValue;
+            input = document.getElementById("myInput");
+            filter = input.value.toUpperCase();
+            ul = document.getElementById("dvChecksPackages");
+            li = ul.getElementsByTagName("li");
+            for (i = 0; i < li.length; i++) {
+                a = li[i].getElementsByTagName("a")[0];
+                txtValue = a.textContent || a.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    li[i].style.display = "";
+                } else {
+                    li[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .submit-progress-bg {
+            background-color: lightgray;
+            opacity: .5;
+        }
+
+        .submit-progress {
+            position: fixed;
+            top: 45%;
+            left: 60%;
+            height: 5em;
+            padding-top: 2.3em;
+            z-index: 1;
+            /* The following properties are the ones most likely to change */
+            width: 20em;
+            /* Set 'margin-left' to a negative number that is 1/2 of 'width' */
+            margin-left: -10em;
+            padding-left: 1.1em;
+            /*background-color: black;*/
+            color: white;
+            -webkit-border-radius: 0.4em;
+            -moz-border-radius: 0.4em;
+            border-radius: 0.4em;
+            /*box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+            -webkit-box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);
+            -moz-box-shadow: 0.4em 0.4em rgba(0,0,0,0.6);*/
+        }
+
+        /* Changing style for spinner */
+        .submit-progress {
+            padding-top: 0em;
+            width: 19em;
+            margin-left: -11.5em; /* Set to a negative number that is 1/2 of the width */
+        }
+
+            .submit-progress i {
+                margin-right: 0.5em;
+                color: black
+            }
+
+        .hidden {
+            display: none;
+        }
+
+        .fa-2x {
+            font-size: 4em;
+        }
+    </style>
+}
+
+<style>
+    #btnFSubmit:disabled,
+    #btnFSubmit[disabled] {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    #btnNSubmit:disabled,
+    #btnNSubmit[disabled] {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .edit-table-client table {
+        display: inline-table;
+    }
+</style>
+

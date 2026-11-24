@@ -1,0 +1,672 @@
+﻿
+@model ViewModels.ReportQCViewModel.InterimReportGenerateViewModel
+
+@if (Model != null && Model.EducationProvidedList != null && Model.EducationProvidedList.Count() > 0 && Model.AntecedentList != null && Model.AntecedentList.Count() > 0)
+{
+    foreach (var ProvidedInfo in Model.EducationProvidedList)
+    {
+        var EducationVerInfo = Model.EducationVerifiedList.Where(ver => ver.EducationRowID == ProvidedInfo.EducationRowID).FirstOrDefault();
+        var antecentList = Model.AntecedentList.Where(a => a.CheckFamilyRowID == ProvidedInfo.CheckFamilyRowID && a.SubCheckRowID == ProvidedInfo.SubCheckRowID).ToList();
+        <style>
+            .padding-td > td {
+                height: 40px;
+                vertical-align: middle;
+                padding-left: 10px;
+            }
+        </style>
+        <page id="PrintSrc" size="A4">
+            <div style="page-break-after:always ;"></div>
+            <table width="793" @*border="0"*@ cellspacing="0" cellpadding="0" align="center">
+                <!--- Report Header Include -->
+                @*@Html.Partial("_ReportHeader")*@
+                <!--- Report Header Include -->
+
+
+                <tr>
+                    <td width="2%" align="left" valign="bottom" @*style="border-left:2px solid #999999;"*@>&nbsp;</td>
+                    <td valign="top">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+
+                            <tr>
+                                <td valign="top">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                        <tr><td width="20%" align="right"><img src='@Url.Content("/Images/footer-logo.jpg")' height="60"></td></tr>
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@ProvidedInfo.SubCheckName</p></td>
+
+                                        </tr>
+                                        <tr>
+                                            <td valign="top">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top" align="center"></td>
+                                        </tr>
+                                        <tr>
+                                            <td height="30">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td valign="top" align="center">
+                                                <table class="sd" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px;font-weight:bold; font-size:12px;  font-family:Calibri; color-adjust:exact; background:#c0c0c0;" width="25%">TCS APPLICANT ID </td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;" width="25%"><label for="">@Model.ApplicationId</label></td>
+                                                        <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;" width="25%">VENDOR RF-ID</td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;" width="25%">@Model.CompanyRefNo</td>
+                                                    </tr>
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">RECRUITMENT BRANCH </td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for="">@Model.Location</label></td>
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">NSR IT_PIN</td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;">NIL</td>
+                                                    </tr>
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">NAME OF CANDIDATE</td>
+                                                        <td colspan="3" style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for="">@Model.PersonalName</label></td>
+                                                        @*<td style="padding-left:5px;font-weight:bold; color-adjust:exact; background:#c0c0c0;"></td>
+            <td style="padding-left:5px;"></td>*@
+
+                                                    </tr>
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">DATE OF BIRTH</td>
+                                                        @if (Model.DOB != null)
+                                                        {
+                                                            <td style="padding-left:5px; font-size:12px; font-family:Calibri;">@Model.DOB.Value.ToString("dd-MM-yyyy")</td>
+                                                        }
+                                                        @*<td style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for="">@Model.DOB</label></td>*@
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">
+                                                            FINAL BGC STATUS
+                                                            (RED/GREEN)
+                                                        </td>
+                                                        @if (EducationVerInfo != null)
+                                                        {
+                                                            <td style="padding-left:5px; font-size:12px; font-family:Calibri; color:@EducationVerInfo.ColorCode"><label for="">@ProvidedInfo.CheckStatus</label></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for=""></label></td>
+                                                        }
+
+
+                                                    </tr>
+
+
+
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">CATEGORY (CAMPUS/DT/ EP/EP From CAMPUS)</td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for="">@Model.VerticalLocation</label></td>
+                                                        <td colspan="2" align="left" style="border-top:groove;">
+                                                            <img src='@Url.Content("~/Images/TCS_IT_TwoColor.JPG")' width="265" />
+
+                                                        </td>
+
+
+                                                    </tr>
+                                                    <tr class="padding-td">
+                                                        <td colspan="3" style="border:0;"></td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td colspan="4" style="border:0">
+                                                            <table>
+                                                                <tr class="padding-td">
+                                                                    <td width="10%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Sl. No</td>
+                                                                    <td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">PARTICULARS</td>
+                                                                    <td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Provided by the Applicant</td>
+                                                                    <td width="30%" style="font-size:12px;  margin-top:20px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Verified and Confirmed by BGC Agency</td>
+                                                                </tr>
+
+                                                                @{
+                                                                    if (EducationVerInfo != null)
+                                                                    {
+
+
+                                                                <tr class="padding-td">
+                                                                    <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">1 </td>
+                                                                    <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Name of the Degree / Qualification & Specialization </td>
+                                                                    <td style="font-size:12px; font-family:Calibri; text-align:left;">@ProvidedInfo.EV_Degree_Name   @ProvidedInfo.EV_Specialization </td>
+                                                                    @if (!string.IsNullOrEmpty(EducationVerInfo.EV_Specialization))
+                                                                    {
+                                                                        if ((@ProvidedInfo.EV_Degree_Name.ToLower() == @EducationVerInfo.EV_Degree_Name.ToLower()) && (@ProvidedInfo.EV_Specialization.ToLower() == @EducationVerInfo.EV_Specialization.ToLower()))
+                                                                        {
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center;">Correct</td>
+                                                                        }
+                                                                    }
+
+                                                                    else
+                                                                    {
+                                                                        <td style="font-size:12px; font-family:Calibri; text-align:center;">@EducationVerInfo.EV_Degree_Name  @EducationVerInfo.EV_Specialization</td>
+
+                                                                    }
+                                                                </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">2 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Full Time / Part Time / Distance Learning course </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:left;">@ProvidedInfo.EV_Mode_Of_Edu</td>
+                                                                            @if (!string.IsNullOrEmpty(ProvidedInfo.EV_Mode_Of_Edu))
+                                                                            {
+                                                                                if (ProvidedInfo.EV_Mode_Of_Edu == EducationVerInfo.EV_Mode_Of_Edu)
+                                                                                {
+                                                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">Correct</td>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">@EducationVerInfo.EV_Mode_Of_Edu</td>
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="font-size:12px; font-family:Calibri; text-align:center;"></td>
+
+                                                                            }
+
+
+                                                                        </tr>
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">3 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Seat No./ Roll No. / Regn No. </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:left;">@ProvidedInfo.EV_Enroll_RollNo</td>
+                                                                            @if (!string.IsNullOrEmpty(ProvidedInfo.EV_Enroll_RollNo) && !string.IsNullOrEmpty(EducationVerInfo.EV_Enroll_RollNo))
+                                                                            {
+                                                                                if (@ProvidedInfo.EV_Enroll_RollNo.ToLower() == @EducationVerInfo.EV_Enroll_RollNo.ToLower())
+                                                                                {
+                                                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">Correct</td>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">@ProvidedInfo.EV_Enroll_RollNo</td>
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="font-size:12px; font-family:Calibri; text-align:center;"></td>
+
+                                                                            }
+
+
+                                                                        </tr>
+
+                                                                        if (EducationVerInfo.EV_Colg_Schl_Inst_Name == EducationVerInfo.EV_Colg_Unvrsty_Affl)
+                                                                        {
+                                                                            <tr class="padding-td">
+                                                                                <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">4 </td>
+                                                                                <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Name & address of the Institute / College / University</td>
+                                                                                <td style="font-size:12px; font-family:Calibri; text-align:left;">@ProvidedInfo.EV_Colg_Schl_Inst_Name , @ProvidedInfo.city      </td>
+                                                                                @if (!string.IsNullOrEmpty(ProvidedInfo.EV_Colg_Schl_Inst_Name))
+                                                                                {
+                                                                                    if (@ProvidedInfo.EV_Colg_Schl_Inst_Name.ToLower() == @EducationVerInfo.EV_Colg_Schl_Inst_Name.ToLower())
+                                                                                    {
+                                                                                        <td style="font-size:12px; font-family:Calibri; text-align:center;">Correct</td>
+
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <td style="font-size:12px; font-family:Calibri; text-align:center;">@EducationVerInfo.EV_Colg_Schl_Inst_Name, @ProvidedInfo.city        </td>
+
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;"></td>
+
+                                                                                }
+
+
+
+                                                                            </tr>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <tr class="padding-td">
+                                                                                <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">4 </td>
+                                                                                <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Name & address of the Institute / College / University</td>
+                                                                                <td style="font-size:12px; font-family:Calibri; text-align:left;">
+                                                                                    @ProvidedInfo.EV_Colg_Schl_Inst_Name, @ProvidedInfo.city <br /> /  @ProvidedInfo.EV_Affl_University_Name,
+                                                                                    <br /> @ProvidedInfo.city
+                                                                                </td>
+                                                                                @*<td style="font-size:12px; font-family:Calibri; text-align:left;">
+                                                                                    @EducationVerInfo.EV_Colg_Schl_Inst_Name, @ProvidedInfo.city <br /> /  @EducationVerInfo.EV_Colg_Unvrsty_Affl
+                                                                                    <br /> @EducationVerInfo.city
+                                                                                </td>*@
+
+                                                                                @if (!string.IsNullOrEmpty(ProvidedInfo.EV_Colg_Schl_Inst_Name))
+                                                                                {
+                                                                                    if (@ProvidedInfo.EV_Colg_Schl_Inst_Name.ToLower() == @EducationVerInfo.EV_Colg_Schl_Inst_Name.ToLower())
+                                                                                    {
+                                                                                        <td style="font-size:12px; font-family:Calibri; text-align:center;">Correct</td>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <td style="font-size:12px; font-family:Calibri; text-align:center;">@EducationVerInfo.EV_Colg_Schl_Inst_Name</td>
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;"></td>
+                                                                                }
+
+                                                                            </tr>
+                                                                        }
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">5 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">% of marks and Class / Grade obtained </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:left;">@ProvidedInfo.EV_Division_CGPA</td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:center;">@EducationVerInfo.EV_Division_CGPA</td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">6 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; font-weight:bold;">Period of the Course ( Date From : To )</td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:left;">@ProvidedInfo.EV_Dur_Course</td>
+                                                                            @if (!string.IsNullOrEmpty(ProvidedInfo.EV_Dur_Course) && !string.IsNullOrEmpty(EducationVerInfo.EV_Dur_Course))
+                                                                            {
+                                                                                if (@ProvidedInfo.EV_Dur_Course.ToLower() == @EducationVerInfo.EV_Dur_Course.ToLower())
+                                                                                {
+                                                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">Correct</td>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">@EducationVerInfo.EV_Dur_Course</td>
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="font-size:12px; font-family:Calibri; text-align:center;"></td>
+                                                                            }
+
+
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">7 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Passing out year </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:left;">@ProvidedInfo.EV_Yr_Passing</td>
+                                                                            @if (!string.IsNullOrEmpty(ProvidedInfo.EV_Yr_Passing) && !string.IsNullOrEmpty(EducationVerInfo.EV_Yr_Passing))
+                                                                            {
+                                                                                if (@ProvidedInfo.EV_Yr_Passing.ToLower() == @EducationVerInfo.EV_Yr_Passing.ToLower())
+                                                                                {
+                                                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">Correct</td>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <td style="font-size:12px; font-family:Calibri; text-align:center;">@ProvidedInfo.EV_Yr_Passing</td>
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="font-size:12px; font-family:Calibri; text-align:center;"></td>
+
+
+                                                                            }
+
+
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">8 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Name & Designation of the respondent from the University or Institute</td>
+                                                                            <td style="font-size:12px; font-family:Calibri; color-adjust:exact; border:0; background:#c0c0c0;"></td>
+                                                                            <td style="font-size:12px; font-family:Calibri;border:1; text-align:center;">@EducationVerInfo.EV_Refre_Name_Dsg</td>
+                                                                        </tr>
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">9 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Verbal Verification Date</td>
+                                                                            <td style="font-size:12px; font-family:Calibri; color-adjust:exact; border:0; background:#c0c0c0; "></td>
+                                                                            <td style="font-size:12px; font-family:Calibri; border:1; text-align:center;">NA</td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">10 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Written Verification Date</td>
+                                                                            <td style="font-size:12px; font-family:Calibri; color-adjust:exact; border:0; background:#c0c0c0; "></td>
+                                                                            @if (EducationVerInfo.EV_Date_Time_Verf != null)
+                                                                            {
+                                                                                <td style="font-size:12px; font-family:Calibri; border:1; text-align:center;">@EducationVerInfo.EV_Date_Time_Verf.Value.ToString("dd-MM-yyyy")</td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="font-size:12px; font-family:Calibri; border:1; text-align:center;"></td>
+                                                                            }
+                                                                        </tr>
+
+                                                                      
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; border-bottom:0; text-align:center; font-family:Calibri;font-weight:bold;">11 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; font-weight:bold; border-bottom:0;">Other Remarks</td>
+                                                                            <td style="font-size:12px; font-family:Calibri; color-adjust:exact; border:0; background:#c0c0c0;"></td>
+                                                                            <td colspan="2" style="font-size:12px; font-family:Calibri; border-bottom:0;  text-align:center;">NIL</td>
+                                                                        </tr>
+
+                                                                    }
+
+
+                                                                    else
+                                                                    {
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">1 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Name of the Degree / Qualification & Specialization </td>
+
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:left;">@ProvidedInfo.EV_Degree_Name   @ProvidedInfo.EV_Specialization </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">2 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Full Time / Part Time / Distance Learning course </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:left;">@ProvidedInfo.EV_Mode_Of_Edu</td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                        </tr>
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">3 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Seat No./ Roll No. / Regn No. </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:left;">@ProvidedInfo.EV_Enroll_RollNo</td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">4 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Name & address of the Institute / College / University</td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:left;background:#c0c0c0;">@ProvidedInfo.EV_Colg_Schl_Inst_Name,@ProvidedInfo.city</td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">5 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">% of marks and Class / Grade obtained </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:left;">@ProvidedInfo.EV_Division_CGPA</td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">6 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Period of the Course ( Date From : To )</td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:left;">@ProvidedInfo.EV_Dur_Course</td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">7 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Passing out year </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:left;">@ProvidedInfo.EV_Yr_Passing</td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">8 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; font-weight:bold;">Name & Designation of the respondent from the University or Institute</td>
+                                                                            <td style="font-size:12px; font-family:Calibri;color-adjust:exact; background:#c0c0c0; border:0;text-align:left;">@ProvidedInfo.EV_Refre_Name_Dsg</td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                        </tr>
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">9 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; font-weight:bold;">Verbal Verification Date</td>
+                                                                            <td style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;border:0;text-align:left;">@ProvidedInfo.EV_Verb_Verf_Date</td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">10 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Written Verification Date</td>
+                                                                            <td style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;border:0;text-align:left;">@ProvidedInfo.EV_Date_Time_Verf
+</td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; border-bottom:0; text-align:center; font-family:Calibri;font-weight:bold;">11 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; border-bottom:0; ">Other Remarks</td>
+                                                                            <td style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0; border:0;text-align:left;">NIL</td>
+                                                                            <td colspan="2" style="font-size:12px; border-bottom:0; font-family:Calibri;"></td>
+                                                                        </tr>
+
+
+
+
+
+                                                                    }
+                                                                }
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+
+
+
+
+                                                    @if (EducationVerInfo != null)
+                                                    {
+                                                        if (EducationVerInfo.ReportComment != null)
+                                                        {
+                                                            <tr class="padding-td"><td colspan="4" style="font-weight:bold">@EducationVerInfo.ReportComment</td></tr>
+
+                                                        }
+                                                        else
+                                                        {
+                                                            <tr class="padding-td"><td colspan="4" style="font-weight:bold; height:40px">Additional Comments by BGC agency when details provided by applicant is fake or wrong: NIL</td></tr>
+
+                                                        }
+                                                    }
+
+
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" style=" border:0; text-align:left"><img src='@Url.Content("~/Images/Signature.JPG")'></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" style="padding-left:25px; font-size:12px; font-family:Calibri; border:hidden">
+                                                <label for="">
+                                                    Date:
+                                                    @if (Model.ReportDate != null)
+                                                    {<span>@Model.ReportDate.Value.ToString("dd-MMM-yyyy")</span> }
+                                                else
+                                                { <span>N/A</span>}
+                                                </label>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td @*style="border-right:2px solid #999999;"*@ align="left" valign="top">&nbsp;</td>
+                </tr>
+
+                <!--- Report Footer Address Include -->
+                @*@Html.Partial("_ReportFooterAddress")*@
+                <!--- Report Footer Address Include -->
+                <!--- Report Footer Include -->
+                @*@Html.Partial("_ReportFooter")*@
+                <!--- Report Footer Include -->
+            </table>
+        </page>
+
+                                                                    if (Model.CandidateDocList != null)
+                                                                    {
+                                                                        string DocumentType = string.Empty;
+                                                                        foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == ProvidedInfo.SubCheckRowID))
+                                                                        {
+                                                                            if (Doc.SubCheckRowID == ProvidedInfo.SubCheckRowID)
+                                                                            {
+                                                                                FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                                                                                if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                                                                                {
+                        <page id="PrintSrc" size="A4">
+                            <div style="page-break-after:always ;"></div>
+                            <table width="793" cellspacing="0" cellpadding="0" align="center" border="0">
+                                <!--- Report Header Include -->
+                                @*@Html.Partial("_ReportHeader")*@
+                                <!--- Report Header Include -->
+                                <tr>
+                                    @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                    <td valign="top" colspan="2" align="center" valign="bottom">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td valign="top">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr><td width="20%" align="right"><img src='@Url.Content("/Images/footer-logo.jpg")' height="60"></td></tr>
+                                                        <tr>
+                                                            <td>
+                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                    <tr>
+                                                                        @if (DocumentType != Doc.DocumentType)
+                                                                        { 
+
+                                                                        if (Doc.DocumentType == "Degree Certificate")
+                                                                        {
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EDUCATION DOCUMENT (Degree Certificate)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Consolidated Mark sheet")
+                                                                        {
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EDUCATION DOCUMENT (Consolidated Mark sheet)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Final Year Mark sheet")
+                                                                        {
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EDUCATION DOCUMENT (Final Year Mark sheet)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Consolidated Statement of Marks")
+                                                                        {
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EDUCATION DOCUMENT (Consolidated Statement of Marks)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Final Statement of Marks")
+                                                                        {
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EDUCATION DOCUMENT (Final Statement of Marks)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Diploma Certificate")
+                                                                        {
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EDUCATION DOCUMENT (Diploma Certificate)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Edu CHECK (Confirmation)")
+                                                                        {
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EDUCATION CHECK (Confirmation)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Degree Certificate & Final Mark Sheet")
+                                                                        {
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EDUCATION DOCUMENT (Degree Certificate & Final Mark Sheet)</p></td>
+
+                                                                        }
+
+
+                                                                        else if (Doc.DocumentType == "Degree Certificate & Statement of  Marks")
+                                                                        {
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EDUCATION DOCUMENT (Degree Certificate & Statement of  Marks)</p></td>
+
+                                                                        }
+
+
+                                                                        else if (Doc.DocumentType == "Provisional Certificate")
+                                                                        {
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EDUCATION DOCUMENT (Provisional Certificate)</p></td>
+
+                                                                        }
+
+
+                                                                        else if (Doc.DocumentType == "Provisional Certificate & Final Mark Sheet")
+                                                                        {
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EDUCATION DOCUMENT (Provisional Certificate & Final Mark Sheet)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Provisional Certificate & Statement of Marks")
+                                                                        {
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EDUCATION DOCUMENT (Provisional Certificate & Statement of Marks)</p></td>
+
+
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@Doc.DocumentType</p></td>
+
+                                                                        }                                                                            
+                                                                            DocumentType = Doc.DocumentType;
+                                                                        }
+
+                                                                        @*@if (Doc.DocumentType == "Housephoto")
+        {
+            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">Photograph</p></td>
+
+        }
+
+        @if (Doc.DocumentType == "LandmarkPhoto")
+        {
+            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">Land Mark Photograph</p></td>
+
+        }*@
+
+                                                                        @*<td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@ProvidedInfo.SubCheckName (@Doc.DocumentType)</p></td>*@
+                                                                        @*<td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>*@
+                                                                    </tr>
+                                                                    <tr><td colspan="2">&nbsp;</td></tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td valign="top">&nbsp;</td>
+                                                        </tr>
+                                                        <tr style="text-align:center">
+                                                            <td valign="top" style="border:3px solid #000;padding:5px;">
+                                                                @{
+                                                                    FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                    System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                    if (image.Height > 600)
+                                                                    {
+                                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                    }
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>&nbsp;</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                                </tr>
+                                <!--- Report Footer Address Include -->
+                                @*@Html.Partial("_ReportFooterAddress")*@
+                                <!--- Report Footer Address Include -->
+                                <!--- Report Footer Include -->
+                                @*@Html.Partial("_ReportFooter")*@
+                                <!--- Report Footer Include -->
+                            </table>
+                        </page>
+                    }
+                }
+            }
+        }
+    }
+}

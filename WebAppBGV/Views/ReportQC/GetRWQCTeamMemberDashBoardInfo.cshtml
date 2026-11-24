@@ -1,0 +1,1126 @@
+﻿@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Manage Candidate List For Report QC Team Member";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "ReportQC", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+
+@{
+    string tatHours1 = "";
+    string CaseStatus1 = "";
+    string AllocatedToTL1 = "";
+    string Message = "";
+    string FinalCaseStatus = "";
+    string version = "";
+    string teamMemberRowId = "";
+
+
+    FinalCaseStatus = ViewBag.CaseStatus;
+    version = ViewBag.version;
+    if (Request.QueryString["tatHours"] != null)
+    {
+        tatHours1 = Request.QueryString["tatHours"].ToString();
+    }
+    if (Request.QueryString["AllocatedToTL"] != null)
+    {
+        AllocatedToTL1 = Request.QueryString["AllocatedToTL"].ToString();
+    }
+    if (Request.QueryString["CaseStatus"] != null)
+    {
+        CaseStatus1 = @Request.QueryString["CaseStatus"].ToString();
+    }
+    if (Request.QueryString["Message"] != null)
+    {
+        Message = @Request.QueryString["Message"].ToString();
+    }
+    if (Session["TeamMemberRowID"] != null)
+    {
+        teamMemberRowId = Session["TeamMemberRowID"].ToString();
+    }
+
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    string hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportAddressMge", "ReportQC", new { CaseStatus = CaseStatus1, tatHours = tatHours1 }, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+}
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@*@section LeftNavigation{ @Html.Partial("_NavLeftReportQC") }*@
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="submit-progress">
+    <i class="fa fa-2x fa-spinner fa-spin"></i>
+    @*<label>Please wait...</label>*@
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @if (Message != "")
+                        {
+                            <div style="text-align:center;font-size:15px;color:red">@Message  </div>
+                        }
+
+                        @using (Html.BeginForm("GetRWQCTeamMemberDashBoardInfo", "ReportQC", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Client Name :</label>
+                                    <div class="col-md-8">
+                                        @Html.DropDownList("ClientRowID",
+new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+"-- Select Client -- ",
+new { @class = "form-control Keyword1" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Keyword :</label>
+                                    <div class="col-md-8">
+                                        @Html.TextBox("Search", null, new { @class = "form-control Keyword1", placeholder = "Ex. Enter Candidate name, Securitas Id...", @autocomplete = "off" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">From Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("RecievingDate", null, new { @class = "form-control", @id = "RecievingDate", @placeholder = "dd-MMM-yyyy", @autocomplete = "off" })
+                                    </div>
+                                    <label class="col-md-2 control-label">To Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("CompletedDate", null, new { @class = "form-control", @id = "CompletedDate", @placeholder = "dd-MMM-yyyy", @autocomplete = "off" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">  Fetch Senior Profile:</label>
+
+
+
+                                    <div class="col-md-8">
+                                        @*@Html.Hidden("fetchDataCheckbox", "false")
+                                <input type="checkbox" name="fetchDataCheckbox" value="true" id="fetchDataCheckbox" />*@
+                                        <input type="checkbox" id="fetchDataCheckbox" />
+                                        <input type="hidden" name="fetchDataCheckbox" id="fetchDataCheckboxHidden" value="false" />
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    @{
+                                        if (Request.QueryString["CaseStatus"] != null)
+                                        {
+                                            @Html.Hidden("CaseStatus", Request.QueryString["CaseStatus"].ToString())
+                                        }
+                                    }
+
+                                    <div style="text-align:center;" class="col-md-12">
+                                        <input class="btn bun-bg btn-default" type="submit" onclick="SearchFunction()" value="Search" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.DashboardDetailsRWQC != null)
+                {
+                    @*<div class="row">
+                <div class="col-md-12">
+                    @{
+
+                        WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                        grid.Bind(Model.DashboardDetailsRWQC, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                    }
+                    @grid.GetHtml(
+                            htmlAttributes: new { id = "grid", @class = "table table-striped table-bordered nowrap" },
+                            headerStyle: "thead-inverse",
+                            rowStyle: "ordertxt",
+                            footerStyle: "custpaging",
+                            mode: WebGridPagerModes.All,
+                            columns: new[]
+                            {
+                            grid.Column(header: "No.", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                            //grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"col-md-3"),
+                            grid.Column(columnName: "IsSeniorCase", header: "IsSeniorCase", canSort: false, style:"td-3"),
+                          grid.Column(header : "Client Name", format : (item) => {
+                                string ClientName=item.ClientName;
+                               if (item.ClientRowID==317 || item.ClientRowID==327 )
+                                 {
+                                        var link = Html.ActionLink(ClientName, "ReportInterimWipro", "ReportQC", new { id = item.PersonalRowID,Report_Type=item.Report_Type }, new { @target="_blank",  });
+                                     return link;
+                              }
+                               if (item.ClientRowID==607 )
+                                 {
+                                         var link = Html.ActionLink(ClientName, "ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type=item.Report_Type,ReportPart="CDB",ClientRowId=item.ClientRowid }, new { @target="_blank"});
+                                     return link;
+                              }
+                               else  if (item.ClientRowID==1172 )
+                                 {
+                                         var link = Html.ActionLink(ClientName, "ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type=item.Report_Type,ReportPart="CRC",ClientRowId=item.ClientRowid }, new { @target="_blank"});
+                                     return link;
+                              }
+                               else if(item.ClientRowID==1160)
+                              {
+                                  var link = Html.ActionLink(ClientName,"ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type=item.Report_Type,CaseStatus=CaseStatus1,ClientRowId=item.ClientRowid,ReportStatus="Final",ReportPart="CRC" }, new { @target="_blank", @class="edit"  });
+                                    return link;
+                              }
+                                 else if(item.ClientRowID==1315)
+                              {
+                                  var link = Html.ActionLink(ClientName,"ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type=item.Report_Type,CaseStatus=CaseStatus1,ClientRowId=item.ClientRowid,ReportStatus="Interim",ReportPart="CRCNAT" }, new { @target="_blank", @class="edit"  });
+                                    return link;
+                              }
+                                 else if(item.ClientRowID==787)
+                              {
+                                  var link = Html.ActionLink(ClientName,"ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type=item.Report_Type,CaseStatus=CaseStatus1,ClientRowId=item.ClientRowid,ReportStatus="Final",ReportPart="UAN" }, new { @target="_blank", @class="edit"  });
+                                    return link;
+                              }
+                              else
+                              {
+                                  return ClientName;
+                              }
+                                //return "";
+                            }),
+
+
+                            grid.Column(header : "Securitas ID", format : (item) => {
+                                string CompanyRefNo=item.CompanyRefNo;
+                                        var link = Html.ActionLink(CompanyRefNo, "ManageCandidateChecksForReportQCTM", "ReportQC", new { PersonalRowID = item.PersonalRowID, dispFor="TeamMember"  }, new {@class="edit"  });
+                                     return link;
+                            }),
+                            grid.Column(header : "Interim", format : (item) => {
+
+
+                                 var link = Html.ActionLink("Report","ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type=item.Report_Type,CaseStatus=CaseStatus1,ClientRowId=item.ClientRowid,ReportStatus="Final" }, new { @target="_blank", @class="edit"  });
+                                    return link;
+
+                            }),
+                            grid.Column(header : "InterimCompress", format : (item) => {
+                                var link = Html.ActionLink("CompressReport","CompressReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type=item.Report_Type,CaseStatus=CaseStatus1,ClientRowId=item.ClientRowid,ReportStatus="Final" }, new { @target="_blank", @class="edit"  });
+                                return link;
+                            }),
+                             grid.Column("Report", canSort: false, format: (item)=> {
+                                if (item.IsReportUploaded && !string.IsNullOrEmpty(item.ReportUploadedName))
+                                {
+                                    string FldPathDoc = System.Configuration.ConfigurationManager.AppSettings["CandidateReportdoc"].ToString();
+                                     string DownloadLink = string.Format("<a class='edit' href=\"{0}\" target=\"_blank\">Download</a>",Url.Content(FldPathDoc + item.ReportUploadedName));
+                                     return new HtmlString(DownloadLink);
+                                }
+                                    return null;
+                            }),
+                                grid.Column(header : "Cand Name", format : (item) => {
+                                  string CandName=item.CandidateName;
+                                   if (item.ClientRowID == 268)
+                                 {
+
+                                      string FldPathDoc = System.Configuration.ConfigurationManager.AppSettings["TCSFinalReport"].ToString();
+                                      string rtnLink = string.Format("<a class='edit' href=\"{0}\" target=\"_blank\">"+CandName+"</a>",Url.Content(FldPathDoc + item.CompanyRefNo));
+                                     return new HtmlString(rtnLink);
+                                 }
+                                 else
+                                 {
+                                   return CandName;
+                                 }
+
+
+                            }),
+                            grid.Column(columnName: "SpocName", header: "Spoc Name", canSort: false),
+                            grid.Column(columnName: "Caseageing", header: "Case Ageing", canSort: false),
+                            grid.Column(columnName: "Applicantid", header: "Applicant ID", canSort: false),
+                            //grid.Column(columnName: "Location", header: "Location", canSort: false),
+                            grid.Column(columnName: "Package", header: "Package", canSort: false, style:"word-break:break-all;"),
+                            //grid.Column(columnName: "Category", header: "Category", canSort: false),
+                            //grid.Column("CreatedDate", "Created-Date", format: (item) => item.CreatedDate != DateTime.MinValue ? item.CreatedDate.ToString("dd-MMM-yyyy") : "", canSort: false),
+                            grid.Column(columnName: "CaseStatus", header: "Status", canSort: false),
+                            grid.Column(columnName: "AllocatedTmem", header: "Allocated To", canSort: false),
+                            grid.Column(columnName: "Remark", header: "Spoc Remark", canSort: false),
+                           grid.Column(header : "Action", format : (item) =>
+                            {
+                                var link = Html.ActionLink("History", "CaseActionHistories", "ReportQC", new { pid = item.PersonalRowID }, new { @class = "edit iframeActionHistories cboxElement" });
+                                return link;
+                            }),
+
+                             grid.Column(header : "Report History", format : (item) =>
+                            {
+                                var link = Html.ActionLink("History", "CaseReportHistories", "ReportQC", new { pid = item.PersonalRowID }, new { @class = "iframeActionHistories cboxElement" });
+                                return link;
+                            }),
+                               grid.Column(header : "Candidate Details", format : (item) => {
+                                    var linkPerInfo = Html.ActionLink("Show", "PersonalInformation", "ClientServicing", new { PersonalRowID=clsCommonMethods.PEncrypt(item.PersonalRowID.ToString()) }, new {@class = "#" });
+                                    return linkPerInfo;
+                                }),
+
+                    grid.Column(header : "Map", format : (item) => {
+                                        var link = Html.ActionLink("Artifacts", "UpdateReportArtifactsCaseDocByRWQCTM", "ReportQC", new { Pid = item.PersonalRowID}, new { @class="edit iframeRptArtifactCaseDoc cboxElement" });
+                                    return link;
+                            }),
+                    grid.Column(header : "Update Personal Info", format : (item) => {
+                                            if(CaseStatus1!="Closed"){
+                                        var link = Html.ActionLink("Update", "UpdateCandidateDetails", "ReportQC", new { id = item.PersonalRowID,CaseStatus=CaseStatus1}, new { @class="edit" });
+                                    return link; }
+                        else
+                        {
+                            return null;
+                        }
+
+
+                            }),
+                     grid.Column(header : "Report Edit", format : (item) => {
+                                        if(CaseStatus1!="Closed"){
+                                        var link = Html.ActionLink("Edit/Update", "UpdateAllChecksDetails", "ReportQC", new { id = item.PersonalRowID,CaseStatus = CaseStatus1,version=version}, new { @class="edit" });
+                                    return link;
+                         }
+                                        else
+                         {
+                             return null;
+                         }
+
+                            }),
+                     grid.Column(header : "Scop Edit", format : (item) => {
+                                        if(CaseStatus1!="Closed"){
+                                        var link = Html.ActionLink("Update", "UpdateScopOfVerificationDetails", "ReportQC", new { id = item.PersonalRowID,CaseStatus = CaseStatus1,version=version}, new { @class="edit" });
+                                    return link;
+                         }
+                         else
+                         {
+                             return null;
+                         }
+
+                            }),
+
+                            grid.Column(header : "Gap Details", format : (item) => {
+                                if(item.ClientRowID==1219 )
+                                  {
+                                     var link=@Html.ActionLink("Comperative", "Comperative_Tiger", "Verification", new {PersonalRowID=item.PersonalRowID }, new {@class = "Remindermail  callbacks"});
+                                     return link;
+                                  }
+                                else if((item.ClientRowID==317 || item.ClientRowID==327))
+                                {
+                                       var link = Html.ActionLink("WiproGapDetails", "WiproGapDetails", "ReportQC", new { personalRowid = item.PersonalRowID}, new { @class="edit" });
+                                    return link;
+                                }
+                                return null;
+
+                            })
+
+                        }
+                     )
+                    <div class="total-record">Total Records: @Model.TotalRecords</div>
+                </div>
+            </div>*@
+
+                    if (Session["Designation"].ToString() == "Team Member Quality Check 2")
+                    {
+                        <div class="row">
+                            <div class="col-md-12">
+                                @{
+                                    WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                    grid.Bind(Model.DashboardDetailsRWQC, autoSortAndPage: false, rowCount: Model.TotalRecords);
+
+                                    bool isManagerCS = Session["Designation"] != null && Session["Designation"].ToString() == "Team Member Quality Check 2";
+                                    bool isFinal1 = CaseStatus1 == "Final1";
+
+                                    var columns = new List<WebGridColumn>();
+
+                                    // Static Columns
+                                    columns.Add(grid.Column(header: "No.", format: item => item.WebGrid.Rows.IndexOf(item) + 1));
+                                    columns.Add(grid.Column("IsSeniorCase", "IsSeniorCase"));
+
+                                    columns.Add(grid.Column(header: "Client Name", format: item =>
+                                    {
+                                        string ClientName = item.ClientName;
+                                        if (item.ClientRowID == 317 || item.ClientRowID == 327)
+                                            return Html.ActionLink(ClientName, "ReportInterimWipro", "ReportQC", new { id = item.PersonalRowID, Report_Type = item.Report_Type }, new { @target = "_blank" });
+
+                                        if (item.ClientRowID == 607)
+                                            return Html.ActionLink(ClientName, "ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID, Report_Type = item.Report_Type, ReportPart = "CDB", ClientRowId = item.ClientRowid }, new { @target = "_blank" });
+
+                                        if (item.ClientRowID == 1172)
+                                            return Html.ActionLink(ClientName, "ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID, Report_Type = item.Report_Type, ReportPart = "CRC", ClientRowId = item.ClientRowid }, new { @target = "_blank" });
+
+                                        if (item.ClientRowID == 1160)
+                                            return Html.ActionLink(ClientName, "ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID, Report_Type = item.Report_Type, CaseStatus = CaseStatus1, ClientRowId = item.ClientRowid, ReportStatus = "Final", ReportPart = "CRC" }, new { @target = "_blank", @class = "edit" });
+
+                                        if (item.ClientRowID == 1315)
+                                            return Html.ActionLink(ClientName, "ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID, Report_Type = item.Report_Type, CaseStatus = CaseStatus1, ClientRowId = item.ClientRowid, ReportStatus = "Interim", ReportPart = "CRCNAT" }, new { @target = "_blank", @class = "edit" });
+
+                                        if (item.ClientRowID == 787)
+                                            return Html.ActionLink(ClientName, "ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID, Report_Type = item.Report_Type, CaseStatus = CaseStatus1, ClientRowId = item.ClientRowid, ReportStatus = "Final", ReportPart = "UAN" }, new { @target = "_blank", @class = "edit" });
+
+                                        return ClientName;
+                                    }));
+
+                                    columns.Add(grid.Column(header: "Securitas ID", format: item =>
+                                    {
+                                        // var row = (ViewModels.ReportQCViewModel.DashboardRWQCCandidateInfoViewModel)item;
+                                        // return Html.ActionLink(item.CompanyRefNo, "ManageCandidateChecksForReportQCTM", "ReportQC", new { PersonalRowID = item.PersonalRowID, dispFor = "TeamMember" }, new { @class = "edit" });
+                                        string url = Url.Action("ManageCandidateChecksForReportQCTM", "ReportQC", new { PersonalRowID = item.PersonalRowID, dispFor = "TeamMember" });
+                                        return new HtmlString(string.Format("<a class='edit' href='{0}'>{1}</a>" , url, item.CompanyRefNo));
+                                    }));
+
+                                    columns.Add(grid.Column(header: "Interim", format: item =>
+                                        Html.ActionLink("Report", "ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID, Report_Type = item.Report_Type, CaseStatus = CaseStatus1, ClientRowId = item.ClientRowid, ReportStatus = "Final" }, new { @target = "_blank", @class = "edit" })
+                                    ));
+
+                                    columns.Add(grid.Column(header: "Report", format: item =>
+                                    {
+                                        if (item.IsReportUploaded && !string.IsNullOrEmpty(item.ReportUploadedName))
+                                        {
+                                            string path = System.Configuration.ConfigurationManager.AppSettings["CandidateReportdoc"];
+                                            return new HtmlString(string.Format("<a class='edit' href='{0}' target='_blank'>Download</a>", Url.Content(path + item.ReportUploadedName)));
+                                        }
+                                        return null;
+                                    }));
+
+                                    columns.Add(grid.Column(header: "Cand Name", format: item =>
+                                    {
+                                        if (item.ClientRowID == 268)
+                                        {
+                                            string path = System.Configuration.ConfigurationManager.AppSettings["TCSFinalReport"];
+                                            return new HtmlString(string.Format("<a class='edit' href='{0}' target='_blank'>{1}</a>", Url.Content(path + item.CompanyRefNo), item.CandidateName));
+                                        }
+                                        return item.CandidateName;
+                                    }));
+                                    columns.Add(grid.Column(header: "Manual Report Upload", format: item =>
+                                    {
+                                        string dropdownHtml = "";
+                                        string dropdownColorHtml = "";
+                                        string fileInputHtml = "";
+                                        string buttonHtml = "";
+                                        if (item.ClientRowID == 268)
+                                        {
+                                            var statusOptions = new List<SelectListItem>
+{
+                                        new SelectListItem { Text = "--Please select report type--", Value = "" },
+                                        new SelectListItem { Text = "IR Report", Value = "IR Report" },
+                                              new SelectListItem { Text = "FR Report", Value = "FR Report" },
+                                              new SelectListItem { Text = "YTR Report", Value = "YTR Report" },
+                                              new SelectListItem { Text = "SR Report", Value = "SR Report" }
+};
+                                            var statusColor = new List<SelectListItem>
+{
+                                    new SelectListItem { Text = "--Please select color code type--", Value = "" },
+                                    new SelectListItem { Text = "Red", Value = "Red" },
+                                          new SelectListItem { Text = "No Color", Value = "No Color" },
+                                          new SelectListItem { Text = "Orange", Value = "Orange" },
+                                          new SelectListItem { Text = "Green", Value = "Green" }
+};
+
+                                            dropdownHtml = "<select style=\"margin-top: 8px; width: 232px; height: 30px;\"  name='status_" + item.PersonalRowID + "' Id='status_" + item.PersonalRowID + "'>";
+
+                                            dropdownHtml += string.Join("", statusOptions.Select(opt =>
+                                                                                 string.Format("<option value='{0}'>{1}</option>",
+                                                                                     opt.Value, opt.Text)
+                                                                             ));
+
+                                            dropdownHtml += "</select>";
+                                            dropdownColorHtml = "<select style=\"margin-top: 8px; width: 232px; height: 30px;\"  name='ColorCode_" + item.PersonalRowID + "' Id='ColorCode_" + item.PersonalRowID + "'>";
+
+                                            dropdownColorHtml += string.Join("", statusColor.Select(opt =>
+                                                                                 string.Format("<option value='{0}'>{1}</option>",
+                                                                                     opt.Value, opt.Text)
+                                                                             ));
+
+                                            dropdownColorHtml += "</select>";
+
+                                            fileInputHtml = "<input style=\"margin-top: 8px; width: 232px; height: 30px;\"  type='file' name='file_" + item.PersonalRowID + "' Id='file_" + item.PersonalRowID + "' />";
+                                            buttonHtml = "<button style=\"margin-top: 8px; width: 132px; height: 30px;background: #11c9b7;\"  onclick=\"UploadReport(" + item.PersonalRowID + "," + item.ClientRowID + ")\">Upload</button>";
+
+                                        }
+                                        return new HtmlString(dropdownHtml + "<br/> " + dropdownColorHtml + "<br/> " + fileInputHtml + "<br/> " + buttonHtml);
+                                    }));
+                                    columns.Add(grid.Column(header: "ES Report Upload", format: item =>
+                                    {
+                                        string dropdownHtml = "";
+                                        string dropdownColorHtml = "";
+                                        string fileInputHtml = "";
+                                        string buttonHtml = "";
+                                        if (item.ClientRowID == 268)
+                                        {
+                                            var statusOptions = new List<SelectListItem>
+{
+                                        new SelectListItem { Text = "--Please select report type--", Value = "" },
+                                        new SelectListItem { Text = "ES Report", Value = "ES Report" }
+};
+                                            var statusColor = new List<SelectListItem>
+{
+                                    new SelectListItem { Text = "--Please select color code type--", Value = "" },
+                                    new SelectListItem { Text = "Red", Value = "Red" },
+                                          new SelectListItem { Text = "No Color", Value = "No Color" },
+                                          new SelectListItem { Text = "Orange", Value = "Orange" },
+                                          new SelectListItem { Text = "Green", Value = "Green" }
+};
+
+                                            dropdownHtml = "<select style=\"margin-top: 8px; width: 232px; height: 30px;\"  name='status_" + item.PersonalRowID + "' Id='status_" + item.PersonalRowID + "'>";
+
+                                            dropdownHtml += string.Join("", statusOptions.Select(opt =>
+                                                                         string.Format("<option value='{0}'>{1}</option>",
+                                                                             opt.Value, opt.Text)
+                                                                     ));
+
+                                            dropdownHtml += "</select>";
+                                            dropdownColorHtml = "<select style=\"margin-top: 8px; width: 232px; height: 30px;\"  name='ColorCode_" + item.PersonalRowID + "' Id='ColorCode_" + item.PersonalRowID + "'>";
+
+                                            dropdownColorHtml += string.Join("", statusColor.Select(opt =>
+                                                                         string.Format("<option value='{0}'>{1}</option>",
+                                                                             opt.Value, opt.Text)
+                                                                     ));
+
+                                            dropdownColorHtml += "</select>";
+
+                                            fileInputHtml = "<input style=\"margin-top: 8px; width: 232px; height: 30px;\"  type='file' name='file_" + item.PersonalRowID + "' Id='file_" + item.PersonalRowID + "' />";
+                                            buttonHtml = "<button style=\"margin-top: 8px; width: 132px; height: 30px;background: #11c9b7;\"  onclick=\"UploadReport(" + item.PersonalRowID + "," + item.ClientRowID + ")\">Upload</button>";
+
+                                        }
+                                        return new HtmlString(dropdownHtml + "<br/> " + dropdownColorHtml + "<br/> " + fileInputHtml + "<br/> " + buttonHtml);
+                                    }));
+                                    //columns.Add(grid.Column("SpocName", "Spoc Name"));
+                                    columns.Add(grid.Column("Report_Type", "Report_Type"));
+                                    columns.Add(grid.Column("Caseageing", "Case Ageing"));
+                                    columns.Add(grid.Column("Applicantid", "Applicant ID"));
+                                    columns.Add(grid.Column("Package", "Package", style: "word-break:break-all;"));
+                                    columns.Add(grid.Column("CaseStatus", "Status"));
+                                    columns.Add(grid.Column("AllocatedTmem", "Allocated To"));
+                                    columns.Add(grid.Column("Remark", "Spoc Remark"));
+
+                                    columns.Add(grid.Column(header: "History", format: item =>
+                                        Html.ActionLink("History", "CaseActionHistories", "ReportQC", new { pid = item.PersonalRowID }, new { @class = "edit iframeActionHistories cboxElement" })
+                                    ));
+
+                                    columns.Add(grid.Column(header: "Report History", format: item =>
+                                        Html.ActionLink("History", "CaseReportHistories", "ReportQC", new { pid = item.PersonalRowID }, new { @class = "iframeActionHistories cboxElement" })
+                                    ));
+
+                                    columns.Add(grid.Column(header: "Candidate Details", format: item =>
+                                        Html.ActionLink("Show", "PersonalInformation", "ClientServicing", new { PersonalRowID = clsCommonMethods.PEncrypt(item.PersonalRowID.ToString()) }, new { @class = "#" })
+                                    ));
+
+                                    columns.Add(grid.Column(header: "Map", format: item =>
+                                        Html.ActionLink("Artifacts", "UpdateReportArtifactsCaseDocByRWQCTM", "ReportQC", new { Pid = item.PersonalRowID }, new { @class = "edit iframeRptArtifactCaseDoc cboxElement" })
+                                    ));
+
+                                    columns.Add(grid.Column(header: "Update Personal Info", format: item =>
+                                        CaseStatus1 != "Closed"
+                                            ? Html.ActionLink("Update", "UpdateCandidateDetails", "ReportQC", new { id = item.PersonalRowID, CaseStatus = CaseStatus1 }, new { @class = "edit" })
+                                            : null
+                                    ));
+
+                                    columns.Add(grid.Column(header: "Report Edit", format: item =>
+                                        CaseStatus1 != "Closed"
+                                            ? Html.ActionLink("Edit/Update", "UpdateAllChecksDetails", "ReportQC", new { id = item.PersonalRowID, CaseStatus = CaseStatus1, version = version }, new { @class = "edit" })
+                                            : null
+                                    ));
+
+                                    columns.Add(grid.Column(header: "Scop Edit", format: item =>
+                                        CaseStatus1 != "Closed"
+                                            ? Html.ActionLink("Update", "UpdateScopOfVerificationDetails", "ReportQC", new { id = item.PersonalRowID, CaseStatus = CaseStatus1, version = version }, new { @class = "edit" })
+                                            : null
+                                    ));
+
+                                    columns.Add(grid.Column(header: "Gap Details", format: item =>
+                                    {
+                                        if (item.ClientRowID == 1219)
+                                            return Html.ActionLink("Comperative", "Comperative_Tiger", "Verification", new { PersonalRowID = item.PersonalRowID }, new { @class = "Remindermail callbacks" });
+                                        if (item.ClientRowID == 317 || item.ClientRowID == 327)
+                                            return Html.ActionLink("WiproGapDetails", "WiproGapDetails", "ReportQC", new { personalRowid = item.PersonalRowID }, new { @class = "edit" });
+                                        return null;
+                                    }));
+
+                                    // Conditionally add Approve/Reject buttons
+                                    if (isManagerCS && isFinal1)
+                                    {
+                                        columns.Add(grid.Column("RWQCName", "RWQC Name"));
+                                        columns.Add(grid.Column("ReportDate", "Report Date"));
+                                        //columns.Add(grid.Column(header: "Approve", format: item =>
+                                        //    Html.ActionLink("Approve", "ApproveRejectRWTMQC", "ReportQC", new { id = item.PersonalRowID , Actions = "Approve"}, new { @class = "btn btn-success btn-sm" })
+                                        //));
+                                        //columns.Add(grid.Column(header: "Reject", format: item =>
+                                        //    Html.ActionLink("Reject", "ApproveRejectRWTMQC", "ReportQC", new { id = item.PersonalRowID, Actions = "Reject" , CaseStatus = CaseStatus1 }, new { @class = "btn btn-danger btn-sm" })
+                                        //));
+
+                                        columns.Add(grid.Column(header: "Approve", format: item =>
+                                                new HtmlString( string.Format("<button class='btn btn-success btn-sm open-remark-modal' data-id='{0}' data-action='Approve'>Approve</button>" , item.PersonalRowID))
+                                                ));
+                                        columns.Add(grid.Column(header: "Reject", format: item =>
+                                            new HtmlString( string.Format("<button class='btn btn-danger btn-sm open-remark-modal' data-id='{0}' data-action='Reject'>Reject</button>", item.PersonalRowID))
+                                        ));
+                                    }
+                                }
+
+                                @grid.GetHtml(
+                                    htmlAttributes: new { id = "grid", @class = "table table-striped table-bordered nowrap" },
+                                    headerStyle: "thead-inverse",
+                                    rowStyle: "ordertxt",
+                                    footerStyle: "custpaging",
+                                    mode: WebGridPagerModes.All,
+                                    columns: columns
+                                )
+                                <div class="total-record">Total Records: @Model.TotalRecords</div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                    <div class="col-md-12">
+                        @{
+
+                            WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                            grid.Bind(Model.DashboardDetailsRWQC, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                        }
+                        @grid.GetHtml(
+                                htmlAttributes: new { id = "grid", @class = "table table-striped table-bordered nowrap" },
+                                headerStyle: "thead-inverse",
+                                rowStyle: "ordertxt",
+                                footerStyle: "custpaging",
+                                mode: WebGridPagerModes.All,
+                                columns: new[]
+                                {
+                                grid.Column(header: "No.", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                //grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"col-md-3"),
+                                grid.Column(columnName: "IsSeniorCase", header: "IsSeniorCase", canSort: false, style:"td-3"),
+                              grid.Column(header : "Client Name", format : (item) => {
+                                    string ClientName=item.ClientName;
+                                   if (item.ClientRowID==317 || item.ClientRowID==327 )
+                                     {
+                                            var link = Html.ActionLink(ClientName, "ReportInterimWipro", "ReportQC", new { id = item.PersonalRowID,Report_Type=item.Report_Type }, new { @target="_blank",  });
+                                         return link;
+                                  }
+                                   if (item.ClientRowID==607 )
+                                     {
+                                             var link = Html.ActionLink(ClientName, "ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type=item.Report_Type,ReportPart="CDB",ClientRowId=item.ClientRowid }, new { @target="_blank"});
+                                         return link;
+                                  }
+                                   else  if (item.ClientRowID==1172 )
+                                     {
+                                             var link = Html.ActionLink(ClientName, "ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type=item.Report_Type,ReportPart="CRC",ClientRowId=item.ClientRowid }, new { @target="_blank"});
+                                         return link;
+                                  }
+                                   else if(item.ClientRowID==1160)
+                                  {
+                                      var link = Html.ActionLink(ClientName,"ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type=item.Report_Type,CaseStatus=CaseStatus1,ClientRowId=item.ClientRowid,ReportStatus="Final",ReportPart="CRC" }, new { @target="_blank", @class="edit"  });
+                                        return link;
+                                  }
+                                     else if(item.ClientRowID==1315)
+                                  {
+                                      var link = Html.ActionLink(ClientName,"ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type=item.Report_Type,CaseStatus=CaseStatus1,ClientRowId=item.ClientRowid,ReportStatus="Interim",ReportPart="CRCNAT" }, new { @target="_blank", @class="edit"  });
+                                        return link;
+                                  }
+                                     else if(item.ClientRowID==787)
+                                  {
+                                      var link = Html.ActionLink(ClientName,"ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type=item.Report_Type,CaseStatus=CaseStatus1,ClientRowId=item.ClientRowid,ReportStatus="Final",ReportPart="UAN" }, new { @target="_blank", @class="edit"  });
+                                        return link;
+                                  }
+                                  else
+                                  {
+                                      return ClientName;
+                                  }
+                                    //return "";
+                                }),
+
+
+                                grid.Column(header : "Securitas ID", format : (item) => {
+                                    string CompanyRefNo=item.CompanyRefNo;
+                                            var link = Html.ActionLink(CompanyRefNo, "ManageCandidateChecksForReportQCTM", "ReportQC", new { PersonalRowID = item.PersonalRowID, dispFor="TeamMember"  }, new {@class="edit"  });
+                                         return link;
+                                }),
+                                grid.Column(header : "Interim", format : (item) => {
+                                    if(item.EmploymentType == "Experience Professional")
+                                    {
+                                        var link = Html.ActionLink("Report","ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type=item.Report_Type,CaseStatus=CaseStatus1,ClientRowId=item.ClientRowid,ReportStatus="Final" }, new { @target="_blank", @class="edit"  });
+                                        var link1 = Html.ActionLink("Report EP","ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type=item.Report_Type,CaseStatus=CaseStatus1,ClientRowId=item.ClientRowid,ReportStatus="Final", ModuleType = "EP"}, new { @target="_blank", @class="edit"  });
+                                        var link2 = Html.ActionLink("Report YTR","ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type=item.Report_Type,CaseStatus=CaseStatus1,ClientRowId=item.ClientRowid,ReportStatus="Final", ModuleType = "YTR"}, new { @target="_blank", @class="edit"  });
+                                        return new HtmlString(link.ToString() + " | " + link1.ToString()+ " | " + link2.ToString());
+                                    }
+                                    else
+                                    {
+                                        var link = Html.ActionLink("Report","ReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type=item.Report_Type,CaseStatus=CaseStatus1,ClientRowId=item.ClientRowid,ReportStatus="Final" }, new { @target="_blank", @class="edit"  });
+                                        return link;
+                                    }
+                                     
+
+                                }),
+                                grid.Column(header : "Final", format : (item) => {
+
+                                    if (((teamMemberRowId == "1181") || (teamMemberRowId == "1141")|| (teamMemberRowId == "1024")|| (teamMemberRowId == "686")) && (CaseStatus1 == "Final"))
+                                    {
+                                        var AutoUploadReportLink = Html.ActionLink(
+                                            "Report_Upload",
+                                            "AutoGenerateReportSingle",
+                                            "ReportQC",
+                                            new { companyRefNo = item.CompanyRefNo }, new { @class="edit"  }
+                                        );
+                                        return new HtmlString(AutoUploadReportLink.ToString());
+                                    }
+                                    else
+                                    {
+                                        return null;
+                                    }
+
+                                }),
+
+                                grid.Column(header : "InterimCompress", format : (item) => {
+                                    var link = Html.ActionLink("CompressReport","CompressReportMain", "ReportQC", new { PersonalRowID = item.PersonalRowID,Report_Type=item.Report_Type,CaseStatus=CaseStatus1,ClientRowId=item.ClientRowid,ReportStatus="Final" }, new { @target="_blank", @class="edit"  });
+                                    return link;
+                                }),
+                                 grid.Column("Report", canSort: false, format: (item)=> {
+                                    if (item.IsReportUploaded && !string.IsNullOrEmpty(item.ReportUploadedName))
+                                    {
+                                        string FldPathDoc = System.Configuration.ConfigurationManager.AppSettings["CandidateReportdoc"].ToString();
+                                         string DownloadLink = string.Format("<a class='edit' href=\"{0}\" target=\"_blank\">Download</a>",Url.Content(FldPathDoc + item.ReportUploadedName));
+                                         return new HtmlString(DownloadLink);
+                                    }
+                                        return null;
+                                }),
+                                    grid.Column(header : "Cand Name", format : (item) => {
+                                      string CandName=item.CandidateName;
+                                       if (item.ClientRowID == 268)
+                                     {
+
+                                          string FldPathDoc = System.Configuration.ConfigurationManager.AppSettings["TCSFinalReport"].ToString();
+                                          string rtnLink = string.Format("<a class='edit' href=\"{0}\" target=\"_blank\">"+CandName+"</a>",Url.Content(FldPathDoc + item.CompanyRefNo));
+                                         return new HtmlString(rtnLink);
+                                     }
+                                     else
+                                     {
+                                       return CandName;
+                                     }
+
+
+                                }),
+                                grid.Column(columnName: "SpocName", header: "Spoc Name", canSort: false),
+                                grid.Column(columnName: "Caseageing", header: "Case Ageing", canSort: false),
+                                grid.Column(columnName: "Applicantid", header: "Applicant ID", canSort: false),
+                                //grid.Column(columnName: "Location", header: "Location", canSort: false),
+                                //grid.Column(columnName: "Package", header: "Package", canSort: false, style:"word-break:break-all;")
+                                 grid.Column(header : "Package", format : (item) =>
+                                 {
+                                     if(item.ClientRowID==268 )
+                                     {
+                                    var statusOptions = new List<SelectListItem>
+                                    {
+                                        new SelectListItem { Text = "--Please select report type--", Value = "" },
+                                        new SelectListItem { Text = "IR Report", Value = "IR Report" },
+                                              new SelectListItem { Text = "FR Report", Value = "FR Report" },
+                                              new SelectListItem { Text = "YTR Report", Value = "YTR Report" },
+                                              new SelectListItem { Text = "SR Report", Value = "SR Report" }
+                                    };
+                                         var statusColor = new List<SelectListItem>
+                                {
+                                    new SelectListItem { Text = "--Please select color code type--", Value = "" },
+                                    new SelectListItem { Text = "Red", Value = "Red" },
+                                          new SelectListItem { Text = "No Color", Value = "No Color" },
+                                          new SelectListItem { Text = "Orange", Value = "Orange" },
+                                          new SelectListItem { Text = "Green", Value = "Green" }
+                                };
+
+                                         string dropdownHtml = "<select style=\"margin-top: 8px; width: 232px; height: 30px;\"  name='status_"+item.PersonalRowID+"' Id='status_"+item.PersonalRowID+"'>";
+
+                                dropdownHtml += string.Join("", statusOptions.Select(opt =>
+                                    string.Format("<option value='{0}'>{1}</option>",
+                                        opt.Value, opt.Text)
+                                ));
+
+                                dropdownHtml += "</select>";
+                                                  string dropdownColorHtml = "<select style=\"margin-top: 8px; width: 232px; height: 30px;\"  name='ColorCode_"+item.PersonalRowID+"' Id='ColorCode_"+item.PersonalRowID+"'>";
+
+                                dropdownColorHtml += string.Join("", statusColor.Select(opt =>
+                                    string.Format("<option value='{0}'>{1}</option>",
+                                        opt.Value, opt.Text)
+                                ));
+
+                                dropdownColorHtml += "</select>";
+
+                                string fileInputHtml = "<input style=\"margin-top: 8px; width: 232px; height: 30px;\"  type='file' name='file_" + item.PersonalRowID + "' Id='file_"+item.PersonalRowID+"' />";
+                                string buttonHtml = "<button style=\"margin-top: 8px; width: 132px; height: 30px;background: #11c9b7;\"  onclick=\"UploadReport("+item.PersonalRowID+","+item.ClientRowID+")\">Upload</button>";
+
+                                            return new  HtmlString(dropdownHtml +"<br/> " + dropdownColorHtml + "<br/> " +fileInputHtml+"<br/> " + buttonHtml);
+                                     }
+                                     else
+                                     {
+                                         return item.Package;
+
+                                     }
+
+                                 }),
+
+                                //grid.Column(columnName: "Category", header: "Category", canSort: false),
+                                //grid.Column("CreatedDate", "Created-Date", format: (item) => item.CreatedDate != DateTime.MinValue ? item.CreatedDate.ToString("dd-MMM-yyyy") : "", canSort: false),
+                                grid.Column(columnName: "CaseStatus", header: "Status", canSort: false),
+                                grid.Column(columnName: "AllocatedTmem", header: "Allocated To", canSort: false),
+                                grid.Column(columnName: "Remark", header: "Spoc Remark", canSort: false),
+                               grid.Column(header : "Action", format : (item) =>
+                               {
+                                   var link = Html.ActionLink("History", "CaseActionHistories", "ReportQC", new { pid = item.PersonalRowID }, new { @class = "edit iframeActionHistories cboxElement" });
+                                   return link;
+                               }),
+
+                                 grid.Column(header : "Report History", format : (item) =>
+                                 {
+                                     var link = Html.ActionLink("History", "CaseReportHistories", "ReportQC", new { pid = item.PersonalRowID }, new { @class = "iframeActionHistories cboxElement" });
+                                     return link;
+                                 }),
+                                   grid.Column(header : "Candidate Details", format : (item) => {
+                                       var linkPerInfo = Html.ActionLink("Show", "PersonalInformation", "ClientServicing", new { PersonalRowID=clsCommonMethods.PEncrypt(item.PersonalRowID.ToString()) }, new {@class = "#" });
+                                       return linkPerInfo;
+                                   }),
+
+                        grid.Column(header : "Map", format : (item) => {
+                            var link = Html.ActionLink("Artifacts", "UpdateReportArtifactsCaseDocByRWQCTM", "ReportQC", new { Pid = item.PersonalRowID}, new { @class="edit iframeRptArtifactCaseDoc cboxElement" });
+                            return link;
+                        }),
+                        grid.Column(header : "Update Personal Info", format : (item) => {
+                            if(CaseStatus1!="Closed"){
+                                var link = Html.ActionLink("Update", "UpdateCandidateDetails", "ReportQC", new { id = item.PersonalRowID,CaseStatus=CaseStatus1}, new { @class="edit" });
+                                return link; }
+                            else
+                            {
+                                return null;
+                            }
+
+
+                        }),
+                         grid.Column(header : "Report Edit", format : (item) => {
+                             if(CaseStatus1!="Closed"){
+                                 var link = Html.ActionLink("Edit/Update", "UpdateAllChecksDetails", "ReportQC", new { id = item.PersonalRowID,CaseStatus = CaseStatus1,version=version}, new { @class="edit" });
+                                 return link;
+                             }
+                             else
+                             {
+                                 return null;
+                             }
+
+                         }),
+                         grid.Column(header : "Scop Edit", format : (item) => {
+                             if(CaseStatus1!="Closed"){
+                                 var link = Html.ActionLink("Update", "UpdateScopOfVerificationDetails", "ReportQC", new { id = item.PersonalRowID,CaseStatus = CaseStatus1,version=version}, new { @class="edit" });
+                                 return link;
+                             }
+                             else
+                             {
+                                 return null;
+                             }
+
+                         }),
+
+                                grid.Column(header : "Gap Details", format : (item) => {
+                                    if(item.ClientRowID==1219 )
+                                    {
+                                        var link=@Html.ActionLink("Comperative", "Comperative_Tiger", "Verification", new {PersonalRowID=item.PersonalRowID }, new {@class = "Remindermail  callbacks"});
+                                        return link;
+                                    }
+                                    else if((item.ClientRowID==317 || item.ClientRowID==327))
+                                    {
+                                        var link = Html.ActionLink("WiproGapDetails", "WiproGapDetails", "ReportQC", new { personalRowid = item.PersonalRowID}, new { @class="edit" });
+                                        return link;
+                                    }
+                                    return null;
+
+                                }),
+
+                                 grid.Column(header : "Risk Matrix", format : (item) => {
+                                     string ClientName=item.ClientName;
+                                     if (item.ClientRowID==1767)
+                                     {
+                                         var link = Html.ActionLink(ClientName, "GetRiskMatrix", "ReportQC", new { id = item.PersonalRowID,ClientRowID=item.ClientRowID }, new { @class="edit iframeRptArtifactCaseDoc cboxElement" });
+                                         return link;
+                                     }
+                                     else
+                                     {
+                                         return ClientName;
+                                     }       //return "";
+                                            })
+
+                            }
+                         )
+                        <div class="total-record">Total Records: @Model.TotalRecords</div>
+                    </div>
+                </div>
+                    }
+
+
+
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="remarkModal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form id="remarkForm" method="post" action="/ReportQC/ApproveRejectRWTMQC">
+        <div class="modal-header">
+          <h5 class="modal-title" style="FONT-WEIGHT: BOLDER; FONT-SIZE: 18px;">Remarks</h5>
+          <button type="button" class="close" data-dismiss="modal" id="closeModalBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" name="id" id="remark-id" />
+            <input type="hidden" name="CaseStatus" id="CaseStatus-id" value=@CaseStatus1 />
+            <input type="hidden" name="Actions" id="remark-action" />
+            <div class="form-group">
+                <label for="remark-text">Enter Remarks:</label>
+                <textarea name="Remarks" class="form-control" id="remark-text" required></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancelModalBtn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+    @@media screen and (max-width: 1450px) and (min-width: 600px) {
+        #grid {
+            font-size: .90rem;
+            width: 80%;
+        }
+
+        .table td, .table th {
+            padding: .55rem !important;
+        }
+
+        .thead-inverse {
+            font-size: .90rem !important;
+        }
+
+        table, td, .edit {
+            font-size: .95rem !important;
+        }
+    }
+
+    .submit-progress {
+        position: fixed;
+        height: 100vh;
+        z-index: 9999;
+        /*background-color: black;*/
+        color: #031F30;
+        border-radius: 0.4em;
+        width: 100%;
+        justify-content: center;
+        display: none;
+        /*opacity: 0.3;*/
+    }
+    .fa-2x {
+        font-size: 4em;
+    }
+</style>
+@section Scripts{
+    @*<script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+        <link href="~/Content/colorbox.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery.colorbox-min.js"></script>*@
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+            $(".iframeRptArtifactCaseDoc").colorbox({ iframe: true, width: "80%", height: "65%" });
+            $(".Remindermail").colorbox({ iframe: true, width: "80%", height: "100%" });
+            $("#grid th").each(function () {
+                if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                    $(this).text('');
+                    $("<input/>", { type: "checkbox", id: "select_all", value: "" }).appendTo($(this));
+                    //$(this).append("<span>Select All</span>");
+                }
+            });
+
+            $('#RecievingDate').datepicker({
+                dateFormat: "dd-M-yy",
+                changeMonth: true,
+                changeYear: true,
+                //showButtonPanel: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedDate').datepicker({
+                dateFormat: "dd-M-yy",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+        });
+    </script>
+}
+<script>
+    document.getElementById("fetchDataCheckbox").addEventListener("change", function () {
+        document.getElementById("fetchDataCheckboxHidden").value = this.checked;
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Close modal on close button click
+        $('#closeModalBtn, #cancelModalBtn').on('click', function () {
+            $('#remarkModal').modal('hide');
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        var table = $('#grid').DataTable({
+            responsive: true,
+        });
+
+        new $.fn.dataTable.FixedHeader(table);
+    });
+</script>
+<script>
+    $("#grid > thead > tr").each(function () {
+        $(this).find('th').each(function (index) {
+            // Check if the header text is "checkFackEdu"
+            if ($(this).text().trim() === "IsSeniorCase") {
+                // Hide the corresponding column header
+                $(this).css("display", "none");
+
+                // Now hide the corresponding cells (td) in the body for that column
+                $("#grid > tbody > tr").each(function () {
+                    $(this).find('td').eq(index).css("display", "none");
+                });
+            }
+        });
+    });
+</script>
+<script>
+    $('#grid > tbody > tr').each(function () {
+        var sixthTdValue = $(this).find('td:nth-child(2)').text();
+        if (sixthTdValue == "1") {
+            $(this).css('background-color', '#ffbf80');
+        }
+        else {
+            //$(this).css('background-color', '#f2f2f2');
+        }
+    });
+</script>
+<script>
+$(document).ready(function () {
+    $('.open-remark-modal').click(function () {
+        var id = $(this).data('id');
+        var action = $(this).data('action');
+
+        $('#remark-id').val(id);
+        $('#remark-action').val(action);
+        $('#remark-text').val('');
+
+        $('#remarkModal').modal('show');
+    });
+});
+</script>
+<script>
+$(document).ready(function () {
+    $('.open-remark-modal').click(function () {
+        var id = $(this).data('id');
+        var action = $(this).data('action');
+
+        $('#remark-id').val(id);
+        $('#remark-action').val(action);
+        $('#remark-text').val('');
+
+        $('#remarkModal').modal('show');
+    });
+});
+</script>
+
+<script>
+$(document).ready(function () {
+    $('.open-remark-modal').click(function () {
+        var id = $(this).data('id');
+        var action = $(this).data('action');
+
+        $('#remark-id').val(id);
+        $('#remark-action').val(action);
+        $('#remark-text').val('');
+
+        $('#remarkModal').modal('show');
+    });
+});
+</script>
+<script>
+$(document).ready(function () {
+    $('.open-remark-modal').click(function () {
+        var id = $(this).data('id');
+        var action = $(this).data('action');
+       /* var casestatus = $(this).data('CaseStatus')*/
+        $('#remark-id').val(id);
+        $('#remark-action').val(action);
+        $('#remark-text').val('');
+      //  $('#CaseStatus-id').val(casestatus);
+
+
+        $('#remarkModal').modal('show');
+    });
+});
+</script>
+<script>
+    function UploadReport(pid, Cid) {
+        debugger;
+        var Status = $('#status_' + pid).val();
+        var ColorCode = $('#ColorCode_' + pid).val();
+        var file = $('#file_' + pid).val();
+        if (Status == "")
+        {
+            alert("Please select report type")
+            return false;
+        }
+        if (ColorCode == "") {
+            alert("Please select color code type")
+            return false;
+        }
+        if (file == "") {
+            alert("Please update report file")
+            return false;
+        }
+
+        //$("body").addClass("submit-progress-bg");
+        //// Wrap in setTimeout so the UI can update the spinners
+        //$(".submit-progress").removeClass("hidden");
+        ////submit the form.
+        //setTimeout(function () {
+        //    $("form").submit();
+        //}, 1);
+        var formData = new FormData();
+        formData.append("Fid", $('#file_' + pid)[0].files[0]);
+        formData.append("Ccode", $('#ColorCode_' + pid).val());
+        formData.append("Rid", $('#status_' + pid).val());
+        formData.append("Pid", pid);
+        formData.append("Cid", Cid);
+        $(".submit-progress").css("display", "flex");
+            $.ajax({
+                url: '@Url.Action("UploadReport", "ReportQC")',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success == true) {
+                        $(".submit-progress").css("display", "none");
+                        Swal.fire({
+                            title: "Success",
+                            text: "Report Uploaded Successfully",
+                            icon: "success"
+                        });
+                        location.reload();
+                    }
+                    else {
+                        $(".submit-progress").css("display", "none");
+                        Swal.fire({
+                            title: "Failed",
+                            text: response.message,
+                            icon: "failed"
+                        });
+                    }
+
+                },
+                error: function (xhr, status, error) {
+
+                    alert('Error uploading file: ' + error);
+                }
+            });
+    }
+
+</script>

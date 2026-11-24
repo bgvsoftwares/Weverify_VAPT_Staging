@@ -1,0 +1,510 @@
+@model ViewModels.ClientViewModel.CheckAddAndReverification
+
+@{
+    ViewBag.Title = "Re-Verification";
+    HtmlHelper.ClientValidationEnabled = false;
+    string clid = Session["ClientRowID"] != null ? Session["ClientRowID"].ToString() : "";
+    string clid1 = Model != null ? Model.ClientRowId.ToString() : "";
+}
+
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+<link href="~/Content/MultiselectcNew.css" rel="stylesheet" type="text/css" />
+<link href="~/MultiSelection/docs/css/prettify.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/MultiSelection/dist/css/bootstrap-multiselect.css" type="text/css">
+
+<style>
+    .multiselect-selected-text {
+        color: #000 !important;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("ReverificationWipro", "ClientServicing", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="form-horizontal">
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">CompanyRefNo :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBoxFor(model => model.SecuritasID, null, new { @class = "form-control", placeholder = "Ex Enter CompanyRefNo...", @autocomplete = "off", maxlength = "40" })
+
+                                        @Html.HiddenFor(model => model.PersonalRowID, new { @id = "HfPersonalRowID" })
+                                        @Html.HiddenFor(model => model.ClientRowId, new { @id = "HfClientRowId" })
+                                        @Html.HiddenFor(model => model.approveStatus, new { @id = "HfapproveStatus" })
+
+                                    </div>
+
+                                    <div class="col-md-2" style="text-align:left">
+                                        <input class="btn bun-bg btn-default" type="submit" name="Command" value="Search" id="Search" />
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Select Action :</label>
+                                    <div class="col-md-3">
+                                        @if (clid1 == "722")
+                                        {
+                                            @Html.DropDownListFor(model => model.Actions, new List<SelectListItem>(){
+    new SelectListItem{Text="-- Select --", Value="-- Select --", Selected = true },
+    new SelectListItem{Text="Add Check", Value="Add Check" },
+    new SelectListItem{Text="ReVerification", Value="ReVerification"},
+    new SelectListItem{Text="Update PID", Value="Update PID"}
+    //new SelectListItem{Text="STOP", Value="STOP", Selected = true, }
+    }, new { @class = "form-control", @id = "ddlAction" })
+                                        }
+                                        else
+                                        {
+                                            @Html.DropDownListFor(model => model.Actions, new List<SelectListItem>(){
+    new SelectListItem{Text="-- Select --", Value="-- Select --", Selected = true },
+    new SelectListItem{Text="Add Check", Value="Add Check" },
+    new SelectListItem{Text="ReVerification", Value="ReVerification"}
+    //new SelectListItem{Text="STOP", Value="STOP", Selected = true, }
+    }, new { @class = "form-control", @id = "ddlAction" })
+
+                                        }
+
+
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame" id="checklis">
+                                    <label class="col-md-2 control-label">Check Details :</label>
+                                    <div class="col-md-3">
+                                        <div id="dvCheckDetail">
+                                            @if (ViewBag.CheckList != null)
+                                            {
+                                                @Html.DropDownListFor(model => model.rSubCheckRowID, new SelectList(ViewBag.CheckList, "SubCheckRowID", "SubCheckName"), new { @class = "form-control", @id = "ddlCheckDetail", @multiple = "multiple" })
+                                            }
+                                            @Html.HiddenFor(model => model.rSubCheckRowIDMultiple, new { @id = "rSubCheckRowIDMultiple" })
+                                        </div>
+                                        <div id="dvCheckStatus">
+                                            @if (ViewBag.chek != null)
+                                            {
+                                                @Html.DropDownListFor(model => model.aSubCheckRowID, new SelectList(ViewBag.chek, "SubCheckRowID", "SubCheckName"), new { @class = "form-control", @id = "ddlCheckStatus", @multiple = "multiple" })
+                                            }
+                                            @Html.HiddenFor(model => model.aSubCheckRowIDMultiple, new { @id = "aSubCheckRowIDMultiple" })
+                                        </div>
+
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group branch row search-frame" id="billlis">
+                                    <label class="col-md-2 control-label">Billing Status :</label>
+                                    <div class="col-md-3">
+                                        @Html.DropDownListFor(model => model.BillingStatus, new List<SelectListItem>(){
+                                       new SelectListItem{Text="-- Select --", Value="-- Select --", Selected = true},
+                                       new SelectListItem{Text="Billable", Value="Billable"},
+                                       new SelectListItem{Text="Not Billable", Value="Not Billable"}
+                                   }, new { @class = "form-control", @id = "ddlBillable" })
+
+                                    </div>
+                                    <div class="col-md-2" style="text-align:left">
+                                        @*<input class="btn bun-bg btn-default" type="submit" name="Command" value="Send to approval" id="Approval" />*@
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame" id="remarklis">
+                                    <label class="col-md-2 control-label">Action Remarks :</label>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(model => model.Remark, null, new { @class = "form-control", @id = "TextBoxMode", placeholder = "Ex Enter Remarks...", style = "height:60px;", @autocomplete = "off", maxlength = "200" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group branch row search-frame" id="PIDBOX" hidden>
+                                    <label class="col-md-2 control-label">New PID :</label>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(model => model.ProcessId, null, new { @class = "form-control", @id = "PIDBOX1", placeholder = "Ex Enter PID...", @autocomplete = "off", maxlength = "200" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame" id="attachlis">
+
+                                    <label class="col-md-2 control-label">Attachment :</label>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(model => model.UploadDoc, new { @id = "UploadAddressDoc", @accept = "image/gif, image/jpeg, image/png, image/jpg", type = "file", multiple = "multiple", onchange = "return fileValidation(this)" })
+                                    </div>
+                                </div>
+                                <div class="all-button-bg">
+                                    <input class="btn bun-bg btn-default" type="submit" name="Command" value="Submit" id="btnSubmit" />
+                                </div>
+
+                            </div>
+                        }
+
+
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped" id="detailsGrid">
+                                        <thead>
+                                            <tr class="bun-bg" style="color:black;">
+                                                <th>Resume ID</th>
+                                                <th>Securitas ID</th>
+                                                <th>Candidate Name</th>
+                                                <th>Re-verification Date</th>
+                                                <th>Check Details</th>
+                                                <th>Re-verification Remarks</th>
+                                                <th>Documents if any uploaded</th>
+                                                @*<th>Case Histroy</th>*@
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (ViewBag.GridData != null)
+                                            {
+                                                foreach (var item in ViewBag.GridData)
+                                                {
+                                                    <tr>
+                                                        <td>@item.ResumeID</td>
+                                                        <td>@item.SecuritasID</td>
+                                                        <td>@item.CandidateName</td>
+                                                        <td>@item.ReverificationDate</td>
+                                                        <td>
+                                                            @Html.ActionLink("Show", "ClientCheckStatusNew", "ClientServicing", new { CompanyRefNo = item.SecuritasID }, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" })
+                                                        </td>
+
+                                                        @*<td>@item.ReverificationRemarks</td>*@
+                                                        <td>
+                                                            @Html.ActionLink("History", "CaseActionHistories", "ReportQC",
+                                                                new { pid = item.Personalrowid }, // Note: Ensure PersonalRowID is in your AgencyReverifyCases class
+                                                                new { @class = "iframeActionHistories cboxElement" })
+                                                        </td>
+                                                        <td>@Html.ActionLink("Case Documents", "UploadCandidateDocNew", "ClientServicing", new { CompanyRefNo = WebAppBGV.CommonMethods.clsCommonMethods.PEncrypt(item.SecuritasID.ToString()), SubCheckRowID = 0, personalrowid = WebAppBGV.CommonMethods.clsCommonMethods.PEncrypt(item.Personalrowid.ToString()) }, new { @class = "iframeActiondocs cboxElement" })</td>
+                                                     
+
+                                                        @*<td>
+            @Html.ActionLink("History", "CaseActionHistories", "ReportQC",
+                new { pid = item.PersonalRowID }, // Note: Ensure PersonalRowID is in your AgencyReverifyCases class
+                new { @class = "iframeActionHistories cboxElement" })
+        </td>*@
+                                                    </tr>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td colspan="5" class="text-center">No records found.</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<script type="text/javascript" src="~/MultiSelection/docs/js/jquery-2.1.3.min.js"></script>*@
+<script type="text/javascript" src="~/Scripts/jquery-3.7.1.min.js"></script>
+<script src="~/MultiSelection/dist/js/popper.min.js"></script>
+<script type="text/javascript" src="~/MultiSelection/docs/js/bootstrap-3.3.2.min.js"></script>
+<script type="text/javascript" src="~/MultiSelection/docs/js/prettify.min.js"></script>
+<script type="text/javascript" src="~/MultiSelection/dist/js/bootstrap-multiselect.js"></script>
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+<script src="~/Scripts/normalizePlugin.js"></script>
+<script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+<script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+<script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+<link href="~/Content/colorbox.css" rel="stylesheet" />
+<script src="~/Scripts/jquery.colorbox-min.js"></script>
+<script type="text/javascript">
+    if ('@ViewBag.ErrorMsg' != '') {
+        Swal.fire({
+            icon: 'info',
+            title: 'Info',
+            html: '<div class="errormsg" style="text-align:center;">@Convert.ToString(ViewBag.ErrorMsg)</div>'
+        });
+    }
+     if ('@ViewBag.SuccessMsg' != '') {
+        Swal.fire({
+            icon: 'info',
+            title: 'Info',
+            html: '<div class="errormsg" style="text-align:center;">@Convert.ToString(ViewBag.SuccessMsg)</div>'
+        });
+    }
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $(".iframeActionHistories").colorbox({ iframe: true, width: "60%", height: "80%" });
+        $(".iframeActiondocs").colorbox({ iframe: true, width: "60%", height: "80%" });
+
+        //$("#TextBoxMode").on("input", function () {
+        //    var regexp = /[^a-zA-Z0-9-\s,()]/g;
+        //    if ($(this).val().match(regexp)) {
+        //        $(this).val($(this).val().replace(regexp, ''));
+        //    }
+        //});
+        //$("#SecuritasID").on("input", function () {
+        //    var regexp = /[^a-zA-Z0-9-\s]/g;
+        //    if ($(this).val().match(regexp)) {
+        //        $(this).val($(this).val().replace(regexp, ''));
+        //    }
+        //});
+
+        $('#ddlCheckDetail').multiselect({
+            buttonWidth: '235px',
+            maxHeight: 250,
+            numberDisplayed: 2,
+        });
+
+        $('#ddlCheckStatus').multiselect({
+            buttonWidth: '235px',
+            maxHeight: 250,
+            numberDisplayed: 2,
+
+        });
+
+        $("#ddlAction").change(function () {
+            $("#rSubCheckRowIDMultiple").val(0);
+            $("#aSubCheckRowIDMultiple").val(0);
+            var RefNo = $("#SecuritasID").val();
+            var check = $("#ddlAction").val();
+            var cnt = '@ViewBag.SearchPress';
+            if (RefNo == '') {
+                $("#SecuritasID").focus();
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Info',
+                    html: '<div class="errormsg" style="text-align:center;">Please Enter Company RefNo.</div>'
+                });
+                return false;
+            }
+
+            if (cnt == '0') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Info',
+                    html: '<div class="errormsg" style="text-align:center;">Please press search</div>'
+                });
+                $('#ddlAction').prop('selectedIndex', 0);
+                $('#ddlBillable').prop('selectedIndex', 0);
+                return false;
+            }
+
+           if (check == 'Add Check') {
+                $("#dvCheckStatus").show();
+                $("#dvCheckDetail").hide();
+           }
+           else if (check == 'Update PID') {
+               debugger;
+               $("#checklis").hide();
+
+               $("#billlis").hide();
+               $("#remarklis").hide();
+               $("#attachlis").hide();
+               document.getElementById("PIDBOX").hidden = false;
+
+               var status = "Billable";
+               var RefNo = $("#SecuritasID").val();
+               $.ajax({
+                   url: "/ClientServicing/BillableStatus",
+                   data: { Billable: status, companyRefNo: RefNo },
+                   dataType: 'json',
+                   method: "GET",
+                   success: function (data) {
+                       $('#HfPersonalRowID').val(data.PersonalRowId);
+                       $('#HfClientRowId').val(data.ClientRowId);
+
+
+                   },
+                   error: function (data) {
+                       //console.log(data);
+                   }
+               })
+
+
+            }
+            else {
+                $("#dvCheckDetail").show();
+                $("#dvCheckStatus").hide();
+            }
+
+        });
+
+        $("#ddlCheckDetail").change(function () {
+            var rcd = $("#ddlCheckDetail").val().join(',');
+            $("#rSubCheckRowIDMultiple").val(rcd);
+            $("#aSubCheckRowIDMultiple").val(0);
+
+        });
+
+        $("#ddlCheckStatus").change(function () {
+            var acd = $("#ddlCheckStatus").val().join(',');
+            $("#aSubCheckRowIDMultiple").val(acd);
+            $("#rSubCheckRowIDMultiple").val(0);
+        });
+
+        $("#btnSubmit").click(function () {
+            var RefNo = $("#SecuritasID").val();
+            if (RefNo == '') {
+                $("#SecuritasID").focus();
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Info',
+                    html: '<div class="errormsg" style="text-align:center;">Please Enter Company RefNo.</div>'
+                });
+                return false;
+            }
+
+            var check1 = $("#ddlAction").val();
+            if (check1 != "Update PID") {
+                var act = $("#ddlAction").val();
+                if (act == '-- Select --') {
+                    $("#ddlAction").first().focus();
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Info',
+                        html: '<div class="errormsg" style="text-align:center;">Please Select Action</div>'
+                    });
+                    return false;
+                }
+
+                var bl = $("#ddlBillable").val();
+                if (bl == '-- Select --') {
+                    $("#ddlBillable").first().focus();
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Info',
+                        html: '<div class="errormsg" style="text-align:center;">Please Select Billing Status</div>'
+                    });
+                    return false;
+                }
+
+
+                var rmk = $("#TextBoxMode").val();
+                if (rmk == '') {
+                    $("#TextBoxMode").focus();
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Info',
+                        html: '<div class="errormsg" style="text-align:center;">Please Enter Remark.</div>'
+                    });
+                    return false;
+                }
+
+                var fileInput = document.getElementById('UploadAddressDoc');
+                var filePath = fileInput.value;
+                if (filePath == '') {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Info',
+                        html: '<div class="errormsg" style="text-align:center;">Please Upload File.</div>'
+                    });
+                    return false;
+                }
+            }
+
+
+
+        });
+
+        $('#Search').click(function () {
+            $('#ddlAction').prop('selectedIndex', 0);
+            $('#ddlBillable').prop('selectedIndex', 0);
+            var RefNo = $("#SecuritasID").val();
+            if (RefNo == '') {
+                $("#SecuritasID").focus();
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Info',
+                    html: '<div class="errormsg" style="text-align:center;">Please Enter Company RefNo.</div>'
+                });
+                return false;
+            }
+
+        });
+
+
+    });
+</script>
+
+@section Scripts{
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $("#dvCheckStatus").hide();
+            $("#dvCheckDetail").hide();
+
+            $("#ddlBillable").change(function () {
+                var status = $("#ddlBillable").val();
+                var RefNo = $("#SecuritasID").val();
+                $.ajax({
+                    url: "/ClientServicing/BillableStatus",
+                    data: { Billable: status, companyRefNo: RefNo },
+                    dataType: 'json',
+                    method: "GET",
+                    success: function (data) {
+                        $('#HfPersonalRowID').val(data.PersonalRowId);
+                        $('#HfClientRowId').val(data.ClientRowId);
+                        if (data.billingstatus != '') {
+                            var txt;
+                            var r = confirm(data.billingstatus);
+                            if (r == true) {
+                                txt = "You pressed OK!";
+                                $('#HfapproveStatus').val(true);
+                            } else {
+                                $('#HfapproveStatus').val(false);
+                                $('#ddlBillable').prop('selectedIndex', 0);
+                                txt = "You pressed Cancel!";
+                            }
+                        }
+                        else {
+                        }
+                    },
+                    error: function (data) {
+                        //console.log(data);
+                    }
+                })
+            });
+
+
+            $(".iframeUpdateStatus").colorbox({ iframe: true, width: "60%", height: "60%" });
+
+
+        });
+
+        function fileValidation(fileInput) {
+            var filePath = fileInput.value;
+            var allowedExtensions = /(\.gif|\.GIF\.doc|\.docx|\.xls|\.xlsx|\.pdf|\.rtf|\.txt|\.jpeg|\.jpg|\.png|\.eml|\.email|\.msg|\.DOC|\.DOCX|\.XLS|\.XLSX|\.PDF|\.RTF|\.TXT|\.JPEG|\.JPG|\.PNG|\.EML|\.EMAIL|\.MSG|\.zip|\.ZIP|\.rar|\.RAR)$/i;
+            if (!allowedExtensions.exec(filePath)) {
+                // alert('Please upload file having extensions .doc/.gif/.GIF/.docx/.xls/.xlsx/.pdf/.rtf/.txt/.jpeg/.jpg/.png/.eml/.email/.msg/.DOC/.DOCX/.XLS/.XLSX/.PDF/.RTF/.TXT/.JPEG/.JPG/.PNG/.EML/.EMAIL/.MSG/.ZIP.zip only.');
+                Swal.fire({
+                    icon: 'info',
+                    title: '',
+                    html: '<div class="errormsg" style="text-align:center;">Please upload file having extensions .doc/.gif/.GIF/.docx/.xls/.xlsx/.pdf/.rtf/.txt/.jpeg/.jpg/.png/.eml/.email/.msg/.DOC/.DOCX/.XLS/.XLSX/.PDF/.RTF/.TXT/.JPEG/.JPG/.PNG/.EML/.EMAIL/.MSG/.ZIP.zip only.</div>'
+                });
+
+                fileInput.value = '';
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+    </script>
+
+
+
+}
+
+

@@ -1,0 +1,112 @@
+﻿@model ViewModels.VerificationViewModel.Insuff_FundsAllRemarks
+@{Layout = null; }
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/colorbox.css" rel="stylesheet" />
+<link href="~/Content/Site.css" rel="stylesheet" />
+
+<script src="~/Scripts/jquery-3.7.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/modernizr-2.8.3.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+
+<table width="100%">
+    <tr>
+        <td colspan="3">
+            <h4>View Remark</h4>
+            @if (ViewBag.SuccessMsg != null)
+            {
+                <div class="successmsg">@ViewBag.SuccessMsg.ToString()</div>
+            }
+
+            @if (ViewBag.ErrorMsg != null)
+            {
+                <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+            }
+            <hr />
+        </td>
+    </tr>
+    <tr>
+        <td width="12%">&nbsp;</td>
+        <td width="76%">
+            @if (Model != null)
+            {
+                using (Html.BeginForm("FundsPendindRemark", "Verification"))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.CheckRowID)
+                    //@Html.HiddenFor(model => model.ClientRowID)
+                    @Html.HiddenFor(model => model.SubCheckRowID)
+                    @Html.HiddenFor(model => model.PersonalRowID)
+
+
+
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        @*<tr>
+                                <td width="38%" align="right"><label style="font-size:13px !important;">Check Status : </label></td>
+                                <td width="12%">&nbsp;</td>
+                                <td width="48%">
+                                    @Html.DropDownListFor(model => model.CheckStatus, CheckStatusList,
+                                                  new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.CheckStatus, "", new { @class = "text-danger" })
+                                </td>
+                            </tr>*@
+                        <tr><td colspan="3">&nbsp;</td></tr>
+                        <tr>
+                            <td align="right"><label style="font-size:13px !important;">Remarks : </label></td>
+                            <td>&nbsp;</td>
+                            <td>
+                                @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control ", @rows = "2" })
+                                @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                            </td>
+                        </tr>
+                        <tr><td colspan="3" height="58"></td></tr>
+                        @if (Model.CheckstatusId != 61)
+                        {
+                            <tr>
+                                <td colspan="3" align="center"><input type="submit" value="Update Remark" class="btn btn-default" /></td>
+                            </tr>
+                        }
+
+                    </table>
+                }
+            }
+        </td>
+        <td width="12%">&nbsp;</td>
+    </tr>
+</table>
+<script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+<script>
+    //function ValidateForm() {
+    //    if ($("#CheckStatus").val() == "Funds Pending") {
+    //        var flag = false;
+    //        if ($("#ClientRowID").val() > 0) {
+    //            var url = "/Verification/GetClientExtraExpensesAllowed/" + $("#ClientRowID").val();
+    //            $.ajax({
+    //                url: url,
+    //                type: 'GET',
+    //                async: false,
+    //                dataType: 'json',
+    //                success: function (allowed) {
+    //                    if (allowed.ExtraExpenses == 1) {
+    //                        alert("Extra Expenses Already Accepted By Client. Please Select Another Option!");
+    //                        flag = false;
+    //                    }
+    //                    else {
+    //                        flag = true;
+    //                    }
+    //                }
+    //            });
+    //        }
+    //        else {
+    //            alert("ClientId is missing please close the popup!");
+    //            return false;
+    //        }
+    //        return flag;
+    //    }
+    //}
+</script>
+

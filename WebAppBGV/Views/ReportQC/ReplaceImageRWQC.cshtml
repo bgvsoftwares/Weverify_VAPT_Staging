@@ -1,0 +1,196 @@
+﻿@model ViewModels.ReportQCViewModel.PQVerifiedUploadPDFImagesViewModel
+@{
+    ViewBag.Title = "Replace Image RWQC";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManageAllCandidateListForReportQCTeamMember", "ReportQC", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("ReplaceImageRWQC", "ReportQC", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch search-frame">
+
+
+                                    <label class="col-md-2 control-label">Search :</label>
+                                    <div class="col-md-6">
+                                        @Html.TextBox("companyRefNo", null, new { @class = "form-control", placeholder = "Enter Company Ref No." })
+                                    </div>
+                                </div>
+                                <div class="all-button-bg">
+                                    <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.PQVerifiedUploadPDFImages != null)
+                {
+
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            @{
+                                int rowNum = 0;
+                                WebGrid grid = new WebGrid(rowsPerPage: 50, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.PQVerifiedUploadPDFImages, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                    htmlAttributes: new { id = "grid", @class = "table" },
+                                    headerStyle: "thead-inverse",
+                                    rowStyle: "ordertxt",
+                                    footerStyle: "custpaging",
+                                    mode: WebGridPagerModes.All,
+                                    columns: new[]
+                                    {
+                                        grid.Column("RowNumber", format: item => rowNum = rowNum + 1),
+                                        grid.Column(columnName: "ImageFile", header: "ImageFile", canSort: false, style:"col-md-2"),
+                                    grid.Column(columnName: "ActiveStatus", header: "Active Status", canSort: false, style:"col-md-2"),
+                                    grid.Column("view doc", canSort: false, format: (item) => {
+                                        string FldPathDoc = System.Configuration.ConfigurationManager.AppSettings["provideddocuments"].ToString();
+                                        string DownloadLink = string.Empty;
+                                        if (item.ImageFile != null)
+                                        {
+                                            DownloadLink = string.Format("<a href=\"{0}\" target=\"_blank\">Download</a>", Url.Content(FldPathDoc + item.ImageFile));
+                                        }
+                                       return new HtmlString(DownloadLink);
+                                    }, style: "delete col-md-2"),
+                                    grid.Column("", canSort: false, format: (item)=> {
+                                        string DeleteLink = string.Format("<a href=\"#\" id=\"Complete_{0}\"filename=\"{1}\" class=\"Complete\" >{2}</a>", item.VerifiedUploadRowID,item.ImageFile, "delete");
+                                        return new HtmlString(DeleteLink);
+                                    }, style:"col-md-1"),
+
+                                    // grid.Column(header : "Document", format : (item) => {
+                                    //            //return Html.ActionLink("Upload", "VerifiedUploadDoc", "ReportQC", new { imageName = item.ImageFile,verifiedRowId=item.VerifiedUploadRowID }, null);
+                                    //    return @Html.TextBox("Imageupload", null, new { type="file", @class="input-file" });
+                                    //     //return @Html.TextBoxFor(m => m.PQVerifiedUploadPDFImages[rowNum - 1]., new { @class = "edit-mode" });
+                                    //   // return @Html.TextBoxFor(item => item.PQVerifiedUploadPDFImages[rowNum-1]., new { Class="YourBackgroundClass" });
+
+                                    //}, style:"edit col-md-1"),
+                                                                         grid.Column("UploadDoc", format: (item) => Html.TextBox("PQVerifiedUploadPDFImages[" + (rowNum - 1).ToString() + "].UploadDoc", (object)item.UploadDoc, new { id="UploadDoc",type="file",@style = "width:200px" })),
+
+
+                                    // grid.Column(header : "Document", format : (item) => {
+                                    //   return Html.ActionLink("Upload", "VerifiedUploadDoc1", "ReportQC", new { imageName = item.ImageFile,verifiedRowId=item.VerifiedUploadRowID,type="submit" }, null);
+
+                                    //}, style:"edit col-md-1"),
+                                      grid.Column("", canSort: false, format: (item)=> {
+                                        string DeleteLink = string.Format("<a href=\"#\" id=\"Complete_{0}\"ImageName=\"{1}\" class=\"upload\" >{2}</a>", item.VerifiedUploadRowID,item.ImageFile, "submit");
+                                        return new HtmlString(DeleteLink);
+                                    }, style:"col-md-1"),
+
+
+
+
+
+
+
+
+
+                                    }
+                                    )
+                                    <div class="total-record">Total Records: @Model.TotalRecords</div>
+                                </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <script type="text/javascript">
+
+        $(".Complete").on("click", function () {
+            var str = $(this).attr("id").split("_");
+            var filename = $(this).attr("fileName");
+          
+            id = str[1];
+            var companyRefNo = $('#companyRefNo').val();
+           
+            var flag = confirm('Are you sure to delete the doc?');
+            if (id != "" && flag) {               
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("DeleteUploadImage", "ReportQC")',
+                    
+                    data: { "id": id, "companyRefNo": companyRefNo, "filename": filename },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Image delete Successfully!");
+                            setTimeout(function () { window.location.replace("ReplaceImageRWQC?companyRefNo=" + companyRefNo); }, 500);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+        });
+
+        $(".upload").on("click", function () {
+            var str = $(this).attr("id").split("_");           
+            var imageName = $(this).attr("ImageName");
+            var totalFiles = document.getElementById("UploadDoc").files.length;          
+            id = str[1];
+            var companyRefNo = $('#companyRefNo').val();           
+            var flag = confirm('Are you sure to upload the doc?');
+            if (id != "" && flag) {   
+              
+                var formData = new FormData();
+                
+               var totalFiles = document.getElementById("UploadDoc").files.length;
+
+                for (var i = 0; i < totalFiles; i++) {
+                    var file = document.getElementById("UploadDoc").files[i];
+                    formData.append("UploadDoc", file);               
+                }
+                formData.append("imageName", imageName);   
+                   
+                var dataObject = JSON.stringify({
+                    'UploadDoc': formData,
+                    'imageName': imageName,
+                });
+                
+                $.ajax({
+                    type: 'POST',
+                    url: '/ReportQC/VerifiedUploadDoc1',
+                    data: formData,                       
+                    dataType: 'json',                    
+                    processData: false,
+                    contentType: false,                    
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Image upload Successfully!");                           
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+        });
+
+
+    </script>
+
+}
+

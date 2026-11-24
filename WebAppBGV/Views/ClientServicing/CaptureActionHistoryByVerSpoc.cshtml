@@ -1,0 +1,515 @@
+
+@model ViewModels.VerificationViewModel.CaptureActionHistoryByVerTM
+@{Layout = null; }
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/colorbox.css" rel="stylesheet" />
+<link href="~/Content/Site.css" rel="stylesheet" />
+
+<script src="~/Scripts/jquery-3.7.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/modernizr-2.8.3.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+@{ 
+    string checkfamilyrowid = "";
+    string InsuffType = "";
+    checkfamilyrowid = Session["checkfamilyrowids"].ToString();
+    InsuffType = Session["InsuffType"].ToString();
+}
+
+
+<table width="100%">
+    <tr>
+        <td colspan="3">
+            <h4>Update Check Status</h4>
+            @if (ViewBag.SuccessMsg != null)
+            {
+                <div class="successmsg">@ViewBag.SuccessMsg.ToString()</div>
+            }
+
+            @if (ViewBag.ErrorMsg != null)
+            {
+                <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+            }
+            @{
+                string Desg = Session["Designation"].ToString();
+            }
+            <hr />
+        </td>
+    </tr>
+    <tr>
+        <td width="12%">&nbsp;</td>
+        <td width="76%">
+            @if (Model != null)
+            {
+                using (Html.BeginForm("CaptureActionHistoryByVerSpoc", "clientservicing", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.CheckRowID)
+                    @Html.HiddenFor(model => model.ClientRowID)
+                    @Html.HiddenFor(model => model.SubCheckRowID)
+                    @Html.HiddenFor(model => model.PersonalRowID)
+                    @Html.HiddenFor(model => model.Insufftype)
+
+                    List<SelectListItem> CheckStatusList = new List<SelectListItem>();
+                    if (Session["Designation"] != null)
+                    {
+                        string Designation = Session["Designation"].ToString();
+                        string Department = Session["Department"].ToString();
+                        string teamMemerRowId = Session["TeamMemberRowID"].ToString();
+
+                        if (checkfamilyrowid.Equals("40"))
+                        {
+                            if (checkfamilyrowid.Equals("40"))
+                            {
+                                //CheckStatusList.Add(new SelectListItem { Text = "WIP-Pending", Value = "WIP-Pending" });
+                                if (!(Model.ClientRowID == 576 && (Model.SubCheckRowID == 38 || Model.SubCheckRowID == 416)))
+                                {
+                                    if (InsuffType == "L1-Insuff")
+                                    {
+                                        CheckStatusList.Add(new SelectListItem
+                                        {
+                                            Text = "L1-Insufficent",
+                                            Value = "Insufficent"
+                                        });
+                                    }
+                                    else if (InsuffType == "L2-Insuff")
+                                    {
+                                        CheckStatusList.Add(new SelectListItem
+                                        {
+                                            Text = "L2-Insufficent",
+                                            Value = "Insufficent"
+                                        });
+                                    }
+                                    else
+                                    {
+                                        CheckStatusList.Add(new SelectListItem
+                                        {
+                                            Text = "Insufficent",
+                                            Value = "Insufficent"
+                                        });
+                                    }
+
+                                }
+                                else
+                                {
+                                    if (InsuffType == "L1-Insuff")
+                                    {
+                                        CheckStatusList.Add(new SelectListItem
+                                        {
+                                            Text = "L1-Insufficent",
+                                            Value = "Insufficent"
+                                        });
+                                    }
+                                    else if (InsuffType == "L2-Insuff")
+                                    {
+                                        CheckStatusList.Add(new SelectListItem
+                                        {
+                                            Text = "L2-Insufficent",
+                                            Value = "Insufficent"
+                                        });
+                                    }
+                                    else
+                                    {
+                                        CheckStatusList.Add(new SelectListItem
+                                        {
+                                            Text = "Insufficent",
+                                            Value = "Insufficent"
+                                        });
+                                    }
+
+                                }
+                                // CheckStatusList.Add(new SelectListItem { Text = "Rejected", Value = "Rejected" });
+                                // CheckStatusList.Add(new SelectListItem { Text = "Funds Pending", Value = "Funds Pending" });
+                                //if (Model.ClientRowID == 249 || Model.ClientRowID == 277)
+                                //{
+                                //    CheckStatusList.Add(new SelectListItem { Text = "T-Green", Value = "T-Green" });
+                                //}
+                            }
+                        }
+                        else
+                        {
+                            //if (!Designation.Equals("Team Member-PV"))
+                            //{
+                            //CheckStatusList.Add(new SelectListItem { Text = "WIP-Pending", Value = "WIP-Pending" });
+                            //CheckStatusList.Add(new SelectListItem { Text = "Funds Pending", Value = "Funds Pending" });
+                            if (InsuffType == "L1-Insuff")
+                            {
+                                CheckStatusList.Add(new SelectListItem
+                                {
+                                    Text = "L1-Insufficent",
+                                    Value = "Insufficent"
+                                });
+                            }
+                            else if (InsuffType == "L2-Insuff")
+                            {
+                                CheckStatusList.Add(new SelectListItem
+                                {
+                                    Text = "L2-Insufficent",
+                                    Value = "Insufficent"
+                                });
+                            }
+                            else
+                            {
+                                CheckStatusList.Add(new SelectListItem { Text = "Insufficent", Value = "Insufficent" });
+
+                            }
+                            //CheckStatusList.Add(new SelectListItem { Text = "Rejected", Value = "Rejected" });
+                            //CheckStatusList.Add(new SelectListItem { Text = "InAccurate Revert", Value = "InAccurate Revert" });
+                            //CheckStatusList.Add(new SelectListItem { Text = "Wip On Hold", Value = "Wip On Hold" });
+                            //CheckStatusList.Add(new SelectListItem { Text = "Client Review", Value = "Wip On Hold" });
+                            if (Model.ClientRowID == 990)
+                            {
+                                //  CheckStatusList.Add(new SelectListItem { Text = "Client Review Raised", Value = "Client Review" });
+                            }
+                            else
+                            {
+                                //CheckStatusList.Add(new SelectListItem { Text = "Client Review", Value = "Wip On Hold" });
+                            }
+                            if (Model.ClientRowID == 249 || Model.ClientRowID == 277)
+                            {
+                                //  CheckStatusList.Add(new SelectListItem { Text = "T-Green", Value = "T-Green" });
+                            }
+                            if ((Model.ClientRowID == 1481 || Model.ClientRowID == 113) && Designation == "Team Member-Edu")
+                            {
+                                // CheckStatusList.Add(new SelectListItem { Text = "Result Awaited", Value = "ResultAwaitedRaised" });
+                            }
+                            if (checkfamilyrowid == "11")
+                            {
+                                // CheckStatusList.Add(new SelectListItem { Text = "PV - Field Verification", Value = "PV-Field Verification" });
+                                // CheckStatusList.Add(new SelectListItem { Text = "CV - Field Verification", Value = "CV-Field Verification" });
+                                if (teamMemerRowId == "1008" || teamMemerRowId == "1009" || teamMemerRowId == "858")
+                                {
+                                    //CheckStatusList.Add(new SelectListItem { Text = "Back ReAllocate to User", Value = "BacktoUser" });
+                                }
+                            }
+                            // }
+                            else
+                            {
+                                // CheckStatusList.Add(new SelectListItem { Text = "WIP-Pending", Value = "WIP-Pending" });
+                                // CheckStatusList.Add(new SelectListItem { Text = "Spoc Review", Value = "Spoc Review" });
+                            }
+
+                            if (checkfamilyrowid == "11" || checkfamilyrowid == "12")
+                            {
+                                // CheckStatusList.Add(new SelectListItem { Text = "Send To Research", Value = "SendToResearch" });
+                            }
+
+
+                            if (checkfamilyrowid == "11" || checkfamilyrowid == "12" || checkfamilyrowid == "5")
+                            {
+                                //CheckStatusList.Add(new SelectListItem { Text = "PV Raised", Value = "PV Raised" });
+                            }
+                        }
+                        // CheckStatusList.Add(new SelectListItem { Text = "Spoc Review", Value = "Spoc Review" });
+                    }
+
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td width="38%" align="right"><label style="font-size:13px !important;">Check Status : </label></td>
+                            <td width="12%">&nbsp;</td>
+                            <td width="48%">
+                                @Html.DropDownListFor(model => model.CheckStatus, CheckStatusList,
+                                    new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.CheckStatus, "", new { @class = "text-danger" })
+                            </td>
+                        </tr>
+                        <tr><td colspan="3">&nbsp;</td></tr>
+                        @if (InsuffType == "L1-Insuff")
+                        {
+                            <tr>
+                                <td width="38%" align="right"><label style="font-size:13px !important;">Check: </label></td>
+                                <td width="12%">&nbsp;</td>
+                                <td width="48%">
+                                    @*<select class="form-control" name="CheckRemarks" id="datalist"></select>*@
+                                    <select class="form-control" name="CheckRemarks" id="datalist"></select>
+                                </td>
+                            </tr>
+                        }
+                        else if (InsuffType == "L2-Insuff")
+                        {
+
+
+                            <tr>
+                                <td width="38%" align="right"><label style="font-size:13px !important;">Check: </label></td>
+                                <td width="12%">&nbsp;</td>
+                                <td width="48%">
+                                    <select class="form-control" name="CheckRemarks" id="datalist"></select>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td width="38%" align="right"><label style="font-size:13px !important;">Check: </label></td>
+                                <td width="12%">&nbsp;</td>
+                                <td width="48%">
+                                    <select class="form-control" name="CheckRemarks" id="datalist"></select>
+                                </td>
+                            </tr>
+                        }
+
+                        <tr><td colspan="3">&nbsp;</td></tr>
+                        <tr>
+                            <td align="right"><label style="font-size:13px !important;">Action History Remarks : </label></td>
+                            <td>&nbsp;</td>
+                            <td>
+                                @Html.TextAreaFor(model => model.ActionHistory, new { @class = "form-control ", @rows = "2" })
+                                @Html.ValidationMessageFor(model => model.ActionHistory, "", new { @class = "text-danger" })
+                            </td>
+                        </tr>
+                        <tr><td colspan="3">&nbsp;</td></tr>
+                        <tr id="FundsAmount">
+                            <td align="right"><label style="font-size:13px !important;">Amount : </label></td>
+                            <td>&nbsp;</td>
+                            <td>
+
+
+                                @Html.TextBoxFor(model => model.Amount, new { @class = "form-control ", @rows = "2" })
+
+                            </td>
+                        </tr>
+                        <tr><td colspan="3">&nbsp;</td></tr>
+                        <tr id="DocumentRequired">
+                            <td align="right"><label style="font-size:13px !important;">Document Requirement (if any) : </label></td>
+                            <td>&nbsp;</td>
+                            <td>
+
+
+                                @Html.TextBoxFor(model => model.DocumentRequired, new { @class = "form-control ", @rows = "2" })
+
+                            </td>
+                        </tr>
+                        <tr><td colspan="3">&nbsp;</td></tr>
+                        <tr id="ProofDocument">
+                            <td align="right"><label style="font-size:13px !important;">Proof Document : </label></td>
+                            <td>&nbsp;</td>
+                            <td>
+
+
+                                @*<input type="file" name="ProofDocument" id="ProofDocument" class="form-control" required />*@
+                                @*@Html.TextBoxFor(model => model.ProofDocument, new { type = "file", @class = "form-control", required = "required" })*@
+                                <input type="file" name="ProofDocument" class="form-control" required="required" />
+
+                                @*<input type="file" name="ProofDocument" accept=".jpg,.png,.pdf,.JPG,.PNG,.PDF" class="form-control" required />*@
+
+                            </td>
+                        </tr>
+                        <tr><td colspan="3">&nbsp;</td></tr>
+                        <tr id="ExpectedTAT">
+                            <td align="right"><label style="font-size:13px !important;">ExpectedTAT : </label></td>
+                            <td>&nbsp;</td>
+                            <td>
+
+                                @Html.TextBoxFor(model => model.ExpectedTAT, new { @class = "form-control ", @rows = "2" })
+
+                            </td>
+                        </tr>
+                        <tr><td colspan="3">&nbsp;</td></tr>
+                        <tr id="EMailType">
+                            <td align="right"><label style="font-size:13px !important;">E-Mail Type : </label></td>
+                            <td>&nbsp;</td>
+                            <td>
+                                @Html.DropDownList("EMailType", new List<SelectListItem> {
+                                             new SelectListItem { Text = "-- Select E-Mail Type -- ", Value = "" },
+                                             new SelectListItem { Text = "University", Value = "University" },
+                                             new SelectListItem { Text = "College",Value="College"},
+                                         }, new { @class = "form-control" })
+                            </td>
+                        </tr>
+                        @*<tr><td colspan="3" height="58"></td></tr>*@
+                        <tr>
+                            <td colspan="3" align="center"><input type="submit" id="submit" onclick="return ValidateForm()" value="Update Status" class="btn btn-default" /></td>
+                        </tr>
+                    </table>
+                }
+            }
+        </td>
+        <td width="12%">&nbsp;</td>
+    </tr>
+</table>
+<script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+
+
+
+
+<script>
+    $(document).ready(function () {
+
+
+        $("#datalist").empty();
+        var Curlist = $("#CheckStatus").val();
+        if (Curlist == "Insufficent") {
+            $('#vs').css('display', 'flex');
+            var url = "/Verification/GetCandidatesRemarks/"
+            $.ajax({
+                type: 'GET',
+                url: url,
+                //dataType: 'json',
+                success: function (data) {
+                    //$('#vs').css('display', 'flex');
+                    var items = '<option>--Select Team--</option>';
+                    $.each(data, function (Remarks, val) {
+                        items += "<option value='" + val.Remarks + "'>" + val.Remarks + "</option>";
+                    });
+                    items += '<option>Other</option>';
+                    $("#datalist").append(items);
+                }
+            });
+
+        }
+        else if (Curlist == "CV-Field Verification") {
+            $('#ActionHistory').val("Ok");
+        }
+        else {
+            $('#vs').css('display', 'none');
+            $('#ActionHistory').val("");
+        }
+
+    });
+    $('#CheckStatus').change(function () {
+
+        $("#datalist").empty();
+        var Curlist = $("#CheckStatus").val();
+
+        if (Curlist == "Insufficent") {
+            $('#vs').css('display', 'flex');
+            var url = "/Verification/GetCandidatesRemarks/"
+            $.ajax({
+                type: 'GET',
+                url: url,
+                //dataType: 'json',
+                success: function (data) {
+                    //$('#vs').css('display', 'flex');
+                    var items = '<option>--Select Team--</option>';
+                    $.each(data, function (Remarks, val) {
+                        items += "<option value='" + val.Remarks + "'>" + val.Remarks + "</option>";
+                    });
+                    items += '<option>Other</option>';
+                    $("#datalist").append(items);
+                }
+            });
+
+        }
+        else if (Curlist == "CV-Field Verification") {
+            $('#ActionHistory').val("Ok");
+        }
+        else {
+            $('#vs').css('display', 'none');
+            $('#ActionHistory').val("");
+        }
+    });
+</script>
+<script>
+    $('#datalist').change(function () {
+        if ($('#datalist').val() == 'Other') {
+            $('#ActionHistory').val('')
+            document.getElementById("ActionHistory").placeholder = "Write Other Remarks...";
+        }
+        else { $('#ActionHistory').val($('#datalist').val()); }
+    });
+</script>
+
+
+
+<script>
+    $(document).ready(function () {
+        debugger;
+        if (($("#CheckStatus").val() == "Insufficent")) {
+            
+            $("#ActionHistory").on("focusout", function () {
+                //alert("Clicked");
+                debugger;
+                var uName = $("[id*=ActionHistory]").val().toUpperCase();
+                //alert(uName);
+                if (uName.includes("COST") || uName.includes("EXTRA COST") || uName.includes("AMMOUNT") || uName.includes("AMOUNT") || uName.includes("EXTRA AMOUNT") || uName.includes("EXTRA AMMOUNT") || uName.includes("FUND") || uName.includes("FUNDS") || uName.includes("FUNDS REQUIRED") || uName.includes("INR") || uName.includes("RUPEES")) { //|| parseInt(uName) and //uName.includes("RS") || 
+                    alert("You can not use any special text as cost, amount, fund, rupees etc.");
+                    $('#ActionHistory').val('').empty();
+                    //alert(document.getElementById("ActionHistory").value);
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            });
+        }
+        $("#FundsAmount").hide();
+        $("#DocumentRequired").hide();
+        $("#ProofDocument").hide();
+        $("#ExpectedTAT").hide();
+        $("#EMailType").hide();
+        $('#CheckStatus').on('change', function () {
+
+            var strDesg = '@Desg';
+            if (this.value == 'Funds Pending')
+            {
+                if (strDesg == 'Team Member-Edu') {
+                    $("#FundsAmount").show();
+                    $("#DocumentRequired").show();
+                    $("#ExpectedTAT").show();
+                    $("#ProofDocument").show();
+                    $("#EMailType").show();
+                }
+                else {
+                    $("#FundsAmount").show();
+                    $("#DocumentRequired").show();
+                    $("#ExpectedTAT").show();
+                    $("#ProofDocument").show();
+                    $("#EMailType").hide();
+                }
+            }
+            else if (this.value == 'Client Review')
+            //.....................^.......
+            {
+                $("#ProofDocument").show();
+            }
+            else {
+                $("#FundsAmount").hide();
+                $("#DocumentRequired").hide();
+                $("#ExpectedTAT").hide();
+                $("#ProofDocument").hide();
+                $("#EMailType").hide();
+            }
+        });
+
+        $("#Amount").on("input", function (evt) {
+            var self = $(this);
+            self.val(self.val().replace(/[^0-9\.]/g, ''));
+            if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                evt.preventDefault();
+            }
+        });
+    });
+
+    //function ValidateForm() {
+    //        if ($("#CheckStatus").val() == "Funds Pending") {
+    //            var flag = false;
+    //            if ($("#ClientRowID").val() > 0) {
+    //                var url = "/Verification/GetClientExtraExpensesAllowed/" + $("#ClientRowID").val();
+    //                $.ajax({
+    //                    url: url,
+    //                    type: 'GET',
+    //                    async: false,
+    //                    dataType: 'json',
+    //                    success: function (allowed) {
+    //                        if (allowed.ExtraExpenses == 1) {
+    //                            alert("Extra Expenses Already Accepted By Client. Please Select Another Option!");
+    //                            flag = false;
+    //                        }
+    //                        else {
+    //                            flag = true;
+    //                        }
+    //                    }
+    //                });
+    //            }
+    //            else {
+    //                alert("ClientId is missing please close the popup!");
+    //                return false;
+    //            }
+    //            return flag;
+    //        }
+    //    }
+</script>
+

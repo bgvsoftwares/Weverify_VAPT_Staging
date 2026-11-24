@@ -1,0 +1,108 @@
+﻿
+@{
+    ViewBag.Title = "Manage Reporting Members For " + Session["TMName"].ToString();
+
+}
+@{
+    //@ViewBag.NavigationBtnBack
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManageDepartDesignation", "HRMgmt", new { tmid = Session["tmid"].ToString() }, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnBack = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+
+    //@ViewBag.NavigationBtnAddNew
+    string faIconAddNew = string.Format("<i class='fa fa-plus-circle' aria-hidden='true'></i> Add Reporting Team Member");
+    string hyperLinkAddNew = Html.ActionLink("linkTitle", "AddReportingTeamMember", "HRMgmt", new { tdid = Request.QueryString["tdid"] }, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnAddNew = new HtmlString(hyperLinkAddNew.ToString().Replace("linkTitle", faIconAddNew));
+
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftHRMgmt") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="form-horizontal">
+                            <div class="form-group branch search-frame">
+                                <h3> </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (Model != null && Model.RepoToTeamMembers != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12">
+                            @{
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.RepoToTeamMembers, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                    htmlAttributes: new { id = "grid", @class = "table" },
+                                    headerStyle: "thead-inverse",
+                                    rowStyle: "ordertxt",
+                                    footerStyle: "custpaging",
+                                    mode: WebGridPagerModes.All,
+                                    columns: new[]
+                                    {
+                                    grid.Column(header: "No.", style:"col-md-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                    grid.Column(columnName: "TeamMemberName", header: "Full Name And Designation", canSort: true, style:"col-md-6"),
+
+                                    grid.Column("Delete", canSort: false, format: (item)=> {
+                                        string DeleteLink = string.Format("<a href=\"#\" id=\"Delete_{0}\" class=\"delete\" >{1}</a>", item.ReportTeamRowID, "Delete");
+                                        return new HtmlString(DeleteLink);
+                                    }, style:"delete col-md-1")
+                                }
+                            )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="all-button-bg">
+            @Html.ActionLink("Back", "ManageDepartDesignation", "HRMgmt", new { tmid = Session["tmid"].ToString() }, new { @class = "btn bun-bg btn-default" })
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+
+        $(".delete").on("click", function () {
+            // alert($('#hdnTeamMemberRowID').val());
+            var str = $(this).attr("id").split("_");
+            id = str[1];
+
+            var flag = confirm('Do you want to Delete the Record ?');
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("DeleteReportingTeamMember", "HRMgmt")',
+                    data: { "id": id },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Record Deleted Successfully!!");
+
+                            setTimeout(function () { window.location.replace("ManageReportedTeamMembers?tdid="+ @Request.QueryString["tdid"]); }, 500);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}
+

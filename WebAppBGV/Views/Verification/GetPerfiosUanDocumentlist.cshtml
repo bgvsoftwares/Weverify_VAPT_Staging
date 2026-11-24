@@ -1,0 +1,72 @@
+﻿
+@model dynamic
+@{Layout = null; }
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/colorbox.css" rel="stylesheet" />
+<link href="~/Content/Site.css" rel="stylesheet" />
+
+<script src="~/Scripts/jquery-3.5.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/modernizr-2.8.3.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+
+<table width="100%">
+    <tr>
+        <td width="100%">
+
+            @using (Html.BeginForm("GetPerfiosUanDocumentlist", "Verification", FormMethod.Get))
+            {
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr><td colspan="3">&nbsp;</td></tr>
+                    <tr>
+                        @if (Model != null && Model.GetDigiLockerDocumentlist != null)
+                        {
+                            <div class="row">
+                                <div class="col-md-12 table">
+                                    @{
+
+                                        WebGrid grid = new WebGrid(ajaxUpdateContainerId: "grid");
+                                        grid.Bind(Model.GetDigiLockerDocumentlist, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                                    }
+                                    @{
+                                        @grid.GetHtml(
+                                             htmlAttributes: new { id = "grid", @class = "table" },
+                                             headerStyle: "thead-inverse",
+                                             rowStyle: "ordertxt",
+                                             footerStyle: "custpaging",
+                                             mode: WebGridPagerModes.All,
+                                             columns: new[]
+                                             {
+                                                        grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                                        grid.Column(columnName: "FileName", header: "File Name", canSort: false, style:"td-1"),
+                                                        grid.Column(columnName: "CreateDate", header: "Date", canSort: false, style:"td-1"),
+
+                                                                                                                grid.Column("Download", "Download", format: @<text>@Html.ActionLink("Download", "PerfiosUanDownloadDocument", "Verification", new { FileName = item.FileName }, new { @class = "cboxElement callbacks ", @id = "FileName" })</text>)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           )
+                                    }
+
+                                    <div class="total-record">Total Records: @Model.TotalRecords</div>
+                                </div>
+                            </div>
+                        }
+                    </tr>
+                    <tr>
+                        <div class="row row-sm mt-3" style="justify-content: center;">
+                            <h4 class="card-title text-center fw-bold" style="color:#8D5FFF;">@ViewBag.msg</h4>
+                        </div>
+                    </tr>
+
+
+                </table>
+            }
+        </td>
+    </tr>
+</table>
+<script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+
+

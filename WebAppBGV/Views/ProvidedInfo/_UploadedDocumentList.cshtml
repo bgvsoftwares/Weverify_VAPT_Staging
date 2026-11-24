@@ -1,0 +1,107 @@
+﻿
+    <div class="row">
+        <div class="doclist-head col-md-12">
+            <div class="col-md-6">
+                <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                Document List :
+            </div>
+            <div style="float:right;">
+                @*@Html.ActionLink("Check Action History", "CheckActionHistory", "Verification", new { scid = Model.SubCheckRowID, pe = Model.PersonalRowID }, new { @class = "iframeActionHistories cboxElement btn btn-default" })*@
+            </div>
+        </div>
+    </div>
+
+
+
+@if (ViewBag.UploadedDocInfo != null)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-12">
+                    @{
+                        WebGrid grid = new WebGrid(rowsPerPage: 10, ajaxUpdateContainerId: "grid");
+                        grid.Bind(ViewBag.UploadedDocInfo, autoSortAndPage: false, rowCount: ViewBag.UploadedDocInfo.Count);
+                    }
+                    @grid.GetHtml(
+                                      htmlAttributes: new { id = "grid", @class = "table" },
+                                      headerStyle: "thead-inverse",
+                                      rowStyle: "ordertxt",
+                                      footerStyle: "custpaging",
+                                      mode: WebGridPagerModes.All,
+                                      columns: new[]
+                                      {
+                                    grid.Column(header: "No.", style:"td-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                    grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-3"),
+                                    grid.Column(columnName: "DocumentType", header: "Document Type", canSort: false, style:"td-2"),
+                                    grid.Column(columnName: "FileName", header: "File Name", canSort: false, style:"td-1"),
+                                    grid.Column(columnName: "Remarks", header: "Description", canSort: false, style:"td-2"),
+                                    grid.Column("UploadDate", "Upload Date", format: (item) => item.UploadDate != DateTime.MinValue ? item.UploadDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"td-2"),
+                                      grid.Column("Page for Automation", canSort: false, format: (item)=> {
+
+                                    var link=@Html.ActionLink("Add", "AddPageforAutomation", "ProvidedInfo", new { VerifiedUploadRowID=item.VerifiedUploadRowID,PersonalRowID =item.PersonalRowID,SubCheckRowID=item.SubCheckRowID }, new { @class = "iframeActionHistoriesforpage cboxElement callbacks ", @id = "VerificationActionHistostry" });
+                                    return link;
+                                    //}
+
+                                    }, style:"td-1" ),
+
+                                    grid.Column("Download", canSort: false, format: (item)=> {
+                                                  string DownloadLink="";
+                                                string FldPathDoc = System.Configuration.ConfigurationManager.AppSettings["provideddocuments"].ToString();
+                                                 if(item.DocumentType=="Insuff Document by API" || item.DocumentType == "Check wise Document by API"){
+                                             DownloadLink = string.Format("<a href=\"{0}\" target=\"_blank\">Download</a>",Url.Content("https://api.weverifyglobal.com/CaseDocsFromAPI?fileName=" + item.FileName));
+                                        }
+                                        else
+                                        {
+                                             DownloadLink = string.Format("<a href=\"{0}\" target=\"_blank\">Download</a>",Url.Content(FldPathDoc + item.FileName));
+                                        }
+
+
+                                            return new HtmlString(DownloadLink);
+                                        }, style:"delete td-1"),
+
+
+                                     grid.Column("Doc Show", canSort: false, format: (item)=> {
+                                                  string DownloadLink="";
+                                                string FldPathDoc = System.Configuration.ConfigurationManager.AppSettings["provideddocuments"].ToString();
+                                                 if(item.DocumentType=="Insuff Document by API"){
+                                             DownloadLink = "";
+                                        }
+                                        else
+                                        {
+                                             DownloadLink = string.Format("<button class=\"btn btn-primary docShow\" type=\"button\" onclick=\"showPicture('{0}')\">Show</button>",Url.Content(FldPathDoc + item.FileName));
+                                        }return new HtmlString(DownloadLink);
+                                        },style:"delete td-1"),
+
+                                      }
+                                  )
+                    @*<div class="total-record">Total Records: @Model.UploadedDocInfo.Count</div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div class="row"><div class="col-md-12 viewborder">&nbsp;</div></div>
+<link href="~/Content/colorbox.css" rel="stylesheet" />
+<script src="~/Scripts/jquery.colorbox-min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".iframeActionHistories").colorbox({ iframe: true, width: "60%", height: "80%" });
+        $(".iframeActionHistoriesforpage").colorbox({ iframe: true, width: "60%", height: "60%" });
+
+        $('#RecievingDate').datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            //showButtonPanel: true,
+            yearRange: "-66:+0",
+        });
+        $('#CompletedDate').datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-66:+0",
+        });
+    });
+</script>

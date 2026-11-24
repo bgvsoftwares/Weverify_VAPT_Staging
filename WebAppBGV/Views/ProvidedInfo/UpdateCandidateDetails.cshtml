@@ -1,0 +1,1017 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Edit Candidate";
+    //Layout = "~/Areas/Candidate/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "Home", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+    string PRowid = "";
+    string SubCheckId = "";
+    string cRowId = "";
+
+
+    PRowid = @ViewBag.PersonalRowid;
+
+    cRowId = @ViewBag.clientRowId;
+    string CaseStatus2 = "";
+
+    CaseStatus2 = Session["CaseStatus"].ToString();
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftDataEntryProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@*@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }*@
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+<div class="container">
+    <div class="row">
+        <div class="col-lg-2 col-md-2 col-sm-12">
+            <label>Upload BGC File</label>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12">
+            <input type="file" id=OCRfile name=OCRfile accept=".pdf">
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12">
+            <select class="form-select" id="BGCFormType">
+                <option>--Select--</option>
+                <option value="TCS APPLICATION FORM AND BGC FORM">TCS APPLICATION FORM AND BGC FORM</option>
+                <option value="TCS BACKGROUND CHECK FORM">TCS BACKGROUND CHECK FORM</option>
+                <option value="TCS EMPLOYMENT APPLICATION FORM">TCS EMPLOYMENT APPLICATION FORM</option>
+            </select>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-12">
+            <input type="button" class="btn" value="OCR" id="btnOCR" onclick="OCRText()" style="border:1px solid #11c9b7; color: #FFF; background: #11c9b7;" />
+        </div>
+    </div>
+
+    <div id="OCRspinner" class="overlay1">
+        <!-- Pop-up content -->
+        <div class="popup">
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+
+
+    @if (ViewBag.ErrorMsg != null)
+    {
+        <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+    }
+    @using (Html.BeginForm("UpdateCandidateDetails", "ProvidedInfo", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Hidden("PersonalRowid", @PRowid)
+        var cid = cRowId;
+        @Html.Hidden("clientRowId", cid)
+        foreach (var category in Model)
+        {
+            <div class="row mt-3">
+                @{
+                    string[] nm = category.Key.Split('_');
+
+
+                    if (@nm[2] == "textbox")
+                    {
+                        <div class="col-md-6">
+                            @{
+                                if (@nm[3] == "mandatory")
+                                {
+                                    <h7 style="color:#ff0000;">*</h7>
+                                }
+                                else
+                                {
+                                    <h7>&nbsp;</h7>
+                                }
+                            }
+                            @nm[1]
+                        </div>
+                        <div class="col-md-6">
+                            <span style="color:#ff0000;"> @nm[4] </span>
+                            <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                        </div>
+                    }
+                    else if (@nm[2] == "dropdown")
+                    {
+                        <div class="col-md-6">
+                            @{
+                                if (@nm[3] == "mandatory")
+                                {
+                                    <h7 style="color:#ff0000;">*</h7>
+                                }
+                                else
+                                {
+                                    <h7>&nbsp;</h7>
+                                }
+                            }
+                            @nm[1]
+                        </div>
+                        <div class="col-md-6">
+                            @*<span style="color:#ff0000;"> @nm[4] </span>*@
+                            @{
+                                string[] nmOption = nm[7].Split(',');
+                            }
+                            <select name=@nm[0] id=@nm[0]>
+                                @for (int i = 0; i < nmOption.Length; i++)
+                                {
+                                    if (@nmOption[i].Trim() == @nm[6])
+                                    {
+                                        <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                    }
+                                    if (@nmOption[i].Trim() != @nm[6])
+                                    {
+                                        <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    }
+                    else if (@nm[2] == "checkbox")
+                    {
+                        <div class="col-md-6">
+                            @{
+                                if (@nm[3] == "mandatory")
+                                {
+                                    <h7 style="color:#ff0000;">*</h7>
+                                }
+                                else
+                                {
+                                    <h7>&nbsp;</h7>
+                                }
+                            }
+                            @nm[1]
+                        </div>
+                        <div class="col-md-6">
+                            @{
+                                if (@nm[6] == "TRUE")
+                                {
+                                    <span style="color:#ff0000;"> @nm[4]</span>
+                                    <input type="checkbox" id=@nm[0] name=@nm[0] value="checked" checked>
+                                }
+                                else
+                                {
+                                    <input type="checkbox" id=@nm[0] name=@nm[0] value=@nm[0]>
+                                }
+                            }
+                        </div>
+                    }
+                    else if (@nm[2] == "fileUpload")
+                    {
+                        <div class="col-md-6">
+                            @{
+                                if (@nm[3] == "mandatory")
+                                {
+                                    <h7 style="color:#ff0000;">*</h7>
+                                }
+                                else
+                                {
+                                    <h7>&nbsp;</h7>
+                                }
+                            }
+                            @nm[1]
+                        </div>
+                        <div class="col-md-6">
+                            <span style="color:#ff0000;"> @nm[4]</span>
+                            <input type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                        </div>
+                    }
+                }
+            </div>
+        }
+        <div class="row m-5">
+            <div class="col-sm-12" style="text-align:center;">
+                @if (CaseStatus2 != "Closed")
+                {
+                    <input type="submit" class="btn" value="Submit" id="submitBtn" style="width:15rem!important;  border-radius:.90rem; font-size:1.6rem!important;" />
+                }
+            </div>
+        </div>
+    }
+
+</div>
+
+@section Scripts{
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            if ('@TempData["Message"]' != '') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Success',
+                    html: '<div class="errormsg" style="text-align:center;">@TempData["Message"].ToString()</div>'
+                });
+            }
+        });
+    </script>
+    <style>
+        .spinner-border {
+            width: 12rem !important;
+            height: 12rem !important;
+            border: .25em solid rgb(251 252 255) !important;
+            border-right-color: transparent !important;
+        }
+
+        .modal-header {
+            border-bottom: unset !important;
+        }
+
+        .modal-content {
+            background-color: none !important;
+        }
+
+
+        /* Overlay style */
+
+        .overlay1 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 9999;
+        }
+
+        /* Pop-up style */
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: unset;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Close button */
+
+        .close-btn {
+            background: red;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+    function OCRText() {
+        if ($('#OCRfile').val()) {
+            const OCRspinner = document.getElementById('OCRspinner');
+            OCRspinner.style.display = 'block';
+            var formData = new FormData();
+            formData.append("file", $('#OCRfile')[0].files[0]);
+            formData.append("Pid", $('#PersonalRowid').val());
+            formData.append("Cid", $('#clientRowId').val());
+            formData.append("bgcF", $('#BGCFormType').val());
+            $.ajax({
+                url: '@Url.Action("GetDetailsfromPDF_OCR", "ProvidedInfo")',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data, textStatus, XMLHttpRequest) {
+                    OCRspinner.style.display = 'none';
+                    location.reload();
+                    if (data.success == 1) {
+                        Swal.fire({
+                            title: "Success",
+                            text: "Records Update Successfully",
+                            icon: "success"
+                        });
+                    }
+                    else {
+                        Swal.fire({
+                            title: "Success",
+                            text: "Records not Update",
+                            icon: "warning"
+                        });
+                    }
+
+                },
+                error: function (xhr, status, error) {
+                    pencardspinner.style.display = 'none';
+                    alert('Error uploading file: ' + error);
+                }
+            });            }
+        else {
+            pencardspinner.style.display = 'none';
+            Swal.fire({
+                title: "Warning",
+                text: "Please upload file",
+                icon: "warning"
+            });
+        }
+    }
+
+    </script>
+    <script type="text/javascript">
+    $(function () {
+        //Bind Candidate code
+        $('#CaseType').change(function () {
+            if ($("#CaseType").val() == "Normal") {
+                GetClientTAT();
+                var tat = $('#hdnTAT').val();
+                $('#TAT').val(tat);
+                $('#TAT').attr("readonly", true);
+            }
+            if ($("#CaseType").val() == "Priority") {
+                $('#TAT').val(0);
+                $('#TAT').attr("readonly", false);
+            }
+        });
+    });
+
+    function GetClientTAT() {
+        var url = "/ProvidedInfo/GetClientTATByCandidateId/" + $("#PersonalRowID").val();
+        $.ajax({
+            url: url,
+            type: 'GET',
+            async: false,
+            dataType: 'json',
+            success: function (tat) {
+                $('#hdnTAT').val(tat);
+            }
+        });
+    }
+
+        function validateForm() {
+            var ClientRowID = $('#ClientRowID').val();
+            if (ClientRowID != 647 && ClientRowID != 576 )
+            {
+                var loa = $('#LOA').attr('title');
+                var ct = $('#CandidateTermsFile').val();
+                if (loa == "Blank" && ct == "") {
+                    alert("Please upload signed agreement!!!");
+                    return false;
+                }
+            }
+
+            var Mcountry = $('#ddlMobCountry').val();
+
+
+            //$("#MobileNo").val('');
+            var Mob_No = $('#MobileNo').val();
+            if (Mob_No == "") {
+                alert('please fill mobile no');
+                $("#MobileNo").focus();
+                return false;
+            }
+
+            if (Mcountry == 'India') {
+                var minLength = 10;
+                var maxLength = 10;
+                //$("#MobileNo").attr("maxlength", 10);
+                //$("#MobileNo").attr("minlength", 10);
+
+                var char = $("#MobileNo").val();
+                var charLength = $("#MobileNo").val().length;
+                if (charLength < minLength) {
+                    alert('please fill 10 degit mobile no');
+                    $("#MobileNo").focus();
+                    return false;
+                } else if (charLength > maxLength) {
+                    alert('please fill 10 degit mobile no');
+                    $("#MobileNo").focus();
+                    return false;
+                    //$(this).val(char.substring(0, maxLength));
+                }
+
+            }
+
+
+                // Field Values
+                var C_Middle = $('#MiddleName').val();
+                var C_Last = $('#LastName').val();
+                var F_Name = $('#FatherName').val();
+                var F_Middle = $('#FatherMiddleName').val();0
+                var F_Last = $('#FatherLastName').val();
+                var AlternateNo = $('#AlternateNo').val();
+                var Nationality = $('#Nationality').val();
+                var EmployeeID = $('#EmployeeID').val();
+                var Designation = $('#Designation').val();
+                var PlaceofJoining = $('#PlaceofJoining').val();
+                var AadhaarCardNo = $('.Aadhaar_CardNo').val();
+                var DrivingLicenseNo = $('.Driving_License').val();
+                var PassportNo = $('.Passport_No').val();
+                var PanCardNo = $('.Pan_CardNo').val();
+                var VoterIDCardNo = $('.VoterID_CardNo').val();
+
+                // List of SQL keywords
+                let sql_val = [
+                    { name: 'SELECT' },
+                    { name: 'ADDCONSTRAINT' },
+                    { name: 'ALTER' },
+                    { name: 'ALTERCOLUMN' },
+                    { name: 'ALTERTABLE' },
+                    { name: 'ALL' },
+                    { name: 'AND' },
+                    { name: 'ANY' },
+                    { name: 'AS' },
+                    { name: 'ASC' },
+                    { name: 'BACKUPDATABASE' },
+                    { name: 'BETWEEN' },
+                    { name: 'CASE' },
+                    { name: 'CHECK' },
+                    { name: 'COLUMN' },
+                    { name: 'CONSTRAINT' },
+                    { name: 'CREATE' },
+                    { name: 'CREATEDATABASE' },
+                    { name: 'CREATEINDEX' },
+                    { name: 'CREATEOR REPLACE VIEW' },
+                    { name: 'CREATETABLE' },
+                    { name: 'CREATEPROCEDURE' },
+                    { name: 'CREATEUNIQUE INDEX' },
+                    { name: 'CREATEVIEW' },
+                    { name: 'DATABASE' },
+                    { name: 'DEFAULT' },
+                    { name: 'DELETE' },
+                    { name: 'DESC' },
+                    { name: 'DISTINCT' },
+                    { name: 'DROP' },
+                    { name: 'DROPCOLUMN' },
+                    { name: 'DROPCONSTRAINT' },
+                    { name: 'DROPDATABASE' },
+                    { name: 'DROPDEFAULT' },
+                    { name: 'DROPINDEX' },
+                    { name: 'DROPTABLE' },
+                    { name: 'DROPVIEW' },
+                    { name: 'EXEC' },
+                    { name: 'EXISTS' },
+                    { name: 'FOREIGNKEY' },
+                    { name: 'FROM' },
+                    { name: 'FULLOUTERJOIN' },
+                    { name: 'GROUPBY' },
+                    { name: 'HAVING' },
+                    { name: 'IN' },
+                    { name: 'INDEX' },
+                    { name: 'INNERJOIN' },
+                    { name: 'INSERTINTO' },
+                    { name: 'INSERTINTOSELECT' },
+                    { name: 'ISNULL' },
+                    { name: 'ISNOTNULL' },
+                    { name: 'JOIN' },
+                    { name: 'LEFTJOIN' },
+                    { name: 'LIKE' },
+                    { name: 'LIMIT' },
+                    { name: 'NOT' },
+                    { name: 'NOTNULL' },
+                    { name: 'OR' },
+                    { name: 'ORDERBY' },
+                    { name: 'OUTERJOIN' },
+                    { name: 'PRIMARYKEY' },
+                    { name: 'PROCEDURE' },
+                    { name: 'RIGHTJOIN' },
+                    { name: 'ROWNUM' },
+                    { name: 'WHERE' },
+                    { name: 'SELECTDISTINCT' },
+                    { name: 'SELECTINTO' },
+                    { name: 'SELECTTOP' },
+                    { name: 'SET' },
+                    { name: 'TABLE' },
+                    { name: 'TOP' },
+                    { name: 'TRUNCATETABLE' },
+                    { name: 'UNION' },
+                    { name: 'UNIONALL' },
+                    { name: 'UNIQUE' },
+                    { name: 'UPDATE' },
+                    { name: 'VALUES' },
+                    { name: 'VIEW' }
+                ];
+
+                C_Middle = C_Middle.replace(/ +/g, "");
+                C_Last = C_Last.replace(/ +/g, "");
+                F_Name = F_Name.replace(/ +/g, "");
+                F_Middle = F_Middle.replace(/ +/g, "");
+                F_Last = F_Last.replace(/ +/g, "");
+                AlternateNo = AlternateNo.replace(/ +/g, "");
+                Nationality = Nationality.replace(/ +/g, "");
+                EmployeeID = EmployeeID.replace(/ +/g, "");
+                Designation = Designation.replace(/ +/g, "");
+                PlaceofJoining = PlaceofJoining.replace(/ +/g, "");
+                AadhaarCardNo = AadhaarCardNo.replace(/ +/g, "");
+                DrivingLicenseNo = DrivingLicenseNo.replace(/ +/g, "");
+                PassportNo = PassportNo.replace(/ +/g, "");
+                PanCardNo = PanCardNo.replace(/ +/g, "");
+                VoterIDCardNo = VoterIDCardNo.replace(/ +/g, "");
+
+
+                // Search Input validation.
+                let filter_Val = sql_val.filter(c => c.name.toLowerCase().trim() == C_Middle.toLowerCase().trim());
+                if (filter_Val.length > 0) {
+                    alert("Invalid value -" + C_Middle);
+                    $('#MiddleName').focus();
+                    return false;
+                }
+
+                filter_Val = sql_val.filter(c => c.name.toLowerCase().trim() == C_Last.toLowerCase().trim());
+                if (filter_Val.length > 0) {
+                    alert("Invalid value -" + C_Last);
+                    $('#LastName').focus();
+                    return false;
+                }
+
+                filter_Val = sql_val.filter(c => c.name.toLowerCase().trim() == F_Name.toLowerCase().trim());
+                if (filter_Val.length > 0) {
+                    alert("Invalid value -" + F_Name);
+                    $('#FatherName').focus();
+                    return false;
+                }
+
+                filter_Val = sql_val.filter(c => c.name.toLowerCase().trim() == F_Middle.toLowerCase().trim());
+                if (filter_Val.length > 0) {
+                    alert("Invalid value -" + F_Middle);
+                    $('#FatherMiddleName').focus();
+                    return false;
+                }
+
+                filter_Val = sql_val.filter(c => c.name.toLowerCase().trim() == F_Last.toLowerCase().trim());
+                if (filter_Val.length > 0) {
+                    alert("Invalid value -" + F_Last);
+                    $('#FatherLastName').focus();
+                    return false;
+                }
+
+                filter_Val = sql_val.filter(c => c.name.toLowerCase().trim() == AlternateNo.toLowerCase().trim());
+                if (filter_Val.length > 0) {
+                    alert("Invalid value -" + AlternateNo);
+                    $('#AlternateNo').focus();
+                    return false;
+                }
+
+                filter_Val = sql_val.filter(c => c.name.toLowerCase().trim() == Nationality.toLowerCase().trim());
+                if (filter_Val.length > 0) {
+                    alert("Invalid value -" + Nationality);
+                    $('#Nationality').focus();
+                    return false;
+                }
+
+                filter_Val = sql_val.filter(c => c.name.toLowerCase().trim() == EmployeeID.toLowerCase().trim());
+                if (filter_Val.length > 0) {
+                    alert("Invalid value -" + EmployeeID);
+                    $('#EmployeeID').focus();
+                    return false;
+                }
+
+                filter_Val = sql_val.filter(c => c.name.toLowerCase().trim() == Designation.toLowerCase().trim());
+                if (filter_Val.length > 0) {
+                    alert("Invalid value -" + Designation);
+                    $('#Designation').focus();
+                    return false;
+                }
+
+                filter_Val = sql_val.filter(c => c.name.toLowerCase().trim() == PlaceofJoining.toLowerCase().trim());
+                if (filter_Val.length > 0) {
+                    alert("Invalid value -" + PlaceofJoining);
+                    $('#PlaceofJoining').focus();
+                    return false;
+                }
+
+                filter_Val = sql_val.filter(c => c.name.toLowerCase().trim() == AadhaarCardNo.toLowerCase().trim());
+                if (filter_Val.length > 0) {
+                    alert("Invalid value -" + AadhaarCardNo);
+                    $('.Aadhaar_CardNo').focus();
+                    return false;
+                }
+
+                filter_Val = sql_val.filter(c => c.name.toLowerCase().trim() == DrivingLicenseNo.toLowerCase().trim());
+                if (filter_Val.length > 0) {
+                    alert("Invalid value -" + DrivingLicenseNo);
+                    $('.Driving_License').focus();
+                    return false;
+                }
+
+                filter_Val = sql_val.filter(c => c.name.toLowerCase().trim() == PassportNo.toLowerCase().trim());
+                if (filter_Val.length > 0) {
+                    alert("Invalid value -" + PassportNo);
+                    $('.Passport_No').focus();
+                    return false;
+                }
+
+                filter_Val = sql_val.filter(c => c.name.toLowerCase().trim() == PanCardNo.toLowerCase().trim());
+                if (filter_Val.length > 0) {
+                    alert("Invalid value -" + PanCardNo);
+                    $('.Pan_CardNo').focus();
+                    return false;
+                }
+
+                filter_Val = sql_val.filter(c => c.name.toLowerCase().trim() == VoterIDCardNo.toLowerCase().trim());
+                if (filter_Val.length > 0) {
+                    alert("Invalid value -" + VoterIDCardNo);
+                    $('.VoterID_CardNo').focus();
+                    return false;
+                }
+
+
+
+                if (ClientRowID == 679)
+                {
+                    var value = $('#mydrpNationalIDProof').val();
+                    if (value != "Pan Card") {
+                        alert("Please select PAN card detail!!!");
+                        $("#mydrpNationalIDProof").focus();
+                        return false;
+                    }
+                }
+            @* // For TATA Elxsi *@
+
+            if (ClientRowID== 635)
+            {
+                var PersonalIdProof = $('#PersonalIdProof').attr('title');
+                //alert(PersonalIdProof);
+                var ct = $('#UploadIdProof').val();
+                //alert(PersonalIdProof);
+                //alert(ct);
+                if (PersonalIdProof == "Blank" && ct == "") {
+                    alert("Please upload Id proof detail!!!");
+                    return false;
+                }
+
+                var FatherName = $("#FatherName").val();
+                if (FatherName == "") {
+                    alert("Please fill father name!!!");
+                    $("#FatherName").focus();
+                    return false;
+                }
+
+                var MaritalStatus = $("#mydrpMaritalStatus").val();
+                if (MaritalStatus == "") {
+                    alert("Please fill Marital Status!!!");
+                    return false;
+                }
+
+                var DOJ = $("#DateofJoining").val();
+                if (DOJ == "") {
+                    alert("Please fill Date of Joining!!!");
+                    $("#DateofJoining").focus();
+                    return false;
+                }
+
+
+            }
+
+            if (ClientRowID == 647 || ClientRowID == 576)
+            {
+                var doj = $("#DateofJoining").val();
+                if (doj == "") {
+                    alert("Please fill DOJ!!!");
+                    $("#DateofJoining").focus();
+                    return false;
+                }
+
+            }
+            function normalizeDate(dateStr) {
+                if (!dateStr) return '';
+
+                // ✅ Handle dd-MM-yyyy (e.g. 13-06-2010)
+                if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+                    var parts = dateStr.split('-');
+                    return parts[2] + '-' + parts[1] + '-' + parts[0]; // returns yyyy-MM-dd
+                }
+
+                // ✅ Already yyyy-MM-dd — return as is
+                return dateStr;
+            }
+            var dob = normalizeDate($('#5').val()); // ✅ called here
+            var doj = new Date().toISOString().split('T')[0];
+            if (dob != '' && (cRowId != 1808 || cRowId != 1692)) {
+                debugger
+                var dateOfBirth = new Date(dob);
+                var dateOfJoin = new Date(doj);
+
+                var age = dateOfJoin.getFullYear() - dateOfBirth.getFullYear();
+                var monthDiff = dateOfJoin.getMonth() - dateOfBirth.getMonth();
+
+                if (monthDiff < 0 || (monthDiff === 0 && dateOfJoin.getDate() < dateOfBirth.getDate())) {
+                    age--;
+                }
+
+                if (age < 18) {
+                    alert("Age should be more than 18 years. from date of joining!");
+                    return false;
+                }
+            }
+            /*var dob = $('#DOB').val();*/
+
+        var doj = '@DateTime.Now.Date.ToString("yyyy-MM-dd")';
+    /**/
+    /**/
+
+    //if (dob != '') {
+    //    var str = dob.split('-');
+    //    var dojday1 = str[2];
+    //    var dojmonth1 = str[1];
+    //    var dojyear1 = str[0];
+
+    //    var dateOfBorth = new Date(dojyear1, dojmonth1 - 1, dojday1);
+
+    //    var str1 = doj.split('-');
+    //    var day = str1[2];
+    //    var month = str1[1];
+    //    var year = str1[0];
+
+    //    var DateOfJoin = new Date(year, month - 1, day)
+
+    //    var timeDiff = DateOfJoin - dateOfBorth;
+
+    //    var diffDays = timeDiff / (1000 * 3600 * 24 * 365);
+    //    var age = parseInt(diffDays);
+
+    //    if (age < 18) {
+    //        alert("Age should be more than 18 years. from date of joining!");
+    //        return false;
+    //    }
+    //}
+
+    if ($("#CaseType").val() == "Priority") {
+        GetClientTAT();
+        var tat = $("#TAT").val();
+        var hdtat = $("#hdnTAT").val();
+        if (tat >= hdtat) {
+            alert("Please enter valid TAT!");
+            return false;
+        }
+        }
+
+
+
+
+    var count = 0;
+        if (document.getElementById("#AadhaarCardNo").val() != '') {
+        count += 1;
+    }
+        if (document.getElementById("#DrivingLicenseNo").val() != '') {
+        count += 1;
+    }
+    if (document.getElementById("#PassportNo").val() != '') {
+        count += 1;
+    }
+        if (document.getElementById("#PanCardNo").val() != '') {
+        count += 1;
+    }
+        if (document.getElementById("#VoterIDCardNo").val() != '') {
+
+        count += 1;
+    }
+    if (count == 0) {
+        alert("Please enter atleast one document no details!");
+        return false;
+    }
+
+        return true;
+
+
+
+}
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var ClientRowID = $("#ClientRowID").val();
+            if (ClientRowID == 249) {
+                $("#EmployeeID").attr('maxlength', '5');
+
+                $("#EmployeeID").keypress(function (event) {
+                    // Allow only backspace and delete
+                    if (event.keyCode == 46 || event.keyCode == 8) {
+                        // let it happen, don't do anything
+                    }
+                    else {
+                        // Ensure that it is a number and stop the keypress
+                        if (event.keyCode < 48 || event.keyCode > 57) {
+                            event.preventDefault();
+                        }
+                    }
+                });
+
+            }
+            else {
+                $("#EmployeeID").attr('maxlength', '100');
+                $('#EmployeeID').unbind("keypress");
+            }
+
+            $('input[type=datetime]').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: "-66:+10",
+                //onClose: function (dateText, inst) {
+                //    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
+                //}
+            });
+            var dNow = new Date();
+            var localdate = (dNow.getFullYear() + '-' + (dNow.getMonth() + 1) + '-' + dNow.getDate());
+            $('#OrderDate').val(localdate);
+            $('#goBack').click(function () {
+                parent.history.back();
+                return false;
+            });
+        });
+        $(function () {
+            $('#mydrpNationalIDProof').change(function () {
+                var value = $(this).val();
+                //alert(value);
+                $('#AadhaarCardNo').hide();
+                $('#DrivingLicenseNo').hide();
+                $('#PassportNo').hide();
+                $('#PanCardNo').hide();
+                $('#VoterIDCardNo').hide();
+
+                if (value == "Aadhaar Card") {
+                    $('#AadhaarCardNo').show();
+                }
+                else if (value == "Driving License") {
+                    $('#DrivingLicenseNo').show();
+                }
+                else if (value == "Passport") {
+
+                    $('#PassportNo').show();
+                }
+                else if (value == "Pan Card") {
+                    $('#PanCardNo').show();
+                }
+                else if (value == "Voter ID Card") {
+                    $('#VoterIDCardNo').show();
+                }
+                else {
+
+                }
+            });
+        });
+
+        $(function () {
+            var value = $('#mydrpNationalIDProof').val();
+            //alert(value);
+            $('#AadhaarCardNo').hide();
+            $('#DrivingLicenseNo').hide();
+            $('#PassportNo').hide();
+            $('#PanCardNo').hide();
+            $('#VoterIDCardNo').hide();
+
+            if (value == "Aadhaar Card") {
+                $('#AadhaarCardNo').show();
+            }
+            else if (value == "Driving License") {
+                $('#DrivingLicenseNo').show();
+            }
+            else if (value == "Passport") {
+
+                $('#PassportNo').show();
+            }
+            else if (value == "Pan Card") {
+                $('#PanCardNo').show();
+            }
+            else if (value == "Voter ID Card") {
+                $('#VoterIDCardNo').show();
+            }
+            else {
+
+            }
+        });
+
+
+        $(function () {
+            $('#mydrpMaritalStatus').change(function () {
+                var value = $(this).val();
+                if (value == "Married") {
+                    $('#dvMaritalStatus').show();
+                    $('#dvlblMaritalStatus').show();
+                }
+                else {
+                    $('#dvMaritalStatus').hide();
+                    $('#dvlblMaritalStatus').hide();
+                }
+            });
+        });
+
+
+        $(document).ready(function () {
+
+            // $('#Novo').hide();
+            $(".show").show();
+
+            var ClientRowID = $("#ClientRowID").val();
+
+            if (ClientRowID == 647) {
+                $('input:radio[name="favorite_pet"]').change(function () {
+
+                    if ($(this).val() == 'No') {
+                        $('#Novo').hide();
+                        $('#SSNNo').val("");
+                        $('#ProcessName').val("");
+
+                    }
+                    else {
+                        $('#Novo').show();
+                    }
+                });
+            }
+
+        });
+
+
+
+    </script>
+    <script>
+        $('#submitBtn').on('click', function () {
+            debugger
+            function normalizeDate(dateStr) {
+                if (!dateStr) return '';
+
+                if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+                    var parts = dateStr.split('-');
+                    return parts[2] + '-' + parts[1] + '-' + parts[0];
+                }
+
+                return dateStr;
+            }
+
+            var dob = normalizeDate($('#5').val());
+            var doj = new Date().toISOString().split('T')[0];
+
+            if (dob != '' && (cRowId != 1808 || cRowId != 1692)) {
+                var dateOfBirth = new Date(dob);
+                var dateOfJoin = new Date(doj);
+
+                var age = dateOfJoin.getFullYear() - dateOfBirth.getFullYear();
+                var monthDiff = dateOfJoin.getMonth() - dateOfBirth.getMonth();
+
+                if (monthDiff < 0 || (monthDiff === 0 && dateOfJoin.getDate() < dateOfBirth.getDate())) {
+                    age--;
+                }
+
+                if (age < 18) {
+                    alert("Age should be more than 18 years. from date of joining!");
+                    return false;
+                }
+            }
+        });
+    </script>
+
+}
+<style>
+    .btn {
+        padding: 10px 40px 10px 40px !important;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 22px;
+        border: 1px solid #ccc;
+        border-radius: 0px;
+        resize: vertical;
+    }
+
+    input[type=text], textarea {
+        width: 100%;
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 0px;
+        resize: vertical;
+    }
+
+    select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 0px;
+        resize: vertical;
+    }
+
+    label {
+        padding: 12px 12px 12px 0;
+        display: inline-block;
+    }
+
+    input[type=submit] {
+        background-color: #04AA6D;
+        color: white;
+        padding: 12px 20px;
+        border: 1px solid #04AA6D;
+        border-radius: 0px;
+        cursor: pointer;
+        transition: 0.3s ease-in-out;
+    }
+
+        input[type=submit]:hover {
+            background: #FFF;
+            color: #04AA6D;
+        }
+
+    .container {
+        border-radius: 5px;
+        /*background-color: #f2f2f2;*/
+        padding: 8px;
+        font-size: 1.2rem !important;
+    }
+</style>

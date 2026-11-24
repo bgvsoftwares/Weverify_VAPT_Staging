@@ -1,0 +1,119 @@
+﻿
+@{
+    ViewBag.Title = "Manage Team Members";
+}
+@{
+    ////@ViewBag.NavigationBtnBack
+    //string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    //string hyperLink = Html.ActionLink("linkTitle", "ManagePQClient", "HRMgmt", null, new { @class = "btn bun-bg btn-default" }).ToString();
+    //ViewBag.NavigationBtnBack = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+    //@ViewBag.NavigationBtnAddNew
+    string faIconAddNew = string.Format("<i class='fa fa-plus-circle' aria-hidden='true'></i> Add New Team Member");
+    string hyperLinkAddNew = Html.ActionLink("linkTitle", "AddTeamMember", "HRMgmt", null, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnAddNew = new HtmlString(hyperLinkAddNew.ToString().Replace("linkTitle", faIconAddNew));
+
+    //@ViewBag.NavigationBtnExportExcel
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    string hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportTeamMembers", "HRMgmt", null, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftHRMgmt") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+
+        <div class="row">
+            <div class="col-md-10">
+                @using (Html.BeginForm("ManageTeamMembers", "HRMgmt", FormMethod.Get))
+                {
+                <div class="form-horizontal">
+                    <div class="form-group branch row search-frame">
+                        <label class="col-md-3 control-label">Enter Team Member :</label>
+                        <div class="col-md-5">
+                            @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Team Member name..." })
+                        </div>
+                        <div class="col-md-2">
+                            <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        @if (Model != null && Model.TeamMembers != null)
+        {
+            <div class="row">
+                <div class="col-md-12 table">
+                    @{
+
+                        WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                        grid.Bind(Model.TeamMembers, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                    }
+                    @grid.GetHtml(
+                                    htmlAttributes: new { id = "grid", @class = "table" },
+                                    headerStyle: "thead-inverse",
+                                    rowStyle: "ordertxt",
+                                    footerStyle: "custpaging",
+                                    mode: WebGridPagerModes.All,
+                                    columns: new[]
+                                    {
+                                    grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                    grid.Column(columnName: "EmployeeID", header: "Employee Code", canSort: false, style:"td-2"),
+                                    grid.Column(columnName: "TMFirstName", header: "Name", canSort: false, style:"td-2"),
+                                    grid.Column(columnName: "MobileNo", header: "Mobile No.", canSort: false, style:"td-1"),
+                                    grid.Column(columnName: "EmailID", header: "Email", canSort: false, style:"td-3"),                     grid.Column(columnName: "BranchName", header: "Branch Name", canSort: false, style:"td-2"),
+
+                                    grid.Column(header : "Department", format : (item) => {
+                                        var link = Html.ActionLink("Manage", "ManageDepartDesignation", "HRMgmt", new { tmid = item.TeamMemberRowID }, null);
+                                        return link;
+                                    }, style:"edit td-1"),
+
+                                     grid.Column(header : "", format : (item) => {
+                                        var link = Html.ActionLink("Edit", "EditTeamMember", "HRMgmt", new { id = item.TeamMemberRowID }, null);
+                                        return link;
+                                    }, style:"edit td-1"),
+                                }
+                            )
+                    <div class="total-record">Total Records: @Model.TotalRecords</div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(".delete").on("click", function () {
+            var str = $(this).attr("id").split("_");
+            id = str[1];
+
+            var flag = confirm('Do you want to Delete the Record ?');
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("DeleteTeamMember", "HRMgmt")',
+                    data: { "id": id },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Record Deleted Successfully!!");
+                            setTimeout(function () { window.location.replace("ManageTeamMembers"); }, 500);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}
+

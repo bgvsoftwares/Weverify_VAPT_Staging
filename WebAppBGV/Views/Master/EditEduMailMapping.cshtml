@@ -1,0 +1,72 @@
+﻿@model ViewModels.UpdateEduMailMappingViewModel
+
+@{
+    ViewBag.Title = "Edit Education Mail Mapping";
+    //Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+}
+
+@{
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManageEduMailMapping", "Master", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+@*@section LeftNavigation{ @Html.Partial("_NavLeftMaster") }*@
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("EditEduMailMapping", "Master", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <div class="form-horizontal">
+                <div class="form-group branch row">
+                    @Html.LabelFor(m => m.UniversityRowID, new { @class = "col-md-2 control-label" })
+                    <div class="col-md-4">
+                        @Html.HiddenFor(m => m.UniversityRowID)
+                        @Html.DropDownListFor(m => m.UniversityRowID, new SelectList(ViewBag.UniversityList, "UniversityRowID", "UniversityName", Model.UniversityRowID),
+                            "", new { @class = "form-control", @disabled= "disabled" })
+                        @Html.ValidationMessageFor(m => m.UniversityRowID)
+                    </div>
+                    @Html.LabelFor(m => m.CollegeRowID, new { @class = "col-md-2 control-label" })
+                    <div class="col-md-4">
+                        @Html.HiddenFor(m => m.CollegeRowID)
+                        @Html.DropDownListFor(m => m.CollegeRowID, new SelectList(ViewBag.CollegeList, "CollegeRowID", "CollegeName", Model.CollegeRowID),
+                            "", new { @class = "form-control", @disabled = "disabled" })
+                        @Html.ValidationMessageFor(m => m.CollegeRowID)
+                    </div>
+                </div>
+
+                <div class="form-group branch row">
+                    @Html.LabelFor(m => m.EMailType, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                    <div class="col-md-4">
+                        @Html.TextBoxFor(m => m.EMailType, new { @class = "form-control", @readonly = "readonly" })
+                        @Html.HiddenFor(m => m.EMailType)
+                    </div>
+                    @Html.LabelFor(m => m.EMailID, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                    <div class="col-md-4">
+                        @Html.TextBoxFor(m => m.EMailID, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.EMailID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                @Html.HiddenFor(m => m.EduMailMappingRowID)
+                <div class="all-button-bg">
+                    @Html.ActionLink("Back", "ManageEduMailMapping", "Master", null, new { @class = "btn bun-bg btn-default" })
+                    <input class="btn bun-bg btn-primary" type="submit" value="Update" />
+                </div>
+            </div>
+        }
+        <div class="row">
+            <div class="col-md-12">
+                <div id="ManageSction" class="product-frame1"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.6.0.min.js"></script>
+
+}

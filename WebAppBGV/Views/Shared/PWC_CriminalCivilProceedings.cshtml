@@ -1,0 +1,537 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    var list = Model.CriminalInfoModel.GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First()).OrderBy(T => T.SubcheckRowID)
+                              .ToList();
+}
+
+
+@if (Model != null && Model.CriminalInfoModel != null && Model.CriminalInfoModel.Count > 0)
+{
+    if (Model.CriminalInfoModel != null)
+    {
+        int i = 0;
+        int j = 0;
+        int annuxureno = Convert.ToInt32(Session["AnnexureNo"]);
+        int k = Convert.ToInt32(annuxureno);
+        foreach (var a in list)
+        {
+            var Anticident = Model.CriminalInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+
+            var ReportComment = a.ReportComment;
+            if (j == 0)
+            {
+                annuxureno = k + 1;
+            }
+            else
+            {
+                annuxureno = annuxureno + 1;
+            }
+            j = 2;
+            var doc = Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID);
+
+            if (doc.Count() > 0)
+            {
+                Session["AnnexureNo"] = annuxureno.ToString();
+            }
+            //foreach (var a in list)
+            //{
+            //    var Anticident = Model.EducationInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+
+            //    var ReportComment = list[i].ReportComment;
+
+            <page id="PrintSrc" size="A4"  style="page-break-after:always;">
+                <div style="page-break-after:always;"></div>
+                <table style="border:3px solid #000; margin:auto; width:793px;">
+                    <tr>
+                        <td>
+                            <table style="width: 97%;">
+                                <tr>
+                                    <td colspan="2" style="width: 40pt;" valign="top"></td>
+                                    <td colspan="2" style="width: 40pt; text-align: right;" valign="top">
+                                        @*<img src='@Url.Content("~/Images/logo.jpg")' width="60" height="40">*@
+                                        <img src="https://bgv.securitas-india.com/Images/logo.jpg" alt="" width="60" height="40" />
+                                    </td>
+                                </tr>
+                            </table>
+                            @if (a.SubcheckRowID == 23)
+                            {
+                                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;margin-bottom:8.0pt;text-align:center;line-height:107%;'><strong><span style='font-size:15px;line-height:107%;font-family:"Arial",sans-serif;'><a name="@a.SubcheckRowID"> Court Record Verification-Permanent Address</a></span></strong></p>
+
+                            }
+                            else if (a.SubcheckRowID == 24)
+                            {
+                                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;margin-bottom:8.0pt;text-align:center;line-height:107%;'><strong><span style='font-size:15px;line-height:107%;font-family:"Arial",sans-serif;'><a name="@a.SubcheckRowID"> Court Record Verification-Present Address</a></span></strong></p>
+
+                            }
+
+                            else if (a.SubcheckRowID == 25 || a.SubcheckRowID == 26 || a.SubcheckRowID == 27 || a.SubcheckRowID == 30 || a.SubcheckRowID == 34 || a.SubcheckRowID == 35 || a.SubcheckRowID == 36 || a.SubcheckRowID == 303 || a.SubcheckRowID == 307)
+                            {
+                                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;margin-bottom:8.0pt;text-align:center;line-height:107%;'><strong><span style='font-size:15px;line-height:107%;font-family:"Arial",sans-serif;'><a name="@a.SubcheckRowID"> Court Record Verification-Previous Address</a></span></strong></p>
+
+                            }
+
+
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;'></p>
+                            <table style="border:1px solid #000;  border-collapse: collapse; width: 90%; margin: auto;">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="3" style="border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 12px; font-weight: bold; font-family: 'Arial',sans-serif">Civil Proceedings (Civil and High Court)</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" style="border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 12px; font-weight: bold; font-family: 'Arial',sans-serif">Includes Original Suit, Miscellaneous Suit, Execution and Arbitration Case</td>
+                                    </tr>
+
+
+
+                                    @foreach (var item in Anticident)
+                                    {
+                                        if (item.AntecedentRowID == "52" || item.AntecedentRowID == "56" || item.AntecedentRowID == "60")
+                                        {
+                                            if (item.AntecedentRowID == "60")
+                                            {
+                                                <tr>
+                                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">@item.DisplayNameRep</td>
+                                                    <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif; width: 13rem; padding: 10px;">@item.DataEntryValue</td>
+                                                    @*<td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">Verified</td>*@
+                                                    @if (item.OpsValue != "" && (a.CheckStatusId == "24" || a.CheckStatusId == "36" || a.CheckStatusId == "37"))
+                                                    {
+                                                        if (item.OpsValue.ToUpper() == item.DataEntryValue.ToUpper())
+                                                        {
+                                                            <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> Verified </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> Verified </td>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> - </td>
+                                                    }
+                                                </tr>
+                                                if (a.SubcheckRowID == 23)
+                                                {
+                                                    <tr>
+                                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Type of Address (Permanent / Present)</td>
+                                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">Permanent</td>
+                                                    </tr>
+                                                }
+                                                else if (a.SubcheckRowID == 24)
+                                                {
+                                                    <tr>
+                                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Type of Address (Permanent / Present)</td>
+                                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">Present</td>
+                                                    </tr>
+                                                }
+
+                                                else if (a.SubcheckRowID == 25 || a.SubcheckRowID == 26 || a.SubcheckRowID == 27 || a.SubcheckRowID == 30 || a.SubcheckRowID == 34 || a.SubcheckRowID == 35 || a.SubcheckRowID == 36)
+                                                {
+                                                    <tr>
+                                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Type of Address (previous)</td>
+                                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">previous</td>
+                                                    </tr>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">@item.DisplayNameRep</td>
+                                                    <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif; width: 13rem; padding: 10px;">@item.DataEntryValue</td>
+                                                    @if (item.OpsValue != "" && (a.CheckStatusId == "24" || a.CheckStatusId == "36" || a.CheckStatusId == "37"))
+                                                    {
+                                                        if (item.OpsValue.ToUpper() == item.DataEntryValue.ToUpper())
+                                                        {
+                                                            <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> Verified </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> @item.OpsValue </td>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> - </td>
+                                                    }
+                                                    @*<td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">Verified</td>*@
+                                                </tr>
+                                            }
+
+
+                                        }
+
+                                    }
+                                    <tr>
+                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Original suit (Civil court)</td>
+                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">No Record</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Appeals (High court)</td>
+                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">No Record </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Criminal cases (CC)</td>
+                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> No Record</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Private Compliant Report (PCR) – (Magistrate court)</td>
+                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> No Record </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Criminal appeals (Sessions court)</td>
+                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> No Record </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Criminal appeals (High court</td>
+                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> No Record </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Criminal proceedings</td>
+                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> No Record </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Civil proceedings</td>
+                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> No Record </td>
+                                    </tr>
+
+
+                                    @foreach (var item in Anticident)
+                                    {
+                                        if (item.AntecedentRowID == "136" || item.AntecedentRowID == "51" || item.AntecedentRowID == "337" || item.AntecedentRowID == "283" || item.AntecedentRowID == "284" || item.AntecedentRowID == "336" || item.AntecedentRowID == "171")
+                                        {
+                                            if (item.AntecedentRowID == "51")
+                                            {
+                                                <tr>
+                                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">@item.DisplayNameRep</td>
+                                                    @*<td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">See Attachment @annuxureno </td>*@
+                                                    <td colspan="2" style="border:1px solid #000;  text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">
+                                                        @Html.Raw(ReportComment)<br />
+                                                        @if (doc.Count() > 0)
+                                                        {
+                                                            <a href="#@item.SubcheckRowID+A"> See Attachment @annuxureno</a>
+                                                        }
+                                                    </td>
+
+                                                </tr>
+                                            }
+                                            else if (item.AntecedentRowID == "171")
+                                            {
+                                                <tr>
+                                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">@item.DisplayNameRep</td>
+                                                    @*<td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">See Attachment @annuxureno </td>*@
+                                                    <td colspan="2" style="border:1px solid #000;  text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">
+                                                        @if (!string.IsNullOrEmpty(item.OpsValue))
+                                                        {
+                                                            try
+                                                            {
+                                                                @Convert.ToDateTime(@item.OpsValue).ToString("dd-MMMM-yyyy")
+                                                            }
+                                                            catch
+                                                            {
+                                                                @item.OpsValue
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            @item.OpsValue
+                                                        }
+
+
+                                                    </td>
+
+                                                </tr>
+                                            }
+                                            else if (item.AntecedentRowID == "337")
+                                            {
+                                                <tr>
+                                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">@item.DisplayNameRep</td>
+                                                    <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> - </td>
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif"> @item.DisplayNameRep </td>
+
+                                                    <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> No Record </td>
+
+                                                </tr>
+                                            }
+
+
+
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                            <p><br></p>
+                            <table style="width:97%; margin:auto; border-top:2px solid #000;">
+                                <tr>
+                                    <td colspan="2" style="width: 40pt;" valign="bottom">
+                                        @*<img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50">*@
+                                        <img src="https://bgv.securitas-india.com/Images/footer-logo.jpg" alt="" width="120" height="50" />
+                                    </td>
+                                    <td colspan="2" style="width: 488.35pt; padding: 0cm;">
+                                        <p><br></p>
+                                        <p style='margin-top:.5pt;margin-bottom:.0001pt; font-size:15px;font-family:"Calibri",sans-serif;text-align:center;line-height:83%;'><span style="font-size:15px;line-height:83%;color:blue; font-weight: bold;">SECURITAS INDIA<span style='font-size:10px;line-height:83%;font-family:"Arial MT",sans-serif;color:blue;'></span></p>
+                                        <p style='margin-top:.5pt;margin-bottom:.0001pt; font-size:12px;font-family:"Calibri",sans-serif;text-align:center;'><span style="font-size:13px;color:#010202;">496, Udyog Vihar, Phase-3, Gurgaon-122016 Tel: +91 1244718888<br></span><a href="http://www.securitas.in/"><span style='font-size:10px;font-family:"Arial MT",sans-serif;color:blue;'>www.securitas.in</span></a><span style="font-size:15px;color:blue; margin-left: 60px;">&nbsp;</span><a href="http://www.walsons.com/"><span style='font-size:10px;font-family:"Arial MT",sans-serif;color:blue;'>www.walsons.com</span></a></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+                <div style="page-break-after:always;"></div>
+
+            </page>
+
+
+           
+
+            <page id="PrintSrc1" size="A4" style="page-break-before:always; page-break-inside:auto">
+                <div style="page-break-before:always;"></div>
+                <table style="border:3px solid #000; margin:auto; width:793px;page-break-before:always;">
+                    <tr>
+                        <td>
+                            <table style="width: 97%;">
+                                <tr>
+                                    <td colspan="2" style="width: 40pt;" valign="top"></td>
+                                    <td colspan="2" style="width: 40pt; text-align: right;" valign="top">
+                                        <img src='@Url.Content("~/Images/logo.jpg")' width="60" height="40">
+                                    </td>
+                                </tr>
+                            </table>
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;margin-bottom:8.0pt;text-align:center;line-height:107%;'><strong><span style='font-size:15px;line-height:107%;font-family:"Arial",sans-serif;'></span></strong></p>
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;'></p>
+                            <table style="border:1px solid #000;  border-collapse: collapse; width: 90%; margin: auto;">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="3" style="border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 12px; font-weight: bold; font-family: 'Arial',sans-serif">Criminal Proceedings (Magistrate, Sessions and High Court)</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" style="border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 12px; font-weight: bold; font-family: 'Arial',sans-serif">Includes Criminal Petitions, Criminal Appeal, Sessions Case, Special Sessions Case, Criminal Miscellaneous Petition and Criminal Revision Appeal.</td>
+                                    </tr>
+
+                                    @*@if (a.SubcheckRowID == 23)
+        {
+            <tr>
+                <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Type of Address (Permanent / Present)</td>
+                <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">Permanent</td>
+            </tr>
+        }
+        else if (a.SubcheckRowID == 24)
+        {
+            <tr>
+                <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Type of Address (Permanent / Present)</td>
+                <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">Present</td>
+            </tr>
+        }*@
+
+                                    @foreach (var item in Anticident)
+                                    {
+                                        if (item.AntecedentRowID == "52" || item.AntecedentRowID == "56" || item.AntecedentRowID == "60")
+                                        {
+                                            if (item.AntecedentRowID == "60")
+                                            {
+                                                <tr>
+                                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">@item.DisplayNameRep</td>
+                                                    <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif; width: 13rem; padding: 10px;">@item.DataEntryValue</td>
+                                                    @*<td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">Verified</td>*@
+                                                    @if (item.OpsValue != "" && (a.CheckStatusId == "24" || a.CheckStatusId == "36" || a.CheckStatusId == "37"))
+                                                    {
+                                                        if (item.OpsValue.ToUpper() == item.DataEntryValue.ToUpper())
+                                                        {
+                                                            <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> Verified </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> Verified </td>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> - </td>
+                                                    }
+                                                </tr>
+                                                if (a.SubcheckRowID == 23)
+                                                {
+                                                    <tr>
+                                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Type of Address (Permanent / Present)</td>
+                                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">Permanent</td>
+                                                    </tr>
+                                                }
+                                                else if (a.SubcheckRowID == 24)
+                                                {
+                                                    <tr>
+                                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Type of Address (Permanent / Present)</td>
+                                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">Present</td>
+                                                    </tr>
+                                                }
+
+                                                else if (a.SubcheckRowID == 25 || a.SubcheckRowID == 26 || a.SubcheckRowID == 27 || a.SubcheckRowID == 30 || a.SubcheckRowID == 34 || a.SubcheckRowID == 35 || a.SubcheckRowID == 36)
+                                                {
+                                                    <tr>
+                                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Type of Address (previous)</td>
+                                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">previous</td>
+                                                    </tr>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">@item.DisplayNameRep</td>
+                                                    <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif; width: 13rem; padding: 10px;">@item.DataEntryValue</td>
+                                                    @if (item.OpsValue != "" && (a.CheckStatusId == "24" || a.CheckStatusId == "36" || a.CheckStatusId == "37"))
+                                                    {
+                                                        if (item.OpsValue.ToUpper() == item.DataEntryValue.ToUpper())
+                                                        {
+                                                            <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> Verified </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> @item.OpsValue </td>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> - </td>
+                                                    }
+                                                    @*<td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">Verified</td>*@
+                                                </tr>
+                                            }
+
+
+                                        }
+
+
+
+                                    }
+                                    <tr>
+                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Original suit (Civil court)</td>
+                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">No Record</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Appeals (High court)</td>
+                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">No Record </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Criminal cases (CC)</td>
+                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> No Record</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Private Compliant Report (PCR) – (Magistrate court)</td>
+                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> No Record </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Criminal appeals (Sessions court)</td>
+                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> No Record </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Criminal appeals (High court</td>
+                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> No Record </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Criminal proceedings</td>
+                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> No Record </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">Civil proceedings</td>
+                                        <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> No Record </td>
+                                    </tr>
+                                    @foreach (var item in Anticident)
+                                    {
+                                        if (item.AntecedentRowID == "136" || item.AntecedentRowID == "51" || item.AntecedentRowID == "337" || item.AntecedentRowID == "284" || item.AntecedentRowID == "336" || item.AntecedentRowID == "171")
+                                        {
+                                            if (item.AntecedentRowID == "51")
+                                            {
+                                                <tr>
+                                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">@item.DisplayNameRep</td>
+                                                    @*<td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">See Attachment @annuxureno </td>*@
+                                                    <td colspan="2" style="border:1px solid #000;  text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">
+                                                        @Html.Raw(ReportComment)<br />
+                                                        @if (doc.Count() > 0)
+                                                        {
+                                                            <a href="#@annuxureno"> See Attachment @annuxureno</a>
+                                                        }
+                                                    </td>
+
+                                                </tr>
+                                            }
+                                            else if (item.AntecedentRowID == "171")
+                                            {
+                                                <tr>
+                                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">@item.DisplayNameRep</td>
+                                                    @*<td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">See Attachment @annuxureno </td>*@
+                                                    <td colspan="2" style="border:1px solid #000;  text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">
+                                                        @if (!string.IsNullOrEmpty(item.OpsValue))
+                                                        {
+                                                            try
+                                                            {
+                                                                @Convert.ToDateTime(@item.OpsValue).ToString("dd-MMMM-yyyy")
+                                                            }
+                                                            catch
+                                                            {
+                                                                @item.OpsValue
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            @item.OpsValue
+                                                        }
+
+
+                                                    </td>
+
+                                                </tr>
+                                            }
+                                            else if (item.AntecedentRowID == "337")
+                                            {
+                                                <tr>
+                                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">@item.DisplayNameRep</td>
+                                                    <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> - </td>
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">@item.DisplayNameRep</td>
+                                                    <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">No Record </td>
+                                                </tr>
+                                            }
+
+
+                                        }
+                                    }
+                                </tbody>
+                            </table>                        <p><br></p>
+                            <table style="width:97%; margin:auto; border-top:2px solid #000;">
+                                <tr>
+                                    <td colspan="2" style="width: 40pt;" valign="bottom">
+                                        <img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50">
+                                    </td>
+                                    <td colspan="2" style="width: 488.35pt; padding: 0cm;">
+                                        <p><br></p>
+                                        <p style='margin-top:.5pt;margin-bottom:.0001pt; font-size:15px;font-family:"Calibri",sans-serif;text-align:center;line-height:83%;'><span style="font-size:15px;line-height:83%;color:blue; font-weight: bold;">SECURITAS INDIA<span style='font-size:10px;line-height:83%;font-family:"Arial MT",sans-serif;color:blue;'></span></p>
+                                        <p style='margin-top:.5pt;margin-bottom:.0001pt; font-size:12px;font-family:"Calibri",sans-serif;text-align:center;'><span style="font-size:13px;color:#010202;">496, Udyog Vihar, Phase-3, Gurgaon-122016 Tel: +91 1244718888<br></span><a href="http://www.securitas.in/"><span style='font-size:10px;font-family:"Arial MT",sans-serif;color:blue;'>www.securitas.in</span></a><span style="font-size:15px;color:blue; margin-left: 60px;">&nbsp;</span><a href="http://www.walsons.com/"><span style='font-size:10px;font-family:"Arial MT",sans-serif;color:blue;'>www.walsons.com</span></a></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+            </page>
+
+
+
+
+
+            i++;
+
+        }
+
+    }
+}
+

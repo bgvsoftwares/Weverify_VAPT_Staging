@@ -1,0 +1,96 @@
+﻿@{
+    ViewBag.Title = "TCS Mail Data";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>TCS initiation details</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Search Filters
+            </div>
+            <div class="panel-body">
+
+                <div class="row">
+
+                    @*<div class="col-md-3">
+                        <label>From Date</label>
+                        <input type="date" id="txtFromDate" class="form-control" />
+                        
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>To Date</label>
+                        <input type="date" id="txtToDate" class="form-control" />
+                       
+                    </div>
+
+                    <div class="col-md-6" style="margin-top:25px;">
+                        <button type="button" id="btnSearch" class="btn btn-primary">
+                            Search
+                        </button>*@
+
+                        <button type="button" id="btnExport" class="btn btn-success">
+                            Export To Excel
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <table id="tblTCSMaildata" class="table table-bordered table-striped" style="margin-top:25px;">
+            <thead>
+                <tr>
+                    <th>Sr No</th>
+                    <th>ApplicantName</th>
+                    <th>ApplicantID</th>
+                    <th>CoordinatorName</th>
+                    <th>MailDateTime</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        LoadData();
+
+        $("#btnSearch").click(function () {
+            LoadData();
+        });
+
+        $("#btnExport").click(function () {
+            window.location = '@Url.Action("ExportTCSMailData", "ClientServicing")';
+        });
+    });
+
+    function LoadData() {
+        $.ajax({
+            url: '@Url.Action("GetTCSMailData", "ClientServicing")',
+            type: 'GET',
+            success: function (data) {
+                $("#tblTCSMaildata tbody").empty();
+
+                $.each(data, function (i, item) {
+                    $("#tblTCSMaildata tbody").append(
+                        "<tr>" +
+                        "<td>" + (i + 1) + "</td>" +
+                        "<td>" + (item.ApplicantName || "") + "</td>" +
+                        "<td>" + (item.ApplicantID || "") + "</td>" +
+                        "<td>" + (item.CoordinatorName || "") + "</td>" +
+                        "<td>" + (item.MailDateTime || "") + "</td>" +
+                        "</tr>"
+                    );
+                });
+            }
+        });
+    }
+</script>

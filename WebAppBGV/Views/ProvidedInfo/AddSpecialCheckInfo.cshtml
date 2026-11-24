@@ -1,0 +1,671 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "Add SpecialCheck Info (" + Convert.ToString(Session["CandidateName"]) + ")";
+    string Department = Convert.ToString(Session["Department"]);
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = string.Empty;
+    if (Request.QueryString["window"] == "TLDE")
+    {
+        hyperLink = Html.ActionLink("linkTitle", "ManageCandidateChecksForReportQCTM", "ProvidedInfo", new { PersonalRowID = @ViewBag.PersonalRowid, dispFor = "TeamMember" }, new { @class = "headerbacklink" }).ToString();
+        ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    }
+    //string hyperLink = Html.ActionLink("linkTitle", "ManageDataEntryJob", "ProvidedInfo", new { id = Model.PersonalRowID, CheckstatusId=Model.CheckStatusId }, new { @class = "headerbacklink" }).ToString();
+    //ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+
+    string CaseStatus2 = "";
+    string CheckStatusId = "";
+    string Package = "";
+
+    CaseStatus2 = Session["CaseStatus"].ToString();
+    PersonalRowid = @ViewBag.PersonalRowid;
+    SubCheckId = @ViewBag.SubCheckId;
+    clientRowId = @ViewBag.clientRowId;
+    CheckStatusId = @ViewBag.checkstatusid;
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftDataEntryProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+@if (ViewBag.ErrorMsg != null)
+{
+    <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+}
+<div class="container">
+    @using (Html.BeginForm("AddSpecialCheckInfo", "ProvidedInfo", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        if (clientRowId == "1470" && ViewBag.PackageOrCheckDetails != null)
+        {
+            Package = ViewBag.PackageOrCheckDetails.ToString().Replace("Package-", "");
+        }
+        @Html.AntiForgeryToken()
+        <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+        @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+        <input id="SubCheckId" type="hidden" value=@SubCheckId>
+        @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+        <input id="clientRowId" type="hidden" value=@clientRowId>
+        @Html.Hidden("clientRowId", clientRowId.ToString())
+
+        <input id="package" type="hidden" value=@Package>
+        @Html.Hidden("package", Package.ToString())
+
+        @Html.ValidationSummary()
+        @Html.Partial("_PersonalDetails")
+        @Html.Partial("_UploadedDocumentList")
+        @Html.Partial("_CaseDocumentList")
+        @Html.Partial("_ClientSpecialInstructionsDE")
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-2 col-md-2 col-sm-12">
+                    <label>Copy Paste Text</label>
+                </div>
+                <div class="col-lg-7 col-md-7 col-sm-12">
+                    <textarea class="form-control" id="CopyPaste_Text"></textarea>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-12">
+                    <input type="button" class="btn" value="Paste" id="btnCopyPaste" onclick="CopyPasteText()" style="border:1px solid #11c9b7; color: #FFF; background: #11c9b7;" />
+                </div>
+            </div>
+        </div>
+        
+        @*if (clientRowId == "1470" && Package == "CAPCO_Package BNP Paribas (3EDU_6EMP_ID_IDB_GDB_1CER_ DIN_6CRC_UAN_1FPA_1CV)")
+            {
+                <div style="text-align: center;">
+                    <a href='@Url.Action("AddCVValidation", "ProvidedInfo", new { PersonalRowID = PersonalRowid, ClientRowId = clientRowId, SubCheckRowID = SubCheckId})' class="btn bun-bg btn-default iframeCompanyRefNo" style="padding: 5px 10px 5px 10px; font-weight: bold;" id="clip">Add CV Validation</a>
+                </div>
+
+            }*@
+        //
+        //if (clientRowId != "1255")
+        //{
+        <div class="row row-sm p-2 mt-2 ms-5" id="NADiv" style="background:#11c9b7; margin:5px 20px 5px 20px;padding: 3px 0px;">
+            <div class="col-md-12 d-flex pr-0">
+                @Html.CheckBox("Notraised", false, new { onchange = "NotRaised(this)", @class = "form-check-input", @style = "height: 20px;width:20px;margin: 0px 5px;" })<b style="color:white;padding-left:30px;font-size:1.3rem;">Not Applicable</b>
+            </div>
+        </div>
+        // }
+
+        //
+        <div class="container" id="container">
+            <div class="container-fluid mb-2 p-0" id="top_div">
+                @foreach (var category in Model)
+                {
+                    <div class="row row-sm mt-3">
+                        @{
+                            string[] nm = category.Key.Split('_');
+
+
+                            if (@nm[2] == "textbox")
+                            {
+                                <div class="col-md-6 col-sm-6">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <span>@nm[4]</span>
+                                    <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength=@nm[5]>
+                                </div>
+                            }
+                            else if (@nm[2] == "dropdown")
+                            {
+                                <div class="col-md-6 col-sm-6">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <span> @nm[4] </span>
+                                    @{
+                                        string[] nmOption = nm[7].Split(',');
+                                    }
+                                    <select name=@nm[0] id=@nm[0]>
+                                        @for (int i = 0; i < nmOption.Length; i++)
+                                        {
+                                            if (@nmOption[i].Trim() == @nm[6])
+                                            {
+                                                <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                            }
+                                            if (@nmOption[i].Trim() != @nm[6])
+                                            {
+                                                <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            }
+                            else if (@nm[2] == "checkbox")
+                            {
+                                <div class="col-md-6 col-sm-6">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <span> @nm[4] </span>
+                                    @{
+                                        if (@nm[6] == "TRUE")
+                                        {
+                                            <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value="checked" checked>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value=@nm[0]>
+                                        }
+                                    }
+                                </div>
+                            }
+                            else if (@nm[2] == "fileUpload")
+                            {
+                                <div class="col-md-6 col-sm-6">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-sm">
+                                    <sapn>@nm[4]</sapn>
+                                    <input type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                                </div>
+                            }
+                        }
+
+                    </div>
+                }
+                <div class="row row-sm mt-3">
+                    <div class="col-md-6 col-sm-6">
+                        @Html.Label("Check Status", htmlAttributes: new { @class = " control-label text-right" })
+                    </div>
+                    @if (@ViewBag.clientRowId == "990")
+                    {
+                        <div class="col-md-6 col-sm-6">
+                            @Html.DropDownList("CheckStatus", new List<SelectListItem>
+                   { new SelectListItem{Text="Completed", Value="Completed"},
+                     new SelectListItem{Text="Insufficent", Value="Insufficent"},
+                     new SelectListItem{Text="Rejected", Value="Rejected"},
+                     new SelectListItem{Text="Review Requested", Value="Review Requested"},
+                     new SelectListItem { Text = "WIP-Pending", Value = "WIP-Pending" } },
+                     new { @class = "checkStatus", @id = "CheckStatus" })
+                        </div>
+                    }
+                    else if ((@ViewBag.clientRowId == "327" || @ViewBag.clientRowId == "317") && SubCheckId == "38" && ViewBag.CreatedBySource == "API")
+                    {
+                        <div class="col-md-6 col-sm-6">
+                            @Html.DropDownList("CheckStatus", new List<SelectListItem>
+                   { new SelectListItem{Text="Completed", Value="Completed"},
+                     new SelectListItem{Text="Insufficent", Value="Insufficent"},
+                     new SelectListItem{Text="Recruiter Insufficent", Value="Recruiter Insufficent"},
+                     new SelectListItem{Text="Rejected", Value="Rejected"},
+                     new SelectListItem{Text="Review Requested", Value="Review Requested"},
+                     new SelectListItem { Text = "WIP-Pending", Value = "WIP-Pending" },
+                     new SelectListItem { Text = "Not Applicable", Value = "Not Applicable" }},
+                                                  new { @class = "checkStatus", @id = "CheckStatus" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-6 col-sm-6">
+                            @Html.DropDownList("CheckStatus", new List<SelectListItem>
+                   { new SelectListItem{Text="Completed", Value="Completed"},
+                     new SelectListItem{Text="Insufficent", Value="Insufficent"},
+                     new SelectListItem{Text="Rejected", Value="Rejected"},
+                     new SelectListItem{Text="Review Requested", Value="Review Requested"},
+                     new SelectListItem { Text = "WIP-Pending", Value = "WIP-Pending" },
+                     new SelectListItem { Text = "Not Applicable", Value = "Not Applicable" }},
+                                                  new { @class = "checkStatus", @id = "CheckStatus" })
+                        </div>
+                    }
+                </div>
+
+                <div class="row row-sm mt-3">
+                    <div class="col-md-6 col-sm-6">Check Remarks</div>
+                    <div class="col-md-6 col-sm-6">
+                        <select name="CheckRemarks" id="datalist"></select>
+                    </div>
+                </div>
+
+                <div class="row row-sm mt-3">
+                    <div class="col-md-6 col-sm-6">
+                        @Html.Label("INFRemarks", htmlAttributes: new { @class = "control-label" })
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                        @Html.TextArea("INFRemarks", new { @class = "form-control", @rows = "2", @disabled = "disabled" })
+                    </div>
+                </div>
+
+                @if (clientRowId == "1470" && Package == "CAPCO_Package BNP Paribas (3EDU_6EMP_ID_IDB_GDB_1CER_ DIN_6CRC_UAN_1FPA_1CV)")
+                {
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+
+                            <h4 style="text-align:center; background:#11c9b7; color:white; padding:10px;">
+                                CV Validation
+                            </h4>
+
+                            @Html.Action(
+                                "GetCVValidationPartial",
+                                "ProvidedInfo",
+                                new
+                                {
+                                    PersonalRowID = PersonalRowid,
+                                    ClientRowId = clientRowId,
+                                    SubCheckRowID = SubCheckId
+                                })
+
+                        </div>
+                    </div>
+                }
+
+                <div class="row mb-2">
+                    <div class="col-md-12" style="text-align:center; justify-content:center;display:flex; margin-top:10px;">
+                        @if (CaseStatus2 != "Closed" && CheckStatusId != "1")
+                        {
+                            <input id="WithQcval" name="WithQcval" value="" hidden />
+                            <input class="btn" type="submit" value="Submit" style="width:15rem!important; border-radius:.90rem; font-size:1.6rem!important;" onclick="validateForm()" />
+                            <div class="w-100 d-flex justify-content-end">
+                                <input class="btn" type="submit" id="SubmitWithQC" style="width: 19rem !important; margin-left: 15PX; border-radius: .90rem; font-size: 1.6rem !important" value="SubmitWithQC" onclick="validateFormWithQc()" disabled />
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid mt-2 p-0" id="bottom_div">
+                <div class="row h-100">
+                    <div class="col-md-12">
+                        <img id="bigpic" src="" style="display:none;height:100%; width:100%;" />
+                        <iframe id="bigpdf" src="" style="display: none; height: 100%; width: 100%;"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+        @section Scripts{
+            <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+            <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+            <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+            <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+            <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+            <link href="~/Content/colorbox.css" rel="stylesheet" />
+            <script src="~/Scripts/jquery.colorbox-min.js"></script>
+
+            <script>
+
+                function showPicture(url) {
+                    var sourceOfPicture = url + '?embedded = true';
+                    var exe = getExtension(url);
+                    //var url1 = Url.Content(url);
+                    if (exe = 'pdf') {
+                        var img = document.getElementById('bigpdf');
+                        img.src = sourceOfPicture.replace('90x90', '225x225');
+                        img.style.display = "block";
+                    }
+                    else {
+                        var img = document.getElementById('bigpic')
+                        img.src = sourceOfPicture.replace('90x90', '225x225');
+                        img.style.display = "block";
+                    }
+
+                }
+                function getExtension(path) {
+                    var basename = path.split(/[\\/]/).pop(),  // extract file name from full path ...
+                        // (supports `\\` and `/` separators)
+                        pos = basename.lastIndexOf(".");       // get last position of `.`
+
+                    if (basename === "" || pos < 1)            // if file name is empty or ...
+                        return "";                             //  `.` not found (-1) or comes first (0)
+
+                    return basename.slice(pos + 1);            // extract extension ignoring `.`
+                }
+
+
+            </script>
+
+            <script>
+                $('#CheckStatus').change(function () {
+                    debugger
+                    $("#datalist").empty();
+                    var Curlist = $("#CheckStatus").val();
+
+                    if (Curlist == "Insufficent") {
+                        $('#vs').css('display', 'flex');
+                        var url = "/ProvidedInfo/GetCandidatesRemarks/"
+                        $.ajax({
+                            type: 'GET',
+                            url: url,
+                            //dataType: 'json',
+                            success: function (data) {
+                                //$('#vs').css('display', 'flex');
+                                var items = '<option>--Select Remarks--</option>';
+                                $.each(data, function (Remarks, val) {
+                                    items += "<option value='" + val.Remarks + "'>" + val.Remarks + "</option>";
+                                });
+                                items += '<option>Other</option>';
+                                $("#datalist").append(items);
+                            }
+                        });
+
+                    }
+                    else {
+                        $('#vs').css('display', 'none');
+                    }
+                });
+            </script>
+
+            <script>
+                function CopyPasteText() {
+                    var CopyPaste_Text = $('#CopyPaste_Text').val().replace(/[\n\r]+/g, "•");;
+                    if (CopyPaste_Text != '') {
+                        var url = "/ProvidedInfo/GetCopyPasteText?Copytext=" + CopyPaste_Text + "&CheckId=FasisCheck";
+                        $.ajax({
+                            type: 'GET',
+                            url: url,
+                            async: false,
+                            dataType: 'json',
+                            success: function (data) {
+                                if (data.CountryName != null) {
+                                    $('#456').empty();
+                                    $('#456').append("<option value='" + data.CountryRowID + "'>" + data.CountryName + "</option>");
+                                }
+                                if (data.CandidateName != "") {
+                                    // $('#116').val(data.CandidateName);
+                                    $('#241').val(data.CandidateName);
+
+                                }
+                                if (data.FatherName != "") {
+                                    $('#117').val(data.FatherName);
+
+                                }
+                                if (data.DOB != "") {
+                                    $('#178').val(data.DOB);
+
+                                }
+                                if (data.AddressLine != "") {
+                                    $('#115').val(data.AddressLine);
+
+                                }
+                                if (data.Gender != null) {
+                                    $('#118').empty();
+                                    $('#118').append("<option value='" + data.Gender + "'>" + data.Gender + "</option>");
+                                }
+
+                            },
+                            error: function (xhr, status, error) {
+                                //console.error(xhr, status, error);
+                            }
+                        });
+                    }
+                }
+            </script>
+            <script>
+                $('#datalist').change(function () {
+                    if ($('#datalist').val() == 'Other') {
+                        $('#INFRemarks').val('')
+                        document.getElementById("INFRemarks").placeholder = "Write Other Remarks...";
+                    }
+                    else { $('#INFRemarks').val($('#datalist').val()); }
+                });
+            </script>
+
+            <script>
+                $(document).ready(function () {
+                    $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+                });
+            </script>
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected" || $("#CheckStatus").val() == "Review Requested" || $("#CheckStatus").val() == "Recruiter Insufficent") {
+                        $("#INFRemarks").prop("disabled", false);
+                    }
+                    else {
+                        $("#INFRemarks").prop("disabled", true);
+                    }
+
+                    if ($("#CheckStatus").val() == "Completed") {
+                        $("#SubmitWithQC").prop("disabled", false);
+
+                    } else {
+                        $("#SubmitWithQC").prop("disabled", true);
+                    }
+                });
+                $(function () {
+                    $("#CheckStatus").change(function () {
+                        if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected" || $("#CheckStatus").val() == "Review Requested" || $("#CheckStatus").val() == "Recruiter Insufficent") {
+                            $("#INFRemarks").prop("disabled", false);
+                            $('#INFRemarks').focus();
+                        }
+                        else {
+                            $("#INFRemarks").prop("disabled", true);
+                        }
+
+                        if ($("#CheckStatus").val() == "Completed") {
+                            $("#SubmitWithQC").prop("disabled", false);
+
+                        } else {
+                            $("#SubmitWithQC").prop("disabled", true);
+                        }
+                    });
+                });
+
+                function validateForm() {
+                    if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected" || $("#CheckStatus").val() == "Recruiter Insufficent") {
+                        if ($("#INFRemarks").val().trim() == '') {
+                            alert("Please mention the reason!");
+                            $('#INFRemarks').focus();
+                            event.preventDefault();
+                            return false;
+                        }
+                        else {
+                            const infRemarks = $("#INFRemarks").val().trim();
+                            if (infRemarks.length < 15) {
+                                alert("Please provide a reason that is at least 15 characters long!");
+                                $('#INFRemarks').focus();
+                                event.preventDefault();
+                                return false;
+                            }
+                            return true;
+                        }
+                    }
+                    function normalizeDate(dateStr) {
+                        if (!dateStr) return '';
+
+                        if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+                            var parts = dateStr.split('-');
+                            return parts[2] + '-' + parts[1] + '-' + parts[0];
+                        }
+
+                        return dateStr;
+                    }
+
+                    var dob = normalizeDate($('#178').val());
+                    var doj = new Date().toISOString().split('T')[0];
+
+                    if (dob != '' && (cRowId != 1808 || cRowId != 1692)) {
+                        debugger
+                        var dateOfBirth = new Date(dob);
+                        var dateOfJoin = new Date(doj);
+
+                        var age = dateOfJoin.getFullYear() - dateOfBirth.getFullYear();
+                        var monthDiff = dateOfJoin.getMonth() - dateOfBirth.getMonth();
+
+                        if (monthDiff < 0 || (monthDiff === 0 && dateOfJoin.getDate() < dateOfBirth.getDate())) {
+                            age--;
+                        }
+
+                        if (age < 18) {
+                            alert("Age should be more than 18 years. from date of joining!");
+                            event.preventDefault();
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+
+
+                function validateFormWithQc() {
+                    $('#WithQcval').val('SubmitWithQCApprove')
+                    return true;
+                }
+
+            </script>
+            <script>
+                function NotRaised(element) {
+                    if ($('#Notraised').is(':checked')) {
+                        $("#382").attr('checked', true);
+                        $("#178").val('Not Applicable');
+                        $("#117").val('Not Applicable');
+                        $("#191").val('Not Applicable');
+                        $("#229").val('Not Applicable');
+                        $("#CheckStatus").val('Not Applicable');
+                    }
+                    else {
+                        $("#382").attr('checked', false);
+                        $("#178").val('');
+                        $("#117").val('');
+
+                        $("#CheckStatus").val('');
+
+                    }
+
+                }
+            </script>
+            <script>
+                $(".docShow").click(function () {
+                    $("#top_div").addClass("topdiv");
+                    $("#bottom_div").addClass("bottomdiv");
+                });
+            </script>
+        }
+        <style>
+
+            .btn {
+                padding: 10px 40px 10px 40px !important;
+            }
+
+            .form-control {
+                width: 100%;
+                padding: 22px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                resize: vertical;
+            }
+
+            input[type=text], textarea {
+                width: 100%;
+                padding: 15px;
+                border: 1px solid #ccc;
+                border-radius: 0px;
+                resize: vertical;
+            }
+
+            select {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 0px;
+                resize: vertical;
+            }
+
+            label {
+                padding: 12px 12px 12px 0;
+                display: inline-block;
+            }
+
+            input[type=submit] {
+                background-color: #04AA6D;
+                color: white;
+                padding: 12px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                float: right;
+            }
+
+                input[type=submit]:hover {
+                    background-color: #45a049;
+                }
+
+            .container {
+                border-radius: 5px;
+                /*background-color: #f2f2f2;*/
+                padding: 8px;
+                font-size: 1.2rem !important;
+            }
+
+            .col-25 {
+                float: left;
+                width: 25%;
+                margin-top: 6px;
+            }
+
+            .col-75 {
+                float: left;
+                width: 40%;
+                margin-top: 6px;
+                margin-left: 90px;
+            }
+
+            /* Clear floats after the columns */
+            .row:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+
+            /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+            @@media screen and (max-width: 600px) {
+                .col-25, .col-75, input[type=submit] {
+                    width: 100%;
+                    margin-top: 0;
+                }
+            }
+
+            .ui-menu {
+                height: 200px;
+                overflow: scroll;
+                z-index: 999;
+                width: 470px;
+            }
+
+            /*///////////////////////////*/
+
+            .topdiv {
+                height: 300px;
+                overflow-y: scroll;
+                border-bottom: 2px solid #11c9b7;
+            }
+
+            .bottomdiv {
+                height: 300px;
+            }
+        </style>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $(".iframeCompanyRefNo").colorbox({ iframe: true, width: "90%", height: "72%" });
+            });
+        </script>

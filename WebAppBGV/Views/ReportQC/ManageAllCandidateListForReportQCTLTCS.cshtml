@@ -1,0 +1,296 @@
+
+@{
+    ViewBag.Title = "Manage Report QC Cases And Allocate To TeamMember";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+}
+@{
+    string tatHours1 = "";
+    string CaseStatus1 = "";
+    string AllocatedToTL1 = "";
+    if (Request.QueryString["tatHours"] != null)
+    {
+        tatHours1 = Request.QueryString["tatHours"].ToString();
+    }
+    if (Request.QueryString["AllocatedToTL"] != null)
+    {
+        AllocatedToTL1 = Request.QueryString["AllocatedToTL"].ToString();
+    }
+    if (Request.QueryString["CaseStatus"] != null)
+    {
+        CaseStatus1 = @Request.QueryString["CaseStatus"].ToString();
+    }
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    string hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportReportMIS", "ReportQC", new { CaseStatus = CaseStatus1, tatHours = tatHours1 }, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+    @*//@ViewBag.NavigationBtnExportWord
+        //string faIconExportWord = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Word");
+        //string hyperLinkExportWord = Html.ActionLink("linkTitle", "ExportCountryInWord", "Master", null, new { class = "btn bun-bg btn-default" }).ToString();
+        //ViewBag.NavigationBtnExportWord = new HtmlString(hyperLinkExportWord.ToString().Replace("linkTitle", faIconExportWord));
+
+        //@ViewBag.NavigationBtnBackExportPDF
+        //string faIconExportPDF = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export PDF");
+        //string hyperLinkExportPDF = Html.ActionLink("linkTitle", "ExportCountryInPDF", "Master", null, new { class = "btn bun-bg btn-default" }).ToString();
+        //ViewBag.NavigationBtnBackExportPDF = new HtmlString(hyperLinkExportPDF.ToString().Replace("linkTitle", faIconExportPDF));*@
+}
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("ManageAllCandidateListForReportQCTLTCS", "ReportQC", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Client Name :</label>
+                                    <div class="col-md-4">
+                                        @Html.DropDownList("ClientRowID",
+                                        new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                                        "-- Select Client -- ",
+                                        new { @class = "form-control" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Keyword :</label>
+                                    <div class="col-md-4">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, Ref No...", @autocomplete = "off" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Select TeamLeader :</label>
+                                    <div class="col-md-4">
+                                        @Html.DropDownList("AllocateTM",
+                                        new List<SelectListItem>
+                                            {
+                                            new SelectListItem { Text = "Monika Sachdeva", Value = "263" },
+                                            new SelectListItem { Text = "Archana Tiwari", Value = "1024" },
+                                            new SelectListItem { Text = "Niraj Kumar", Value = "465" },
+                                            new SelectListItem { Text = "Dinesh Chetry", Value = "504" },
+                                            new SelectListItem { Text = "Vivek Kumar Shukla", Value = "539" },
+                                            new SelectListItem { Text = "Avdhesh Kumar", Value = "213" },
+                                            new SelectListItem { Text = "Deepak Ahuja", Value = "404" },
+                                            new SelectListItem { Text = "Saurabh Saxena", Value = "839" },
+                                            new SelectListItem { Text = "Rohit Kumar", Value = "1147" },
+                                            new SelectListItem { Text = "Akash Kumar Prashad", Value = "524" },
+                                            new SelectListItem { Text = "Akash Kumar", Value = "1140" },
+                                            new SelectListItem { Text = "Ajit Singh", Value = "1169" },
+                                            new SelectListItem { Text = "Ashwani Kumar", Value = "1165" },
+                                            new SelectListItem { Text = "Brijesh Singh", Value = "1072" },
+                                            new SelectListItem { Text = "Gulshad Ahmed Ansari", Value = "643" },
+                                            new SelectListItem { Text = "Khushal Taneja RWQC", Value = "547" },
+                                            new SelectListItem { Text = "Manoj Kumar Verma", Value = "1114" },
+                                            new SelectListItem { Text = "Margaret Shantha Kumari", Value = "940" },
+                                            new SelectListItem { Text = "Nazia Hussain RWQC", Value = "636" },
+                                            new SelectListItem { Text = "NIKITA SANATAN RW", Value = "1144" },
+                                            new SelectListItem { Text = "Nirmala Mehta", Value = "390" },
+                                            new SelectListItem { Text = "Pramod Kumar", Value = "1149" },
+                                            new SelectListItem { Text = "Pushpeshwar Tiwar RWQC", Value = "686" },
+                                            new SelectListItem { Text = "Rajgopal. M RWQC", Value = "929" },
+                                            new SelectListItem { Text = "Rohit Kumar RW", Value = "1147" },
+                                            new SelectListItem { Text = "Sakshi Shrivastav RWQC", Value = "1039" },
+                                            new SelectListItem { Text = "Sani Kumar RW", Value = "1124" },
+                                            new SelectListItem { Text = "Saurabh Saxena RWQC", Value = "839" },
+                                            new SelectListItem { Text = "Shrikant Thakur CS", Value = "707" },
+                                            new SelectListItem { Text = "Sonam Sharma RWQC", Value = "540" },
+                                            new SelectListItem { Text = "Sripathi Kalyani", Value = "903" },
+                                            new SelectListItem { Text = "Suheb Khan", Value = "923" },
+                                            new SelectListItem { Text = "Sunil Rawat RWQC", Value = "1023" },
+                                            new SelectListItem { Text = "S Sakthi", Value = "505" },
+                                            new SelectListItem { Text = "Sweety Gupta", Value = "436" },
+                                            new SelectListItem { Text = "Vivek Singh Malyal", Value = "1077" },
+                                            new SelectListItem { Text = "YogeshRWQC", Value = "1092" }
+                                            },
+                                            "-- Select Member --",
+                                            new { @class = "form-control" })
+
+                                    </div>
+                                    @Html.Hidden("PersonalIds", null)
+                                    @{
+                                        if (Request.QueryString["CaseStatus"] != null)
+                                        {
+                                            @Html.Hidden("CaseStatus", Request.QueryString["CaseStatus"].ToString())
+                                        }
+
+
+                                    }
+                                </div>
+                                <div class="all-button-bg">
+                                    <input class="btn bun-bg btn-default" type="submit" onclick="SearchFunction()" value="Search" />
+                                    <input class="btn bun-bg btn-default" type="submit" id="btnAllocation" onclick="return validateForm()" value="Allocate" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.PQPersonalForReportQC != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12 table">
+                            @{
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.PQPersonalForReportQC, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                    htmlAttributes: new { id = "grid", @class = "table table-striped table-bordered nowrap" },
+                                    headerStyle: "thead-inverse",
+                                    rowStyle: "ordertxt",
+                                    footerStyle: "custpaging",
+                                    mode: WebGridPagerModes.All,
+                                    columns: new[]
+                                    {
+                                    grid.Column(header: "No.", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                    grid.Column(header: "{checkall}",format: @<text> <input type="checkbox" value="@item.PersonalRowID" name="personalId" class="personalId" /> </text>),grid.Column(columnName: "ClientName", header: "Client Name", canSort: false),
+                                    grid.Column(columnName: "Name", header: "Candidate Name", canSort: false),
+                                    grid.Column(columnName: "Caseageing", header: "Case Ageing", canSort: false),
+                                    grid.Column(columnName: "ClientRefID", header: "Client-Ref-ID", canSort: false),
+                                    
+                                    grid.Column(header : "Securitas ID", format : (item) => {
+                                    string CompanyRefNo=item.CompanyRefNo;
+                                    var link = Html.ActionLink(CompanyRefNo,"ManageCandidateChecksForReportQC", "ReportQC", new { PersonalRowID = item.PersonalRowID, dispFor="TeamLeader"  }, new { });
+                                    return link;
+                                    }),
+                                    grid.Column(columnName: "FinalColor", header: "Color", canSort: false),
+                                    grid.Column(columnName: "ReportUploadedDate", header: "Upload Date", canSort: false),
+                                    grid.Column(columnName: "RWQCName", header: "User Name", canSort: false),
+                                    grid.Column(columnName: "FinalStatus", header: "Report Type", canSort: false),
+                                    grid.Column(columnName: "CaseStatus", header: "Case-Status", canSort: false),
+                                    grid.Column(header : "Action", format : (item) => {
+                                        var link = Html.ActionLink("History", "CaseActionHistories", "ReportQC", new { pid = item.PersonalRowID }, new { @class = "iframeActionHistories cboxElement" });
+                                        return link;
+                                    }),
+                                    })
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @*<script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+
+        @*<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>*@
+    @*<link href="~/Content/colorbox.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery.colorbox-min.js"></script>*@
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+
+            $("#grid th").each(function () {
+                if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                    $(this).text('');
+                    $("<input/>", { type: "checkbox", id: "select_all", value: "" }).appendTo($(this));
+                    //$(this).append("<span>Select All</span>");
+                }
+            });
+
+            //2nd click event for header checkbox for select /deselect all
+            $('#select_all').change(function () {
+                $('input[class="personalId"]').prop('checked', $(this).prop('checked'));
+                var personalIds = '';
+                $('input[class="personalId"]').each(function (index, value) {
+                    if (this.checked) { personalIds += this.value + ','; }
+                });
+                if (personalIds.length > 0) {
+                    personalIds = personalIds.substring(0, personalIds.length - 1);
+                } else { personalIds = ''; }
+                $('#PersonalIds').val(personalIds.trim());
+            });
+        });
+
+        function SearchFunction() {
+            $('#VerificationIds').val("");
+        }
+
+        function SearchFunction() {
+            $('#PersonalIds').val("");
+        }
+
+        //3rd click event for checkbox of each row
+        $(document).on('change', 'input[class="personalId"]', function (e) {// on change of state
+            var personalIds = '';
+            $('input[class="personalId"]').each(function (index, value) {
+                if (this.checked) { personalIds += this.value + ','; }
+            });
+
+            if (false == $(this).prop("checked")) { //if this item is unchecked
+                $("#select_all").prop('checked', false); //change "select all" checked status to false
+            }
+            //check "select all" if all checkbox items are checked
+            if ($('.personalId:checked').length == $('.personalId').length) {
+                $("#select_all").prop('checked', true);
+            }
+
+            if (personalIds.length > 0) {
+                personalIds = personalIds.substring(0, personalIds.length - 1);
+            } else { personalIds = ''; }
+            $('#PersonalIds').val(personalIds.trim());
+        })
+
+        function validateForm() {
+            if ($("#AllocateTM").val() == 0) {
+                alert("Select Team Leader For Allocate.");
+                return false;
+            }
+
+            var count = 0;
+            $('input[class="personalId"]').each(function (index, value) {
+                if (this.checked) { count += 1; }
+            });
+
+            if (count == 0) {
+                alert("Please select atleast one case.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+}
+<script>
+    $(document).ready(function () {
+        var table = $('#grid').DataTable({
+            responsive: true,
+        });
+
+        new $.fn.dataTable.FixedHeader(table);
+    });
+</script>
+<style>
+    #select_all {
+        width: 30px !important;
+    }
+
+    .personalId {
+        width: 30px !important;
+    }
+
+    @@media screen and (max-width: 1450px) and (min-width: 600px) {
+        #grid {
+            font-size: .90rem;
+            width: 100%;
+        }
+
+        .table td, .table th {
+            padding: .60rem !important;
+        }
+
+        .thead-inverse {
+            font-size: .90rem !important;
+        }
+
+        table, td, a {
+            font-size: .95rem !important;
+        }
+    }
+</style>
+
+

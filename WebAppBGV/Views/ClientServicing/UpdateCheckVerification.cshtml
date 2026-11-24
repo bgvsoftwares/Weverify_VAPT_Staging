@@ -1,0 +1,139 @@
+﻿@model dynamic
+@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Stop Checks Verification";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+}
+
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("UpdateCheckVerification", "ClientServicing", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                        {
+                        @Html.AntiForgeryToken()
+                        var ClientId = Model.ClientRowId;
+                        var CandCheckRowID = Model.CandCheckRowId;
+                        <input id="CandCheckRowID" type="hidden" name="CandCheckRowID" value="@CandCheckRowID">
+                        <input id="hdnDispositionID" type="hidden" name="hdnDispositionID">
+                        <input id="hdnSeverity" type="hidden" name="hdnSeverity">
+                        <input id="ColorsName" type="hidden" name="ColorsName">
+                        <input id="clientRowId" type="hidden" name="clientRowId" value="@ClientId">
+                        <div class="form-horizontal">
+                            <div class="form-group branch search-frame">
+                                <div class="col-md-2">
+                                    Client Name
+                                </div>
+                                <div class="col-md-5">
+                                    @Model.ClientName
+                                </div>
+                                <div class="col-md-2">
+                                    Company Ref No
+                                </div>
+                                <div class="col-md-3">
+                                    @Model.CompanyRefNo
+                                </div>
+                            </div>
+                            <div class="form-group branch search-frame">
+                                <div class="col-md-2">
+                                    Candidate Name
+                                </div>
+                                <div class="col-md-5">
+                                    @Model.CandidateFullName
+                                </div>
+                                <div class="col-md-2">
+                                    Check name
+                                </div>
+                                <div class="col-md-3">
+                                    @Model.CheckName
+                                </div>
+                            </div>
+
+                            <div class="form-group branch search-frame">
+                                <div class="col-md-2">
+                                    Disposition
+                                </div>
+                                <div class="col-md-5">
+                                    @Html.DropDownList("CDispositionRowId",
+                                    new SelectList(ViewBag.Disposition, "DispositionRowId", "Disposition"),
+                                    "-- Select -- ",
+                                    new { @class = "form-control" })
+                                </div>
+                                <div class="col-md-2">
+                                    Severity :
+                                </div>
+                                <div class="col-md-3">
+                                    @Html.Editor("Severity", new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
+                                </div>
+                            </div>
+                            <div class="form-group branch search-frame">
+                                <div class="col-md-2">
+                                    Color :
+                                </div>
+                                <div class="col-md-5">
+                                    @Html.Editor("ColorName", new { htmlAttributes = new { @class = "form-control", @disabled = "disabled", @name = "ColorName" } })
+                                </div>
+
+                            </div>
+                            <div class="form-group branch search-frame">
+                                <div class="col-md-2">
+                                    Remark
+                                </div>
+                                <div class="col-md-10">
+                                    @*@Html.TextArea("Remark", new { htmlAttributes = new { @class = "form-control", @name = "Remark" } })*@
+                                    <TextArea Id="Remark" Class="text" name="Remark" style="height: 97px;width: 100%;"></TextArea>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group branch search-frame">
+                                <div style="text-align:center;margin-top:100px;">
+                                    <input class="btn bun-bg btn-default" type="submit" value="Update" id="btnSubmit" autofocus />
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+<script src="~/Scripts/normalizePlugin.js"></script>
+<script type="text/javascript">
+
+
+    $(function () {
+        $('#CDispositionRowId').change(function () {
+            $('#hdnDispositionID').val($('#CDispositionRowId').val());
+            var url = "/Verification/GetSeverityColor?ClientRowId=" + $("#clientRowId").val() + "&Dispositions=" + $("#CDispositionRowId").val();
+            $.ajax({
+                url: url,
+                type: 'GET',
+                async: false,
+                dataType: 'json',
+                success: function (colors) {
+                    $('#Severity').val(colors.SeverityName);
+                    $('#ColorName').val(colors.ColorName);
+                    $('#ColorsName').val(colors.ColorName);
+                    $('#hdnSeverity').val(colors.SeverityRowId);
+
+                }
+            });
+        });
+    });
+
+
+</script>
+}

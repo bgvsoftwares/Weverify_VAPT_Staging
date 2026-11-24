@@ -1,0 +1,179 @@
+﻿@model ViewModels.VerificationViewModel.ReminderMail
+@{Layout = null; }
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/colorbox.css" rel="stylesheet" />
+<link href="~/Content/Site.css" rel="stylesheet" />
+
+<script src="~/Scripts/jquery-3.7.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/modernizr-2.8.3.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" />
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<div class="container" style="margin-left:10px;">
+    <h1 style="text-align:left;color:green">Bounce Revert Process</h1>
+
+    @*@if (ViewBag.SuccessMsg != null)
+    {
+        <div class="successmsg">@ViewBag.SuccessMsg.ToString()</div>
+    }
+
+    @if (ViewBag.ErrorMsg != null)
+    {
+        <div style="color:red" class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+    }*@
+
+    @if (Model != null)
+    {
+        //@using (Html.BeginForm("SubmitForm", "Home", FormMethod.Post, new { id = "submitForm" }))
+        using (Html.BeginForm("BounceAutoRevertProceed", "Verification", FormMethod.Post))
+        {
+
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.BounceId)
+            @*@Html.HiddenFor(model => model.subject)*@
+            @Html.HiddenFor(model => model.Status)
+            @Html.HiddenFor(model => model.ReminderStatus)
+            <div id="alertmsg"></div>
+
+            @*<div class="row">
+                    <div class="mx-auto mt-5" style="width:500px;">
+                        <div class="form-group form-inline">
+
+                            <div class="col-md-3 offset-md-3" style="font-size:12px;">
+                                Subject
+                            </div>
+                            <div class="col-md-6" style="float: left; display: inline; width: 265px; word-break: break-all; word-wrap: break-word;">
+                                <span style="border-color:black;">
+                                    @Html.DisplayFor(model => model.subject, new { @class = "form-control ", style = "width: 500px;" });
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+
+
+
+
+            @*<div class="row">
+                    <div class="mx-auto mt-5" style="width:500px;">
+                        <div class="form-group form-inline">
+
+                            <div class="col-md-3 offset-md-3" style="font-size:12px;">
+                                Status
+                            </div>
+                            <div class="col-md-6">
+                                @Html.DropDownListFor(model => model.MailStatus, new List<SelectListItem>
+                                                              {new SelectListItem{Text="--Select--", Value="--Select--"},
+                               new SelectListItem{Text="Match", Value="Match"},
+                                                              new SelectListItem{Text="NotMatch", Value="NotMatch"},
+                                                              }, new {  style = "width: 230px; height:35px;" })
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+            <div class="row">
+                <div class="mx-auto mt-3" style="width:500px;">
+                    <div class="form-group form-inline">
+                        <div class="col-md-3 offset-md-3" style="font-size:12px;">
+                            CheckId
+                        </div>
+                        <div class="col-md-3">
+                            @Html.TextBoxFor(model => model.CandCheckRowID, new { @class = "form-control ", style = "width: 180px;" })
+                            @Html.HiddenFor(model => model.AutoId)
+
+                        </div>
+                        <div class="col-md-3">
+                            <input type="submit" id="btnSearch" style="width:120px; margin-left:100px; height:40px;" name="Search" value="Search" class="btn btn-default" />
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            if (@Model.subject != "" && @Model.subject != null)
+            {
+                @Html.Partial("ReminderMail");
+            }
+
+
+            @*<div class="row">
+                    <div class="mx-auto mt-3 mb-2" style="width:500px;">
+                        <div class="form-group form-inline">
+                            <div class="col-md-3 offset-md-3" style="font-size:12px;">
+                                Check Name :
+                            </div>
+                            <div class="col-md-6">
+                                @Html.DropDownListFor(model => model.CheckName,
+                               new SelectList(ViewBag.EmployementSubCheckList, "SubCheckFamilyRowID", "SubCheckFamilyName"),
+                               "--Select-- ",
+                               new { style = "width: 230px; height:35px;" })
+
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+
+
+        }
+    }
+
+</div>
+
+
+
+@*<script src='@Url.Content("~/Scripts/EventValidations.js")'></script>*@
+<script>
+
+    $('#MailStatus').change(function () {
+        var checkstatus = $("#MailStatus").val();
+        if (checkstatus == "NotMatch") {
+            $("#companyRefNo").val("");
+            $('#CheckName').prop('selectedIndex', 0);
+            $("#companyRefNo").attr("disabled", "disabled");
+            $("#CheckName").attr("disabled", "disabled");
+
+
+            //$("#textbox1").removeAttr("disabled");
+        }
+        else
+        {
+            $("#companyRefNo").removeAttr("disabled");
+            $("#CheckName").removeAttr("disabled");
+
+        }
+    });
+    $('#btnSubmit').click(function () {
+
+        var checkstatus = $("#MailStatus").val();
+        var compRefNo = $("#companyRefNo").val();
+        var CheckName = $("#CheckName").val();
+        if (checkstatus =="--Select--")
+        {
+            alert('Please select type');
+            $("#MailStatus").focus();
+            return false;
+        }
+        if (checkstatus == "Match")
+        {
+            if (compRefNo == '') {
+                alert('Please fill Company Ref No');
+                $("#companyRefNo").focus();
+                return false;
+            }
+
+            if (CheckName == '') {
+                alert('Please Select Check Name');
+                $("#CheckName").focus();
+                return false;
+            }
+        }
+        //CheckName
+        });
+</script>
+
+

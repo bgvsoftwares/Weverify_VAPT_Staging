@@ -1,0 +1,501 @@
+﻿@model ViewModels.ClientViewModel.ClientNGRViewModel
+@{
+    ViewBag.Title = "Client Login";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+
+    string SecretDataSitekeyHcaptcha = System.Configuration.ConfigurationManager.AppSettings["Secret_data-sitekey_hcaptcha"].ToString();
+
+    string msg = "";
+    if (ViewBag.ErrorMsg != null)
+    {
+        msg = ViewBag.ErrorMsg.ToString();
+    }
+}
+<div class="d-flex align-items-center login_error_div mb-2" style="width: 440px;height:35px;
+            text-align: center;
+            font-size: .90rem;
+            color:#AA1834!important; display:flex; position:absolute; top: 40px;
+  left: 99px;">
+
+    @{
+        if (ViewBag.EncData != null)
+        {
+            <input type="hidden" id="EnSalt" value="@ViewBag.EncData.ToString()" />
+        }
+        if (msg != "")
+        {
+            <div class="errormsglogin" style="position: relative;top:4px;">
+                <div class="drop">
+                    <p class="img_p">1</p>
+                    <img src="~/assets/LoginPageImages/marker.png" width="35" />
+                </div>
+                <ul class="Error_ul">
+                    <li>
+                        @msg.ToString()
+                    </li>
+                </ul>
+            </div>
+        }
+    }
+    @{
+        if (TempData["ErrorMsg"] != null)
+        {
+            <div class="errormsglogin">@TempData["ErrorMsg"].ToString()</div>
+        }
+        if (TempData["SuccessMsg"] != null)
+        {
+            <div class="successmsg">@TempData["SuccessMsg"].ToString()</div>
+        }
+    }
+</div>
+<div class="loginhead">
+    <h2 class="heading">Client Login</h2>
+</div>
+
+<div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+    @using (Html.BeginForm("ClientNGR", "Account", FormMethod.Post, new { @onsubmit = "return validateForm()", @autocomplete = "off", @class = "sign-in-form forms" }))
+    {
+        @Html.AntiForgeryToken()
+        <input type="hidden" id="GenCaptchaVal" value="@Model.GenerateCaptchaVal" />
+        @Html.HiddenFor(T => T.GenerateCaptchaVal)
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="d-flex flex-column">
+            <div class="actual-form">
+                <div class="d-flex align-items-center mt-1 mb-3">
+                    <fieldset class="highlight" id="fieldset">
+                        <legend class="legend">UserName</legend>
+                        @Html.EditorFor(model => model.CRPUserName, new { htmlAttributes = new { @placeholder = "User Name", @class = "form-control", @id = "Username", required = "required", @maxlength = "50", @onmousedown = "return noCopyMouse(event);", @onkeydown = "return DisableEscape(event);", @onkeypress = "return BlockBlacklist(event);" } })
+                        <div class="loginerror" style="font-size:.70rem; color:#FC273F!important;">@Html.ValidationMessageFor(model => model.CRPUserName, "", new { @class = "text-danger" })</div>
+                    </fieldset>
+                </div>
+                <div class="d-flex align-items-center mt-1 mb-4">
+                    <fieldset class="highlight" id="fieldset">
+                        <legend class="legend">Password</legend>
+                        <div class="fake-input" id="testinput" style="overflow:hidden;"></div>
+                        @Html.EditorFor(model => model.CRPPassWord, new { htmlAttributes = new { @placeholder = "Password", @class = "form-control-pass_clientNGR", @id = "CRPPassWord", @autocomplete = "off", @onKeyUp = "RemoveSavedPassword()" } })
+                        <div class="loginerror" style="font-size:.70rem; color:#FC273F!important; margin-top:47px!important;">@Html.ValidationMessageFor(model => model.CRPPassWord, "", new { @class = "text-danger" })</div>
+                    </fieldset>
+                </div>
+                <div class="mt-2 mb-4 gap-2">
+                    <img id="captchaImg" src="@Url.Action("GetImgCaptcha", "Account")" style="width:200px; height:50px;" alt="CAPTCHA" />
+                    <button type="button" class="btn  btn-login-submit" style=" background:none !important; border:none !important; height:50px !important; padding:0px !important; display:unset; width:50px; font-size:24px !important; color:#fff;" onclick="reloadCaptcha()">&#x21bb;</button>
+
+                    <input type="text" name="CaptchaVal" id="CaptchaVal" class="form-control" style="top:0px!important; margin-top:12px; " placeholder="Enter CAPTCHA" />
+                    <marquee width="50%" direction="left" height="20px" behavior="scroll" scrollamount="3" style="margin-top:10px; color:red">
+                        Data Retention Notice- Please download and save any required data before they expire & automatically removed permanently.
+                    </marquee>
+                </div>
+
+                <div class="d-flex align-items-center btn_box">
+                    @Html.Hidden("hdnEnptStatus", "false")
+                    <button type="submit" id="submit" class="btn  btn-login-submit" onclick="return SubmitsEncry();">Submit</button>
+                </div>
+                <div class="row" style="display:flex; width:380px!important; margin-top:10px;">
+                    <div class="col-md-10">
+                        <a class="login_as" href="mailto:bgv.helpdesk@securitas-india.com">
+                            <div class="d-flex align-items-center Login_as_box">
+                                Can't Access The Software
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+    <form class="forms otp_form" style="display:block;" id="ENU">
+        <fieldset class="highlight Numberfieldset" id="fieldset3">
+            <legend class="legend">Mobile Number/Email</legend>
+            <input class="form-control" id="mobno" name="mob" type="text" placeholder="Enter Mobile Number / Email" required />
+        </fieldset>
+        <div class="d-flex align-items-center btn_box">
+            <label id="CLNGR" class="btn btn-login-submit" name="Getotp">Get OTP</label>
+        </div>
+    </form>
+
+    <form id="create" class="forms" action="/Account/ClientLoginWithOTPNGR" method="post" style="position:absolute; top: 204px; display:none;">
+        <fieldset class="highlight otpfieldset" id="fieldset4">
+            <legend class="legend">Enter OTP</legend>
+            <input class="form-control py-2" type="text" placeholder="Enter OTP" required name="Getotps" id="optvrf" />
+        </fieldset>
+        <div class="d-flex align-items-center btn_box">
+            <button class="btn btn-default" id="verify-btn" name="GetotpVerify" type="submit">Verify</button>
+            <button style="display: none" class="btn btn-default" id="p" type="submit">Verify This</button>
+
+        </div>
+    </form>
+
+
+</div>
+
+
+<style>
+    .loginhead {
+        top: 80px;
+        position: absolute;
+        left: 100px;
+        width: 100%;
+    }
+
+    .login-text {
+        text-decoration: underline;
+        font-size: 1rem;
+    }
+
+    .otpfieldset {
+        width: 91px;
+    }
+
+    .Numberfieldset {
+        width: 197px;
+    }
+
+    .nav-tabs {
+        z-index: 999;
+        height: 43px;
+        /*position: absolute;*/
+        top: 60px;
+    }
+
+        .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+            color: #FFF;
+            background-color: #031F30;
+            border-color: #031F30;
+        }
+
+    .nav-link {
+        color: #FFF;
+        border-radius: 0px;
+        border-color: #031F30 #031F30 #031F30 !important;
+    }
+
+    .nav-tabs .nav-link {
+        border-top-left-radius: 0rem;
+        border-top-right-radius: 0rem;
+    }
+
+        .nav-tabs .nav-link:hover {
+            color: #FFF;
+        }
+
+    .nav-tabs {
+        border-bottom: 0px !important;
+    }
+
+    /*#profile {
+        margin-top: 60px;
+    }*/
+
+    .tab-pane {
+        margin-top: 1.5rem;
+    }
+
+    @@media only screen and (max-width: 1080px) {
+        .nav-tabs {
+            left: 50px;
+        }
+
+        .loginhead {
+            left: 50px;
+        }
+    }
+
+    @@media only screen and (max-width: 850px) {
+        .nav-tabs {
+            left: 0px;
+            width: 100%;
+            display: flex;
+            /*justify-content: center;*/
+        }
+
+        .tab-pane {
+            margin-top: 60px;
+        }
+
+        #profile {
+            margin-top: 100px;
+            height: 330px;
+        }
+
+        .otpfieldset {
+            width: 164px;
+        }
+
+        .btn_box {
+            width: 80%;
+        }
+
+        .loginhead {
+            position: relative;
+            left: 0px;
+            width: 40%;
+            margin: auto;
+        }
+    }
+
+    @@media only screen and (max-width: 750px) {
+        .loginhead {
+            width: 70%;
+            margin-left: 32%;
+        }
+    }
+
+    @@media only screen and (max-width: 500px) {
+        .loginhead {
+            margin-left: 19%;
+        }
+    }
+
+    @@media only screen and (max-width: 400px) {
+        .btn_box {
+            width: 100%;
+        }
+
+        .loginhead {
+            width: 70%;
+            margin-left: 8%;
+        }
+    }
+
+    @@media only screen and (max-width: 350px) {
+        .loginhead {
+            width: 100%;
+            margin-left: 0%;
+        }
+    }
+</style>
+
+@section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+    <script>
+ function reloadCaptcha() {
+   document.getElementById("captchaImg").src = '@Url.Action("GetImgCaptcha", "Account")?'+ new Date().getTime();
+       }
+    $(document).ready(function () {
+    document.getElementById("captchaImg").src = '@Url.Action("GetImgCaptcha", "Account")?' + new Date().getTime();
+});
+    </script>
+    <script>
+        $('#CLNGR').click(function () {
+            var mobno = $("#mobno").val();
+            var mobnolength = $("#mobno").val().length;
+            if (mobnolength >= 10) {
+                $.ajax({
+
+                    type: 'POST',
+                    dataType: 'JSON',
+                    url: '/Account/SendOTPToMail',
+                    // url: '/Account/GenerateOTPS',
+                    data: { "mobno": mobno },
+                    success:
+                        function (result) {
+                            if (result.code === 3) {
+                                alert("This Number is not register with client");
+                            } else {
+                                $('#ENU').css('display', 'none');
+                                $('#create').css('display', 'block');
+                            }
+                        },
+                    //function (response) {
+                    //    $('#ENU').css('display', 'none');
+                    //    $('#create').css('display', 'block');
+                    //},
+                    error:
+                        function (response) {
+                            alert("Error: " + response);
+                        }
+                });
+            }
+            else {
+                alert("Please fill mobile/emialId ");
+                return false;
+            }
+        })
+
+
+    </script>
+
+
+
+    <script>
+        $(document).ready(function () {
+            $('#verify-btn').click(function (event) {
+                event.preventDefault();
+                var otpvrfi = $("#optvrf").val();
+                var MobileNo = $("#mobno").val();
+
+                if (otpvrfi.length > 0) {
+                    $.ajax({
+                        type: 'POST',
+                        dataType: 'json',
+                        url: '/Account/CheckOTP',
+                        data: { "mobotp": otpvrfi },
+                        success: function (result) {
+                            if (result.code === 1) {
+                                $("#p").click();
+                            } else if (result.code === 2) {
+                                alert("Please enter a valid OTP");
+                            } else {
+                                alert("Unexpected response from server");
+                            }
+                        },
+                        error: function (response) {
+                            alert("Error2: " + response);
+                        }
+
+                    });
+                } else {
+                    alert("Please fill in the OTP field");
+                }
+            });
+        });
+    </script>
+
+
+    <script>
+        function myFunction1() {
+            var x = document.getElementById("home");
+            var y = document.getElementById("profile");
+            x.style.display = "none";
+            y.style.display = "block";
+        }
+    </script>
+    <script>
+        function myFunction2() {
+            var a = document.getElementById("home");
+            var b = document.getElementById("profile");
+            a.style.display = "block";
+            b.style.display = "none";
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#Username").val("");
+            var captchaVal = $("#valCaptcha").val();
+            var iNumber = captchaVal;
+            $("#divGenerateRandomValues").html("<div id='txtNewInput'></div>");
+            $("#txtNewInput").text(iNumber);
+            $("#txtNewInput").prop('disabled', true);
+            document.getElementById("textInput").value = "";
+
+            document.getElementsByName("CRPUserName")[0].value = "";
+            document.getElementsByName("CRPPassWord")[0].value = "";
+
+        });
+
+        function blankInput() {
+            document.getElementById("textInput").value = "";
+        }
+        blankInput();
+
+        function Validate() {
+            var Pkey = $("#CRPPassWord").val().trim().ltrim().rtrim()
+            var passhash = SHA256(Pkey);
+            document.getElementsByName("CRPPassWord")[0].value = passhash + '' + $("#valCaptcha").val();
+        }
+        $('#submit').click(function () {
+            //alert('i');
+            var pass = $.trim($("[id*=Password]").val());
+            var uName = $.trim($("[id*=Username]").val());
+            //alert(uName);
+            if (uName.includes("alert") || uName.includes("script") || uName.includes("select") || uName.includes("exec") || uName.includes("execute") || uName.includes("drop") || uName.includes("truncate") || uName.includes("insert") || uName.includes("update") || uName.includes("delete")) {
+                alert("You can not use any special text as usename like alert,script,etc.");
+                document.getElementsByName("CRPUserName")[0].value = "";
+                document.getElementsByName("CRPPassWord")[0].value = "";
+                return false;
+            }
+        });
+
+
+    </script>
+    <script>
+        String.prototype.trim = function () {
+            var trimmed = this.replace(/^\s+|\s+$/g, '');
+            return trimmed;
+        };
+        String.prototype.ltrim = function () {
+            var trimmed = this.replace(/^\s+/g, '');
+            return trimmed;
+        };
+        String.prototype.rtrim = function () {
+            var trimmed = this.replace(/\s+$/g, '');
+            return trimmed;
+        };
+    </script>
+    <script type="text/javascript">
+        function toBase64(str) {
+            const bytes = new TextEncoder().encode(str);
+            let binary = '';
+            for (let byte of bytes) {
+                binary += String.fromCharCode(byte);
+            }
+            return btoa(binary);
+        }
+        function SubmitsEncry() {
+            var txtpassword = document.getElementsByName("CRPPassWord")[0].value.trim();
+            var encrypted = document.getElementById('CRPPassWord');
+            encrypted.value = encryptPassword(txtpassword);
+        }
+
+        function encryptPassword(password) {
+
+            var key = CryptoJS.enc.Utf8.parse('1234567890123456');
+            var iv = CryptoJS.enc.Utf8.parse('1234567890123456');
+
+            var encrypted = CryptoJS.AES.encrypt(
+                password,
+                key,
+                {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+            return encrypted.toString();
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+
+            $("form").attr('autocomplete', 'off');
+
+            $('input').focus(function () {
+                $(this).removeAttr('readonly');
+            });
+
+            $('input').blur(function () {
+                $(this).attr('readonly', true);
+
+            });
+            document.getElementsByName("CRPUserName")[0].value = "";
+            document.getElementsByName("CRPPassWord")[0].value = "";
+        });
+    </script>
+    <script>
+
+        function RemoveSavedPassword() {
+            inputValue = $('#CRPPassWord').val();
+            numChars = inputValue.length;
+            showText = "";
+            for (i = 0; i < numChars; i++) {
+                showText += "&#9679;";
+            }
+            $('.fake-input').html(showText);
+        }
+    </script>
+    <script>
+        function validateForm() {
+            var response = document.getElementsByName("CaptchaVal")[0].value;
+            if (response.length == 0) {
+                alert("Please Enter Captcha.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+}
+

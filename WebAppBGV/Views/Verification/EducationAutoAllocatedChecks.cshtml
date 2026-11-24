@@ -1,0 +1,624 @@
+
+@{
+    ViewBag.Title = "Auto Allocated Checks";
+    //Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "Verification", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+@{
+    //@ViewBag.NavigationBtnExportExcel
+    string tatdays1 = "";
+    string CheckStatus1 = "";
+    string AllocatedToTL1 = "";
+    if (Request.QueryString["tatdays"] != null)
+    {
+        tatdays1 = Request.QueryString["tatdays"].ToString();
+    }
+
+    if (Request.QueryString["AllocatedToTL"] != null)
+    {
+        AllocatedToTL1 = Request.QueryString["AllocatedToTL"].ToString();
+    }
+    if (Request.QueryString["CheckStatus"] != null)
+    {
+        CheckStatus1 = @Request.QueryString["CheckStatus"].ToString();
+    }
+  
+
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("EducationAutoAllocatedChecks", "Verification", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <!--<div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Client Name :</label>-->
+                                @*<div class="col-md-8">
+                                        @Html.DropDownList("ClientRowID",
+                                                   new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                                                   "-- Select Client -- ",
+                                                   new { @class = "form-control" })
+                                    </div>*@
+                                <!--</div>-->
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Keyword :</label>
+
+                                    <div class="col-md-2 mg-t-5 mg-md-t-0">
+                                        @Html.DropDownList("SearchType", new List<SelectListItem> {
+                                       new SelectListItem { Text = "Securitas ID", Value = "SecuritasID" },
+                                       new SelectListItem { Text="Unique Check ID",Value="CheckID"},
+
+                                   }, new { @class = "form-control", style = "height:33px;" })
+                                    </div>
+
+                                    <div class="col-md-8">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, Ref No,Company name..." })
+                                    </div>
+                                </div>
+                                @*<div class="form-group branch row search-frame">
+                                        <label class="col-md-2 control-label">Recieving From Date :</label>
+                                        <div class="col-md-3">
+                                            @Html.TextBox("RecievingfromDate", null, new { @class = "form-control", @id = "RecievingToDate", @placeholder = "yyyy-mm-dd" })
+                                        </div>
+                                        <label class="col-md-2 control-label">Recieving To Date :</label>
+                                        <div class="col-md-3">
+                                            @Html.TextBox("RecievingToDate", null, new { @class = "form-control", @id = "RecievingFromDate", @placeholder = "yyyy-mm-dd" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group branch row search-frame">
+                                        <label class="col-md-2 control-label">Completed From Date :</label>
+                                        <div class="col-md-3">
+                                            @Html.TextBox("CompletedFromDate", null, new { @class = "form-control", @id = "CompletedToDate", @placeholder = "yyyy-mm-dd" })
+                                        </div>
+                                        <label class="col-md-2 control-label">Completed To Date :</label>
+                                        <div class="col-md-3">
+                                            @Html.TextBox("CompletedToDate", null, new { @class = "form-control", @id = "CompletedFromDate", @placeholder = "yyyy-mm-dd" })
+                                        </div>
+                                    </div>*@
+                                @*<div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">CheckStatus :</label>
+                                    <div class="col-md-3">
+                                        @Html.DropDownList("CheckStatus",
+                                              new SelectList(ViewBag.CheckStatusOptionList, "Value", "Text"),
+                                              "-- Select Check -- ",
+                                              new { @class = "form-control" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Case Status :</label>
+                                    <div class="col-md-3">
+                                        @Html.DropDownList("CaseStatus",
+                                                   new SelectList(ViewBag.CaseStatusOptionList, "Value", "Text"),
+                                                   "-- Select Case -- ",
+                                                   new { @class = "form-control" })
+                                    </div>
+                                </div>*@
+                                @{ string Designation = Session["Designation"].ToString();
+                                    if (!string.IsNullOrWhiteSpace(Designation) && Designation != "Team Member-Ref" && Designation != "Team Member-Ide")
+                                    {
+                                        if (Designation != null && Designation == "Team Member-Add")
+                                        {
+                                            <div class="form-group branch row search-frame">
+                                                <label class="col-md-2 control-label">State :</label>
+                                                <div class="col-md-3">
+                                                </div>
+                                                <label class="col-md-2 control-label">City :</label>
+                                                <div class="col-md-3">
+                                                </div>
+                                            </div>
+                                            <div class="form-group branch row search-frame">
+                                                <label class="col-md-2 control-label">Partner :</label>
+                                                <div class="col-md-3">
+                                                </div>
+                                            </div>
+                                        }
+                                        if (Designation != null && Designation == "Team Member-Emp")
+                                        {
+                                            <div class="form-group branch row search-frame">
+                                                <label class="col-md-2 control-label">Employer Name :</label>
+                                                <div class="col-md-3">
+                                                    @Html.TextBox("EmployerName", null, new { @class = "form-control", placeholder = "Ex. Enter name ..." })
+                                                </div>
+                                                <label class="col-md-2 control-label">Allocated to :</label>
+                                                <div class="col-md-3">
+                                                    @Html.TextBox("Allocatedto", null, new { @class = "form-control", placeholder = "Ex. Enter Allocated to..." })
+                                                </div>
+                                            </div>
+                                        }
+                                        if (Designation != null && Designation == "Team Member-Edu")
+                                        {
+                                            <div class="form-group branch row search-frame">
+                                                <label class="col-md-2 control-label">Institute Name :</label>
+                                                <div class="col-md-3">
+                                                    @Html.TextBox("EmployerName", null, new { @class = "form-control", placeholder = "Ex. Enter name ..." })
+                                                </div>
+                                                <label class="col-md-2 control-label">Allocated to :</label>
+                                                <div class="col-md-3">
+                                                    @Html.TextBox("Allocatedto", null, new { @class = "form-control", placeholder = "Ex. Enter Allocated to..." })
+                                                </div>
+                                            </div>
+                                        }
+
+                                    }
+                                }
+                                @{
+                                    if (Request.QueryString["CheckStatus"] != null)
+                                    {
+                                        @Html.Hidden("CheckStatus", Request.QueryString["CheckStatus"].ToString())
+                                    }
+
+                                    if (Request.QueryString["tatdays"] != null)
+                                    {
+                                        @Html.Hidden("tatdays", Request.QueryString["tatdays"].ToString())
+                                    }
+                                }
+                                <div class="all-button-bg">
+                                    <input class="btn bun-bg btn-default" type="submit" onclick="SearchFunction()" value="Search" style="font-size:1.4rem!important;" />
+                                    @if (Designation != null && Designation == "Team Member-Emp")
+                                    {
+                                        if (CheckStatus1 == "WIP")
+                                        {
+
+                                            <input class="btn bun-bg btn-default" id="btnGroupMail" type="submit" value="Create Group Mail" style="background-color:#11c9b7!important; font-size:1.4rem!important; cursor:pointer" />
+                                        }
+                                        @Html.Hidden("VEmploymentId");
+
+
+                                    }
+
+                                </div>
+
+                            </div>
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.PQVerificationInfo != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12 table table-striped">
+                            @{
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.PQVerificationInfo, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @{
+                                string Designation = Convert.ToString(Session["Designation"]);
+
+                                @grid.GetHtml(
+                                        htmlAttributes: new { id = "grid", @class = "table" },
+                                        headerStyle: "thead-inverse",
+                                        rowStyle: "ordertxt",
+                                        footerStyle: "custpaging",
+                                        mode: WebGridPagerModes.All,
+                                        columns: new[]
+                                        {
+                                   grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+
+
+                                  grid.Column(columnName: "CompanyRefNo", header: "Securitas ID", canSort: false, style:"td-1"),
+                                   grid.Column(columnName: "UniqueComponentID", header: "Unique Component ID", canSort: false, style:"td-1"),
+                            grid.Column(columnName: "CompanyRefNo", header: "Securitas ID", canSort: false, style:"td-1"),
+                                   grid.Column(columnName: "CurrentlyAllocatedTM", header: "Currently Allocated TM", canSort: false, style:"td-1"),
+                                   grid.Column(columnName: "DateTMAllocation", header: "TM Auto Allocation Date", canSort: false, style: ""),
+                                   grid.Column(columnName: "AutoAllocatedTM", header: "Auto Allocated TM", canSort: false, style:"td-1"),
+                                   grid.Column(columnName: "CollegeeName", header: "College Name", canSort: false, style:"td-1"),
+
+                             })
+
+                            }
+
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                            <br />
+                            <br />
+                        </div>
+                    </div>
+                }
+
+
+                
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Structure -->
+<div class="modal fade" id="employmentInfoModal" tabindex="-1" role="dialog" aria-labelledby="employmentInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <!-- Increased modal size -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="employmentInfoModalLabel">Add Employment Info</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="employmentInfoForm">
+                    <input type="hidden" name="VerificationRowID" id="modalVerificationRowID" />
+                    <input type="hidden" name="PersonalRowID" id="modalPersonalRowID" />
+                    <input type="hidden" name="SubCheckRowID" id="modalSubCheckRowID" />
+                    <input type="hidden" name="ClientRowID" id="modalClientRowID" />
+                    <input type="hidden" name="CheckStatusdID" id="modalCheckStatusdID" />
+
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <label for="CandidateName">Candidate Name</label>
+                            <input type="text" class="form-control" id="CandidateName" name="CandidateName" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="OrganisationName">Organisation Name</label>
+                            <input type="text" class="form-control" id="OrganisationName" name="OrganisationName" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <label for="EmployeeCode">Employee Code</label>
+                            <input type="text" class="form-control" id="EmployeeCode" name="EmployeeCode" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="UANNumber">UAN Number</label>
+                            <input type="text" class="form-control" id="UANNumber" name="UANNumber" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <label for="DOJ">Date of Joining (DOJ)</label>
+                            <input type="text" class="form-control" id="DOJ" name="DOJ" placeholder="DD-MM-YYYY" required /> <!-- Changed to date type -->
+                        </div>
+                        <div class="col-md-6">
+                            <label for="DOL">Date of Leaving (DOL)</label>
+                            <input type="text" class="form-control" id="DOL" name="DOL" placeholder="DD-MM-YYYY" required /> <!-- Changed to date type -->
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <label for="ModeOfVerification">Mode Of Verification</label>
+                            <input type="text" class="form-control" id="ModeOfVerification" name="ModeOfVerification" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="DateOfVerification">Date Of Verification</label>
+                            <input type="text" class="form-control" id="DateOfVerification" name="DateOfVerification" required /> <!-- Changed to date type -->
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        @*<div class="col-md-6">
+                <label for="Position">Position</label>
+                <input type="text" class="form-control" id="Position" name="Position" required />
+            </div>
+            <div class="col-md-6">
+                <label for="Department">Department</label>
+                <input type="text" class="form-control" id="Department" name="Department" required />
+            </div>*@
+                    </div>
+                    <center><button type="submit" class="btn btn-primary" style="margin-top:20px;">Submit</button></center>
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .modal-content {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+        background-color: #007bff;
+        color: white;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .form-group label {
+        font-weight: bold;
+        color: #333;
+        margin-top: 10px;
+    }
+
+    .form-control {
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    .btn-primary {
+        background-color: #28a745;
+        border-color: #28a745;
+        font-weight: bold;
+        border-radius: 5px;
+    }
+
+    .btn-primary:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+
+    .close {
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    /* Additional styling for responsiveness */
+    @@media (max-width: 768px) {
+        .modal-dialog {
+            width: 100%; /* Full width on smaller screens */
+            margin: 0; /* Remove margin for full-width modal */
+        }
+    }
+</style>
+
+
+
+@section Scripts{
+
+    <script>
+        $("#grid > thead > tr").each(function () {
+            $(this).find('th:nth-child(2)').css("display", "none");
+        });
+        $("#grid > tbody > tr").each(function () {
+            $(this).find('td:nth-child(2)').css("display", "none");
+        });
+    </script>
+    <script>
+        $('#grid > tbody > tr').each(function () {
+            var sixthTdValue = $(this).find('td:nth-child(2)').text();
+            if (sixthTdValue == "fake") {
+                $(this).css('background-color', '#FFFF00');
+            }
+            else {
+                //$(this).css('background-color', '#f2f2f2');
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('.link-open-popup').click(function () {
+                // Get data attributes
+                var verificationId = $(this).data('verification-id');
+                var personalId = $(this).data('personal-id');
+                var subCheckId = $(this).data('subcheck-id');
+                var clientId = $(this).data('client-id');
+                var checkstatusid = $(this).data('checkstatus-id');
+
+                $('#modalVerificationRowID').val(verificationId);
+                $('#modalPersonalRowID').val(personalId);
+                $('#modalSubCheckRowID').val(subCheckId);
+                $('#modalClientRowID').val(clientId);
+                $('#modalCheckStatusdID').val(checkstatusid);
+
+
+                $.ajax({
+                    url: '/verification/GetUANEmpCheckData',
+                    type: 'GET',
+                    data: {
+                        verification_id: verificationId,
+                        personal_id: personalId,
+                        subcheck_id: subCheckId,
+                        client_id: clientId,
+                        checkstatus_id: checkstatusid
+                    },
+                    success: function (response) {
+                 
+                        $('#CandidateName').val(response.CandidateName);
+                        $('#OrganisationName').val(response.OrganisationName);
+                        $('#EmployeeCode').val(response.EmployeeCode);
+                        $('#UANNumber').val(response.UANNumber);
+                        $('#DOJ').val(response.DOJ);
+                        $('#DOL').val(response.DOL);
+                        $('#ModeOfVerification').val(response.ModeOfVerification);
+                        $('#DateOfVerification').val(response.DateOfVerification);
+
+                        
+                        $('#employmentInfoModal').modal('show');
+                    },
+                    error: function (xhr, status, error) {
+                        //console.error('AJAX Error:', status, error);
+                        
+                        alert('Failed to load data: ' + error);
+                    }
+                });
+
+
+                //// Show the modal
+                //$('#employmentInfoModal').modal('show');
+            });
+
+            
+            $('#employmentInfoForm').submit(function (e) {
+                e.preventDefault();
+
+
+                var formData = $(this).serialize();
+                $.ajax({
+                    url: '/Verification/AddEmploymentUANInfo', 
+                    type: 'POST', 
+                    data: formData,
+                    success: function (response) {
+                        
+                        
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Employment information added successfully!',
+                            icon: 'success',
+                            confirmButtonText: 'Ok'
+                        }).then(() => {
+                          
+                            location.reload();
+                        });;
+
+                        
+                        $('#employmentInfoModal').modal('hide');
+
+
+                        window.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle error response
+                        alert('Error occurred: ' + error);
+                    }
+                });
+                
+            });
+        });
+    </script>
+    <script type="text/javascript">
+
+
+        $(document).ready(function () {
+
+            $('input[class="verificationId"]').css('display', 'none');
+
+            $('#btnGroupMail').attr('disabled', 'disabled');
+            $(".iframeUpdateStatus").colorbox({ iframe: true, width: "60%", height: "60%" });
+            $(".iframemap").colorbox({ iframe: true, width: "90%", height: "90%" });
+            $(".Remindermail").colorbox({ iframe: true, width: "80%", height: "100%" });
+            $(".Sendgroup").colorbox({ iframe: true, width: "60%", height: "60%" });
+            $(".iframeUpdateAddressDoc").colorbox({ iframe: true, width: "60%", height: "60%" });
+            $(".callbacks").colorbox({
+                onClosed: function () {
+                    window.location.reload(true);
+                }
+            });
+
+            $('#select_all').change(function () {
+                $('input[class="verificationId"]').prop('checked', $(this).prop('checked'));
+                var VerificationIds = '';
+                var Organization_Name = '';
+                var myarray = [];
+                $('input[class="verificationId"]').each(function (index, value) {
+                    if (this.checked) {
+                        var id = this.value.split('_');
+                        VerificationIds += id[0] + ',';
+
+                        //alert(id[1]);
+                        if (jQuery.inArray(id[1], myarray) == -1 && myarray.length > 0) {
+                            alert("please select same company");
+                            $('input[class="verificationId"]').prop('checked', false);
+                            $('#select_all').prop('checked', false);
+                            VerificationIds = '';
+                            $('#btnGroupMail').attr('disabled', 'disabled');
+                        }
+                        myarray.push(id[1]);
+
+                    }
+                });
+
+                if (VerificationIds.length > 0) {
+                    VerificationIds = VerificationIds.substring(0, VerificationIds.length - 1);
+                    $('#btnGroupMail').removeAttr('disabled');
+                } else {
+                    VerificationIds = '';
+                    $('#btnGroupMail').attr('disabled', 'disabled');
+                }
+                $('#VEmploymentId').val(VerificationIds.trim());
+            });
+
+
+            //3rd click event for checkbox of each row
+            $(document).on('change', 'input[class="verificationId"]', function (e) {// on change of state
+                var VerificationIds = '';
+                var Organization_Name = '';
+                var myarray = [];
+                $('input[class="verificationId"]').each(function (index, value) {
+                    if (this.checked) {
+                        var id = this.value.split('_');
+                        VerificationIds += id[0] + ',';
+                        $("#VEmploymentId").val(VerificationIds);
+                        alert($("#VEmploymentId").val());
+
+                        //alert(id[1]);
+                        if (jQuery.inArray(id[1], myarray) == -1 && myarray.length > 0) {
+                            alert("please select same company");
+                            $('input[class="verificationId"]').prop('checked', false);
+                            $('#select_all').prop('checked', false);
+                            $('#VEmploymentId').val("");
+                            VerificationIds = '';
+                            $('#btnGroupMail').attr('disabled', 'disabled');
+                        }
+                        myarray.push(id[1]);
+                    }
+                });
+
+                if (false == $(this).prop("checked")) { //if this item is unchecked
+                    $("#select_all").prop('checked', false); //change "select all" checked status to false
+                }
+                //check "select all" if all checkbox items are checked
+                if ($('.verificationId:checked').length == $('.verificationId').length) {
+                    $("#select_all").prop('checked', true);
+                }
+
+                //if (VerificationIds.length > 0 && OCVerIDs.length > 0) {
+                if (VerificationIds.length > 0) {
+                    VerificationIds = VerificationIds.substring(0, VerificationIds.length - 1);
+                    $("#VEmploymentId").val(VerificationIds);
+                    $('#btnGroupMail').removeAttr('disabled');
+                    alert($("#VEmploymentId").val());
+
+                } else {
+                    VerificationIds = '';
+                    $('#btnGroupMail').attr('disabled', 'disabled');
+                }
+                $('#VEmploymentId').val(VerificationIds.trim());
+            })
+
+
+
+
+        });
+
+        function SearchFunction() {
+            $('#VEmploymentId').val("");
+        }
+        $('#RecievingToDate').datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-66:+0",
+        });
+        $('#RecievingFromDate').datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-66:+0",
+        });
+        $('#CompletedToDate').datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-66:+0",
+        });
+        $('#CompletedFromDate').datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-66:+0",
+        });
+    </script>
+
+}

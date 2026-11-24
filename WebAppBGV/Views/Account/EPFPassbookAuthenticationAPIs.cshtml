@@ -1,0 +1,220 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "Welcome to the EPFO UAN Validation Portal";
+
+}
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="col-md-12">
+
+        @using (Html.BeginForm("EPFPassbookAuthenticationAPIs", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <br />
+            <div class="card-body card2 shadow p-3 mb-5 bg-body-tertiary rounded ">
+                <b style="font-size: initial;">
+                    At Securitas India, we take pride in our strong association with Cognizant Technology Solutions (CTS), working together to ensure a smooth and efficient onboarding process for all candidates. As part of this process, it is mandatory for you to validate your EPFO UAN through this portal.
+                </b>
+                <br />
+                <b style="font-size: initial;">
+                    By proceeding, you acknowledge and provide your consent for Securitas India to carry out the background verification process via EPFO UAN passbook on behalf of CTS. If you have any questions or require further clarification, please feel free to reach out to your CTS Recruiter.
+                </b>
+            </div>
+            <div class="card-body card shadow p-3 mb-5 bg-body-tertiary rounded ">
+                <div class="container" style="margin-left: 22%;">
+                    <div class="row" id="dvMoblie">
+                        <div class="row row-sm mt-6">
+                            <div class="col-md-6">
+                                <label class="label">UAN No</label>
+                                <input type="text" id='UANNo' name='UANNo' maxlength="12" class="form-control" placeholder="Please enter 12 digit uan no" Value="@ViewBag.UANNo" autocomplete="off" required/>
+                            </div>
+                        </div>
+                        <div class="row row-sm mt-3">
+                            <div class="col-md-2">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="submit" class="btn_submit" id="btnsend" value="SUBMIT" name="Action" style="font-size: large;" onclick="return validateMobile(this,'Send...')">
+                                <br />
+                                <label id="btnWait"><i class="fa fa-spinner fa-spin" style="font-size:84px"></i></label>
+                            </div>
+                            <img>
+                        </div>
+                        <br />
+                    </div>
+                    <div class="row" id="dvOTP">
+                        <div class="row row-sm mt-6">
+                            <div class="col-md-12">
+                                <label class="label" style="color: #348c4b;font-size: initial;" id="lblmsg"></label>
+                            </div>
+                        </div>
+                        <div class="row row-sm mt-6">
+                            <div class="col-md-6">
+                                <label class="label">OTP</label>
+                                <input type="text" id='OTP' name='OTP' class="form-control" maxlength="6"  Value="@ViewBag.OTP" autocomplete="off" required/>
+                            </div>
+                        </div>
+                        <div class="row row-sm mt-3">
+                            <div class="col-md-4">
+                                <input type="submit" class="btn_submit" value="SUBMIT" name="Action" style="font-size: large;" onclick="return validateOtp(this,'Saving...')"/>
+                                <br />
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row" id="dvspinner">
+                        <div class="row">
+                            <label id="btnWait"><i class="fa fa-spinner fa-spin" style="font-size:140px;margin-left:55px;margin-top:72px; "></i></label>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <input type="hidden" id="Finalmsg" name="Finalmsg" value="@ViewBag.Finalmsg" />
+                        <label id="labf" style="color:#8D5FFF;font-size: initial;margin-left: -73px;">@ViewBag.Finalmsg</label>
+                    </div>
+                    <input type="hidden" id="CompanyRefNo" name="CompanyRefNo" value="@ViewBag.CompanyRefNo" />
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://bgv.securitas-india.com/assets/LoginCarusol/img/Securitas-logo.png" type="image/x-icon" rel="shortcut icon" />
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#btnWait').hide();
+            $('#dvspinner').hide();
+            var Finalmsg = $('#Finalmsg').val();
+            if (Finalmsg = 'Invaild information please try again.') {
+                $('#dvMoblie').show();
+                $('#dvOTP').hide();
+            }
+            if ($('#OTP').val() == '') {
+                $('#dvMoblie').show();
+                $('#dvOTP').hide();
+            }
+
+
+        });
+        function validateMobile(ctl, msg) {
+            var Finalmsg = $('#Finalmsg').val();
+            if ($('#UANNo').val() == '') {
+                alert("Please enter 12 digit uan no");
+                return false;
+            }
+            $('#btnsend').hide();
+            $('#btnWait').show();
+            var UANNo = $('#UANNo').val();
+            var CompanyRefNo = $('#CompanyRefNo').val();
+            $.getJSON('/Account/GetOtp?' + 'UANNo=' + UANNo +'&' + 'CompanyRefNo=' + CompanyRefNo, function (data) {
+                $.each(data, function (i, result) {
+                    if (result.message == "Error") {
+                        alert("Please review your details and try again.");
+                        $('#btnsend').show();
+                        $('#btnWait').hide();
+                        return false;
+                    }
+                    else {
+                        $('#dvMoblie').show();
+                        $('#dvOTP').show();
+                        $('#btnsend').show();
+                        $('#btnWait').hide();
+                        $('#btnsend').val('Resend OTP');
+                        $('#lblmsg').text(result.message);
+                        return true;
+                    }
+                });
+            });
+        }
+        function validateOtp(ctl, msg) {
+            if ($('#OTP').val() == '') {
+                alert("Please enter 6 digit otp");
+                return false;
+            }
+            $('#dvMoblie').hide();
+            $('#dvOTP').hide();
+            $('#dvspinner').show();
+            return true;
+        }
+    </script>
+    <style>
+
+        .card {
+            width: 25rem;
+            margin: auto;
+            width: 60rem;
+            height: 30rem;
+        }
+
+        .card2 {
+            width: 25rem;
+            margin: auto;
+            width: 103rem;
+            height: 16rem;
+        }
+
+        .card-img-top {
+            width: 130px;
+            margin: auto;
+            padding: 10px;
+        }
+
+        .btn {
+            padding: 10px 30px;
+            background: #FC273F;
+            border: 1px solid #FC273F;
+            transition: 0.3s ease-in-out;
+        }
+
+            .btn:hover {
+                color: #FC273F;
+                background: #FFF;
+                border: 1px solid #FC273F;
+            }
+
+        .logo {
+            width: 130px;
+        }
+
+        p {
+            color: #031F30 !important;
+            font-weight: 600;
+            font-family: 'Securitas Pro';
+        }
+
+        .label {
+            font-size: initial;
+            color: black;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: .375rem .75rem;
+            font-size: 2rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: var(--bs-body-color);
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-color: var(--bs-body-bg);
+            background-clip: padding-box;
+            border: var(--bs-border-width) solid var(--bs-border-color);
+            border-radius: var(--bs-border-radius);
+            transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        }
+
+        .btn_submit {
+            font-size: large;
+        }
+    </style>
+
+}

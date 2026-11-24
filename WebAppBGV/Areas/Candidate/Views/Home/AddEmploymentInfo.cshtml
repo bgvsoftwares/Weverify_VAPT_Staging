@@ -1,0 +1,2163 @@
+﻿
+@model dynamic
+@{
+    //ViewBag.Title = "Add Employment Info";
+    Layout = "~/Areas/Candidate/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "Home", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+    string msg = "";
+    if (Request.QueryString["ErrorMsg"] != null)
+    {
+        //hyperLink = Html.ActionLink("linkTitle", "AllocatedDataEntryJob", "ProvidedInfo", new { CaseStatus = Request.QueryString["Casestatus"].ToString() }, new { @class = "headerbacklink" }).ToString();
+        msg = Request.QueryString["ErrorMsg"].ToString();
+    }
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+
+
+    PersonalRowid = @ViewBag.PersonalRowid;
+    SubCheckId = @ViewBag.SubCheckId;
+    clientRowId = @ViewBag.clientRowId;
+    string SubCheckRowID = WebAppBGV.CommonMethods.clsCommonMethods.PDecrypt(SubCheckId);
+    int clientno = @ViewBag.clientno;
+    bool NACheckStatus = ViewBag.NACheckStatus;
+    var clid = "";
+    clid = Session["ClientRowID"].ToString();
+    string Candidatedocvisibilty = ViewBag.Candidatedocvisibilty;
+
+}
+@if (clid == "193" && SubCheckRowID == "68")
+{
+    ViewBag.Title = "Add Employment Info (Prior to Jade Global)";
+}
+else
+{
+    ViewBag.Title = "Add Employment Info";
+}
+@section LeftNavigation{ @Html.Partial("_NavLeftCandidateCaseInfoProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+@if (ViewBag.ErrorMsg != null)
+{
+    string err = @ViewBag.ErrorMsg.ToString();
+    string[] err2 = err.Split(',');
+    <script>
+        Swal.fire({
+            icon: 'info',
+            title: 'Mandatory Fields.',
+            timer: 5000,
+            html: '<div class="errormsg" style="text-align:left;"><ol type="1">@foreach(String item in err2){<li> @item</li> }</ol></div>'
+       })
+    </script>
+}
+@if (ViewBag.AstraErrorPopup != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Documents Required',
+            html: '<div style="color:#A32D2D; font-weight:500;">@ViewBag.AstraErrorPopup.ToString()</div>',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#A32D2D'
+        })
+    </script>
+}
+@*@if (ViewBag.Success != null)
+    {
+        <script>
+            Swal.fire({
+                icon: 'success',
+                html:'<div class="errormsg">@ViewBag.Success.ToString()</div>',
+                showConfirmButton: false,
+                timer: 5000
+            })
+        </script>
+    }*@
+@if (TempData["ErrorMessage"] != null)
+{
+    <script>
+Swal.fire({
+        icon: 'error',
+        timer: 5000,
+        showConfirmButton: false,
+        html: '<div style="color:#A32D2D; font-weight:500;">@TempData["ErrorMessage"].ToString()</div>'    });
+    </script>
+}
+@if (ViewBag.Success != null)
+{
+    <script>
+        var msg = @Html.Raw(Json.Encode(ViewBag.Success.ToString()));
+        var iconType = 'info';
+        if (msg.includes('Upload file extension not allowed')) {
+            iconType = 'error';
+        }
+        else if (msg.includes('Document Uploaded Successfully')) {
+            iconType = 'success';
+        }
+        Swal.fire({
+            icon: iconType,
+            text: msg,
+            showConfirmButton: false,
+            timer: 5000
+        });
+    </script>
+}
+@if (clid == "559")
+{
+    if (ViewBag.Information != null)
+    {
+        <script>
+        Swal.fire({
+            icon: 'info',
+            html:'<div class="errormsg">@ViewBag.Information.ToString()</div>',
+            showConfirmButton: false,
+            timer: 20000
+        })
+        </script>
+    }
+
+}
+<div class="container-fluid form_container">
+
+    @if (clid == "559")
+    {
+        <div class="row row-sm ps-2">
+            <div class="col-md-12 d-flex mt-3">
+                <p class="text-danger align-content-center">
+                    <b>Note:-</b>
+                </p>
+                <p class="text-danger align-content-center ps-2">
+                    Please fill employment details for last 7 years only.
+                </p>
+            </div>
+        </div>
+    }
+    else if (clid == "1803")
+    {
+        <div class="row row-sm ps-2">
+            <div class="col-md-12 d-flex mt-3">
+                <p class="text-danger align-content-center">
+                    <b>Note:-</b>
+                </p>
+                <p class="text-danger align-content-center ps-2">
+                    The employment details provided should cover the period prior to your employment with IM/EXL Service.com.
+                </p>
+            </div>
+        </div>
+    }
+    else if (clid == "51")
+    {
+        <div class="row row-sm ps-2">
+            <div class="col-md-12 d-flex mt-3">
+                <p class="text-danger align-content-center">
+                    <b>Note:-</b>
+                </p>
+                <p class="text-danger align-content-center ps-2">
+                    Please upload Experience letter/Relieving letter.
+                </p>
+            </div>
+        </div>
+    }
+    else if (clid == "1747" && SubCheckRowID == "68")
+    {
+        <div class="row row-sm ps-2">
+            <div class="col-md-12 d-flex mt-3">
+                <p class="text-danger"><b>Note:-</b></p>
+                <p class="text-danger ps-2">
+                    a. If you had already joined Ingram Micro, you should enter details of your last employer (the company you worked for before joining Ingram Micro).<br />
+                    b. If the you had not yet joined Ingram Micro, you should enter details of your current employer.
+                </p>
+            </div>
+        </div>
+    }
+    else if (clid == "1747" && SubCheckRowID == "69")
+    {
+        <div class="row row-sm ps-2">
+            <div class="col-md-12 d-flex mt-3">
+                <p class="text-danger"><b>Note:-</b></p>
+                <p class="text-danger ps-2">
+                    a. If you  had already joined Ingram Micro, you should enter details of your second last employer.<br />
+                    b. If you  had not yet joined Ingram Micro, you should enter details of your previous employer (the company you worked for before your current employer).
+
+                </p>
+            </div>
+        </div>
+    }
+
+    @*pranav*@
+
+    else if (clid == "957" && SubCheckRowID == "68")
+    {
+        <div class="row row-sm ps-2">
+            <div class="col-md-12 d-flex mt-3">
+                <p class="text-danger"><b>Note:-</b></p>
+                <p class="text-danger ps-2">
+                    We will only coordinate with your current employment once you join AZ.
+
+                </p>
+            </div>
+        </div>
+    }
+
+    @if (clid == "1680")
+    {
+        if (ViewBag.packagename != null)
+        {
+            <div class="row row-sm ps-2">
+                <div class="col-md-12 d-flex mt-3">
+                    @if (ViewBag.packagename == "VSSPL_Package G1(07YrsCRC_1YrsEMP_EDUH_PAN_Drug)")
+                    {
+                        <p class="text-danger align-content-center">
+                            <b>Note:-</b>
+                        </p>
+                        <p class="text-danger align-content-center ps-2">
+                            Kindly Fill Details of 07 Yrs Address details for Criminal Check, Last 1 Year employments, Highest Education and PAN Card and Drug Test)
+                        </p>
+                    }
+                    @if (ViewBag.packagename == "VSSPL_Package G2 (10YrsCRC_7YrsEMP_EDUH_ID)")
+                    {
+                        <p class="text-danger align-content-center">
+                            <b>Note:-</b>
+                        </p>
+                        <p class="text-danger align-content-center ps-2">
+                            Kindly Fill Details of 10 Yrs Address details for Criminal Check, Last 7 Year employments, Highest Education and PAN / Passport Details)
+
+                        </p>
+                    }
+                    @if (ViewBag.packagename == "VSSPL_Package G3 (10YrsCRC_10YrsEMP_EDUH_PAN_GSE_CUR-ADD_PER-ADD)")
+                    {
+                        <p class="text-danger align-content-center">
+                            <b>Note:-</b>
+                        </p>
+                        <p class="text-danger align-content-center ps-2">
+                            Kindly Fill Details of 10 Yrs Address details for Criminal Check, Last 10 Year employments, Highest Education and PAN / Passport Details, Current and Permanent Adress Details)
+                        </p>
+                    }
+                    @if (ViewBag.packagename == "VSSPL_Package G4 (7YrsCRC_7YrsEMP_2EDU-PG-UG)")
+                    {
+                        <p class="text-danger align-content-center">
+                            <b>Note:-</b>
+                        </p>
+                        <p class="text-danger align-content-center ps-2">
+                            Kindly Fill Details of 07 Yrs Address details for Criminal Check, Last 7 Year employments, Highest Education & Second EDU UG)
+
+                        </p>
+                    }
+                    @if (ViewBag.packagename == "VSSPL_Package G5 (7YrsCRC_10YrsEMP_5EDU_PG_UG_Diploma_12_10_PAN_Drug)")
+                    {
+                        <p class="text-danger align-content-center">
+                            <b>Note:-</b>
+                        </p>
+                        <p class="text-danger align-content-center ps-2">
+                            Kindly Fill Details of 07 Yrs Address details for Criminal Check, Last 10 Year employments, Education (PG_UG_Diploma_12_10) and PAN Details, Drug)
+
+                        </p>
+                    }
+                    @if (ViewBag.packagename == "VSSPL_Package G6 (7YrsCRC_1YrsEMP)")
+                    {
+                        <p class="text-danger align-content-center">
+                            <b>Note:-</b>
+                        </p>
+                        <p class="text-danger align-content-center ps-2">
+                            Kindly Fill Details of 07 Yrs Address details for Criminal Check, Last 1 Year employments
+
+                        </p>
+                    }
+
+                </div>
+            </div>
+        }
+
+
+    }
+
+    @using (Html.BeginForm("AddEmploymentInfo", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" value="@SubCheckRowID" id="SubId" />
+        <input type="hidden" value="@clid" id="clid" />
+        <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+        @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+        <input id="SubCheckId" type="hidden" value=@SubCheckId>
+        @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+        <input id="clientRowId" type="hidden" value=@clientRowId>
+        @Html.Hidden("clientRowId", clientRowId.ToString())
+
+        <input type="hidden" id="OrganizationNameTemp" name="OrganizationNameTemp" value="@ViewBag.CompanyName" />
+
+        @Html.ValidationSummary()
+
+        //if (clid != "1425" )
+        //{
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Declaration</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        I have disclosed the employment where I have worked & there is no other additional employment as per my CV in last 5 years. Hope you have added all your employment as per your CV in last 5 years & no employment you have hidden or apart from disclosed in the form there is no other additional employment in last 5 years.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary Cancel_btn" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary Accepte_btn" data-bs-dismiss="modal">Yes, I Accepte</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        if (clid.ToString() != "1747" && clid.ToString() != "1654")
+        {
+            <div class="row row-sm p-2 mt-2 ms-5" id="NADiv" style="background:#8D5FFF;">
+                @if (clid == "974" || clid == "1089")
+                {
+                    <div class="col-md-12 ps-4">
+                        @Html.CheckBox("Notraised", NACheckStatus, new { onchange = "NotRaised(this)" })
+                    </div>
+                }
+                else if (clid == "75")
+                {
+                    <button type="button" class="Na_btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        @Html.CheckBox("Notraised", NACheckStatus, new { onchange = "NotRaised(this)", @class = "form-check-input" })<b style="color:white">Not Applicable</b>
+                    </button>
+                }
+                else if (clid == "1395" || clid == "1414" || clid == "1415" || clid == "1416")
+                {
+                    if (SubCheckRowID == "68")
+                    {
+
+                        @Html.CheckBox("Notraised", NACheckStatus, new { onchange = "NotRaised(this)", @class = "form-check-input ms-1" })<b style="color:white;margin-left:10px;">Not applicable: I do not have any employment prior to Chargbee</b>
+
+                    }
+                    else if (SubCheckRowID == "69")
+                    {
+
+                        @Html.CheckBox("Notraised", NACheckStatus, new { onchange = "NotRaised(this)", @class = "form-check-input ms-1" })<b style="color:white;margin-left:10px;">Not applicable: I only have 1 employment prior to Chargebee</b>
+
+                    }
+                    else
+                    {
+
+                        @Html.CheckBox("Notraised", NACheckStatus, new { onchange = "NotRaised(this)", @class = "form-check-input ms-1" })<b style="color:white; margin-left:10px;">Not Applicable</b>
+
+                    }
+
+                }
+                else
+                {
+                    if (clid.ToString() == "1450")
+                    {
+                        <div class="col-md-12 ps-4" style="display:none;">
+                            @Html.CheckBox("Notraised", NACheckStatus, new { onchange = "NotRaised(this)", @class = "form-check-input" })<b style="color:white;">Not Applicable</b>
+                        </div>
+                    }
+                    else if ((clid.ToString() == "1545") || (clid.ToString() == "51"))
+                    {
+                        <div class="col-md-12 ps-4" style="display:none;">
+                            @Html.CheckBox("Notraised", NACheckStatus, new { onchange = "NotRaised(this)", @class = "form-check-input" })<b style="color:white;">Not Applicable</b>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-12 ps-4">
+                            @Html.CheckBox("Notraised", NACheckStatus, new { onchange = "NotRaised(this)", @class = "form-check-input", @style = "width: 20px;height: 20px; " })<b style="color:white;font-size: 19px;margin-left: 5px;">Not Applicable</b>
+                        </div>
+                    }
+                }
+            </div>
+        }
+
+        foreach (var category in Model)
+        {
+            <div class="row row-sm ps-3">
+                @{
+                    string[] nm = category.Key.Split('_');
+                    if (nm[0] != "document")
+                    {
+                        if (@nm[2] == "textbox")
+                        {
+                            if (@nm[0] == "92") //"Organisation Name"
+                            {
+
+                                if (clid == "1395" || clid == "1425" || clid == "1416" || clid == "1429" || clid == "1414" || clid == "1415" || clid == "1449")
+                                {
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center" style="display:none!important;">
+                                        <label class="form-label mg-b-0 fw-bolder">
+                                            Organization Name
+                                            @if (nm[4].ToString() != "")
+                                            {
+                                                <sup class="text-danger">&nbsp;</sup>
+                                            }
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <sup class="text-danger">*</sup>
+                                                }
+                                            }
+                                        </label>
+                                    </div>
+                                }
+
+                                else
+                                {
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                        <label class="form-label mg-b-0 fw-bolder">
+                                            Payroll Organization
+                                            @if (nm[4].ToString() != "")
+                                            {
+                                                <sup class="text-danger">&nbsp;</sup>
+                                            }
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <sup class="text-danger">*</sup>
+                                                }
+                                            }
+                                        </label>
+                                    </div>
+                                }
+
+                                if (clid == "1395" || clid == "1425" || clid == "1416" || clid == "1429" || clid == "1414" || clid == "1415" || clid == "1449")
+                                {
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3" style="display:none!important;">
+                                        <span class="text-danger tx-13"> @nm[4] </span>
+                                        <input type="text" class="form-control" id="OrganizationName" name="OrganizationName" value='Other' maxlength="@nm[5]" />
+                                        <input type="hidden" class="form-control" id="OrganizationId" name="OrganizationId" value='2' />
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                        <span class="text-danger tx-13"> @nm[4] </span>
+                                        <input type="text" class="form-control" id="OrganizationName" name="OrganizationName" value='@category.Value' maxlength="@nm[5]" />
+                                        <input type="hidden" class="form-control" id="OrganizationId" name="OrganizationId" value=@ViewBag.OrgId />
+                                    </div>
+                                }
+                            }
+                            else if (@nm[0] == "93")
+                            {
+                                if (clid == "1395" || clid == "1425" || clid == "1416" || clid == "1429" || clid == "1414" || clid == "1415" || clid == "1449")
+                                {
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                        <label class="form-label mg-b-0 fw-bolder">
+                                            @nm[1]
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <sup class="text-danger">*</sup>
+                                                }
+                                            }
+                                        </label>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                        <span class="text-danger tx-13"> @nm[4] </span>
+                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="Other_Organisation w-100 p-0">
+                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                            <label class="form-label mg-b-0 fw-bolder">
+                                                @nm[1]
+                                                @{
+                                                    if (@nm[3] == "mandatory")
+                                                    {
+                                                        <sup class="text-danger">*</sup>
+                                                    }
+                                                }
+                                            </label>
+                                        </div>
+                                        <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                            <span class="text-danger tx-13"> @nm[4] </span>
+                                            <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else if (@nm[0] == "94")
+                            {
+                                if (clid == "1395" || clid == "1425" || clid == "1416" || clid == "1429" || clid == "1414" || clid == "1415" || clid == "1449" || clid == "1188")
+                                {
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                        <label class="form-label mg-b-0 fw-bolder">
+                                            @nm[1]
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <sup class="text-danger">*</sup>
+                                                }
+                                            }
+                                        </label>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                        <span class="text-danger tx-13"> @nm[4] </span>
+                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="Reason_for_leaving  w-100 p-0">
+                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                            <label class="form-label mg-b-0 fw-bolder">
+                                                @nm[1]
+                                                @{
+                                                    if (@nm[3] == "mandatory")
+                                                    {
+                                                        <sup class="text-danger">*</sup>
+                                                    }
+                                                }
+                                            </label>
+                                        </div>
+                                        <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                            <span class="text-danger tx-13"> @nm[4] </span>
+                                            <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else if (SubCheckId == "68")
+                            {
+                                if (clientRowId != "75")
+                                {
+                                    if (@nm[0] == "89")
+                                    {
+                                        if (clid == "1395" || clid == "1425" || clid == "1416" || clid == "1429" || clid == "1414" || clid == "1415" || clid == "1449")
+                                        {
+                                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                                <label class="form-label mg-b-0 fw-bolder">
+                                                    @nm[1]
+                                                    @{
+                                                        if (@nm[3] == "mandatory")
+                                                        {
+                                                            <sup class="text-danger">*</sup>
+                                                        }
+                                                    }
+                                                </label>
+                                            </div>
+                                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                                <span class="text-danger tx-13"> @nm[4] </span>
+                                                <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="DateOfleaving  w-100 p-0" style="display:none;">
+                                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                                    <label class="form-label mg-b-0 fw-bolder">
+                                                        @nm[1]
+                                                        @{
+                                                            if (@nm[3] == "mandatory")
+                                                            {
+                                                                <sup class="text-danger">*</sup>
+                                                            }
+                                                        }
+                                                    </label>
+                                                </div>
+                                                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                                    <span class="text-danger tx-13"> @nm[4] </span>
+                                                    <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                    else if (@nm[0] == "580")
+                                    {
+                                        <div class="Tentative_DOL  w-100 p-0" style="display:none;">
+                                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                                <label class="form-label mg-b-0 fw-bolder">
+                                                    @nm[1]
+                                                    @{
+                                                        if (@nm[3] == "mandatory")
+                                                        {
+                                                            <sup class="text-danger">*</sup>
+                                                        }
+                                                    }
+                                                </label>
+                                            </div>
+                                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                                <span class="text-danger tx-13"> @nm[4] </span>
+                                                <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                            <label class="form-label mg-b-0 fw-bolder">
+                                                @nm[1]
+                                                @{
+                                                    if (@nm[3] == "mandatory")
+                                                    {
+                                                        <sup class="text-danger">*</sup>
+                                                    }
+                                                }
+                                            </label>
+                                        </div>
+                                        <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                            <span class="text-danger tx-13"> @nm[4] </span>
+                                            <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                        <label class="form-label mg-b-0 fw-bolder">
+                                            @nm[1]
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <sup class="text-danger">*</sup>
+                                                }
+                                            }
+                                        </label>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                        <span class="text-danger tx-13"> @nm[4] </span>
+                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                    </div>
+                                }
+                            }
+                            else if (@nm[1] == "Address of the company")
+                            {
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                    <label class="form-label mg-b-0 fw-bolder">
+                                        Address of the company
+                                    </label>
+                                </div>
+                                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                    <input type="text" id="Addressofthecompany" name="Addressofthecompany" value='@category.Value' class="form-control" maxlength="@nm[5]" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                    <label class="form-label mg-b-0 fw-bolder">
+                                        @nm[1]
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <sup class="text-danger">*</sup>
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                    <span class="text-danger tx-13"> @nm[4] </span>
+                                    <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                </div>
+                            }
+                        }
+                        if (@nm[2] == "dropdown")
+                        {
+                            if (@nm[0] == "146")
+                            {
+                                if (clid == "1395" || clid == "1425" || clid == "1416" || clid == "1429" || clid == "1414" || clid == "1415" || clid == "1449" || clid == "1188")
+                                {
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                        <label class="form-label mg-b-0 fw-bolder">
+                                            @nm[1]
+                                            @{
+                                                if (@nm[3] == "mandatory")
+                                                {
+                                                    <sup class="text-danger">*</sup>
+                                                }
+                                            }
+                                        </label>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                        <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                        @{
+                                            string[] nmOption = nm[7].Split(',');
+                                        }
+                                        <select class="form-select" name=@nm[0] id=@nm[0]>
+                                            @for (int i = 0; i < nmOption.Length; i++)
+                                            {
+                                                if (@nmOption[i].Trim() == @nm[6])
+                                                {
+                                                    <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                                }
+                                                if (@nmOption[i].Trim() != @nm[6])
+                                                {
+                                                    <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="Exit_formalities w-100 p-0">
+                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                            <label class="form-label mg-b-0 fw-bolder">
+                                                @nm[1]
+                                                @{
+                                                    if (@nm[3] == "mandatory")
+                                                    {
+                                                        <sup class="text-danger">*</sup>
+                                                    }
+                                                }
+                                            </label>
+                                        </div>
+                                        <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                            <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                            @{
+                                                string[] nmOption = nm[7].Split(',');
+                                            }
+                                            <select class="form-select" name=@nm[0] id=@nm[0]>
+                                                @for (int i = 0; i < nmOption.Length; i++)
+                                                {
+                                                    if (@nmOption[i].Trim() == @nm[6])
+                                                    {
+                                                        <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                                    }
+                                                    if (@nmOption[i].Trim() != @nm[6])
+                                                    {
+                                                        <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                    <label class="form-label mg-b-0 fw-bolder">
+                                        @nm[1]
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <sup class="text-danger">*</sup>
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                    <span style="color:red; font-size:1.1rem;"> @nm[4] </span>
+                                    @{
+                                        string[] nmOption = nm[7].Split(',');
+                                    }
+                                    <select class="form-select" name=@nm[0] id=@nm[0]>
+                                        @for (int i = 0; i < nmOption.Length; i++)
+                                        {
+                                            if (@nmOption[i].Trim() == @nm[6])
+                                            {
+                                                <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                            }
+                                            if (@nmOption[i].Trim() != @nm[6])
+                                            {
+                                                <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            }
+                        }
+                        if (@nm[2] == "checkbox")
+                        {
+                            <div class="row ms-2" style="background: #42638c; color:#FFF;">
+                                <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 mt-3 d-flex align-items-center">
+                                    @{
+                                        if (@nm[6] == "TRUE")
+                                        {
+                                            <input type="checkbox" id=@nm[0] name=@nm[0] value="checked" checked style="width:5rem!important;">
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id=@nm[0] name=@nm[0] value=@nm[0] style="width:5rem!important;">
+                                        }
+                                    }
+
+                                </div>
+                                <div class="col-xl-11 col-lg-11 col-md-11 col-sm-12 mt-3 d-flex align-items-center">
+                                    <span class="text-danger tx-13"> @nm[4] </span>
+                                    @nm[1]
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        }
+                        if (@nm[2] == "fileUpload")
+                        {
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    @nm[1]
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <sup class="text-danger">*</sup>
+                                        }
+                                    }
+                                </label>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                <span class="text-danger tx-13"> @nm[4] </span>
+                                <input class="form-control dropify" type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        }
+        <div class="row row-sm justify-content-center d-flex mt-3 mb-3">
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 text-center mb-2">
+                <input class="submit-btn ps-5 pe-5" type="submit" value="Save" onclick="Validate()" />
+            </div>
+        </div>
+    }
+    @if (@ViewBag.NACheckStatus == true)
+    {
+
+    }
+    else
+    {
+        if (Candidatedocvisibilty == "true")
+        {
+            <div class="row row-sm d-flex justify-content-between ms-0">
+                @using (Html.BeginForm("UploadCandidateDocumentUpdated", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    <div class="card h-auto" id="UploadCandidateDocumentUpdated">
+                        <div class="row row-sm ms-0 ps-2 pt-2 pe-5">
+                            <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+                            @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+                            <input id="SubCheckId" type="hidden" value=@SubCheckId>
+                            @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+                            <input id="clientRowId" type="hidden" value=@clientRowId>
+                            @Html.Hidden("clientRowId", clientRowId.ToString())
+
+                            <input id="CheckFamilyId" type="hidden" value="12">
+                            @Html.Hidden("CheckFamilyId", "12")
+
+                            @if (clid == "1803")
+                            {
+                                <div class="row row-sm ps-2">
+                                    <div class="col-md-12 d-flex mt-3">
+                                        <p class="text-danger align-content-center ps-2">
+                                            Kindly upload Payslip / Relieving letter & Experience letter as a mandatory requirement.
+                                        </p>
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="row row-sm ps-3">
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3">
+                                    <label class="form-label mg-b-0 fw-bolder mb-2">Select Document Type</label>
+                                    @Html.DropDownList("ddlDocumentType",
+               new SelectList(ViewBag.DocumentList, "Value", "Text"),
+               "-- Select -- ",
+               new { @class = "form-control text-center", required = "required" })
+                                </div>
+                                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 mt-3">
+                                    <label class="form-label mg-b-0 fw-bolder mb-2">Upload Document</label>
+                                    <input class='form-control dropify' data-val='true' name='UploadDoc' type='file' value=" + allData.Value + " id=" + allData.Value + " onchange="return file_Doc_Validation(this)" accept='.png, .jpg, .jpeg, .pdf, .doc, .zip, .msg' required>
+                                </div>
+                            </div>
+                            @Html.Hidden("UploadHid", null)
+                            <div class="row row-sm justify-content-center d-flex mt-3 mb-3">
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 text-center me-5">
+                                    @if ((ViewBag.ErrorMsg == null || ViewBag.ErrorMsg == "") && (ViewBag.getviewbagerrormsg == null || ViewBag.getviewbagerrormsg == ""))
+                                    {
+                                        if (Model.document != null && Model.document.Count > 0)
+                                        {
+                                            <input class="submit-btn ps-5 pe-5" type="submit" id="Submitbtn" value="Upload More Document" />
+                                        }
+                                        else
+                                        {
+                                            <input class="submit-btn ps-5 pe-5" type="submit" id="Submitbtn" value="Upload Document" />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <input class="submit-btn ps-5 pe-5" type="submit" id="Submitbtn" value="Upload Document" disabled style="cursor:not-allowed;" data-bs-placement="right" data-bs-toggle="tooltip" title="First Fill the Information" />
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        @if (Model.document != null && Model.document.Count > 0)
+                        {
+                            <div class="row">
+                                <div class="col-xl-12 mb-5 mt-1 ps-4 pe-4">
+                                    <div class="card h-auto rounded-0 shadow-none" style="background: #ECF0FA !important;">
+                                        <div class="card-header p-2 rounded-0" style="background: #ECF0FA !important;">
+                                            <h5 class="tx-14">Uploded File List :</h5>
+                                        </div>
+                                        <div class="card-body p-3">
+                                            @foreach (var item in Model.document)
+                                            {
+                                                <div class="row shadow p-3 mb-2 bg-body-tertiary rounded bg-white">
+                                                    <div class="col-md-7 d-flex">
+                                                        <h4 class="fw-bold tx-12">@item.DocumentType : </h4>
+                                                        <h4 class="tx-12 ms-2">@item.FileName</h4>
+                                                    </div>
+                                                    <div class="col-md-2 d-flex">
+                                                        @*<a target="_blank" href='@Url.Content("~/Documents/CandidateDocuments/ProvidedDocuments/" + @item.FileName)'><i class="fa fa-eye tx-14" style="color:#8D5FFF;"></i></a>*@
+                                                        @Html.ActionLink("download", "DownloadDocument", "Download", new { FileName = @item.FileName }, null) <i class="fa fa-eye tx-14" style="color:#8D5FFF;"></i>
+                                                        @Html.Raw(string.Format("<a href=\"#\" id=\"Delete_{0}_{1}\" class=\"deletetempdoc\"><i class='fa fa-trash tx-14 ms-3' style='color:#Fc273F;'></i></a>", @item.VerifiedUploadRowID, @item.SubCheckRowID))
+                                                    </div>
+                                                    <div class="col-md-3 d-flex">
+                                                        <h4 class="tx-12 ms-2">@item.UploadDate</h4>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                }
+                @using (Html.BeginForm("UpdateFormFill", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+                    @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+                    <input id="SubCheckId" type="hidden" value=@SubCheckId>
+                    @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+                    <input id="clientRowId" type="hidden" value=@clientRowId>
+                    @Html.Hidden("clientRowId", clientRowId.ToString())
+
+                    <input id="CheckFamilyId" type="hidden" value="12">
+                    @Html.Hidden("CheckFamilyId", "12")
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 text-center">
+                            @if ((ViewBag.ErrorMsg == null || ViewBag.ErrorMsg == "") && (ViewBag.getviewbagerrormsg == null || ViewBag.getviewbagerrormsg == ""))
+                            {
+                                if (Model.document != null && Model.document.Count > 0)
+                                {
+                                    <input type="submit" class="submit-btn ps-5 pe-5" value="SUBMIT" id="finalsave">
+                                }
+                                else
+                                {
+                                    <input type="submit" class="submit-btn ps-5 pe-5" value="SUBMIT" disabled style="cursor:not-allowed;" data-bs-placement="right" data-bs-toggle="tooltip" title="First Fill All the Information and Document" />
+                                }
+                            }
+                            else
+                            {
+                                <input type="submit" class="submit-btn ps-5 pe-5" value="SUBMIT" disabled style="cursor:not-allowed;" data-bs-placement="right" data-bs-toggle="tooltip" title="First Fill All the Information and Document" />
+                            }
+                        </div>
+
+                    </div>
+                }
+            </div>
+        }
+    }
+    @if (clid == "559")
+    {
+        <div class="row row-sm d-flex justify-content-between ms-0">
+            @{
+                string[] NextPreviousButtonsURL = (string[])(Session["NextPreviousButtonsURL"]);
+                for (int I = 0; I < NextPreviousButtonsURL.Length; I++)
+                {
+                    if (NextPreviousButtonsURL[I] != null)
+                    {
+                        string[] Nenu1 = NextPreviousButtonsURL[I].Split('|');
+                        if (SubCheckId == Nenu1[4].ToString())
+                        {
+                            if (Nenu1[2] != "Start")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    <a href="@Nenu1[1]" class="previous_btn text-center">Previous<span></span></a>
+                                </div>
+                            }
+                            else if (Nenu1[2] == "Start")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    <a href="~/Candidate/Home/UpdateCandidateDetails/@PersonalRowid" class="previous_btn text-center">Previous<span></span></a>
+                                </div>
+                            }
+
+                            if (Nenu1[3] != "End")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    @if (ViewBag.CheckInfoStatus == "Pending" || ViewBag.CheckDocStatus == "Pending" || ViewBag.CheckInfoStatus == "" || ViewBag.CheckDocStatus == "" || ViewBag.CheckInfoStatus == null || ViewBag.CheckDocStatus == null)
+                                    {
+                                        <a href="#" class="next_btn text-center notmove not_movenext" id="nextss">Next<span></span></a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Nenu1[0]" class="next_btn text-center nextbtn" id="nextss">Next<span></span></a>
+                                    }
+                                </div>
+                            }
+                            else if (Nenu1[3] == "End")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    @if (ViewBag.CheckInfoStatus == "Pending" || ViewBag.CheckDocStatus == "Pending" || ViewBag.CheckInfoStatus == "" || ViewBag.CheckDocStatus == "" || ViewBag.CheckInfoStatus == null || ViewBag.CheckDocStatus == null)
+                                    {
+                                        <a id="rtr" href="#" class="next_btn text-center notmove not_movenext"><span>Next</span></a>
+                                    }
+                                    else
+                                    {
+                                        <a id="rtr" href="~/Candidate/Home/Digital_LOA/@PersonalRowid" class="next_btn text-center finalbtn"><span>Next</span></a>
+                                    }
+                                </div>
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+        </div>
+    }
+    else
+    {
+        <div class="row row-sm d-flex justify-content-between ms-0">
+            @{
+                string[] NextPreviousButtonsURL = (string[])(Session["NextPreviousButtonsURL"]);
+                for (int I = 0; I < NextPreviousButtonsURL.Length; I++)
+                {
+                    if (NextPreviousButtonsURL[I] != null)
+                    {
+                        string[] Nenu1 = NextPreviousButtonsURL[I].Split('|');
+                        string NextURL = Nenu1[0];
+                        if (Nenu1[0] == "End")
+                        {
+                            NextURL = Nenu1[1];
+                        }
+
+                        if (SubCheckId == Nenu1[4].ToString())
+                        {
+                            if (Nenu1[2] != "Start")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    <a href="@Nenu1[1]" class="previous_btn text-center">Previous<span></span></a>
+                                </div>
+                            }
+                            else if (Nenu1[2] == "Start")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    <a href="~/Candidate/Home/UpdateCandidateDetails/@PersonalRowid" class="previous_btn text-center">Previous<span></span></a>
+                                </div>
+                            }
+
+                            if (Nenu1[3] != "End")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+
+                                    <a href="@NextURL" class="next_btn text-center nextbtn" id="nextss">Next<span></span></a>
+                                </div>
+                            }
+                            else if (Nenu1[3] == "End")
+                            {
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                    <a id="rtr" href="~/Candidate/Home/Digital_LOA/@PersonalRowid" class="next_btn text-center finalbtn"><span>Next</span></a>
+                                </div>
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+        </div>
+    }
+</div>
+<style>
+    #ui-id-1 {
+        height: 300px !important;
+        overflow-x: scroll !important;
+        width: 500px !important;
+    }
+
+    .Other_Organisation {
+        display: none;
+        width: 100%;
+        transition: 0.3s ease-in-out;
+    }
+
+    .Reason_for_leaving {
+        display: none;
+        width: 100%;
+        transition: 0.3s ease-in-out;
+    }
+
+    .Exit_formalities {
+        display: none;
+        width: 100%;
+        transition: 0.3s ease-in-out;
+    }
+
+    .DateOfleaving {
+        width: 100%;
+        transition: 0.3s ease-in-out;
+    }
+
+    .Tentative_DOL {
+        width: 100%;
+        transition: 0.3s ease-in-out;
+    }
+
+    .Na_btn {
+        background: none;
+        width: 140px;
+        border: none;
+        text-align: left;
+        padding-left: 20px;
+    }
+
+    .modal {
+        background: rgba(255, 255, 255, .1);
+    }
+
+    .ui-menu {
+        height: 350px !important;
+        overflow: scroll !important;
+    }
+</style>
+@section Scripts{
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/assets/Client_Page_images/Forget Password_files/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/assets/css/bootstrap-datepicker.min.css" rel="stylesheet" />
+    <script src="~/assets/js/bootstrap-datepicker.min.js"></script>
+    <script src="~/Scripts/loginScript.js"></script>
+    <script>
+     $(document).ready(function () {
+         $(".not_movenext").on("click", function () {
+             debugger
+             var CheckInfoStatus = '@ViewBag.CheckInfoStatus';
+             var CheckDocStatus = '@ViewBag.CheckDocStatus';
+             if (CheckInfoStatus == 'Pending' || CheckInfoStatus =="") {
+                 Swal.fire({
+                     title: "Mandatory",
+                     icon: "info",
+                     text: "Please first fill all information and click on submit button!",
+                     //    showCloseButton: true,
+                 });
+             }
+             else if (CheckDocStatus == "Pending" || CheckDocStatus =="") {
+                 Swal.fire({
+                     title: "Mandatory",
+                     icon: "info",
+                     text: "Please first Upload the Document !",
+                     //    showCloseButton: true,
+                 });
+             }
+         });
+     });
+    </script>
+    <script type="text/javascript">
+$(document).on("click", ".deletetempdoc", async function (e) {
+    e.preventDefault();
+    const $btn = $(this);
+    const idParts = ($btn.attr("id") || "").split("_");
+    const id = idParts[1] || "";
+    const SubCheckRowID = idParts[2] || "";
+    const PersonalRowid = $("#PersonalRowid").val();
+    if (!id) {
+        Swal.fire({ icon: 'error', title: 'Invalid document id.', timer: 2000, showConfirmButton: false });
+        return;
+    }
+    const result = await Swal.fire({
+        title: 'Do you want to delete the document?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Delete it!',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+        focusCancel: true,
+        allowOutsideClick: () => !Swal.isLoading(),
+        allowEscapeKey: () => !Swal.isLoading()
+    });
+    if (!result.isConfirmed) {
+        return;
+    }
+
+    Swal.fire({
+        title: 'Deleting...',
+        didOpen: () => { Swal.showLoading(); },
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false
+    });
+
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("DeleteCandidateUploadedTempDocs", "Home")',
+        data: {
+            id: id,
+            SubCheckRowID: SubCheckRowID,
+            PersonalRowid: PersonalRowid
+        },
+        dataType: "json",
+        success: function (res) {
+            Swal.close();
+            if (res === true) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Document deleted successfully!',
+                    timer: 1800,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'There was an error deleting the document.',
+                    timer: 3500
+                });
+            }
+        },
+        error: function (xhr) {
+            Swal.close();
+            Swal.fire({
+                icon: 'error',
+                title: 'Request failed',
+                text: xhr.responseText || 'Please try again.',
+                timer: 3500
+            });
+        }
+    });
+});
+    </script>
+
+    <script>
+        $(function () {
+            var clid = $('#clid').val();
+            if (clid == 559) {
+                $('#89').change(function () {
+                    var DOJq = $("#88").val();
+                    var DOLq = $("#89").val();
+                    function parseDate(dateStr) {
+                        var parts = dateStr.split('-');
+                        return new Date(parts[2], parts[1] - 1, parts[0]);  // Create Date object: year, month (0-based), day
+                    }
+
+                    if (DOJq === '') {
+                        $('#89').val('');
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Mandatory Fields.',
+                            timer: 5000,
+                            html: 'Enter valid date of joining'
+                        })
+                    }
+                    else {
+                        if (DOLq !== '') {
+                            const [DOLday, DOLmonthName, DOLyear] = DOLq.split('-');
+                            const DOLdate = new Date(`${DOLmonthName} ${DOLday}, ${DOLyear}`);
+
+                            if (isNaN(DOLdate.getTime())) {
+                                return "Invalid Date";
+                            }
+
+                            const DOLformattedDay = String(DOLdate.getDate()).padStart(2, '0');
+                            const DOLformattedMonth = String(DOLdate.getMonth() + 1).padStart(2, '0');
+                            const DOLformattedYear = DOLdate.getFullYear();
+
+                            const NewDOL = `${DOLformattedDay}-${DOLformattedMonth}-${DOLformattedYear}`;
+
+                            const [DOJday, DOJmonthName, DOJyear] = DOJq.split('-');
+                            const DOJdate = new Date(`${DOJmonthName} ${DOJday}, ${DOJyear}`);
+
+                            if (isNaN(DOJdate.getTime())) {
+                                return "Invalid Date";
+                            }
+
+                            const DOJformattedDay = String(DOJdate.getDate()).padStart(2, '0');
+                            const DOJformattedMonth = String(DOJdate.getMonth() + 1).padStart(2, '0');
+                            const DOJformattedYear = DOJdate.getFullYear();
+
+                            const NewDOJ = `${DOJformattedDay}-${DOJformattedMonth}-${DOJformattedYear}`;
+
+                            var DOJDates = parseDate(NewDOJ); // Parse DOJ into Date object
+                            var DOLDates = parseDate(NewDOL); // Parse DOL into Date object
+
+                            // Compare the dates using .getTime() method to get the time in milliseconds
+                            if (DOJDates.getTime() > DOLDates.getTime()) {
+                                $('#89').val('');
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'Mandatory Fields.',
+                                    timer: 5000,
+                                    html: 'DOL can not be smaller then DOJ'
+                                })
+                            }
+                        }
+                        else {
+
+                        }
+                    }
+                });
+            }
+            else {
+                $('#89').change(function () {
+                    var DOJq = $("#88").val();
+                    var DOLq = $("#89").val();
+                    function parseDate(dateStr) {
+                        var parts = dateStr.split('-');
+                        return new Date(parts[2], parts[1] - 1, parts[0]);  // Create Date object: year, month (0-based), day
+                    }
+
+                    if (DOJq === '') {
+                        $('#89').val('');
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Mandatory Fields.',
+                            timer: 5000,
+                            html: 'Enter valid date of joining'
+                        })
+                    }
+                    else {
+                        if (DOLq !== '') {
+                            var DOJDate = parseDate(DOJq); // Parse DOJ into Date object
+                            var DOLDate = parseDate(DOLq); // Parse DOL into Date object
+
+                            // Compare the dates using .getTime() method to get the time in milliseconds
+                            if (DOJDate.getTime() > DOLDate.getTime()) {
+                                $('#89').val('');
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'Mandatory Fields.',
+                                    timer: 5000,
+                                    html: 'DOL can not be smaller then DOJ'
+                                })
+                            }
+                        }
+                        else {
+
+                        }
+                    }
+                });
+            }
+
+        });
+
+
+
+        $(function () {
+            debugger
+
+
+            $('#89').change(function () {
+                var clid = parseInt($('#clid').val(), 10);
+                let SubchckId = parseInt($('#SubId').val(), 10);
+                if (clid == 1731 && [69, 70, 71, 72, 73, 74, 75, 76].includes(SubchckId)) {
+                    var DOLq = $("#89").val();
+                    function parseDate(dateStr) {
+                        var parts = dateStr.split('-');
+                        return new Date(parts[2], parts[1] - 1, parts[0]);  // Create Date object: year, month (0-based), day
+                    }
+
+                    const currentDate = new Date();
+
+
+                    if (DOLq !== '') {
+                        //  var DOJDate = parseDate(DOJq); // Parse DOJ into Date object
+                        var DOLDate = parseDate(DOLq); // Parse DOL into Date object
+
+                        // Compare the dates using .getTime() method to get the time in milliseconds
+                        if (DOLDate.getTime() > currentDate.getTime()) {
+                            $('#89').val('');
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Mandatory Fields.',
+                                timer: 5000,
+                                html: 'DOL can not be Greater then Current date'
+                            })
+                        }
+                    }
+                    else {
+
+                    }
+                }
+                //  var DOJq = $("#88").val();
+
+
+            });
+
+
+
+
+            $('#88').change(function () {
+                debugger
+                var clid = parseInt($('#clid').val(), 10);
+                let SubchckId = parseInt($('#SubId').val(), 10);
+                if (clid == 1731 && [69, 70, 71, 72, 73, 74, 75, 76].includes(SubchckId)) {
+                    debugger
+                    var DOJq = $("#88").val();
+                    // var DOLq = $("#89").val();
+                    function parseDate(dateStr) {
+                        var parts = dateStr.split('-');
+                        return new Date(parts[2], parts[1] - 1, parts[0]);  // Create Date object: year, month (0-based), day
+                    }
+
+                    const currentDate = new Date();
+
+
+                    if (DOJq !== '') {
+                        var DOJDate = parseDate(DOJq); // Parse DOJ into Date object
+                        //var DOLDate = parseDate(DOLq); // Parse DOL into Date object
+
+                        // Compare the dates using .getTime() method to get the time in milliseconds
+                        if (DOJDate.getTime() > currentDate.getTime()) {
+                            $('#88').val('');
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Mandatory Fields.',
+                                timer: 5000,
+                                html: 'DOJ can not be Greater then Current date'
+                            })
+                        }
+                    }
+                    else {
+
+                    }
+
+                }
+
+            });
+
+
+        });
+
+
+
+
+    </script>
+
+    <script type="text/javascript">
+        function Validate() {
+            var email = document.getElementById('96');
+            var clientid = document.getElementById('clientRowId').value;
+            var filter = /(?:[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@@(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-zA-Z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+            if (clientid != "UitaN2JodDBFcWc9") {
+                if (!filter.test(email.value)) {
+                    //alert('Please provide a valid email address');
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Mandatory Fields.',
+                        timer: 5000,
+                        html: 'Please provide a valid email address'
+                    })
+                    return false;
+                }
+                else {
+                    return true;
+                }
+
+            }
+        }
+
+        function Validate() {
+            var email = document.getElementById('149');
+            var email2 = document.getElementById('96');
+            var values = document.getElementById('149').value;
+            var values2 = document.getElementById('96').value;
+            var clientid = document.getElementById('clientRowId').value;
+            var filter = /(?:[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@@(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-zA-Z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+            if (clientid != "UitaN2JodDBFcWc9") {
+                if (values != "Not Applicable" || values2 != "Not Applicable") {
+                    if (!filter.test(email.value) || !filter.test(email2.value)) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Mandatory Fields.',
+                            timer: 5000,
+                            html: 'Please provide a valid email address'
+                        })
+                        return false;
+                    }
+                    else {
+                        return true;
+                    }
+                }
+                else {
+                    return true;
+                }
+            }
+        }
+        $(document).ready(function () {
+            $(".Accepte_btn").click(function () {
+                $("#Notraised").attr('checked', true);
+                $("#OrganizationName").val('Not Applicable');
+                $("#141").val('Not Applicable');
+                $("#142").val('Not Applicable');
+                $("#144").val('Not Applicable');
+                $("#146").val('Not Applicable');
+                $("#93").val('Not Applicable');
+                $("#143").val('Not Applicable');
+                $("#147").val('Not Applicable');
+                $("#95").val('Not Applicable');
+                $("#94").val('Not Applicable');
+                $("#87").val('Not Applicable');
+
+                $("#149").val('Not Applicable');
+                $("#150").val('Not Applicable');
+                $("#148").val('Not Applicable');
+                $("#96").val('Not Applicable');
+                $("#147").val('Not Applicable');
+
+                $("#91").val('Not Applicable');
+                $("#88").val('Not Applicable');
+                $("#89").val('Not Applicable');
+            });
+            $(".Cancel_btn").click(function () {
+                $("#Notraised").attr('checked', false);
+                $("#OrganizationName").val('');
+                $("#141").val('');
+                $("#142").val('');
+                $("#144").val('');
+                $("#146").val('');
+                $("#93").val('');
+                $("#143").val('');
+                $("#147").val('');
+                $("#95").val('');
+                $("#94").val('');
+                $("#87").val('');
+
+                $("#149").val('');
+                $("#150").val('');
+                $("#148").val('');
+                $("#96").val('');
+                $("#147").val('');
+
+                $("#91").val('');
+                $("#88").val('');
+                $("#89").val('');
+            });
+        });
+        function NotRaised(element) {
+            if ($('#Notraised').is(':checked')) {
+                $("#382").attr('checked', true);
+                $("#OrganizationName").val('Not Applicable');
+                $("#141").val('Not Applicable');
+                $("#142").val('Not Applicable');
+                $("#144").val('Not Applicable');
+                $("#146").val('Not Applicable');
+                $("#93").val('Not Applicable');
+                $("#143").val('Not Applicable');
+                $("#147").val('Not Applicable');
+                $("#95").val('Not Applicable');
+                $("#94").val('Not Applicable');
+                $("#87").val('Not Applicable');
+
+                $("#149").val('Not Applicable');
+                $("#150").val('Not Applicable');
+                $("#148").val('Not Applicable');
+                $("#96").val('Not Applicable');
+                $("#147").val('Not Applicable');
+
+                $("#91").val('Not Applicable');
+                $("#88").val('Not Applicable');
+                $("#89").val('Not Applicable');
+
+
+
+                //$("#EV_Designation").val('Not Applicable');
+                //$("#EV_EmployeeTenure").val('Not Applicable');
+                //$("#EV_EmployeeCode").val('Not Applicable');
+                //$("#EV_leavingReason").val('Not Applicable');
+                //$('input[type=text]').attr("readonly", true);
+                //$('input[type=text], textarea').attr("readonly", true);
+                //$('input[type=text], select').attr("readonly", true);
+            }
+            else {
+                $("#382").attr('checked', false);
+                $("#OrganizationName").val('');
+                $("#141").val('');
+                $("#142").val('');
+                $("#144").val('');
+                $("#146").val('');
+                $("#93").val('');
+                $("#143").val('');
+                $("#147").val('');
+                $("#95").val('');
+                $("#94").val('');
+                $("#87").val('');
+
+                $("#149").val('');
+                $("#150").val('');
+                $("#148").val('');
+                $("#96").val('');
+                $("#147").val('');
+
+                $("#91").val('');
+                $("#88").val('');
+                $("#89").val('');
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            if ('@ViewBag.NACheckStatus' == 'True')
+            {
+                $("#OrganizationName").val('Not Applicable');
+                $("#141").val('Not Applicable');
+                $("#93").val('Not Applicable');
+                $("#143").val('Not Applicable');
+                $("#147").val('Not Applicable');
+                $("#95").val('Not Applicable');
+                $("#94").val('Not Applicable');
+                $("#87").val('Not Applicable');
+
+                $("#149").val('Not Applicable');
+                $("#150").val('Not Applicable');
+                $("#148").val('Not Applicable');
+                $("#96").val('Not Applicable');
+                $("#147").val('Not Applicable');
+
+                $("#91").val('Not Applicable');
+                $("#88").val('Not Applicable');
+                $("#89").val('Not Applicable');
+            }
+          if (('@ViewBag.clientno' != '576') || ('@ViewBag.clientno' == '576' && '@ViewBag.SubCheckId'!='68')) {
+
+                $('#NADiv').show();
+            }
+            else {
+
+                $('#NADiv').hide();
+            }
+
+            //$("#OrganizationName").autocomplete({
+            //    source: function (request, response) {
+            //        $.ajax({
+            //            url: "/Candidate/Home/getEmployerlist",
+            //            type: "POST",
+            //            dataType: "json",
+            //            data: { Prefix: request.term },
+            //            success: function (data) {
+            //                response($.map(data, function (item) {
+            //                    return { label: item.CompanyName, value: item.CompanyRowID };
+            //                }))
+            //            }
+            //        })
+            //    },
+            //    minLength: 3,
+            //    select: function (event, ui) {
+            //        event.preventDefault();
+            //    },
+            //    focus: function (event, ui) {
+            //        event.preventDefault();
+            //        var OrgName = ui.item.label;
+            //        $("#OrganizationName").val(OrgName);
+            //        $("#OrganizationNameTemp").val(OrgName);
+            //        $('#OrganizationId').val(ui.item.value);
+            //    },
+            //});
+            //$(document).ready(function () {
+                let isSelecting = false; // flag to prevent blur clearing
+
+                $("#OrganizationName").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: "/Candidate/Home/getEmployerlist",
+                            type: "POST",
+                            dataType: "json",
+                            data: { Prefix: request.term },
+                            success: function (data) {
+                                response($.map(data, function (item) {
+                                    return { label: item.CompanyName, value: item.CompanyRowID };
+                                }));
+                            }
+                        });
+                    },
+                    minLength: 3,
+                    select: function (event, ui) {
+                        event.preventDefault();
+                        isSelecting = true; // mark that user selected an item
+
+                        $("#OrganizationName").val(ui.item.label);
+                        $("#OrganizationNameTemp").val(ui.item.label);
+                        $("#OrganizationId").val(ui.item.value);
+
+                        setTimeout(() => { isSelecting = false; }, 200); // reset flag after a short delay
+                    },
+                    focus: function (event, ui) {
+                        event.preventDefault();
+                        $("#OrganizationName").val(ui.item.label);
+                    }
+                });
+
+                $("#OrganizationName").on("blur", function () {
+                    // Only clear if not currently selecting from autocomplete
+                    if (!isSelecting) {
+                        if ($("#OrganizationName").val().trim() !== $("#OrganizationNameTemp").val().trim()) {
+                            $("#OrganizationName").val("");
+                            $("#Addressofthecompany").val("");
+                            $("#OrganizationId").val("0");
+                        }
+                    }
+                });
+            //});
+
+        })
+
+        //$("#OrganizationName").blur(function () {
+        //    if ($("#OrganizationName").val().trim() != $("#OrganizationNameTemp").val().trim()) {
+        //        //alert($("#OrganizationName").val());
+        //        //alert($("#OrganizationNameTemp").val());
+        //        $("#OrganizationName").val("");
+        //        $('#Addressofthecompany').val("");
+        //        $('#OrganizationId').val("0");
+        //    }
+        //});
+
+        $(function () {
+            $('#OrganizationName').change(function () {
+                var CurOrg = $("#OrganizationName").val();
+                var url = "/ProvidedInfo/EmploymentAddress/" + $("#OrganizationId").val();
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+                    success: function (Address) {
+                        $('#Addressofthecompany').val(Address);
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        //validation for candidatename
+        document.getElementById('141').onkeypress = function (e) {
+            if (!(/[a-z ]/i.test(String.fromCharCode(e.keyCode)))) {
+                e.preventDefault();
+                return false;
+            }
+        }
+        document.getElementById('95').onkeypress = function (e) {
+            if (!(/[a-z ]/i.test(String.fromCharCode(e.keyCode)))) {
+                e.preventDefault();
+                return false;
+            }
+        }
+
+        document.getElementById('148').onkeypress = function (e) {
+            if (!(/[a-z ]/i.test(String.fromCharCode(e.keyCode)))) {
+                e.preventDefault();
+                return false;
+            }
+        }
+
+        //validation for Mobile Number and Pincode
+        $("#132").keypress(function (e) {
+            $("132").attr("min", "10");
+            var valueLength = this.value.length;
+            if (valueLength == 10) {
+                return false;
+            }
+            var kk = e.which;
+            if (kk < 48 || kk > 57)
+                e.preventDefault();
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            var clid = $('#clid').val();
+            if (clid == 559) {
+                $('#88').attr("placeholder", "DD-MM-YYYY");
+                $('#88').datepicker({
+                    format: 'dd-MM-yyyy',
+                    changeMonth: true,
+                    changeYear: true,
+                    showButtonPanel: true,
+                    yearRange: '-65:+0',
+                    autoclose: true,
+                });
+                $('#88').bind('copy paste cut', function (e) {
+                    e.preventDefault();
+                });
+            }
+            else {
+                $('#88').attr("placeholder", "DD-MM-YYYY");
+                $('#88').datepicker({
+                    format: 'dd-mm-yyyy',
+                    changeMonth: true,
+                    changeYear: true,
+                    showButtonPanel: true,
+                    yearRange: '-65:+0',
+                    autoclose: true,
+                });
+                $('#88').bind('copy paste cut', function (e) {
+                    e.preventDefault();
+                });
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            var clid = $('#clid').val();
+            if (clid == 559) {
+                $('#89').attr("placeholder", "DD-MM-YYYY");
+                $('#89').datepicker({
+                    format: 'dd-MM-yyyy',
+                    changeMonth: true,
+                    changeYear: true,
+                    showButtonPanel: true,
+                    yearRange: '-65:+0',
+                    autoclose: true,
+                });
+                $('#89').bind('copy paste cut', function (e) {
+                    e.preventDefault();
+                });
+            }
+            else {
+                $('#89').attr("placeholder", "DD-MM-YYYY");
+                $('#89').datepicker({
+                    format: 'dd-mm-yyyy',
+                    changeMonth: true,
+                    changeYear: true,
+                    showButtonPanel: true,
+                    yearRange: '-65:+0',
+                    autoclose: true,
+                });
+                $('#89').bind('copy paste cut', function (e) {
+                    e.preventDefault();
+                });
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#580').attr("placeholder", "DD-MM-YYYY");
+            $('#580').datepicker({
+                format: 'dd-mm-yyyy',
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: '-65:+0',
+                autoclose: true,
+            });
+            $('#580').bind('copy paste cut', function (e) {
+                e.preventDefault();
+            });
+        });
+    </script>
+    <script>
+        $("#144").change(function () {
+            var option = $("#144").val();
+            if (option === "No") {
+                $("#89").datepicker({
+                    setEndDate: new Date(),
+                    format: 'dd-mm-yyyy',
+                });
+            }
+            else {
+                $("#89").datepicker({
+                    setEndDate: null,
+                    format: 'dd-mm-yyyy',
+                });
+            }
+        });
+
+        $(document).ready(function () {
+            $("#88").datepicker({
+                setEndDate: new Date(),
+                format: 'dd-mm-yyyy',
+            });
+
+            var option = $("#144").val();
+            if (option === "No") {
+                $("#89").datepicker({
+                    setEndDate: new Date(),
+                    format: 'dd-mm-yyyy',
+                });
+            } else {
+                $("#89").datepicker({
+                    setEndDate: null,
+                    format: 'dd-mm-yyyy',
+                });
+            }
+        });
+    </script>
+    <script>
+        $("#btnSave").click(function () {
+            var obj = $('form input[type="text"]').NormalizedString();
+            if (obj == false) {
+                return false;
+            }
+        });
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#142').on('change', function (e) {
+                if ($('#142').val() == 'Fulltime' && '@ViewBag.clientno' == '1190') {
+
+                    $("#143").val('Not Applicable');
+                }
+                else if ($('#142').val() == 'Part time' && '@ViewBag.clientno' == '1190') {
+                    $("#143").val('');
+                }
+                else if ($('#142').val() == 'Through Outsourcing Agency' && '@ViewBag.clientno' == '1190') {
+                    $("#143").val('');
+                }
+                else if ($('#142').val() == 'Not Applicable' && '@ViewBag.clientno' == '1190') {
+                    $("#143").val('Not Applicable');
+                }
+                else {
+                    $("#143").val();
+                }
+
+            }).trigger('change');
+
+        });
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#OrganizationName").change(function () {
+                var OtherOrganizationName = $("#OrganizationName").val();
+                if (OtherOrganizationName == "Others") {
+                    $(".Other_Organisation").css("display", "flex");
+                }
+                else {
+                    $(".Other_Organisation").css("display", "none");
+                }
+            });
+            var OtherOrganizationName = $("#OrganizationName").val();
+            if (OtherOrganizationName == "Others") {
+                $(".Other_Organisation").css("display", "flex");
+            }
+            else {
+                $(".Other_Organisation").css("display", "none");
+            }
+        });
+
+        $(document).ready(function () {
+            $("#144").change(function () {
+                var Currentlyworking = $("#144").val();
+                if (Currentlyworking == "No") {
+                    $(".DateOfleaving").css("display", "flex");
+                    $(".Exit_formalities").css("display", "flex");
+                    $(".Reason_for_leaving").css("display", "flex");
+                    $(".Tentative_DOL").css("display", "none");
+                }
+                else if (Currentlyworking == "Yes") {
+                    $(".DateOfleaving").css("display", "none");
+                    $(".Tentative_DOL").css("display", "flex");
+                    $(".Exit_formalities").css("display", "none");
+                    $(".Reason_for_leaving").css("display", "none");
+                }
+                else {
+                    $(".DateOfleaving").css("display", "none");
+                    $(".Tentative_DOL").css("display", "none");
+                    $(".Exit_formalities").css("display", "none");
+                    $(".Reason_for_leaving").css("display", "none");
+                }
+            });
+            var Currentlyworking = $("#144").val();
+            if (Currentlyworking == "No") {
+                $(".DateOfleaving").css("display", "flex");
+                $(".Exit_formalities").css("display", "flex");
+                $(".Reason_for_leaving").css("display", "flex");
+                $(".Tentative_DOL").css("display", "none");
+            }
+            else if (Currentlyworking == "Yes") {
+                $(".DateOfleaving").css("display", "none");
+                $(".Tentative_DOL").css("display", "flex");
+                $(".Exit_formalities").css("display", "none");
+                $(".Reason_for_leaving").css("display", "none");
+            }
+            else {
+                $(".DateOfleaving").css("display", "none");
+                $(".Tentative_DOL").css("display", "none");
+                $(".Exit_formalities").css("display", "none");
+                $(".Reason_for_leaving").css("display", "none");
+            }
+
+            var clid1 = '@ViewBag.clientno';
+        if (clid1 == "1747") {
+            $('[id="144"]').on('change', function () {
+                var value = $(this).val().trim().toLowerCase();
+                console.log("Selected value:", value);
+
+                // Clear values
+                $('[id="580"]').val('');
+                $('[id="89"]').val('');
+
+                if (value === 'yes') {
+                    $('[id="580"]').prop('disabled', false);
+                    $('[id="89"]').prop('disabled', true);
+                }
+                else if (value === 'no') {
+                    $('[id="580"]').prop('disabled', true);
+                    $('[id="89"]').prop('disabled', false);
+                }
+                else {
+                    // Optional: both disabled for default/empty selection
+                    $('[id="580"]').prop('disabled', true);
+                    $('[id="89"]').prop('disabled', true);
+                }
+            });
+        }
+
+    });
+    </script>
+    <script>
+        //validation for Mobile Number and Pincode
+        $('#147').keypress(function (event) {
+            // Allow only numbers
+            var charCode = (event.which) ? event.which : event.keyCode;
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                return false;
+            }
+
+            // Limit input to 10 digits
+            var maxLength = 10;
+            var currentValue = $(this).val();
+            if (currentValue.length >= maxLength) {
+                return false;
+            }
+        });
+        $('#150').keypress(function (event) {
+            // Allow only numbers
+            var charCode = (event.which) ? event.which : event.keyCode;
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                return false;
+            }
+
+            // Limit input to 10 digits
+            var maxLength = 10;
+            var currentValue = $(this).val();
+            if (currentValue.length >= maxLength) {
+                return false;
+            }
+        });
+
+
+
+        //$("#87").on("input", function () {
+        //    var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+        //    if ($(this).val().match(regexp)) {
+        //        $(this).val($(this).val().replace(regexp, ''));
+        //    }
+        //});
+
+        //$("#87").on("input", function () {
+        //    this.value = this.value.replace(/[^a-zA-Z]/g, '');
+        //}) ;
+
+        //$("#95").on("input", function () {
+        //    this.value = this.value.replace(/[^a-zA-Z]/g, '');
+        //});
+
+        //$("#148").on("input", function () {
+        //    this.value = this.value.replace(/[^a-zA-Z]/g, '');
+        //}) ;
+
+
+
+        $("#91").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        });
+
+        $("#582").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        }) ;
+
+        $("#OrganizationName").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        });
+
+
+
+        $("#95").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        });
+
+        //$("#96").on("input", function () {
+        //    var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+        //    if ($(this).val().match(regexp)) {
+        //        $(this).val($(this).val().replace(regexp, ''));
+        //    }
+        //});
+
+        $("#148").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        });
+
+        $("#147")
+            .on("input", function () {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+
+        $("#150")
+            .on("input", function () {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            }) ;
+
+        //$("#149").on("input", function () {
+        //    var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+        //    if ($(this).val().match(regexp)) {
+        //        $(this).val($(this).val().replace(regexp, ''));
+        //    }
+        //});
+
+
+        function file_Doc_Validation(fileInput) {
+
+            var fileName = fileInput.value.split('\\').pop();
+
+            // Block dangerous double extensions
+            var doubleExtensionPattern = /\.(php|asp|aspx|jsp|exe|bat|cmd|sh)\./i;
+
+            if (doubleExtensionPattern.test(fileName)) {
+                alert('Double extension files are not allowed.');
+                fileInput.value = '';
+                return false;
+            }
+
+            if ((fileName.match(/\./g) || []).length > 1) {
+                alert("Double extension files are not allowed.");
+                fileInput.value = '';
+                return false;
+            }
+
+
+        }
+
+    </script>
+}
+
+
+
+

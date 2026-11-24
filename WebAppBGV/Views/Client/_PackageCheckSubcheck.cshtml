@@ -1,0 +1,103 @@
+﻿@{int count = 0; }
+@foreach (var item in ViewBag.CheckFamilyList)
+{
+    count++;
+
+    <div class="card">
+        <div class="card-header" id="headingsOne_@item.CheckFamilyRowID">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-4 text-left">
+                        <input type="checkbox" name="@item.CheckFamilyRowID" class="chkFmly @item.CheckFamilyRowID" value="@item.CheckFamilyRowID" checked='@item.PkgChk' />
+                        <a class="btn collapsed" data-toggle="collapse" data-target="#card-@item.CheckFamilyRowID" aria-expanded="false" aria-controls="@item.CheckFamilyRowID">
+                            &nbsp;@item.CheckFamilyName
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" inputmode="numeric" id="ddlSelSeq_@(item.CheckFamilyRowID)" name="ddlSelSeq_@(item.CheckFamilyRowID)"
+                               value="@item.PkgChkRepoSequence" maxlength="2" onkeypress="return isNumberKey(event,false)" class="ddlSelSeq client_select_sequence form-control" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="card_@item.CheckFamilyRowID" class="collapse" aria-labelledby="headingsOne-@item.CheckFamilyRowID" data-parent="#accordionExample">
+            <div class="card-body">
+                @foreach (var subchk in ViewBag.SubCheckFamilyList)
+                {
+                    if (item.CheckFamilyRowID == subchk.CheckFamilyRowID)
+                    {
+                        <div class="row">
+                            <div class="col-md-3">
+                                <input type="checkbox" class="SubchkFmly @(item.CheckFamilyRowID) _@(subchk.SubCheckFamilyRowID)" name="SubchkFmly" checked='@subchk.SubChkPkg' value="@(item.CheckFamilyRowID)_@(subchk.SubCheckFamilyRowID)" />
+                                @subchk.SubCheckName
+                            </div>
+                            <div class="col-md-4 dvSubCheck1">
+                                <input type="text" id="txtChInRpt_@(item.CheckFamilyRowID)_@(subchk.SubCheckFamilyRowID)" name="txtChInRpt_@(item.CheckFamilyRowID)_@(subchk.SubCheckFamilyRowID)"
+                                       value="@subchk.CheckNameInReport" class="txtChInRpt package_size1" />
+                            </div>
+                            <div class="col-md-1 dvSubCheck">
+                                <input type="text" id="txtClTat_@(item.CheckFamilyRowID)_@(subchk.SubCheckFamilyRowID)" name="txtClTat_@(item.CheckFamilyRowID)_@(subchk.SubCheckFamilyRowID)"
+                                       value="@subchk.TAT" onblur="myFunction(this)" onkeypress="return isNumberKey(event,false)" class="txtClTat package_size" />
+                            </div>
+                            <div class="col-md-1 dvSubCheck">
+                                <input type="text" id="txtIntTat_@(item.CheckFamilyRowID)_@(subchk.SubCheckFamilyRowID)" name="txtIntTat_@(item.CheckFamilyRowID)_@(subchk.SubCheckFamilyRowID)"
+                                       value="@subchk.InternalTAT" onblur="myFunction(this)" onkeypress="return isNumberKey(event,false)" class="txtIntTat package_size" />
+                            </div>
+                            <div class="col-md-1 dvSubCheck">
+                                <input type="text" id="txtBprChk_@(item.CheckFamilyRowID)_@(subchk.SubCheckFamilyRowID)" name="txtBprChk_@(item.CheckFamilyRowID)_@(subchk.SubCheckFamilyRowID)"
+                                       value="@subchk.BillingPerCase" onkeypress="return isNumberKey(event,true)" class="txtBprChk package_size" />
+                            </div>
+                            <div class="col-md-1 dvSubCheck">
+                                <input type="text" id="txtCprChk_@(item.CheckFamilyRowID)_@(subchk.SubCheckFamilyRowID)" name="txtCprChk_@(item.CheckFamilyRowID)_@(subchk.SubCheckFamilyRowID)"
+                                       value="@subchk.CostParCase" class="txtCprChk package_size" readOnly="readOnly" />
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+}
+
+
+<style>
+    .show {
+        display: block !important;
+    }
+
+    .hide {
+        display: none !important;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        const cardIds = ['#card_2', '#card_5', '#card_11', '#card_12', '#card_26', '#card_30', '#card_40'];
+
+        function toggleCard(cardToToggle) {
+            const $targetCard = $(cardToToggle);
+            const isAlreadyVisible = $targetCard.hasClass('show');
+
+            // First, hide all cards
+            cardIds.forEach(id => {
+                $(id).removeClass('show').addClass('hide');
+            });
+
+            // If it was not visible before, show it
+            if (!isAlreadyVisible) {
+                $targetCard.removeClass('hide').addClass('show');
+            }
+            // If it was already visible, it stays hidden (toggle off)
+        }
+
+        $('#headingsOne_2').on('click', () => toggleCard('#card_2'));
+        $('#headingsOne_5').on('click', () => toggleCard('#card_5'));
+        $('#headingsOne_11').on('click', () => toggleCard('#card_11'));
+        $('#headingsOne_12').on('click', () => toggleCard('#card_12'));
+        $('#headingsOne_26').on('click', () => toggleCard('#card_26'));
+        $('#headingsOne_30').on('click', () => toggleCard('#card_30'));
+        $('#headingsOne_40').on('click', () => toggleCard('#card_40'));
+    });
+
+</script>

@@ -1,0 +1,72 @@
+﻿
+@if (Model != null)
+{
+
+    if (Model.CandidateCaseDocList != null)
+    {
+        foreach (var Doc in Model.CandidateCaseDocList)
+        {
+            if (Doc.DocumentType != "BGV EDU EMP Summary" && Doc.DocumentType != "Addendum Form")
+            {
+                FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                {
+                    <page id="PrintSrc" size="A4">
+                        <div style="page-break-after:always ;"></div>
+                        <table width="793" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999;">
+
+                            <tr>
+                                <td width="2%" align="left" valign="bottom" @*style="border-left:2px solid #999999;"*@>&nbsp;</td>
+                                <td valign="top">
+                                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td valign="top">
+                                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                    <tr>
+                                                        <td>
+                                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                <tr>
+                                                                    <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@Doc.DocumentType</p><a name="LOAS"> </a></td>
+                                                                    <td width="6%" valign="top"><img src='@Url.Content("~/Content/Securitas_AB_logo.svg.png")' width="71" height="40"></td>
+                                                                </tr>
+                                                                <tr><td colspan="2">&nbsp;</td></tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td valign="top">&nbsp;</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td valign="top">
+                                                            @{
+                                                                FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                if (image.Height > 850)
+                                                                {
+                                                                    <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="644" style="height:850px;" />
+                                                                }
+                                                                else
+                                                                {
+                                                                    <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="644" />
+                                                                }
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td @*style="border-right:2px solid #999999;"*@ align="left" valign="top">&nbsp;</td>
+                            </tr>
+                            <!--- Report Footer with Address Include -->
+
+                        </table>
+                    </page>
+                }
+            }
+
+        }
+    }
+
+}

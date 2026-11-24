@@ -1,0 +1,325 @@
+﻿@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Welcome To " + ViewBag.Dashboard;
+    //Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    string TeamMemberRowID1 = Convert.ToString(Session["TeamMemberRowID"]);
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitleWoutNav") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+<link href="~/Content/MultiselectcNew.css" rel="stylesheet" type="text/css" />
+<link href="~/MultiSelection/docs/css/prettify.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/MultiSelection/dist/css/bootstrap-multiselect.css" type="text/css">
+
+<div class="container">
+    <div class="col-md-12">
+        <div class="form-horizontal">
+
+            @*<div class="container" style="margin:0px!important;">
+                <div class="row">
+                    <div class="col-md-2" style="margin-top:26px;">
+                        @Html.Label("Select Client", htmlAttributes: new { @class = "control-label required", })
+                    </div>
+                    <div class="col-md-4" style="margin-top:26px;">
+                        @Html.DropDownList("ClientRowID", new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                          new { @class = "form-control", @id = "ClientRowID", @multiple = "multiple", @size = "3" })
+                    </div>
+                    <div class="col-md-3">
+                        <label class="control-label">From Date :</label>
+                        @Html.TextBox("FromDate", null, new { @class = "form-control", @id = "FromDate", @placeholder = "DD-MMM-YYY", @autocomplete = "off", @style = "height:35px!important;" })
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="control-label">To Date :</label>
+                        @Html.TextBox("ToDate", null, new { @class = "form-control", @id = "ToDate", @placeholder = "DD-MMM-YYY", @autocomplete = "off", @style = "height:35px!important;" })
+                    </div>
+                </div>
+            </div>*@
+            @*<div class="row col-md-12" style="margin:20px 0px 50px 0px!important; text-align:center;">
+                <div class="col-md-12">
+                    <input type="button" id="btnExportCaseStatus" value="Export to Excel" class="btn bun-bg btn-default" />
+                    <input type="button" id="btnE2EMIS" value="MIS" class="btn bun-bg btn-default" />
+                    <input type="button" id="btnCheckwisemis" value="Check MIS" class="btn bun-bg btn-default" />
+                    <input type="button" id="btnRejectCheckwisemis" value="Reject Check MIS" class="btn bun-bg btn-default" />
+                    @if (TeamMemberRowID1 == "524" || TeamMemberRowID1 == "160" || TeamMemberRowID1 == "864" || TeamMemberRowID1 == "926" || TeamMemberRowID1 == "882" || TeamMemberRowID1 == "557")
+                    {
+                        <input type="button" id="btnclientmis" value="Client Tracker" class="btn bun-bg btn-default" />
+                    }
+                </div>
+                <div class="col-md-3"></div>
+            </div>*@
+
+
+            @{
+                if (Request.QueryString["ClientRowID"] != null && Convert.ToInt16(Request.QueryString["ClientRowID"]) > 0)
+                {
+                    @Html.Hidden("hdnClientRowID", clsCommonMethods.PEncrypt(Request.QueryString["ClientRowID"]))
+                    @*@Html.Hidden("ClientRowID", clsCommonMethods.PEncrypt(Request.QueryString["ClientRowID"]))*@
+                }
+                @*else
+                    {
+                        @Html.Hidden("hdnClientRowID", clsCommonMethods.PEncrypt("0"))
+                        @Html.Hidden("ClientRowID", clsCommonMethods.PEncrypt("0"))
+                    }*@
+            }
+        </div>
+    </div>
+</div>
+<div class="row" id="dvPartialView">
+    @{Html.RenderAction("RefreshDashboardDetails", "ClientServicing");}
+</div>
+
+@*<script type="text/javascript" src="~/MultiSelection/docs/js/jquery-2.1.3.min.js"></script>*@
+<script type="text/javascript" src="~/Scripts/jquery-3.7.1.min.js"></script>
+<script src="~/MultiSelection/dist/js/popper.min.js"></script>
+<script type="text/javascript" src="~/MultiSelection/docs/js/bootstrap-3.3.2.min.js"></script>
+<script type="text/javascript" src="~/MultiSelection/docs/js/prettify.min.js"></script>
+<script type="text/javascript" src="~/MultiSelection/dist/js/bootstrap-multiselect.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#ClientRowID').multiselect({
+            enableFiltering: true,
+            enableCaseInsensitiveFiltering: true,
+            buttonWidth: '250px',
+            maxHeight: 250,
+            numberDisplayed: 1,
+
+        });
+
+        $("#ClientRowID").change(function () {
+            var ptn = $("#ClientRowID").val() || "0";;
+            if (ptn == "0") {
+                $(".multiselect-selected-text").html('None selected');
+            }
+
+        });
+
+    });
+</script>
+@section Scripts{
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //$('#ClientRowID').val($('#hdnClientRowID').val());
+            //$("select#ClientRowID").prop('selectedIndex', 0);
+            $('#btnExportCaseStatus').click(function () {
+               //var client = $('#ClientRowID').val();
+                var dtf = $("#FromDate").val();
+                var dtt = $("#ToDate").val();
+                var client = $("#ClientRowID").val() || "0";
+                if (client == '-- Select --') {
+                    Swal.fire({
+                        icon: 'info',
+                        title: '',
+                        html: '<div class="errormsg" style="text-align:center;">Select atleast one Client Name</div>'
+                    });
+
+                    $('#ClientRowID').first().focus();
+                    return false;
+                }
+                if (client != '-- Select --') {
+
+                    window.location.href = '@Url.Action("ExportCaseStatus", "ClientServicing")?ClientRowId=' + client + '&dtf=' + dtf + '&dtt=' + dtt;
+                }
+                else {
+                    window.location.href = '@Url.Action("ExportCaseStatus", "ClientServicing")?ClientRowId=0';
+
+                }
+
+
+            });
+
+            $('#btnE2EMIS').click(function () {
+                //var client = $('#ClientRowID').val();
+                var dtf = $("#FromDate").val();
+                var dtt = $("#ToDate").val();
+                var client = $("#ClientRowID").val() || "0";
+                if (client == "0") {
+                    Swal.fire({
+                        icon: 'info',
+                        title: '',
+                        html: '<div class="errormsg" style="text-align:center;">Select atleast one Client Name</div>'
+                    });
+                    $('#ClientRowID').first().focus();
+                    return false;
+                }
+
+                if (client != '0') {
+                    window.location.href = '@Url.Action("E2eTrackerForCS_clientwise", "ClientServicing")?ClientRowId=' + client + '&dtf=' + dtf + '&dtt=' + dtt;
+                }
+                else {
+                    window.location.href = '@Url.Action("E2eTrackerForCS_clientwise", "ClientServicing")?ClientRowId=0';
+
+                }
+
+            });
+
+            $('#btnCheckwisemis').click(function () {
+                //var client = $('#ClientRowID').val();
+                var dtf = $("#FromDate").val();
+                var dtt = $("#ToDate").val();
+                var client = $("#ClientRowID").val() || "0";
+                //if (client == '0') {
+                //    Swal.fire({
+                //        icon: 'info',
+                //        title: '',
+                //        html: '<div class="errormsg" style="text-align:center;">Select atleast one Client Name</div>'
+                //    });
+                //    $('#ClientRowID').first().focus();
+                //    return false;
+                //}
+                if (client != 'Select')  {
+                    window.location.href = '@Url.Action("CheckwiseMIS_clientwise", "ClientServicing")?ClientRowId=' + client + '&dtf=' + dtf + '&dtt=' + dtt;
+                }
+                else {
+                    window.location.href = '@Url.Action("CheckwiseMIS_clientwise", "ClientServicing")?ClientRowId=0' ;
+
+                }
+
+            });
+            $('#btnclientmis').click(function () {
+
+                    @*if (client != 'Select')  {
+                        window.location.href = '@Url.Action("CheckwiseMIS_clientwise", "ClientServicing")?ClientRowId=' + client + '&dtf=' + dtf + '&dtt=' + dtt;
+                    }
+                    else {*@
+                        window.location.href = '@Url.Action("BankingClientMIS", "ClientServicing")' ;
+
+                    /*}*/
+
+              });
+
+            $('#btnRejectCheckwisemis').click(function () {
+                //var client = $('#ClientRowID').val();
+                var dtf = $("#FromDate").val();
+                var dtt = $("#ToDate").val();
+                var client = $("#ClientRowID").val() || "0";
+                //if (client == '0') {
+                //    Swal.fire({
+                //        icon: 'info',
+                //        title: '',
+                //        html: '<div class="errormsg" style="text-align:center;">Select atleast one Client Name</div>'
+                //    });
+                //    $('#ClientRowID').first().focus();
+                //    return false;
+                //}
+                if (client != 'Select') {
+                    window.location.href = '@Url.Action("RejectionCheckwiseMIS", "ClientServicing")?ClientRowId=' + client + '&dtf=' + dtf + '&dtt=' + dtt;
+                }
+                else {
+                    window.location.href = '@Url.Action("RejectionCheckwiseMIS", "ClientServicing")?ClientRowId=0' ;
+
+                }
+
+            });
+
+        });
+
+        $(function () {
+            $('#ClientRowID').change(function () {
+              var url = "/ClientServicing/RefreshDashboardDetails?" + $.param({ ClientRowID: $("#ClientRowID").val().join(',') });
+                var notifications = $("#dvPartialView");
+                notifications.load(url);
+            });
+        });
+    </script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#FromDate').datepicker({
+                dateFormat: "dd-M-yy",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#ToDate').datepicker({
+                dateFormat: "dd-M-yy",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+
+
+        });
+    </script>
+
+
+}
+
+<style>
+    .btn-default {
+        font-size: 1rem !important;
+    }
+
+    .multiselect {
+        color: #000;
+        background: rgba(0,0,0,0.2);
+        height: 35px !important;
+    }
+
+    .count {
+        color: #000 !important;
+    }
+
+    .tile-stats {
+        /*background: #81d3c9;*/
+        border-radius: 10px !important;
+        box-shadow: 30px 30px 30px #1b1c1b, !important;
+        transition: 0.3s;
+        box-shadow: 0 8px 12px 0 rgba(0,0,0,0.2);
+        cursor: pointer;
+    }
+
+        .tile-stats:hover {
+            box-shadow: 20px 25px 24px 15px rgba(0,0,0,0.2);
+        }
+
+    .count a {
+        color: #000 !important;
+    }
+
+
+    .tile-stats .icon {
+        width: 20px !important;
+        height: 20px !important;
+        color: #0375b3b0 !important;
+        position: absolute !important;
+        left: 12px !important;
+        top: 10px !important;
+        z-index: 1 !important;
+    }
+
+    .tile-stats > h4 {
+        margin: 10px 0 0 3% !important;
+        font-weight: 500 !important;
+    }
+
+    @@media only screen and (max-width: 760px) {
+        .tile-stats {
+            width: 25rem;
+        }
+    }
+
+    @@media only screen and (max-width: 573px) {
+        .tile-stats {
+            width: 40rem !important;
+        }
+    }
+
+    .multiselect-container {
+        width: 32rem !important;
+    }
+
+    .multiselect {
+        width: 130% !important;
+    }
+</style>

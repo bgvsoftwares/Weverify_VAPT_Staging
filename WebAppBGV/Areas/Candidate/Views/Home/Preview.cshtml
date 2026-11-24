@@ -1,0 +1,287 @@
+﻿@{
+    ViewBag.Title = "Candidate Details";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=0'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta name="Description" content="Bootstrap Responsive Admin Web Dashboard HTML5 Template">
+    <meta name="Author" content="Spruko Technologies Private Limited">
+    <meta name="Keywords" content="admin,admin dashboard,admin dashboard template,admin panel template,admin template,admin theme,bootstrap 4 admin template,bootstrap 4 dashboard,bootstrap admin,bootstrap admin dashboard,bootstrap admin panel,bootstrap admin template,bootstrap admin theme,bootstrap dashboard,bootstrap form template,bootstrap panel,bootstrap ui kit,dashboard bootstrap 4,dashboard design,dashboard html,dashboard template,dashboard ui kit,envato templates,flat ui,html,html and css templates,html dashboard template,html5,jquery html,premium,premium quality,sidebar bootstrap 4,template admin bootstrap 4" />
+    <!-- Title -->
+    <title>BGV Client - @ViewBag.Title</title>
+
+
+    <!-- Favicon -->
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <!-- Icons css -->
+    <link href="~/assets/css/icons.css" rel="stylesheet">
+
+    <!-- Bootstrap css -->
+    <link href="~/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!--  Owl-carousel css-->
+    <link href="~/assets/plugins/owl-carousel/owl.carousel.css" rel="stylesheet" />
+
+    <!-- P-scroll bar css-->
+    <link href="~/assets/plugins/perfect-scrollbar/p-scrollbar.css" rel="stylesheet" />
+
+    <!--  Right-sidemenu css -->
+    <link href="~/assets/plugins/sidebar/sidebar.css" rel="stylesheet">
+
+    <!-- Sidemenu css -->
+    <link rel="stylesheet" href="~/assets/css/sidemenu.css">
+
+    <!-- style css -->
+    <link href="~/assets/css/style.css" rel="stylesheet">
+    <link href="~/assets/css/style-dark.css" rel="stylesheet">
+    <link href="~/assets/css/boxed.css" rel="stylesheet">
+    <link href="~/assets/css/dark-boxed.css" rel="stylesheet">
+
+    <!---Skinmodes css-->
+    <link href="~/assets/css/skin-modes.css" rel="stylesheet" />
+
+    <!---datatable css-->
+    <link href="~/assets/plugins/datatable/datatables.min.css" rel="stylesheet" />
+    <link href="~/assets/plugins/datatable/responsive.dataTables.min.css" rel="stylesheet">
+    <link href="~/assets/plugins/datatable/responsive.bootstrap5.css" rel="stylesheet">
+    <link href="~/assets/plugins/datatable/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/assets/plugins/datatable/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="~/assets/plugins/select2/css/select2.min.css" rel="stylesheet">
+
+    <link href="~/assets/plugins/fortawesome/fontawesome-free/css/fontawesome.min.css" rel="stylesheet" />
+    <!--- Internal Sweet-Alert css-->
+    <link href="~/assets/plugins/sweet-alert/sweetalert.css" rel="stylesheet">
+
+    <!---Internal Fileupload css-->
+    <link href="~/assets/plugins/fileuploads/css/fileupload.css" rel="stylesheet" type="text/css" /><!--- Internal Select2 css-->
+    <link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+
+
+    @{
+        int CheckCount = 0;
+        int Count = 0;
+        string OldSubCheckName = "";
+    }
+
+        <ul class="accordion-list">
+            @foreach (var item in Model)
+            {
+                if (item.SubCheckRowID == "0")
+                {
+                    CheckCount += 1;
+                    if (CheckCount == 1)
+                    {
+                        <li>
+                            @if (item.SubCheckRowID == "0" && CheckCount != 0)
+                            {
+                                <h3>
+                                    Personal Info
+                                    @*<a href="#" style="font-size: 0.9rem;padding: 0px 10px;width: 40px;height: 19px;display: inline-block;border-radius: 50%;"><i class="fa-solid fa-pencil"></i></a>*@
+                                </h3>
+                            }
+                            <div class="answer">
+                                <table class="table mb-0 text-md-nowrap fl-table table-responsive js-serial items w-100 table-bordered mt-3">
+                                    <thead>
+                                        <tr>
+                                            <th class="w-100">Anticident</th>
+                                            <th class="w-100">Detail Provided By Candidate</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var a in Model)
+                                        {
+                                            if (a.SubCheckRowID == "0")
+                                            {
+                                                <tr>
+                                                    <td>@a.DisplayName</td>
+                                                    <td>@a.DataEntryValue</td>
+                                                </tr>
+                                            }
+
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </li>
+
+                    }
+
+                }
+                else
+                {
+                    if (OldSubCheckName != item.SubCheckName)
+                    {
+                        <li>
+                            @if (OldSubCheckName != item.SubCheckName)
+                            {
+                                OldSubCheckName = item.SubCheckName;
+
+                                <h3>
+                                    <span>@item.SubCheckName</span>
+                                    @*@if (item.SubCheckRowID == "2")
+                                    {
+                                        <a href="@Url.Action("UpdateCandidateDetails", "Home", new { PersonalRowID = item.PersonalRowID.ToString(),subCheckId = item.SubCheckRowID.ToString()})" style="font-size: 0.9rem;padding: 0px 10px;width: 40px;height: 19px;display: inline-block;border-radius: 50%;"><i class="fa-solid fa-pencil"></i></a>
+                                    }*@
+                                </h3>
+                            }
+
+                            <div class="answer">
+                                <table class="table mb-0 text-md-nowrap fl-table table-responsive js-serial items w-100 table-bordered mt-3">
+                                    <thead>
+                                        <tr>
+                                            <th class="w-100">Anticident</th>
+                                            <th class="w-100">Detail Provided By Candidate</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var a in Model)
+                                        {
+                                            if (OldSubCheckName == a.SubCheckName)
+                                            {
+                                                OldSubCheckName = a.SubCheckName;
+                                                if (a.SubCheckRowID != "0")
+                                                {
+                                                    <tr>
+                                                        <td>@a.DisplayName</td>
+                                                        <td>@a.DataEntryValue</td>
+                                                    </tr>
+                                                }
+
+                                            }
+
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </li>
+                    }
+
+                }
+            }
+        </ul>
+        <!-- JQuery min js -->
+        <script src="~/assets/plugins/jquery/jquery.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $(".accordion-list > li > .answer").hide();
+
+                $(".accordion-list > li").click(function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).removeClass("active").find(".answer").slideUp();
+                    } else {
+                        $(".accordion-list > li.active .answer").slideUp();
+                        $(".accordion-list > li.active").removeClass("active");
+                        $(this).addClass("active").find(".answer").slideDown();
+                    }
+                    return false;
+                });
+            });
+
+        </script>
+        <style>
+            @@charset "UTF-8";
+
+            .table tr td {
+                line-height: .757 !important;
+            }
+
+            ul.accordion-list {
+                position: relative;
+                display: block;
+                width: 100%;
+                height: auto;
+                padding: 20px;
+                margin: 0;
+                list-style: none;
+                background-color: #f9f9fA;
+            }
+
+                ul.accordion-list li {
+                    position: relative;
+                    display: block;
+                    width: 100%;
+                    height: auto;
+                    background-color: #FFF;
+                    padding: 12px;
+                    margin: 0 auto 15px auto;
+                    border: 1px solid #eee;
+                    border-radius: 5px;
+                    cursor: pointer;
+                }
+
+                    ul.accordion-list li.active h3:after {
+                        transform: rotate(45deg);
+                    }
+
+                    ul.accordion-list li h3 {
+                        font-weight: 700;
+                        position: relative;
+                        display: block;
+                        width: 100%;
+                        height: auto;
+                        padding: 0 0 0 0;
+                        margin: 0;
+                        font-size: 15px;
+                        letter-spacing: 0.01em;
+                        cursor: pointer;
+                        color: #031F30;
+                    }
+
+                        ul.accordion-list li h3 a {
+                            font-weight: 700;
+                            position: relative;
+                            display: block;
+                            width: 100%;
+                            height: auto;
+                            padding: 0 0 0 0;
+                            margin: 0;
+                            font-size: 15px;
+                            letter-spacing: 0.01em;
+                            cursor: pointer;
+                            color: #8D5FFF;
+                        }
+
+                        ul.accordion-list li h3:after {
+                            content: "";
+                            font-family: "material-design-iconic-font";
+                            position: absolute;
+                            right: 0;
+                            top: 0;
+                            color: #8D5FFF;
+                            transition: all 0.3s ease-in-out;
+                            font-size: 18px;
+                        }
+
+                    ul.accordion-list li div.answer {
+                        position: relative;
+                        display: block;
+                        width: 100%;
+                        height: auto;
+                        margin: 0;
+                        padding: 0;
+                        cursor: pointer;
+                    }
+
+                        ul.accordion-list li div.answer p {
+                            position: relative;
+                            display: block;
+                            font-weight: 300;
+                            padding: 10px 0 0 0;
+                            cursor: pointer;
+                            line-height: 150%;
+                            margin: 0 0 15px 0;
+                            font-size: 14px;
+                        }
+        </style>
+</body>
+</html>

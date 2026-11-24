@@ -1,0 +1,1071 @@
+﻿
+@{
+    ViewBag.Title = "Manage Team Member Checks Jobs";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "Verification", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+
+@{
+
+
+    //@ViewBag.NavigationBtnExportExcel
+    string tatdays1 = "";
+    string CheckStatus1 = "";
+    string AllocatedToTL1 = "";
+    if (Request.QueryString["tatdays"] != null)
+    {
+        tatdays1 = Request.QueryString["tatdays"].ToString();
+    }
+
+    if (Request.QueryString["AllocatedToTL"] != null)
+    {
+        AllocatedToTL1 = Request.QueryString["AllocatedToTL"].ToString();
+    }
+    if (Request.QueryString["CheckStatus"] != null)
+    {
+        CheckStatus1 = @Request.QueryString["CheckStatus"].ToString();
+    }
+    string Designation = Convert.ToString(Session["Designation"]);
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    string hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportChecksReport", "Verification", new { CheckStatus = CheckStatus1, tatdays = tatdays1, AllocatedToTL = AllocatedToTL1 }, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+    @*//@ViewBag.NavigationBtnExportWord
+        //string faIconExportWord = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Word");
+        //string hyperLinkExportWord = Html.ActionLink("linkTitle", "ExportCountryInWord", "Master", null, new { class = "btn bun-bg btn-default" }).ToString();
+        //ViewBag.NavigationBtnExportWord = new HtmlString(hyperLinkExportWord.ToString().Replace("linkTitle", faIconExportWord));
+
+        //@ViewBag.NavigationBtnBackExportPDF
+        //string faIconExportPDF = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export PDF");
+        //string hyperLinkExportPDF = Html.ActionLink("linkTitle", "ExportCountryInPDF", "Master", null, new { class = "btn bun-bg btn-default" }).ToString();
+        //ViewBag.NavigationBtnBackExportPDF = new HtmlString(hyperLinkExportPDF.ToString().Replace("linkTitle", faIconExportPDF));*@
+}
+
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("DepartmentTeamMemberQCChecks", "Verification", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Client Name :</label>
+                                    <div class="col-md-8">
+                                        @Html.DropDownList("ClientRowID",
+new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+"-- Select Client -- ",
+new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Keyword :</label>
+                                    <div class="col-md-8">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, Ref No,Company name..." })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Recieving From Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("RecievingfromDate", null, new { @class = "form-control", @id = "RecievingToDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Recieving To Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("RecievingToDate", null, new { @class = "form-control", @id = "RecievingFromDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Completed From Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("CompletedFromDate", null, new { @class = "form-control", @id = "CompletedToDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Completed To Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("CompletedToDate", null, new { @class = "form-control", @id = "CompletedFromDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">  Fetch Senior Profile:</label>
+
+
+
+                                    <div class="col-md-8">
+                                        @*@Html.Hidden("fetchDataCheckbox", "false")
+                                            <input type="checkbox" name="fetchDataCheckbox" value="true" id="fetchDataCheckbox" />*@
+                                        <input type="checkbox" id="fetchDataCheckbox" />
+                                        <input type="hidden" name="fetchDataCheckbox" id="fetchDataCheckboxHidden" value="false" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">CheckStatus :</label>
+                                    <div class="col-md-3">
+                                        @Html.DropDownList("DCheckStatus",
+new SelectList(ViewBag.CheckStatusOptionList, "Value", "Text"),
+"-- Select Check -- ",
+new { @class = "form-control" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Case Status :</label>
+                                    <div class="col-md-3">
+                                        @Html.DropDownList("CaseStatus",
+new SelectList(ViewBag.CaseStatusOptionList, "Value", "Text"),
+"-- Select Case -- ",
+new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                @{ Designation = Convert.ToString(Session["Designation"]);
+
+                                    if (!string.IsNullOrWhiteSpace(Designation) && Designation != "Team Member-Ref-QC" && Designation != "Team Member-Ide-QC")
+                                    {
+                                        @*if (Designation != "" && Designation == "Team Member-Add-QC")
+                                            {
+                                                <div class="form-group branch row search-frame">
+                                                    <label class="col-md-2 control-label">State :</label>
+                                                    <div class="col-md-3">
+                                                        @Html.DropDownList("State", new SelectList(ViewBag.States, "StateRowID", "StateName"), "-- Select State -- ", new { @class = "form-control" })
+                                                    </div>
+                                                    <label class="col-md-2 control-label">City :</label>
+                                                    <div class="col-md-3">
+                                                        @Html.DropDownList("City", new SelectList(ViewBag.Cities, "LocationRowID", "LocationName"), "-- Select City -- ", new { @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group branch row search-frame">
+                                                    <label class="col-md-2 control-label">Partner :</label>
+                                                    <div class="col-md-3">
+                                                        @Html.DropDownList("Partner", new SelectList(ViewBag.Partner, "PartnerRowId", "PartnerName"), "-- Select Partner -- ", new { @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                            }*@
+
+
+                                        if (Designation != "" && Designation == "Team Member-Emp-QC")
+                                        {
+                                            <div class="form-group branch row search-frame">
+                                                <label class="col-md-2 control-label">Employer Name :</label>
+                                                <div class="col-md-3">
+                                                    @Html.TextBox("EmployerName", null, new { @class = "form-control", placeholder = "Ex. Enter name ..." })
+                                                </div>
+                                                <label class="col-md-2 control-label">Allocated to :</label>
+                                                <div class="col-md-3">
+                                                    @Html.TextBox("Allocatedto", null, new { @class = "form-control", placeholder = "Ex. Enter Allocated to..." })
+                                                </div>
+                                            </div>
+                                        }
+                                        if (Designation != "" && Designation == "Team Member-Edu-QC")
+                                        {
+                                            <div class="form-group branch row search-frame">
+                                                <label class="col-md-2 control-label">Institute Name :</label>
+                                                <div class="col-md-3">
+                                                    @Html.TextBox("EmployerName", null, new { @class = "form-control", placeholder = "Ex. Enter name ..." })
+                                                </div>
+                                                <label class="col-md-2 control-label">Allocated to :</label>
+                                                <div class="col-md-3">
+                                                    @Html.TextBox("Allocatedto", null, new { @class = "form-control", placeholder = "Ex. Enter Allocated to..." })
+                                                </div>
+                                            </div>
+                                        }
+                                        if (Designation != "" && Designation == "Team Member-Cri-QC")
+                                        {
+                                            <div class="form-group branch row search-frame">
+                                                <label class="col-md-2 control-label">Criminal Name :</label>
+                                                <div class="col-md-3">
+                                                    @Html.TextBox("EmployerName", null, new { @class = "form-control", placeholder = "Ex. Enter name ..." })
+                                                </div>
+                                                <label class="col-md-2 control-label">Allocated to :</label>
+                                                <div class="col-md-3">
+                                                    @Html.TextBox("Allocatedto", null, new { @class = "form-control", placeholder = "Ex. Enter Allocated to..." })
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                }
+
+                                @{
+                                    if (Request.QueryString["CheckStatus"] != null)
+                                    {
+                                        @Html.Hidden("CheckStatus", Request.QueryString["CheckStatus"].ToString())
+                                    }
+
+                                    if (Request.QueryString["tatdays"] != null)
+                                    {
+                                        @Html.Hidden("tatdays", Request.QueryString["tatdays"].ToString())
+                                    }
+                                }
+                                <div class="all-button-bg">
+                                    <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                                    @if (Designation != null && Designation == "Team Member-Ide-QC")
+                                    {
+                                        if (CheckStatus1 == "APIChecks")
+                                        {
+                                            // <input class="btn bun-bg btn-default ml-3" type="submit" onclick="CompleteFunction()" name="CompleteFunction" value="Face match complete checks" style="font-size:1.4rem!important;" />
+                                            <input class="btn bun-bg btn-default ml-3" type="submit" onclick="CompleteFunction()" name="CompleteFunction" value="DT To RWQC Instant Check MIS" style="font-size:1.4rem!important;" />
+                                        }
+                                    }
+                                </div>
+
+                            </div>
+                        }
+
+                        @if (Designation == "Team Member-Cri-QC")
+                        {
+                            if (CheckStatus1 == "Pending")
+                            {
+                                <div class="col-md-12 bulkApprovediv mt-3" style="display:none;">
+                                    @using (Html.BeginForm("BulkpendingCaseapprovecriminal", "Verification", FormMethod.Post))
+                                    {
+                                        <p class="text-danger" style="font-size:20px;">Note: In case remarks need to be filled, please approve the case manually by clicking the Update option in the table.This is only applicable for Approval; in case of Rejection, please follow the old process.</p>
+                                        <input type="hidden" id="hdnSelected" name="hdnSelected" />
+                                        <input type="hidden" id="statusid" name="statusid" />
+                                        <input type="submit" class="btn bun-bg btn-default m-2" value="Bulk Approve" onclick="return validateForm(this, 'Saving...')" />
+                                    }
+                                </div>
+                            }
+                        }
+
+                        @if (Designation == "Team Member-Ide-QC")
+                        {
+                            if (CheckStatus1 == "Pending")
+                            {
+                                <div class="col-md-12 bulkApprovediv mt-3" style="display:none;">
+                                    @using (Html.BeginForm("BulkpendingCaseapproveNational", "Verification", FormMethod.Post))
+                                    {
+                                        <p class="text-danger" style="font-size:20px;">Note: In case remarks need to be filled, please approve the case manually by clicking the Update option in the table.This is only applicable for Approval; in case of Rejection, please follow the old process.</p>
+                                        <input type="hidden" id="hdnSelected" name="hdnSelected" />
+                                        <input type="hidden" id="statusid" name="statusid" />
+                                        <input type="submit" class="btn bun-bg btn-default m-2" value="Bulk Approve" onclick="return validateForm(this, 'Saving...')" />
+                                    }
+                                </div>
+                            }
+                        }
+                        @if (Designation == "Team Member-SPL-QC")
+                        {
+                            if (CheckStatus1 == "Pending")
+                            {
+                                <div class="col-md-12 bulkApprovediv mt-3" style="display:none;">
+                                    @using (Html.BeginForm("BulkpendingCaseapprovespecial", "Verification", FormMethod.Post))
+                                    {
+                                        <p class="text-danger" style="font-size:20px;">Note: In case remarks need to be filled, please approve the case manually by clicking the Update option in the table.This is only applicable for Approval; in case of Rejection, please follow the old process.</p>
+                                        <input type="hidden" id="hdnSelected" name="hdnSelected" />
+                                        <input type="hidden" id="statusid" name="statusid" />
+                                        <input type="submit" class="btn bun-bg btn-default m-2" value="Bulk Approve" onclick="return validateForm(this, 'Saving...')" />
+                                    }
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    @if (Model != null && Model.PQVerificationInfo != null)
+    {
+        <div class="row">
+            <div class="col-md-12 table">
+                @{
+
+                    WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                    grid.Bind(Model.PQVerificationInfo, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                }
+                @{
+                    Designation = Session["Designation"].ToString();
+
+                    if (Designation != null && Designation == "Team Member-Add-QC")
+                    {
+                        @grid.GetHtml(
+                             htmlAttributes: new { id = "grid", @class = "table" },
+                             headerStyle: "thead-inverse",
+                             rowStyle: "ordertxt",
+                             footerStyle: "custpaging",
+                             mode: WebGridPagerModes.All,
+                             columns: new[]
+                             {
+                                        grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                        grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-1"),
+                                        grid.Column(columnName: "IsSeniorCase", header: "IsSeniorCase", canSort: false, style:"td-3"),
+                                        //grid.Column(columnName: "CompanyRefNo", header: "Securitas ID", canSort: false, style:"td-1"),
+                                         grid.Column(header : "Securitas Id", format : (item) => {
+                                            string SecuritasID=item.CompanyRefNo;
+
+                                         if (item.CheckFamilyRowID==2)
+                                            {
+                                              return SecuritasID;
+                                            }
+                                            else if (item.CheckFamilyRowID==5)
+                                            {
+                                                var link = Html.ActionLink(SecuritasID, "UpdateCriminalInfoByTMQC", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID }, null);
+                                            return link;
+                                            }
+                                        else
+                                        {
+                                        return SecuritasID;
+                                        }
+                                        }, style:"td-1"),
+                                        grid.Column(columnName: "PersonalName", header: "Candidate Name", canSort: false, style:"td-1"),
+                                        grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-1"),
+                                        grid.Column("Ageing", format: (item) => item.InternalOutDate != null ? (item.InternalOutDate - DateTime.Now).Days : "", canSort: false,style:""),
+                                        grid.Column("OutDate", "TAT", format: (item) => item.OutDate != null ? item.OutDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"td-1"),
+                                        grid.Column(columnName: "SecuritasSPOC", header: "SPOC", canSort: false, style:"td-1"),
+                                         grid.Column(columnName: "AllocatedTMName", header: "AllocatedTM", canSort: false, style:"td-1"),
+                                        grid.Column(columnName: "Partner", header: "Partner", canSort: false, style: "td-1"),
+                                        grid.Column(columnName: "Location", header: "Location", canSort: false, style: "td-1"),
+                                        grid.Column(columnName: "CheckStatus", header: "Status", canSort: false, style: ""),
+                                         grid.Column("Remarks", canSort: false, format: (item)=> {
+                                if ((item.CheckStatus=="Insufficent" && !string.IsNullOrEmpty(item.CheckStatus))|| (item.CheckStatusid==53))
+                                {
+
+
+                                    var link=@Html.ActionLink("Remarks", "InsuffRemarks", "Verification", new { PersonalRowID = item.PersonalRowID ,SubCheckRowID = item.SubCheckRowID ,processName="L2-Insuff-QC_Approval"}, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" });
+                                    return link;
+                                }
+                                return null;
+                            }, style:"td-1" ),
+                             }
+                           )
+                    }
+
+                    else if (Designation == "Team Member-Cri-QC" && CheckStatus1 == "Pending")
+                    {
+
+                        @grid.GetHtml(
+                            htmlAttributes: new { id = "grid", @class = "table table-striped table-bordered nowrap" },
+                            headerStyle: "thead-inverse",
+                            rowStyle: "ordertxt",
+                            footerStyle: "custpaging",
+                            mode: WebGridPagerModes.All,
+                            columns: new[]
+                            {
+                                   //grid.Column(header: "",format: (item) =>item.CheckStatus == "Pending"? Html.CheckBox("chkRow",new { value = item.PersonalRowID + "/" + item.SubCheckRowID }): Html.Raw("")),
+                                   grid.Column(header: "",format: (item) => Html.CheckBox("chkRow",new { value = item.PersonalRowID + "/" + item.SubCheckRowID })),
+                                   //grid.Column(header: "",format: (item) => Html.CheckBox("chkRow", new { value = item.PersonalRowID + "/" + item.SubCheckRowID })),
+                                   grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                   grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-1"),
+                                   grid.Column(columnName: "IsSeniorCase", header: "IsSeniorCase", canSort: false, style:"td-3"),
+                                   //grid.Column(columnName: "CompanyRefNo", header: "Securitas ID", canSort: false, style:"td-1"),
+                                   grid.Column(header : "Securitas Id", format : (item) => {
+                                    string SecuritasID=item.CompanyRefNo;
+
+                                    if (item.CheckFamilyRowID==2)
+                                    {
+                                        return SecuritasID;
+                                    }
+                                    else if (item.CheckFamilyRowID==5)
+                                    {
+                                        var link = Html.ActionLink(SecuritasID, "UpdateCriminalInfoByTMQC", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID }, null);
+                                        return link;
+                                    }
+                                    else
+                                    {
+                                        return SecuritasID;
+                                    }
+                                }, style:"td-1"),
+                               grid.Column(columnName: "PersonalName", header: "Candidate Name", canSort: false, style:"td-1"),
+                               grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-1"),
+                               grid.Column("Ageing", format: (item) => item.InternalOutDate != null ? (item.InternalOutDate - DateTime.Now).Days : "", canSort: false,style:""),
+                               grid.Column("OutDate", "TAT", format: (item) => item.OutDate != null ? item.OutDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"td-1"),
+                               grid.Column(columnName: "SecuritasSPOC", header: "SPOC", canSort: false, style:"td-1"),
+                               grid.Column(columnName: "CheckStatus", header: "Status", canSort: false, style: ""),
+                                grid.Column("Remarks", canSort: false, format: (item)=> {
+                                    if ((item.CheckStatus=="Insufficent" && !string.IsNullOrEmpty(item.CheckStatus))|| (item.CheckStatusid==53))
+                                    {
+
+
+                                        var link=@Html.ActionLink("Remarks", "InsuffRemarks", "Verification", new { PersonalRowID = item.PersonalRowID ,SubCheckRowID = item.SubCheckRowID ,processName="L2-Insuff-QC_Approval"}, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" });
+                                        return link;
+                                    }
+                                    return null;
+                                }, style:"td-1" ),
+                            }
+                          )
+                    }
+                    else if (Designation == "Team Member-SPL-QC" && CheckStatus1 == "Pending")
+                    {
+
+                        @grid.GetHtml(
+                                        htmlAttributes: new { id = "grid", @class = "table table-striped table-bordered nowrap" },
+                                        headerStyle: "thead-inverse",
+                                        rowStyle: "ordertxt",
+                                        footerStyle: "custpaging",
+                                        mode: WebGridPagerModes.All,
+                                        columns: new[]
+                                        {
+                                               //grid.Column(header: "",format: (item) =>item.CheckStatus == "Pending"? Html.CheckBox("chkRow",new { value = item.PersonalRowID + "/" + item.SubCheckRowID }): Html.Raw("")),
+                                               grid.Column(header: "",format: (item) => Html.CheckBox("chkRow",new { value = item.PersonalRowID + "/" + item.SubCheckRowID })),
+                                               //grid.Column(header: "",format: (item) => Html.CheckBox("chkRow", new { value = item.PersonalRowID + "/" + item.SubCheckRowID })),
+                                               grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                               grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-1"),
+                                               grid.Column(columnName: "IsSeniorCase", header: "IsSeniorCase", canSort: false, style:"td-3"),
+                                               //grid.Column(columnName: "CompanyRefNo", header: "Securitas ID", canSort: false, style:"td-1"),
+                                               grid.Column(header : "Securitas Id", format : (item) => {
+                                                string SecuritasID=item.CompanyRefNo;
+
+                                                if (item.CheckFamilyRowID==2)
+                                                {
+                                                    return SecuritasID;
+                                                }
+                                                else if (item.CheckFamilyRowID==40)
+                                                {
+                                                    var link = Html.ActionLink(SecuritasID, "UpdateSpecialCheckInfoByTMQC", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID }, null);
+                                                    return link;
+                                                }
+                                                else
+                                                {
+                                                    return SecuritasID;
+                                                }
+                                            }, style:"td-1"),
+                                           grid.Column(columnName: "PersonalName", header: "Candidate Name", canSort: false, style:"td-1"),
+                                           grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-1"),
+                                           grid.Column("Ageing", format: (item) => item.InternalOutDate != null ? (item.InternalOutDate - DateTime.Now).Days : "", canSort: false,style:""),
+                                           grid.Column("OutDate", "TAT", format: (item) => item.OutDate != null ? item.OutDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"td-1"),
+                                           grid.Column(columnName: "SecuritasSPOC", header: "SPOC", canSort: false, style:"td-1"),
+                                           grid.Column(columnName: "CheckStatus", header: "Status", canSort: false, style: ""),
+                                            grid.Column("Remarks", canSort: false, format: (item)=> {
+                                                if ((item.CheckStatus=="Insufficent" && !string.IsNullOrEmpty(item.CheckStatus))|| (item.CheckStatusid==53))
+                                                {
+
+
+                                                    var link=@Html.ActionLink("Remarks", "InsuffRemarks", "Verification", new { PersonalRowID = item.PersonalRowID ,SubCheckRowID = item.SubCheckRowID ,processName="L2-Insuff-QC_Approval"}, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" });
+                                                    return link;
+                                                }
+                                                return null;
+                                            }, style:"td-1" ),
+                                        }
+                          )
+                    }
+                    else if (Designation == "Team Member-Ide-QC" && CheckStatus1 == "Pending")
+                    {
+
+                        @grid.GetHtml(
+                                        htmlAttributes: new { id = "grid", @class = "table table-striped table-bordered nowrap" },
+                                        headerStyle: "thead-inverse",
+                                        rowStyle: "ordertxt",
+                                        footerStyle: "custpaging",
+                                        mode: WebGridPagerModes.All,
+                                        columns: new[]
+                                        {
+                                               //grid.Column(header: "",format: (item) =>item.CheckStatus == "Pending"? Html.CheckBox("chkRow",new { value = item.PersonalRowID + "/" + item.SubCheckRowID }): Html.Raw("")),
+                                               grid.Column(header: "",format: (item) => Html.CheckBox("chkRow",new { value = item.PersonalRowID + "/" + item.SubCheckRowID })),
+                                               //grid.Column(header: "",format: (item) => Html.CheckBox("chkRow", new { value = item.PersonalRowID + "/" + item.SubCheckRowID })),
+                                               grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                               grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-1"),
+                                               grid.Column(columnName: "IsSeniorCase", header: "IsSeniorCase", canSort: false, style:"td-3"),
+                                               //grid.Column(columnName: "CompanyRefNo", header: "Securitas ID", canSort: false, style:"td-1"),
+                                               grid.Column(header : "Securitas Id", format : (item) => {
+                                                string SecuritasID=item.CompanyRefNo;
+
+                                                if (item.CheckFamilyRowID==2)
+                                                {
+                                                    return SecuritasID;
+                                                }
+                                                else if (item.CheckFamilyRowID==26)
+                                                {
+                                                    var link = Html.ActionLink(SecuritasID, "UpdateNationalIdentityInfoByTMQC", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID }, null);
+                                                    return link;
+                                                }
+                                                else
+                                                {
+                                                    return SecuritasID;
+                                                }
+                                            }, style:"td-1"),
+                                           grid.Column(columnName: "PersonalName", header: "Candidate Name", canSort: false, style:"td-1"),
+                                           grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-1"),
+                                           grid.Column("Ageing", format: (item) => item.InternalOutDate != null ? (item.InternalOutDate - DateTime.Now).Days : "", canSort: false,style:""),
+                                           grid.Column("OutDate", "TAT", format: (item) => item.OutDate != null ? item.OutDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"td-1"),
+                                           grid.Column(columnName: "SecuritasSPOC", header: "SPOC", canSort: false, style:"td-1"),
+                                           grid.Column(columnName: "CheckStatus", header: "Status", canSort: false, style: ""),
+                                            grid.Column("Remarks", canSort: false, format: (item)=> {
+                                                if ((item.CheckStatus=="Insufficent" && !string.IsNullOrEmpty(item.CheckStatus))|| (item.CheckStatusid==53))
+                                                {
+
+
+                                                    var link=@Html.ActionLink("Remarks", "InsuffRemarks", "Verification", new { PersonalRowID = item.PersonalRowID ,SubCheckRowID = item.SubCheckRowID ,processName="L2-Insuff-QC_Approval"}, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" });
+                                                    return link;
+                                                }
+                                                return null;
+                                            }, style:"td-1" ),
+                                        }
+                          )
+                    }
+                    else if (Designation == "Team Member-Cri-QC")
+                    {
+
+                        @grid.GetHtml(
+                            htmlAttributes: new { id = "grid", @class = "table" },
+                            headerStyle: "thead-inverse",
+                            rowStyle: "ordertxt",
+                            footerStyle: "custpaging",
+                            mode: WebGridPagerModes.All,
+                            columns: new[]
+                            {
+                                       grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                       grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-1"),
+                                          grid.Column(columnName: "IsSeniorCase", header: "IsSeniorCase", canSort: false, style:"td-3"),
+                                       //grid.Column(columnName: "CompanyRefNo", header: "Securitas ID", canSort: false, style:"td-1"),
+                                        grid.Column(header : "Securitas Id", format : (item) => {
+                                           string SecuritasID=item.CompanyRefNo;
+
+                                        if (item.CheckFamilyRowID==2)
+                                           {
+                                             return SecuritasID;
+                                           }
+                                           else if (item.CheckFamilyRowID==5)
+                                           {
+                                               var link = Html.ActionLink(SecuritasID, "UpdateCriminalInfoByTMQC", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID }, null);
+                                           return link;
+                                           }
+                                       else
+                                       {
+                                       return SecuritasID;
+                                       }
+                                       }, style:"td-1"),
+                                       grid.Column(columnName: "PersonalName", header: "Candidate Name", canSort: false, style:"td-1"),
+                                       grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-1"),
+                                       grid.Column("Ageing", format: (item) => item.InternalOutDate != null ? (item.InternalOutDate - DateTime.Now).Days : "", canSort: false,style:""),
+                                       grid.Column("OutDate", "TAT", format: (item) => item.OutDate != null ? item.OutDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"td-1"),
+                                       grid.Column(columnName: "SecuritasSPOC", header: "SPOC", canSort: false, style:"td-1"),
+                                       grid.Column(columnName: "CheckStatus", header: "Status", canSort: false, style: ""),
+                                        grid.Column("Remarks", canSort: false, format: (item)=> {
+                               if ((item.CheckStatus=="Insufficent" && !string.IsNullOrEmpty(item.CheckStatus))|| (item.CheckStatusid==53))
+                               {
+
+
+                                   var link=@Html.ActionLink("Remarks", "InsuffRemarks", "Verification", new { PersonalRowID = item.PersonalRowID ,SubCheckRowID = item.SubCheckRowID ,processName="L2-Insuff-QC_Approval"}, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" });
+                                   return link;
+                               }
+                               return null;
+                           }, style:"td-1" ),
+                            }
+                          )
+                    }
+
+                    @*else if (Designation == "Team Member-Cri-QC" || CheckStatus1 == "Pending")3
+                        {
+
+                            @grid.GetHtml(
+                                htmlAttributes: new { id = "grid", @class = "table table-striped table-bordered nowrap" },
+                                headerStyle: "thead-inverse",
+                                rowStyle: "ordertxt",
+                                footerStyle: "custpaging",
+                                mode: WebGridPagerModes.All,
+                                columns: new[]
+                                {
+                                       //grid.Column(header: "",format: (item) =>item.CheckStatus == "Pending"? Html.CheckBox("chkRow",new { value = item.PersonalRowID + "/" + item.SubCheckRowID }): Html.Raw("")),
+                                       grid.Column(header: "",format: (item) => Html.CheckBox("chkRow",new { value = item.PersonalRowID + "/" + item.SubCheckRowID })),
+                                       //grid.Column(header: "",format: (item) => Html.CheckBox("chkRow", new { value = item.PersonalRowID + "/" + item.SubCheckRowID })),
+                                       grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                       grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-1"),
+                                       grid.Column(columnName: "IsSeniorCase", header: "IsSeniorCase", canSort: false, style:"td-3"),
+                                       //grid.Column(columnName: "CompanyRefNo", header: "Securitas ID", canSort: false, style:"td-1"),
+                                       grid.Column(header : "Securitas Id", format : (item) => {
+                                        string SecuritasID=item.CompanyRefNo;
+
+                                        if (item.CheckFamilyRowID==2)
+                                        {
+                                            return SecuritasID;
+                                        }
+                                        else if (item.CheckFamilyRowID==5)
+                                        {
+                                            var link = Html.ActionLink(SecuritasID, "UpdateCriminalInfoByTMQC", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID }, null);
+                                            return link;
+                                        }
+                                        else
+                                        {
+                                            return SecuritasID;
+                                        }
+                                    }, style:"td-1"),
+                                   grid.Column(columnName: "PersonalName", header: "Candidate Name", canSort: false, style:"td-1"),
+                                   grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-1"),
+                                   grid.Column("Ageing", format: (item) => item.InternalOutDate != null ? (item.InternalOutDate - DateTime.Now).Days : "", canSort: false,style:""),
+                                   grid.Column("OutDate", "TAT", format: (item) => item.OutDate != null ? item.OutDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"td-1"),
+                                   grid.Column(columnName: "SecuritasSPOC", header: "SPOC", canSort: false, style:"td-1"),
+                                   grid.Column(columnName: "CheckStatus", header: "Status", canSort: false, style: ""),
+                                    grid.Column("Remarks", canSort: false, format: (item)=> {
+                                        if ((item.CheckStatus=="Insufficent" && !string.IsNullOrEmpty(item.CheckStatus))|| (item.CheckStatusid==53))
+                                        {
+
+
+                                            var link=@Html.ActionLink("Remarks", "InsuffRemarks", "Verification", new { PersonalRowID = item.PersonalRowID ,SubCheckRowID = item.SubCheckRowID ,processName="L2-Insuff-QC_Approval"}, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" });
+                                            return link;
+                                        }
+                                        return null;
+                                    }, style:"td-1" ),
+                                }
+                              )
+                        }*@
+                    else
+                    {
+                        if (Designation == "Team Member-Edu-QC")
+                        {
+                            @grid.GetHtml(
+htmlAttributes: new { id = "grid", @class = "table" },
+headerStyle: "thead-inverse",
+rowStyle: "ordertxt",
+footerStyle: "custpaging",
+mode: WebGridPagerModes.All,
+columns: new[]
+    {
+
+grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+grid.Column(columnName: "checkFackEdu", header: "checkFackEdu", canSort: false, style:"td-1"),
+   grid.Column(columnName: "IsSeniorCase", header: "IsSeniorCase", canSort: false, style:"td-3"),
+grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-1"),
+     grid.Column(header : "Securitas Id", format : (item) => {
+    string SecuritasID=item.CompanyRefNo;
+
+if (item.CheckFamilyRowID > 0)
+{
+             //if (item.CheckFamilyRowID==2)
+             //{
+             //    var link = Html.ActionLink(SecuritasID, "UpdateAddressInfoByTMQC", "Verification", new { id = item.VerificationRowID }, null);
+             //return link;
+             //}
+             //else if (item.CheckFamilyRowID==5)
+             //{
+             //    var link = Html.ActionLink(SecuritasID, "UpdateCriminalInfoByTMQC", "Verification", new { id = item.VerificationRowID }, null);
+             //return link;
+             //}
+             //else
+    if (item.CheckFamilyRowID==11)
+    {
+        var link = Html.ActionLink(SecuritasID, "UpdateEducationInfoByTMQC", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID }, null);
+    return link;
+    }
+    else if (item.CheckFamilyRowID==12)
+    {
+                 if (Designation=="Team Member-Emp-QC" && @ViewBag.CheckStatusForTMQC == "Closed")
+                 {
+                     var link = Html.ActionLink(SecuritasID, "UpdateEmploymentInfoByTMQCForOpsQCValue", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID }, null);
+                        return link;
+                 }
+                 if (Designation=="Team Member-Emp-QC" && @ViewBag.CheckStatusForTMQC == "ReviewResolved")
+                 {
+                     var link = Html.ActionLink(SecuritasID, "UpdateEmploymentInfoByTMQCForOpsQCValue", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID }, null);
+                        return link;
+                 }
+                 else
+                 {
+                       var link = Html.ActionLink(SecuritasID, "UpdateEmploymentInfoByTMQC", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID }, null);
+                       return link;
+                     }
+
+    }
+    else if (item.CheckFamilyRowID==26)
+    {
+        var link = Html.ActionLink(SecuritasID, "UpdateNationalIdentityInfoByTMQC", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID }, null);
+    return link;
+    }
+    else if (item.CheckFamilyRowID==30)
+    {
+        var link = Html.ActionLink(SecuritasID, "UpdateReferenceInfoByTMQC", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID }, null);
+    return link;
+    }
+    else if (item.CheckFamilyRowID==40)
+    {
+        var link = Html.ActionLink(SecuritasID, "UpdateSpecialCheckInfoByTMQC", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID   }, null);
+    return link;
+    }
+    else
+    {
+        return SecuritasID;
+    }
+}
+else
+{
+    return SecuritasID;
+}
+}, style:"edit td-1"),
+//grid.Column(columnName: "CompanyRefNo", header: "Securitas Id ", canSort: false, style:"td-1"),
+grid.Column(columnName: "PersonalName", header: "Candidate Name", canSort: false, style:"td-1"),
+grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-1"),
+
+  grid.Column("Ageing", format: (item) => item.InternalOutDate != null ? (DateTime.Now - item.InternalOutDate).Days : "", canSort: false,style:""),
+ // grid.Column("Ageing", format: (item) => item.UploadDate != null ? (DateTime.Now-item.UploadDate).Days : "", canSort: false,style:""),
+  grid.Column(columnName: "TMCompletionDate", header: "User Closer Date", canSort: false, style:"td-1"),
+// grid.Column("OutDate", "TAT", format: (item) => item.OutDate != null ? item.OutDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"td-1"),
+ grid.Column(columnName: "UniqueComponentID", header: "CheckUniqueID", canSort: false, style:"td-1"),
+  grid.Column(columnName: "UniversityName", header: "University Name", canSort: false, style:"td-1"),
+ //grid.Column("InternalOutDate", "Internal TAT", format: (item) => item.InternalOutDate != DateTime.MinValue ? item.InternalOutDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"td-1"),
+  grid.Column(columnName: "AllocatedTMName", header: "AllocatedTM", canSort: false, style:"td-1"),
+grid.Column(columnName: "CheckStatus", header: "Status", canSort: false, style:""),
+grid.Column(columnName: "TypeOfBusinesses", header: "Type of Business", canSort: true, style:""),
+
+grid.Column("Remarks", canSort: false, format: (item)=> {
+if ((item.CheckStatus=="Insufficent" && !string.IsNullOrEmpty(item.CheckStatus))|| (item.CheckStatusid==53))
+{
+
+
+var link=@Html.ActionLink("Remarks", "InsuffRemarks", "Verification", new { PersonalRowID = item.PersonalRowID ,SubCheckRowID = item.SubCheckRowID ,processName="L2-Insuff-QC_Approval"}, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" });
+return link;
+}
+else if( item.CheckStatusID==58)
+{
+var link=@Html.ActionLink("Remarks", "FundsPendindRemark", "Verification", new { PersonalRowID = item.PersonalRowID ,SubCheckRowID = item.SubCheckRowID ,checkstatusid=item.CheckStatusID,CheckRowid=item.CheckFamilyRowID ,processName="Funds-Pending-QC_Approval"}, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" });
+return link;
+}
+return null;
+}, style:"td-1" ),
+
+
+
+}
+)
+                        }
+                        else
+                        {
+                            @grid.GetHtml(
+                                      htmlAttributes: new { id = "grid", @class = "table" },
+                                      headerStyle: "thead-inverse",
+                                      rowStyle: "ordertxt",
+                                      footerStyle: "custpaging",
+                                      mode: WebGridPagerModes.All,
+                                      columns: new[]
+                                      {
+
+                                            grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                            grid.Column(columnName: "checkFackEdu", header: "checkFackEdu", canSort: false, style:"td-1"),
+                                            grid.Column(header: "IsPreviouslyRejected", canSort: false,style: "previously-rejected-column", format: (item) => Html.Raw("<span class='rej-flag' data-rejected='" + Convert.ToString(item.IsPreviouslyRejected).ToLower() + "'>" + Convert.ToString(item.IsPreviouslyRejected) + "</span>")),
+
+                                               grid.Column(columnName: "IsSeniorCase", header: "IsSeniorCase", canSort: false, style:"td-3"),
+                                          grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-1"),
+                                                 grid.Column(header : "Securitas Id", format : (item) => {
+                                                string SecuritasID=item.CompanyRefNo;
+
+                                           if (item.CheckFamilyRowID > 0)
+                                            {
+                                                         //if (item.CheckFamilyRowID==2)
+                                                         //{
+                                                         //    var link = Html.ActionLink(SecuritasID, "UpdateAddressInfoByTMQC", "Verification", new { id = item.VerificationRowID }, null);
+                                                         //return link;
+                                                         //}
+                                                         //else if (item.CheckFamilyRowID==5)
+                                                         //{
+                                                         //    var link = Html.ActionLink(SecuritasID, "UpdateCriminalInfoByTMQC", "Verification", new { id = item.VerificationRowID }, null);
+                                                         //return link;
+                                                         //}
+                                                         //else
+                                                if (item.CheckFamilyRowID==11)
+                                                {
+                                                    var link = Html.ActionLink(SecuritasID, "UpdateEducationInfoByTMQC", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID }, null);
+                                                return link;
+                                                }
+                                                else if (item.CheckFamilyRowID==12)
+                                                {
+                                                             if (Designation=="Team Member-Emp-QC" && @ViewBag.CheckStatusForTMQC == "Closed")
+                                                             {
+                                                                 var link = Html.ActionLink(SecuritasID, "UpdateEmploymentInfoByTMQCForOpsQCValue", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID }, null);
+                                                                    return link;
+                                                             }
+                                                             if (Designation=="Team Member-Emp-QC" && @ViewBag.CheckStatusForTMQC == "ReviewResolved")
+                                                             {
+                                                                 var link = Html.ActionLink(SecuritasID, "UpdateEmploymentInfoByTMQCForOpsQCValue", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID }, null);
+                                                                    return link;
+                                                             }
+                                                             else
+                                                             {
+                                                                   var link = Html.ActionLink(SecuritasID, "UpdateEmploymentInfoByTMQC", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID }, null);
+                                                                   return link;
+                                                                 }
+
+                                                }
+                                                else if (item.CheckFamilyRowID==26)
+                                                {
+                                                    var link = Html.ActionLink(SecuritasID, "UpdateNationalIdentityInfoByTMQC", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID }, null);
+                                                return link;
+                                                }
+                                                else if (item.CheckFamilyRowID==30)
+                                                {
+                                                    var link = Html.ActionLink(SecuritasID, "UpdateReferenceInfoByTMQC", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID }, null);
+                                                return link;
+                                                }
+                                                else if (item.CheckFamilyRowID==40)
+                                                {
+                                                    var link = Html.ActionLink(SecuritasID, "UpdateSpecialCheckInfoByTMQC", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID   }, null);
+                                                return link;
+                                                }
+                                                else
+                                                {
+                                                    return SecuritasID;
+                                                }
+                                            }
+                                           else
+                                            {
+                                                return SecuritasID;
+                                            }
+                                            }, style:"edit td-1"),
+                                            //grid.Column(columnName: "CompanyRefNo", header: "Securitas Id ", canSort: false, style:"td-1"),
+                                            grid.Column(columnName: "PersonalName", header: "Candidate Name", canSort: false, style:"td-1"),
+                                            grid.Column(columnName: "UniqueComponentID", header: "UniqueComponentID", canSort: false, style:"td-1"),
+                                            grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-1"),
+                                             grid.Column(columnName: "Organization_Name", header: "Company Name", canSort: false, style:"td-1"),
+                                             grid.Column(columnName: "ClientTAT", header: "ClientTAT", canSort: false, style:"td-1"),
+                                              grid.Column("Ageing", format: (item) => item.InternalOutDate != null ? (item.InternalOutDate - DateTime.Now).Days : "", canSort: false,style:""),
+                                            grid.Column("OutDate", "TAT", format: (item) => item.OutDate != null ? item.OutDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"td-1"),
+                                             grid.Column(columnName: "SecuritasSPOC", header: "SPOC", canSort: false, style:"td-1"),
+                                             //grid.Column("InternalOutDate", "Internal TAT", format: (item) => item.InternalOutDate != DateTime.MinValue ? item.InternalOutDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"td-1"),
+                                              grid.Column(columnName: "AllocatedTMName", header: "AllocatedTM", canSort: false, style:"td-1"),
+                                            grid.Column(columnName: "CheckStatus", header: "Status", canSort: false, style:""),
+                                             grid.Column(columnName: "ColorName", header: "ColorName", canSort: false, style:""),
+
+                                grid.Column("Remarks", canSort: false, format: (item)=> {
+                                    if ((item.CheckStatus=="Insufficent" && !string.IsNullOrEmpty(item.CheckStatus))|| (item.CheckStatusid==53))
+                                    {
+
+
+                                        var link=@Html.ActionLink("Remarks", "InsuffRemarks", "Verification", new { PersonalRowID = item.PersonalRowID ,SubCheckRowID = item.SubCheckRowID ,processName="L2-Insuff-QC_Approval"}, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" });
+                                        return link;
+                                    }
+                                    else if( item.CheckStatusID==58)
+                                    {
+                                         var link=@Html.ActionLink("Remarks", "FundsPendindRemark", "Verification", new { PersonalRowID = item.PersonalRowID ,SubCheckRowID = item.SubCheckRowID ,checkstatusid=item.CheckStatusID,CheckRowid=item.CheckFamilyRowID ,processName="Funds-Pending-QC_Approval"}, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" });
+                                        return link;
+                                    }
+                                    return null;
+                                }, style:"td-1" ),
+
+
+                  }
+           )
+                        }
+
+                    }
+
+
+                }
+                <div class="total-record">Total Records: @Model.TotalRecords</div>
+            </div>
+        </div>
+    }
+</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts{
+
+    <style>
+
+        @@keyframes rejectedBlink {
+            0% {
+                background-color: #ADD8E6;
+                color: #000000;
+            }
+
+            50% {
+                background-color: #ffffff;
+                color: #000000;
+            }
+
+            100% {
+                background-color: #ADD8E6;
+                color: #000000;
+            }
+        }
+
+        #grid tbody tr.previously-rejected-blink,
+        #grid tbody tr.previously-rejected-blink td {
+            animation: rejectedBlink 1s infinite !important;
+        }
+    </style>
+
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+
+    <script>
+        $("#grid > thead > tr").each(function () {
+            $(this).find('th:nth-child(2)').css("display", "none");
+        });
+        $("#grid > tbody > tr").each(function () {
+            $(this).find('td:nth-child(2)').css("display", "none");
+        });
+    </script>
+    <script>
+        $('#grid > tbody > tr').each(function () {
+            var sixthTdValue = $(this).find('td:nth-child(2)').text();
+            var columnIndex = $("table thead th").filter(function () {
+                return $(this).text().trim() === "Client Name";
+            }).index() + 1;
+            var client = $(this).find("td:nth-child(" + columnIndex + ")").text();
+            if (sixthTdValue == "fake") {
+                if (client == "LTIMindtree Limited") {
+                    $(this).css('background-color', '#7179bf');
+                } else {
+
+
+                    $(this).css('background-color', '#FFFF00');
+                }
+            }
+            else if (sixthTdValue == "Capgeminivendorsupp") {
+                $(this).css('background-color', '#34eb9b');
+            }
+            //else {
+            //    //$(this).css('background-color', '#f2f2f2');
+            //}
+        });
+    </script>
+
+    <script>
+
+        $(document).ready(function () {
+            //alert('Hi1');
+            $(".iframeUpdateStatus").colorbox({ iframe: true, width: "60%", height: "60%" });
+            //$(".callbacks").colorbox({
+            //    //onOpen: function () { alert('onOpen: colorbox is about to open'); },
+            //    //onLoad: function () { alert('onLoad: colorbox has started to load the targeted content'); },
+            //    //onComplete: function () { alert('onComplete: colorbox has displayed the loaded content'); },
+            //    //onCleanup: function () { alert('onCleanup: colorbox has begun the close process'); },
+            //    onClosed: function () {
+            //        //alert('onClosed: colorbox has completely closed');
+            //        window.location.reload(false);
+            //    }
+            //});
+
+            //$(".iframeUpdateVerDoc").colorbox({ iframe: true, width: "60%", height: "60%" });
+            //$(".callbacks").colorbox({
+            //    onClosed: function () {
+            //        window.location.reload(true);
+            //    }
+            //});
+
+            //$(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+
+            //$(".iframeEmailStatus").colorbox({ iframe: true, width: "80%", height: "90%" });
+            //alert('Hi');
+            $('#RecievingToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#RecievingFromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedFromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+
+        });
+    </script>
+    <script>
+        $("#grid > thead > tr").each(function () {
+            $(this).find('th').each(function (index) {
+                // Check if the header text is "checkFackEdu"
+                if ($(this).text().trim() === "IsSeniorCase") {
+                    // Hide the corresponding column header
+                    $(this).css("display", "none");
+
+                    // Now hide the corresponding cells (td) in the body for that column
+                    $("#grid > tbody > tr").each(function () {
+                        $(this).find('td').eq(index).css("display", "none");
+                    });
+                }
+            });
+        });
+    </script>
+    <script>
+        $('#grid > tbody > tr').each(function () {
+            var sixthTdValue = $(this).find('td:nth-child(3)').text();
+            if (sixthTdValue == "1") {
+                $(this).css('background-color', '#ffbf80');
+            }
+            //else {
+            //    //$(this).css('background-color', '#f2f2f2');
+            //}
+        });
+    </script>
+
+    <script>
+        document.getElementById("fetchDataCheckbox").addEventListener("change", function () {
+            document.getElementById("fetchDataCheckboxHidden").value = this.checked;
+        });</script>
+
+    <script>
+        $(document).ready(function () {
+            // Add checkbox to header
+            $("table thead tr th:first").html('Bulk Approve<input type="checkbox" id="chkHeader" />');
+
+            // Function to update hidden input
+            function updateHiddenInput() {
+                var selected = [];
+                $("input[name='chkRow']:checked").each(function () {
+                    $(".bulkApprovediv").css("display", "block");
+                    selected.push($(this).val()); // get value of checked checkbox
+                });
+                $("#hdnSelected").val(selected.join(","));
+                console.log("Hidden input updated:", $("#hdnSelected").val());
+            }
+
+            // Toggle all checkboxes when header is clicked
+            $(document).on("click", "#chkHeader", function () {
+                var checked = this.checked;
+                $("input[name='chkRow']").prop("checked", checked);
+                updateHiddenInput();
+            });
+
+            // Update hidden input when any row checkbox is clicked
+            $(document).on("click", "input[name='chkRow']", function () {
+                updateHiddenInput();
+
+                // Keep header checkbox in sync (checked if all rows checked)
+                var allChecked = $("input[name='chkRow']").length === $("input[name='chkRow']:checked").length;
+                $("#chkHeader").prop("checked", allChecked);
+            });
+        });
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            var $rejectedRows = [];
+            $(".rej-flag").each(function () {
+                var v = ($(this).attr("data-rejected") || "").toLowerCase();
+                var $td = $(this).closest("td");
+                var idx = $td.index();
+                // column hide (header + cell)
+                //$td.addClass("rej-col");
+                //$("#grid thead th").eq(idx).addClass("rej-col");
+                $td.css("display", "none");
+                $("#grid thead th").eq(idx).css("display", "none");
+                if (v === "true" || v === "1") {
+                    var $tr = $(this).closest("tr");
+                    $tr.addClass("previously-rejected-blink");
+                    $rejectedRows.push($tr);
+                }
+            });
+            var $tbody = $("#grid tbody");
+            for (var i = $rejectedRows.length - 1; i >= 0; i--) {
+                $tbody.prepend($rejectedRows[i]);
+            }
+        });
+    </script>
+
+
+
+
+}

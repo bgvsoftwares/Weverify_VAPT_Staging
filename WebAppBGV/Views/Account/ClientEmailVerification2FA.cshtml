@@ -1,0 +1,334 @@
+﻿@model WebAppBGV.Models.ClientOTPViewmodel
+@{
+    ViewBag.Title = "Client Verification";
+    Layout = null;
+
+
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=0'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta name="Description" content="Bootstrap Responsive Admin Web Dashboard HTML5 Template">
+    <meta name="Author" content="Spruko Technologies Private Limited">
+    <meta name="Keywords" content="admin,admin dashboard,admin dashboard template,admin panel template,admin template,admin theme,bootstrap 4 admin template,bootstrap 4 dashboard,bootstrap admin,bootstrap admin dashboard,bootstrap admin panel,bootstrap admin template,bootstrap admin theme,bootstrap dashboard,bootstrap form template,bootstrap panel,bootstrap ui kit,dashboard bootstrap 4,dashboard design,dashboard html,dashboard template,dashboard ui kit,envato templates,flat ui,html,html and css templates,html dashboard template,html5,jquery html,premium,premium quality,sidebar bootstrap 4,template admin bootstrap 4" />
+    <!-- Title -->
+    <title>BGV Client - @ViewBag.Title</title>
+
+    <!-- Favicon -->
+    @*<link rel="icon" href="../../assets/img/brand/favicon.png" type="image/x-icon"/>*@
+
+    <!-- Icons css -->
+    <link href="~/assets/css/icons.css" rel="stylesheet">
+
+    <!-- Bootstrap css -->
+    <link href="~/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!--  Owl-carousel css-->
+    <link href="~/assets/plugins/owl-carousel/owl.carousel.css" rel="stylesheet" />
+
+    <!-- P-scroll bar css-->
+    <link href="~/assets/plugins/perfect-scrollbar/p-scrollbar.css" rel="stylesheet" />
+
+    <!--  Right-sidemenu css -->
+    <link href="~/assets/plugins/sidebar/sidebar.css" rel="stylesheet">
+
+    <!-- Sidemenu css -->
+    <link rel="stylesheet" href="~/assets/css/sidemenu.css">
+
+    <!-- Maps css -->
+    <link href="~/assets/plugins/jqvmap/jqvmap.min.css" rel="stylesheet">
+
+    <!-- Interenal Accordion Css -->
+    <link href="~/assets/plugins/accordion/accordion.css" rel="stylesheet" />
+
+    <!-- style css -->
+    @*<link href="~/assets/css/style.css" rel="stylesheet">*@
+    <link href="~/assets/css/style-dark.css" rel="stylesheet">
+    <link href="~/assets/css/boxed.css" rel="stylesheet">
+    <link href="~/assets/css/dark-boxed.css" rel="stylesheet">
+
+    <!---Skinmodes css-->
+    <link href="~/assets/css/skin-modes.css" rel="stylesheet" />
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <!-- Internal Data table css -->
+    <link href="~/assets/plugins/datatable/datatables.min.css" rel="stylesheet" />
+    <link href="~/assets/plugins/datatable/responsive.dataTables.min.css" rel="stylesheet">
+    <link href="~/assets/plugins/datatable/responsive.bootstrap5.css" rel="stylesheet">
+    <link href="~/assets/plugins/datatable/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/assets/plugins/datatable/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="~/assets/plugins/select2/css/select2.min.css" rel="stylesheet">
+    <!---Internal Fileupload css-->
+    <link href="~/assets/plugins/fileuploads/css/fileupload.css" rel="stylesheet" type="text/css" />
+    <!--- Internal Sweet-Alert css-->
+    @*<link href="../../assets/plugins/sweet-alert/sweetalert.css" rel="stylesheet">*@
+    <link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+</head>
+
+<body class="main-body app sidebar-mini" style="overflow-x:hidden; background:#e2e2ff82!important;">
+    @section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+    @{
+        if (ViewBag.EmailOTP != null)
+        {
+            <input type="hidden" id="EnOTP" value="@ViewBag.EmailOTP.ToString()" />
+        }
+    }
+
+    @using (Html.BeginForm("ClientEmailVerification2FA", "Account", FormMethod.Post))
+    {
+        <div class="card shadow-lg bg-body-tertiary rounded-0 border-0" style="margin:50px auto; width:900px!important;">
+            <div class="card-body p-0 d-flex">
+                <div class="row row-sm">
+                    <div class="col-md-6">
+                        <img src="~/assets/LoginPageImages/autho.png" style="width: 450px;padding: 10px;" />
+                    </div>
+                    <div class="col-md-6" style="padding:60px 0px;">
+                        <h5 class="card-title mb-0">Please Enter Code</h5>
+                        <p class="card-text">We have sent a six digit code on your mail id.</p>
+                        <p class="card-text">Please enter code to verify your login</p>
+                        <div class="row d-flex justify-content-start mt-2 pb-0">
+                            <div class="col-md-6">
+                                @*@Html.EditorFor(model => model.MailOTP, new { htmlAttributes = new { @placeholder = "Enter OTP", @class = "form-control verify_data", @id = "Otp-Code" } })*@
+                                @Html.TextBoxFor(model => model.MailOTP, new
+   {
+       @class = "form-control verify_data",
+       @id = "Otp-Code",
+       @placeholder = "Enter OTP",
+       @maxlength = "6",
+       @oninput = "this.value=this.value.replace(/[^0-9]/g,'').slice(0,6)"
+   })
+                            </div>
+                        </div>
+                        <div class="row d-flex justify-content-start m-2">
+                            <div class="col-md-6 text-end">
+                                <button class="bg-transparent border-0" id="reSend-btn" style="font-size:14px; color:blue; text-decoration:underline;" onclick="countdown()">Resend OTP <span id="some_div"></span></button>
+                            </div>
+                        </div>
+                        <div class="row m-2 d-flex justify-content-start">
+                            <div class="col-md-12 text-start">
+                                <button class="btn btn-default" id="verify-btn" type="submit">Verify</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <script src='@Url.Content("~/assets/plugins/bootstrap/js/bootstrap.bundle.min.js")'></script>
+    <!-- End Page -->
+    <!-- JQuery min js -->
+    <script src="~/assets/plugins/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Bundle js -->
+    <script src="~/assets/plugins/bootstrap/js/popper.min.js"></script>
+    <script src="~/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Moment js -->
+    <script src="~/assets/plugins/moment/moment.js"></script>
+
+    <!--Internal Sparkline js -->
+    <script src="~/assets/plugins/jquery-sparkline/jquery.sparkline.min.js"></script>
+
+    <!-- Moment js -->
+    <script src="~/assets/plugins/raphael/raphael.min.js"></script>
+
+    <!--Internal  Perfect-scrollbar js -->
+    <script src="~/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="~/assets/plugins/perfect-scrollbar/p-scroll.js"></script>
+
+
+    <!-- Sticky js -->
+    <script src="~/assets/js/sticky.js"></script>
+    <script src="~/assets/js/modal-popup.js"></script>
+
+    <!-- Left-menu js-->
+    <script src="~/assets/plugins/side-menu/sidemenu.js"></script>
+
+    <!--Internal  index js -->
+    <script src="~/assets/js/index.js"></script>
+
+    <!-- custom js -->
+    <script src="~/assets/js/custom.js"></script>
+
+    <!-- Tooltip js -->
+    <script src="~/assets/js/tooltip.js"></script>
+
+    <!--Internal Fileuploads js-->
+    <script src="~/assets/plugins/fileuploads/js/fileupload.js"></script>
+    <script src="~/assets/plugins/fileuploads/js/file-upload.js"></script>
+    <!-- Form-layouts js -->
+    <script src="~/assets/js/form-layouts.js"></script>
+
+    <!-- Internal form-elements js -->
+    <script src="~/assets/js/form-elements.js"></script>
+
+    <script src="~/assets/NewScript/jquery.colorbox-min.js"></script>
+
+    <script src="~/assets/js/tableslider.js"></script>
+
+    <!--- Internal Accordion Js -->
+    <script src="~/assets/plugins/accordion/accordion.min.js"></script>
+    <script src="~/assets/js/accordion.js"></script>
+
+    <!-- Internal Data tables -->
+    <script src="~/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
+    <script src="~/assets/plugins/datatable/datatables.min.js"></script>
+    <script src="~/assets/plugins/datatable/js/dataTables.bootstrap5.js"></script>
+    <script src="~/assets/plugins/datatable/js/dataTables.buttons.min.js"></script>
+    <script src="~/assets/plugins/datatable/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/assets/js/table-serialNo.js"></script>
+    <!--Internal  Datatable js -->
+    <script src="~/assets/js/table-data.js"></script>
+    <script src="~/assets/js/placeholder.js"></script>
+
+    <!--Internal  Clipboard js-->
+    <script src="~/assets/plugins/clipboard/clipboard.min.js"></script>
+    <script src="~/assets/plugins/clipboard/clipboard.js"></script>
+
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+    <script src="~/MultiSelection/dist/js/popper.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+
+    <script>
+        let timerOn = true;
+        function PopUpOpen() {
+            $("#myModal").modal('show');
+        }
+        PopUpOpen();
+        //timer(120);
+
+
+
+        $(document).ready(function () {
+            document.getElementById("Otp-Code").value = "";
+            $("#verify-btn").click(function () {
+                var mailCode = $('#Otp-Code').val();
+                var mailOTP = $('#EnOTP').val();
+                if (mailOTP == null) {
+                    swal.fire("OTP Expired!! Please Click on Resend");
+                    return false;
+                }
+                if (mailCode != "") {
+
+                    if (mailCode == "") {
+                        swal.fire("Please enter OTP");
+                        // timer(120);
+                        $("#verify-btn").hide();
+                        return false;
+                    }
+                    else if (mailOTP == "") {
+                        swal.fire("Otp Expired !! Click on resend otp");
+                        document.getElementById("Otp-Code").value = "";
+                        return false;
+                    }
+                    debugger;
+                    var mailCodes = $('#Otp-Code').val();
+                    var EnSaltVl = "000011";
+
+                    var key = CryptoJS.enc.Utf8.parse(EnSaltVl + "8080808080");
+                    var iv = CryptoJS.enc.Utf8.parse(EnSaltVl + "8080808080");
+
+                    var encryptedOTP = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(mailCodes), key,
+                        {
+                            keySize: 128 / 8,
+                            iv: iv,
+                            mode: CryptoJS.mode.CBC,
+                            padding: CryptoJS.pad.Pkcs7
+                        });
+
+                    $('#Otp-Code').val(mailCode);
+                    //var otp = $("#Otp-Code").val();
+                    //var url1 = "/Account/ClientEmailVerification2FA/?otp=" + encryptedOTP;
+                    //$.ajax({
+                    //    url: url1,
+                    //    type: 'Post',
+                    //    dataType: 'json',
+                    //    success: function (result) {
+                    //        if (result != null && result != "" && result.isRedirect == true) {
+                    //            window.location.href = result.redirectUrl;
+                    //        } else {
+                    //            alert("Wrong OTP!! Click on Resend button.");
+                    //            timer(120);
+                    //            document.getElementById("EnOTP").value = "";
+                    //            document.getElementById("Otp-Code").value = "";
+                    //            return false;
+                    //            //window.location.href = "/Account/ClientEmailVerification2FA";
+                    //        }
+                    //    }
+                    //});
+                } else {
+                    swal.fire("Please enter OTP");
+                    document.getElementById("Otp-Code").value = "";
+                    return false;
+                }
+            });
+            $("#reSend-btn").click(function () {
+                swal.fire("OTP Send to your Mailbox");
+                $("#reSend-btn").hide();
+                window.location.href = "/Account/ResendOtpFunc"
+                return true;
+            });
+
+        });
+
+        $(document).ready(function () {
+            $("#Otp-Code").on("input", function () {
+                this.value = this.value.replace(/[^0-9]/g, '').substring(0, 6);
+            });
+    </script>
+    <style>
+        #Otp-Code {
+            border-radius: 0px;
+        }
+
+        #verify-btn {
+            border-radius: 0px;
+            background: #8D5FFF !important;
+            color: #FFF;
+            width: 200px !important;
+            transition: .3s ease-in-out;
+        }
+
+            #verify-btn:hover {
+                border: 1px solid #8D5FFF;
+                background: #FFF !important;
+                color: #031F30;
+            }
+
+        .card-header {
+            background: #DDD;
+        }
+
+        .profile-user img {
+            margin: auto;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+        }
+
+        .card-title {
+            color: #031F30 !important;
+            font-family: 'Securitas Pro';
+            font-weight: 700;
+            text-align: left;
+            font-size: 2rem;
+            padding: 10px 0px;
+        }
+
+        .card-text {
+            text-align: left;
+            padding: 0px 10px;
+            color: #909090;
+            width: 500px;
+            margin: auto;
+        }
+    </style>
+</body>
+</html>

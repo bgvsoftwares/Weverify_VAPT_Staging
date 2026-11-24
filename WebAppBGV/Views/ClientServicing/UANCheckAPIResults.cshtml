@@ -1,0 +1,190 @@
+﻿@model List<UANCheckAPIResults>
+@{
+    ViewBag.Title = "UAN Check";
+
+}
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@using (Html.BeginForm("UANCheckAPIResults", "ClientServicing", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+
+
+    <div class="container">
+        @*<div class="row row-sm mt-4">
+                <div class="col-md-11" style="text-align: center;">
+                    <input type="button" class="btn_submit" value="Search New UAN" onclick="location.href='@Url.Action("UANCheck","Home")'">
+                </div>
+            </div>*@
+
+        <div class="row row-sm mt-4">
+            <div class="col-md-2">
+                <lable class="lable">UAN Number :</lable>
+            </div>
+            <div class="col-md-4">
+                <input type="number" id='uanNumber' name='uanNumber' class="form-control" placeholder="UAN Number" autocomplete="off" maxlength="12">
+            </div>
+            <div class="col-md-2">
+                <lable class="lable">Company Ref No :</lable>
+            </div>
+            <div class="col-md-4">
+                <input type="text" id='companyRefNo' name='companyRefNo' class="form-control" placeholder="Company Ref No" autocomplete="off">
+            </div>
+        </div>
+        <div class="row row-sm mt-4">
+            <div class="col-md-2">
+                <lable class="lable">Date From </lable>
+            </div>
+            <div class="col-md-4">
+                <input type="date" id='dateFrom' name='dateFrom' class="form-control" placeholder="Date from " autocomplete="off">
+            </div>
+            <div class="col-md-2">
+                <lable class="lable">Date To</lable>
+            </div>
+            <div class="col-md-4">
+                <input type="date" id='dateTo' name='dateTo' class="form-control" placeholder="Date to" autocomplete="off">
+            </div>
+        </div>
+        <div class="row row-sm mt-3" style="justify-content: center;">
+            <div class="col-md-4" style="text-align:right;">
+                <input type="submit" class="btn bun-bg btn-default" value="Search" name="Action">
+            </div>
+
+            <div class="col-md-4">
+                <input type="submit" class="btn bun-bg btn-default" value="Excel Export" id="Excel Export" name="Action">
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <table class="table table-striped table-bordered nowrap table-responsive" border="1" style="border-collapse: collapse; width: 100%;">
+                <thead style="background:#9c9595; color:#FFF;">
+                    <tr>
+                        <th>Sr No</th>
+                        <th>Company Ref No</th>
+                        <th>UAN NO</th>
+                        <th>Name</th>
+                        <th>guardian_name</th>
+                        <th>establishment_name</th>
+                        <th>member_id</th>
+                        <th>date_of_joining</th>
+                        <td>date_of_exit</td>
+                        <th>ReportDate</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        int i = 1;
+                        foreach (var item in Model)
+                        {
+                    <tr>
+                        <td>@i</td>
+                        <td>@item.CompanyRefNo</td>
+                        <td>@item.UANNO</td>
+                        <td>@item.name</td>
+                        <td>@item.guardian_name</td>
+                        <td>@item.establishment_name</td>
+                        <td>@item.member_id</td>
+                        <td>@item.date_of_joining</td>
+                        <td>@item.date_of_exit</td>
+                        <td>@item.ReportDate</td>
+
+                    </tr>
+                          i++;
+                        }
+                    }
+                </tbody>
+            </table>
+
+
+        </div>
+
+    </div>
+}
+@section Scripts{
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 11px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #D6EEEE;
+        }
+    </style>
+    @*<style>
+            .card {
+                width: 900px;
+            }
+
+            ul {
+                padding: 0;
+                list-style: none;
+                background: #f2f2f2;
+                width: 225px;
+            }
+
+                ul li {
+                    display: inline-block;
+                    position: relative;
+                    line-height: 21px;
+                    text-align: left;
+                }
+
+                    ul li a {
+                        display: block;
+                        padding: 8px 25px;
+                        color: #333;
+                        text-decoration: none;
+                    }
+
+                        ul li a:hover {
+                            color: #031F30;
+                            background: #e2e2e2;
+                        }
+
+                    ul li ul.dropdown-menu {
+                        min-width: 100%; /* Set width of the dropdown */
+                        background: #f2f2f2;
+                        display: none;
+                        position: absolute;
+                        z-index: 999;
+                        left: 0;
+                        top: 43px;
+                        border-radius: 0px;
+                    }
+
+                        ul li ul.dropdown-menu li {
+                            display: block;
+                        }
+        </style>*@
+
+    <script>
+        $(document).ready(function () {
+            // Show hide popover
+            $(".dropdown").click(function () {
+                $(this).find(".dropdown-menu").slideToggle("fast");
+            });
+        });
+        $(document).on("click", function (event) {
+            var $trigger = $(".dropdown");
+            if ($trigger !== event.target && !$trigger.has(event.target).length) {
+                $(".dropdown-menu").slideUp("fast");
+            }
+        });
+        $('#btnRefresh').click(function () {
+            /*  window.location.replace("UANCheck");*/
+            location.reload();
+        });
+
+
+    </script>
+}
+

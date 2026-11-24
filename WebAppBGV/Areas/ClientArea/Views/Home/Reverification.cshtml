@@ -1,0 +1,340 @@
+@model ViewModels.ClientViewModel.CheckAddAndReverification
+
+@{
+    //ViewBag.Title = "Re-Verification";
+    HtmlHelper.ClientValidationEnabled = false;
+}
+
+@*<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <link href="~/Content/MultiselectcNew.css" rel="stylesheet" type="text/css" />
+    <link href="~/MultiSelection/docs/css/prettify.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/MultiSelection/dist/css/bootstrap-multiselect.css" type="text/css">*@
+
+<style>
+    .multiselect-selected-text {
+        color: #000 !important;
+    }
+</style>
+<style>
+    /* CSS to make the checkbox list scrollable */
+    .scrollable-checkbox-list {
+        /* Set a fixed maximum height for the container */
+        max-height: 200px; /* Adjust this value (e.g., 150px, 300px) as needed */
+        /* Crucial: Enable vertical scrolling when content exceeds max-height */
+        overflow-y: auto;
+        /* Optional: Add a thin border to visually frame the scrollable area */
+        border: 1px solid #ccc;
+        /* Optional: Add some padding inside the container */
+        padding: 5px;
+    }
+
+        /* Optional: Ensure the last item isn't flush against the bottom border */
+        .scrollable-checkbox-list .checkbox {
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+</style>
+@* --- Custom Styles --- *@
+<style>
+    /* Style for the select-like text in bootstrap-multiselect if it were active */
+    .multiselect-selected-text {
+        color: #000 !important;
+    }
+
+    /* CSS to make the checkbox list scrollable */
+    .scrollable-checkbox-list {
+        /* Set a fixed maximum height for the container */
+        max-height: 200px; /* Adjust this value (e.g., 150px, 300px) as needed */
+        /* Crucial: Enable vertical scrolling when content exceeds max-height */
+        overflow-y: auto;
+        /* Optional: Add a thin border to visually frame the scrollable area */
+        border: 1px solid #ccc;
+        /* Optional: Add some padding inside the container */
+        padding: 5px;
+        background-color: #f9f9f9; /* Light background for the scrollable area */
+        border-radius: 4px; /* Slight rounding for container */
+    }
+
+        /* Optional: Ensure the last item isn't flush against the bottom border */
+        .scrollable-checkbox-list .checkbox {
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+
+    /* General Form Styling Enhancements */
+    .search-frame {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .control-label {
+        font-weight: 600; /* Make labels slightly bolder */
+        text-align: right; /* Align labels to the right */
+    }
+
+    .bun-bg { /* Assuming this is a custom button style */
+        background-color: #5cb85c; /* Example: Green color for primary action */
+        color: white;
+        border: 1px solid #4cae4c;
+        transition: background-color 0.3s ease;
+    }
+
+        .bun-bg:hover {
+            background-color: #449d44;
+            color: white;
+        }
+
+    .all-button-bg {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+    }
+</style>
+@* --- End Custom Styles --- *@
+<div class="container-fluid">
+    <h2 class="page-header">@ViewBag.Title</h2>
+
+    @if (ViewBag.ErrorMsg != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            <strong><span class="glyphicon glyphicon-remove-sign"></span> Error:</strong> @ViewBag.ErrorMsg
+        </div>
+    }
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Re-Invite Details</h3>
+        </div>
+        <div class="panel-body">
+            @using (Html.BeginForm("Reverification", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-horizontal">
+
+                    @* --- Search/ID Section --- *@
+                    <div class="form-group branch row search-frame">
+                        <label class="col-sm-2 control-label">CompanyRefNo :</label>
+                        <div class="col-sm-3">
+                            @Html.TextBoxFor(model => model.SecuritasID, null, new { @class = "form-control", placeholder = "Enter CompanyRefNo...", @autocomplete = "off", maxlength = "40" })
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="btn bun-bg btn-default" type="submit" name="Command" value="Search" id="Search" />
+                        </div>
+
+                        @* Hidden Fields *@
+                        @Html.HiddenFor(model => model.PersonalRowID, new { @id = "HfPersonalRowID" })
+                        @Html.HiddenFor(model => model.ClientRowId, new { @id = "HfClientRowId" })
+                        @Html.HiddenFor(model => model.approveStatus, new { @id = "HfapproveStatus" })
+                    </div>
+
+                    @* --- Check Details Section (Custom Checkbox List) --- *@
+                    <div class="form-group branch row search-frame">
+                        <label class="col-sm-2 control-label">Check Details :</label>
+                        <div class="col-sm-3">
+                            <div id="dvCheckStatus" class="scrollable-checkbox-list">
+                                @if (ViewBag.chek != null)
+                                {
+                                    foreach (var item in ViewBag.chek)
+                                    {
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox"
+                                                       name="aSubCheckRowID"
+                                                       value="@item.SubCheckRowID"
+                                                       class="check-status-checkbox"
+                                                       id="chk_@item.SubCheckRowID" />
+                                                @item.SubCheckName
+                                            </label>
+                                        </div>
+                                    }
+                                }
+                                @* This hidden field will be populated by JavaScript with comma-separated IDs *@
+                                @Html.HiddenFor(model => model.aSubCheckRowIDMultiple, new { @id = "aSubCheckRowIDMultiple" })
+                            </div>
+                        </div>
+                        @* Empty column for alignment/spacing if needed: <div class="col-sm-7"></div> *@
+                    </div>
+
+                    @* --- Billing Status Section --- *@
+                    <div class="form-group branch row search-frame">
+                        <label class="col-sm-2 control-label">Billing Status :</label>
+                        <div class="col-sm-3">
+                            @Html.DropDownListFor(model => model.BillingStatus, new List<SelectListItem>(){
+                                new SelectListItem{Text="-- Select --", Value="-- Select --", Selected = true},
+                                new SelectListItem{Text="Billable", Value="Billable"},
+                                new SelectListItem{Text="Not Billable", Value="Not Billable"}
+                            }, new { @class = "form-control", @id = "ddlBillable" })
+                        </div>
+                        <div class="col-sm-7">
+                            @* Action button spot - currently empty in original, but space reserved by layout *@
+                        </div>
+                    </div>
+
+                    @* --- Action Remarks Section --- *@
+                    <div class="form-group branch row search-frame">
+                        <label class="col-sm-2 control-label">Action Remarks :</label>
+                        <div class="col-sm-8">
+                            @Html.TextAreaFor(model => model.Remark, new
+                            {
+                                @class = "form-control",
+                                @id = "TextBoxMode",
+                                placeholder = "Enter Remarks...",
+                                style = "height:80px; resize:vertical;", /* Increased height and allowed vertical resize */
+                                @autocomplete = "off",
+                                maxlength = "200"
+                            })
+                            @* Using TextAreaFor instead of TextBoxFor for multiline input, adjust height in style *
+                                @* The original used TextBoxFor with height:60px, TextAreaFor is more semantic here *@
+                        </div>
+                    </div>
+
+                    @* --- Attachment Section --- *@
+                    <div class="form-group branch row search-frame">
+                        <label class="col-sm-2 control-label">Attachment :</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(model => model.UploadDoc, new
+                            {
+                                @id = "UploadAddressDoc",
+                                @accept = "image/gif, image/jpeg, image/png, image/jpg, .doc, .docx, .xls, .xlsx, .pdf, .rtf, .txt, .eml, .email, .msg, .zip, .rar",
+                                type = "file",
+                                multiple = "multiple",
+                                @class = "form-control",
+                                onchange = "return fileValidation(this)"
+                            })
+                            <span class="help-block">Allowed extensions: .gif, .doc, .docx, .xls, .xlsx, .pdf, .rtf, .txt, .jpeg, .jpg, .png, .eml, .email, .msg, .zip, .rar</span>
+                        </div>
+                    </div>
+
+                    @* --- Submit Button Section --- *@
+                    <div class="form-group all-button-bg">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <input class="btn bun-bg btn-lg" type="submit" name="Command" value="Submit" id="btnSubmit" />
+                        </div>
+                    </div>
+
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@*<script type="text/javascript" src="~/MultiSelection/docs/js/jquery-2.1.3.min.js"></script>*@
+@*<script type="text/javascript" src="~/Scripts/jquery-3.7.1.min.js"></script>
+    <script src="~/MultiSelection/dist/js/popper.min.js"></script>
+    <script type="text/javascript" src="~/MultiSelection/docs/js/bootstrap-3.3.2.min.js"></script>
+    <script type="text/javascript" src="~/MultiSelection/docs/js/prettify.min.js"></script>
+    <script type="text/javascript" src="~/MultiSelection/dist/js/bootstrap-multiselect.js"></script>*@
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+<script src="~/Scripts/normalizePlugin.js"></script>
+@section Scripts{
+    <script type="text/javascript">
+    if ('@ViewBag.ErrorMsg' != '') {
+        Swal.fire({
+            icon: 'info',
+            title: 'Info',
+            html: '<div class="errormsg" style="text-align:center;">@Convert.ToString(ViewBag.ErrorMsg)</div>'
+        });
+    }
+     if ('@ViewBag.SuccessMsg' != '') {
+        Swal.fire({
+            icon: 'info',
+            title: 'Info',
+            html: '<div class="errormsg" style="text-align:center;">@Convert.ToString(ViewBag.SuccessMsg)</div>'
+        });
+    }
+    </script>
+    <script>
+        $(document).ready(function () {
+            // 1. Attach the change event to all checkboxes with the class
+            $('.check-status-checkbox').on('change', updateHiddenField);
+
+            // Optional: Run on page load if you need to pre-populate based on existing model data
+            updateHiddenField();
+        });
+
+        // 2. Function to collect selected values and update the hidden field
+        function updateHiddenField() {
+            var selectedIDs = [];
+
+            // Iterate over all checkboxes with the class that are currently checked
+            $('.check-status-checkbox:checked').each(function () {
+                selectedIDs.push($(this).val()); // Add the value (SubCheckRowID) to the array
+            });
+
+            // Join the array into a comma-separated string
+            var finalValue = selectedIDs.join(',');
+
+            // Set the value of the hidden field
+            $('#aSubCheckRowIDMultiple').val(finalValue);
+
+            console.log("Updated aSubCheckRowIDMultiple to: " + finalValue);
+        }
+    </script>
+    <script type="text/javascript">
+
+
+        $(document).ready(function () {
+
+
+            $("#ddlBillable").change(function () {
+                var status = $("#ddlBillable").val();
+                var RefNo = $("#SecuritasID").val();
+                $.ajax({
+                    url: "/ClientServicing/BillableStatus",
+                    data: { Billable: status, companyRefNo: RefNo },
+                    dataType: 'json',
+                    method: "GET",
+                    success: function (data) {
+                        $('#HfPersonalRowID').val(data.PersonalRowId);
+                        $('#HfClientRowId').val(data.ClientRowId);
+                        if (data.billingstatus != '') {
+                            var txt;
+                            var r = confirm(data.billingstatus);
+                            if (r == true) {
+                                txt = "You pressed OK!";
+                                $('#HfapproveStatus').val(true);
+                            } else {
+                                $('#HfapproveStatus').val(false);
+                                $('#ddlBillable').prop('selectedIndex', 0);
+                                txt = "You pressed Cancel!";
+                            }
+                        }
+                        else {
+                        }
+                    },
+                    error: function (data) {
+                        //console.log(data);
+                    }
+                })
+            });
+
+
+
+
+        });
+
+        function fileValidation(fileInput) {
+            var filePath = fileInput.value;
+            var allowedExtensions = /(\.gif|\.GIF\.doc|\.docx|\.xls|\.xlsx|\.pdf|\.rtf|\.txt|\.jpeg|\.jpg|\.png|\.eml|\.email|\.msg|\.DOC|\.DOCX|\.XLS|\.XLSX|\.PDF|\.RTF|\.TXT|\.JPEG|\.JPG|\.PNG|\.EML|\.EMAIL|\.MSG|\.zip|\.ZIP|\.rar|\.RAR)$/i;
+            if (!allowedExtensions.exec(filePath)) {
+                // alert('Please upload file having extensions .doc/.gif/.GIF/.docx/.xls/.xlsx/.pdf/.rtf/.txt/.jpeg/.jpg/.png/.eml/.email/.msg/.DOC/.DOCX/.XLS/.XLSX/.PDF/.RTF/.TXT/.JPEG/.JPG/.PNG/.EML/.EMAIL/.MSG/.ZIP.zip only.');
+                Swal.fire({
+                    icon: 'info',
+                    title: '',
+                    html: '<div class="errormsg" style="text-align:center;">Please upload file having extensions .doc/.gif/.GIF/.docx/.xls/.xlsx/.pdf/.rtf/.txt/.jpeg/.jpg/.png/.eml/.email/.msg/.DOC/.DOCX/.XLS/.XLSX/.PDF/.RTF/.TXT/.JPEG/.JPG/.PNG/.EML/.EMAIL/.MSG/.ZIP.zip only.</div>'
+                });
+
+                fileInput.value = '';
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+    </script>
+
+
+}
+

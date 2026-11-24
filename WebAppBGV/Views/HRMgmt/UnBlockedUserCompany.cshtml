@@ -1,0 +1,130 @@
+﻿@*@model ViewModels.HRViewModels.UnBlockedCompanyUserModel*@
+@using System.Web.Helpers
+@{
+    ViewBag.Title = "Company - UnBlock User ID Screen";
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftHRMgmt") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel with-nav-tabs panel-danger ">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#" data-toggle="tab">Company</a></li>
+                <li>
+                    <a href="@Url.Action("UnBlockedUserClient", "HRMgmt")">Client</a>                    
+                </li>
+                <li><a href="@Url.Action("UnBlockedPartnerUsers", "HRMgmt")">Partner</a></li> 
+            </ul>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                @using (Html.BeginForm("UnBlockedUserCompany", "HRMgmt", FormMethod.Get))
+                {
+                    <div class="form-horizontal">
+                        <div class="form-group branch row ">
+                            <label class="col-md-3 control-label">Team Member Name :</label>
+                            <div class="col-md-6">
+                                @Html.TextBox("TeamMemberName", null, new { @class = "form-control", placeholder = "Ex. Team Member Name..." })
+                            </div>
+                        </div>
+                        <div class="form-horizontal">
+                            <div class="form-group branch row ">
+
+                                <label class="col-md-3 control-label">User Name :</label>
+                                <div class="col-md-6">
+                                    @Html.TextBox("UserName", null, new { @class = "form-control", placeholder = "Ex. User name..." })
+                                </div>
+                            </div>
+                            <div class="form-group branch row  search-frame">
+                            <label class="col-md-3 control-label"></label>
+                            <div class="col-md-3" >
+                                <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                }
+
+                @using (Html.BeginForm("UnBlockedUsers", "HRMgmt"))
+                {
+                    if (Model != null && Model.UnBlockedCUsers != null)
+                    {
+                        <div class="col-md-12 table">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.UnBlockedCUsers, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+
+                            @grid.GetHtml(
+                                htmlAttributes: new { id = "grid", @class = "table" },
+                                headerStyle: "thead-inverse",
+                                rowStyle: "ordertxt",
+                                footerStyle: "custpaging",
+                                mode: WebGridPagerModes.All,
+                                columns: new[]
+                                {
+                                    grid.Column(header: "No.", style:"col-md-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                    grid.Column(columnName: "TeamMemberName", header: "TeamMember", canSort: true, style:"col-md-1"),
+                                    grid.Column(columnName: "CRPUserName", header: "UserName", canSort: true, style:"col-md-1"),
+                                    grid.Column(columnName: "EmailID", header: "Email", canSort: true, style:"col-md-1"),
+                                    grid.Column(columnName: "BlockedDate", header: "Blocked Date", canSort: true, style:"col-md-1"),
+                                    grid.Column(header: "Active", canSort: false, format: (item) => {
+                                    string strActive=string.Empty;
+                                    if (item.Status == 1)
+                                       {
+                                           strActive += "<input name="+ item.WebUserRowID +" id="+ item.WebUserRowID +" checked='true' type='checkbox' onchange='adchange(this)' />";
+                                       }
+                                    else
+                                       {
+                                           strActive += "<input name="+ item.WebUserRowID +" id="+ item.WebUserRowID +" type='checkbox' onchange='adchange(this)' />";
+                                       }
+                                       return new HtmlString(strActive);
+                                       },style:"delete col-md-1"),
+                                }
+                            )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script>
+        function adchange(ChkData) {
+            var id = ChkData.id;
+            var checkeds = ChkData.checked;
+            if (ChkData.checked == true) {
+                var flag = confirm('Are you sure you want to Activated this Client ?');
+            }
+            if (ChkData.checked == false) {
+                var flag = confirm('Are you sure you want to UnBlocked  this Client ?');
+            }
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("UnBlockedUsers", "HRMgmt")',
+                    data: { "id": id, "checkeds": checkeds },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Blocked Client are Activated Successfully...!!");
+                            setTimeout(function () { window.location.replace("UnBlockedUserCompany"); }, 500);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+}

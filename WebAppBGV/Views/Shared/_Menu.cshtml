@@ -1,0 +1,1267 @@
+﻿<style>
+    .navbar {
+        padding: 10px 5px 10px 5px !important;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: unset;
+        flex-direction: unset;
+        padding-left: 15px;
+        margin-bottom: 0;
+        list-style: none;
+        font-family: 'Rokkitt', serif;
+        font-size: 12px;
+        color: white;
+        text-align: center;
+        padding: 5px 5px;
+        text-decoration: none;
+    }
+
+    .navbar-default .navbar-nav > li > a:hover {
+        background-color: #eee !important;
+        color: #000 !important;
+        opacity: 0.6;
+        -webkit-transition: opacity 0.5s ease-in-out;
+        -moz-transition: opacity 0.5s ease-in-out;
+        -ms-transition: opacity 0.5s ease-in-out;
+        -o-transition: opacity 0.5s ease-in-out;
+        transition: opacity 0.5s ease-in-out;
+    }
+
+    .navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .open > a {
+        box-shadow: none !important;
+    }
+
+    .navbar-nav > li > a {
+        padding: 15px !important;
+    }
+
+
+    @@media only screen and (max-width: 1450px) and (min-width: 1165px) {
+        .navbar-nav > li > a {
+            padding: 10px !important;
+            font-size: 12px !important;
+        }
+    }
+
+    @@media only screen and (max-width: 1165px) and (min-width: 700px) {
+        .navbar-nav > li > a {
+            padding: 0px 8px 0px 8px !important;
+            font-size: 11px !important;
+        }
+
+        .navbar {
+            padding: 5px 5px 5px 5px !important;
+        }
+
+        .navbar-default .navbar-nav > li > a:hover {
+            padding: 10px;
+        }
+    }
+
+    .dropdown-toggle {
+        /*background-color: #4CAF50;*/
+        color: white;
+        /*padding: 16px;*/
+        font-size: 1.3rem;
+        border: none;
+        cursor: pointer
+    }
+
+    .dropdown {
+        position: relative !important;
+        /*margin-top:8px!important;*/
+        padding: 0px;
+    }
+
+    .dropdown-menu {
+        display: none !important;
+        position: absolute !important;
+        background-color: #f9f9f9 !important;
+        min-width: 200px !important;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2) !important;
+        z-index: 1 !important;
+    }
+
+        .dropdown-menu a {
+            color: #000 !important;
+            padding: 10px 12px !important;
+            text-decoration: none !important;
+            display: block !important;
+        }
+
+            .dropdown-menu a:hover {
+                background-color: #7c7c7c !important;
+            }
+
+    .dropdown:hover .dropdown-menu {
+        display: block !important;
+    }
+
+    /*.dropdown:hover .dropdown-toggle {
+        background-color: #04e4fb !important;
+    }*/
+
+    .navbar1 {
+        background-color: #ffffff; /* White background for cleanliness */
+        border-bottom: 3px solid #007bff; /* A primary color border for professionalism */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .navbar-brand {
+        font-weight: 600; /* Bolder brand name */
+        color: #333;
+    }
+
+    .nav-item .nav-link {
+        color: #555; /* Neutral link color */
+        padding: 10px 15px; /* Ample padding */
+        transition: color 0.3s ease, background-color 0.3s ease; /* Smooth transitions */
+    }
+
+        .nav-item .nav-link:hover {
+            color: #000; /* Darker on hover */
+            background-color: #f8f9fa; /* Light background hover effect */
+        }
+
+        .nav-item .nav-link.active {
+            color: #007bff; /* Primary color for the active page */
+            border-bottom: 2px solid #007bff;
+        }
+</style>
+@{
+    string Designation1 = Convert.ToString(Session["Designation"]);
+    string Department1 = Convert.ToString(Session["Department"]);
+    string TeamMemberRowID1 = Convert.ToString(Session["TeamMemberRowID"]);
+
+
+    var currentController = ViewContext.RouteData.Values["controller"].ToString();
+    var currentAction = ViewContext.RouteData.Values["action"].ToString();
+
+
+    Func<string, string, string> IsActive = (controller, action) =>
+    {
+        return (currentController == controller && currentAction == action) ? "active" : "";
+    };
+
+
+    Func<string, string> IsControllerActive = (controller) =>
+    {
+        return (currentController == controller) ? "active" : "";
+    };
+
+    if (Department1 == "Sales Department")
+    {
+        <nav class="navbar1 navbar-expand-lg navbar-light bg-white shadow-sm">
+            <div class="container-fluid">
+                <!-- Brand/Logo Placeholder -->
+                @*<a class="navbar-brand" href='@Url.Action("Index", "Sales")'>Sales Portal</a>*@
+
+                <!-- Toggler Button for mobile view -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Navigation Links -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <!-- Add 'active' class to the current page's li element -->
+                        <li class="nav-item">
+                            <a class="nav-link @IsActive("Sales", "Index")" aria-current="@(IsActive("Sales", "Index") == "active" ? "page" : "")" href='@Url.Action("Index", "Sales")'>Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @IsActive("Sales", "ClientServicingDashboardCaseInfo")" href='@Url.Action("ClientServicingDashboardCaseInfo", "Sales",new { CaseStatus = "Radar" })'>Radar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @IsActive("Sales", "ChangeClientPassword")" href='@Url.Action("ChangeClientPassword", "Sales")'>Change Client Password</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @IsActive("Sales", "CaseTransaction")" href='@Url.Action("CaseTransaction", "Sales")'>Case Transaction History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @IsActive("Sales", "ClientIndex")" href='@Url.Action("ClientIndex", "Sales")'>Client Management</a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    }
+    else
+    {
+        <nav class="navbar navbar-default navbar-static-top" role="navigation">
+            <div class="nav" id="navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    @{
+                        /**/
+
+                        /**/
+
+                        string Designation = Convert.ToString(Session["Designation"]);
+                        string Department = Convert.ToString(Session["Department"]);
+                        string TeamMemberRowID = Convert.ToString(Session["TeamMemberRowID"]);
+
+                        if (Session["Department"] != null && Session["Designation"] != null)
+                        {
+                            if (Department == "Admin" || Department == "HR")
+                            {
+                                @*<li><a href='@Url.Action("Index", "Home")'><i class="fa fa-home" aria-hidden="true"></i> Home</a></li>*@
+                                if (Designation == "Administrator")
+                                {
+                                    <li><a href='@Url.Action("SelectDesignation", "Home")'><i class="fa fa-home" aria-hidden="true"></i> Home</a></li>
+                                }
+                                else
+                                {
+                                    <li><a href='@Url.Action("Index", "Home")'><i class="fa fa-home" aria-hidden="true"></i> Home</a></li>
+                                }
+
+                                if (Designation == "Master Management" || Designation == "Administrator")
+                                {
+                                    <li><a href='@Url.Action("Index", "Master")'>Master Management</a></li>
+                                    <li><a href='@Url.Action("UnBlockedPartnerUsers", "Master")'>UnBlocked Partner Users</a></li>
+                                    @*<li><a href='@Url.Action("BilledMaster", "Home")'>Billed Master</a></li>*@
+                                }
+
+                                if (Designation == "UserRights Management" || Designation == "Administrator" || Designation == "Manager-HR" || Designation == "Team Member-HR")
+                                {
+                                    <li><a href='@Url.Action("Index", "HRMgmt")'>HR Management</a></li>
+                                }
+
+                                if (Designation == "Client Management" || Designation == "Administrator")
+                                {
+                                    <li><a href='@Url.Action("Index", "Client")'>Client Management</a></li>
+                                    //<li><a href='@Url.Action("Clientcustomised", "Client")'>Client Customized</a></li>
+                                }
+                                if (Designation == "Client Management" || Designation == "Administrator")
+                                {
+                                    <li><a href='@Url.Action("ClientMailTemplateList", "Client")'>Client Template</a></li>
+                                    //<li><a href='@Url.Action("Clientcustomised", "Client")'>Client Customized</a></li>
+                                }
+                                if (Designation == "Client Management" || Designation == "Administrator")
+                                {
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Export Login Details<b class="caret"></b></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href='@Url.Action("ClientLoginDetail", "Client")'>Client Login Details</a></li>
+                                            <li><a href='@Url.Action("InternalLoginDetail", "Client")'>Internal User Login Details</a></li>
+                                            <li><a href='@Url.Action("VendorLoginDetail", "Client")'>Vendor Login Details</a></li>
+                                        </ul>
+                                    </li>
+                                }
+                                if (Designation == "Head of Operation")
+                                {
+                                    <li><a href='@Url.Action("Index", "ProvidedInfo")'>Operation Management</a></li>
+                                    @*
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Verification Module <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href='@Url.Action("ManagerAllocationToTeamLeader", "Verification")'>Allocated Manager Jobs</a></li>
+                                <li><a href='@Url.Action("TeamLeaderAllocationToTeamMember", "Verification")'>Allocated TeamLeader Jobs</a></li>
+                                <li><a href='@Url.Action("ManageTeamMemberChecks", "Verification")'>Manage Team Member Checks Jobs</a></li>
+                            </ul>
+                        </li>*@
+                                }
+                            }
+                            else
+                            {
+                                if (Department != "Sales Department")
+                                {
+                                    <li><a href='@Url.Action("SelectDesignation", "Home")' id="liSelectDesg"><i class="fa fa-home" aria-hidden="true"></i> Home </a></li>
+
+                                }
+
+                                if (Department == "Data Entry")
+                                {
+                                    <li><a href='@Url.Action("Index", "ProvidedInfo")'>Dashboard </a></li>
+                                    <li><a href='@Url.Action("GetCandidateDetail", "ProvidedInfo")'>TekSystem Info </a></li>
+                                    <li><a href='@Url.Action("IndexDoc", "GetOldDoc")'>LTIMindtree Doc</a></li>
+
+
+                                }
+
+                                if (Department == "MIS" && Designation == "Team Member-MIS")
+                                {
+                                    if (TeamMemberRowID == "918")
+                                    {
+
+                                        <li><a href='@Url.Action("MIS_MIS", "Verification")'>MIS</a></li>
+                                        <li><a href='@Url.Action("ClientServicingDashboardCaseInfo", "ClientServicing")'>Radar </a></li>
+                                        <li><a href='@Url.Action("MISDeptWiseCount", "ClientServicing")'>MIS DeptWise </a></li>
+                                        <li><a href='@Url.Action("MISDataEntryQCAgeing", "ClientServicing")'>Ageing Wise </a></li>
+                                        <li><a href='@Url.Action("TMProductivityRept", "Master")'>Team Productivity Report </a></li>
+
+                                    }
+                                    else
+                                    {
+                                        <li><a href='@Url.Action("MIS_MIS", "Verification")'>MIS</a></li>
+                                        <li><a href='@Url.Action("E2ETrackerClientWise", "Verification")'>E2ETracker</a></li>
+                                        <li><a href='@Url.Action("AnnexureGeneration", "Billing")'>Annexure Generation</a></li>
+                                        <li><a href='@Url.Action("BillingProcess", "Billing")'>Billing Process</a></li>
+                                        <li><a href='@Url.Action("VendorBulkUpload", "Billing")'>Vendor Upload</a></li>
+                                        <li><a href='@Url.Action("InvoiceGenerated", "Billing")'>Invoice Generated</a></li>
+                                        <li><a href='@Url.Action("InvoiceUpdation", "Billing")'>Invoice Updation</a></li>
+                                        <li><a href='@Url.Action("BillingPaymentDetail", "Billing")'>Payment Detail</a></li>
+                                        <li><a href='@Url.Action("BillingUploadDetail", "Billing")'>Billing Upload</a></li>
+                                        <li><a href='@Url.Action("ClientServicingDashboardCaseInfo", "ClientServicing")'>Radar </a></li>
+                                        if (TeamMemberRowID == "528")
+                                        {
+                                            <li><a href='@Url.Action("UpdateDetails", "ClientServicing")'>Update Details</a></li>
+                                        }
+
+                                    }
+
+                                }
+
+
+                                if (Department == "Data Entry" && Designation == "Team Leader-DE")
+                                {
+                                    <li><a href='@Url.Action("DataEntryREAllocationByDETL", "ProvidedInfo")'>RE-Allocation Management </a></li>
+                                    @*<li><a href='@Url.Action("Index", "Insuff")'>Insufficiency Management </a></li>*@
+                                    @*<li><a href='@Url.Action("ManageReviewRequestedChecksForDETL", "Insuff")'>Review Requested Management </a></li>*@
+                                    <li><a href='@Url.Action("AddCheck", "Insuff")'>Add Check </a></li>
+                                    <li><a href='@Url.Action("DuplicateReference", "ProvidedInfo")'>Duplicate Reference Statics</a></li>
+                                    <li><a href='@Url.Action("CheckMovementProcess", "ProvidedInfo")'>Case Process</a></li>
+
+                                    if (TeamMemberRowID == "137")
+                                    {
+                                        <li><a href='@Url.Action("HoldForScan", "ClientServicing")'>Hold for scanning </a></li>
+                                        <li><a href='@Url.Action("MIS_DE", "Verification")'>MIS</a></li>
+                                        if (Department == "Data Entry" && Designation == "Team Leader-DE")
+                                        {
+                                            <li><a href='@Url.Action("DataEntryREAllocationByDETL", "ProvidedInfo")'>RE-Allocation Management </a></li>
+                                            @*<li><a href='@Url.Action("Index", "Insuff")'>Insufficiency Management </a></li>*@
+                                            @*<li><a href='@Url.Action("ManageReviewRequestedChecksForDETL", "Insuff")'>Review Requested Management </a></li>*@
+                                            <li><a href='@Url.Action("AddCheck", "Insuff")'>Add Check </a></li>
+                                            <li><a href='@Url.Action("DuplicateReference", "ProvidedInfo")'>Duplicate Reference Statics</a></li>
+                                            <li><a href='@Url.Action("CheckMovementProcess", "ProvidedInfo")'>Case Process</a></li>
+                                            if (TeamMemberRowID == "137")
+                                            {
+                                                <li><a href='@Url.Action("HoldForScan", "ClientServicing")'>Hold for scanning </a></li>
+                                            }
+                                        }
+                                    }
+                                }
+
+                                @*if (Department == "Data Entry" && Designation == "Team Member-DE-QC")
+                    {
+                    <li><a href='@Url.Action("ManageRejectedChecksByDepTMForDEQC", "Insuff")'>Rejected Checks By TeamMember</a></li>
+                    }*@
+
+                                if (Department == "Data Entry" && Designation == "Team Member-DE-Scan")
+                                {
+                                    @*<li><a href='@Url.Action("ManageInsuffChecksForUploadDoc", "Insuff")'>Insufficiency Management </a></li>*@
+                                    <li><a href='@Url.Action("ManageRejectedChecksForDEScan", "Insuff")'>Rejected Management </a></li>
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">PDF Oprations<b class="caret"></b></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href='@Url.Action("SplitAndSaveInterval", "ReportQC")'>Split PDF</a></li>
+                                            <li><a href='@Url.Action("MargePdfInterval", "ReportQC")'>Marge PDF</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href='@Url.Action("CandidateSummary", "ProvidedInfo")'>Cases for API </a></li>
+                                    <li><a href='@Url.Action("IndexDoc", "GetOldDoc")'>LTIMindtree Doc</a></li>
+                                    <li><a href='@Url.Action("BulkDocUpload", "ProvidedInfo")'>Bulk Doc Upload</a></li>
+                                    <li><a href='@Url.Action("AddCheck", "Insuff")'>Add Check </a></li>
+                                }
+
+                                if ((Department == "Address" || Department == "Employment" || Department == "Education" || Department == "Criminal" || Department == "Reference" || Department == "National Identity" || Department == "Special Check") && Designation != "Team Member-Emp-Research" && Designation != "Team Member-Edu-Research")
+                                {
+                                    <li><a href='@Url.Action("Index", "Verification")'> Dashboard </a></li>
+                                }
+                                if (Department == "Education")
+                                {
+                                    <li><a href='@Url.Action("SendDigiLockerLink", "Verification")' target="_blank">Send DigiLocker Link</a></li>
+                                    <li><a href='@Url.Action("DigiLockerTracker", "Verification")' target="_blank">DigiLocker Tracker</a></li>
+                                }
+                                if (Designation == "Team Member-Emp-Research")
+                                {
+                                    <li><a href='@Url.Action("ManageResearchEmploymentChecks", "ProvidedInfo")'>Manage Employment Research</a></li>
+                                    <li><a href='@Url.Action("ManageEmployers", "Master")'>Employer Master</a></li>
+                                    <li><a href='@Url.Action("ManageBeyondEmployers", "Master")'>Beyond 180days Employers</a></li>
+                                }
+
+                                if (Designation == "Team Member-Edu-Research")
+                                {
+                                    <li><a href='@Url.Action("ManageResearchEducationChecks", "ProvidedInfo")'>Manage Education Research</a></li>
+                                    <li><a href='@Url.Action("ManageColleges", "Master")'>College Master</a></li>
+                                    <li><a href='@Url.Action("ManageBeyondColleges", "Master")'>Beyond 180days Colleges</a></li>
+
+                                }
+                                if (Designation == "Team Leader-Add" || Designation == "Team Leader-Cri" || Designation == "Team Leader-Ref" || Designation == "Team Leader-Ide")
+                                {
+
+                                    <li><a href='@Url.Action("TeamLeaderReAllocationToTeamMember", "Verification")'>Re-Allocation Management </a></li>
+
+                                }
+                                if (Designation == "Team Leader-Emp")
+                                {
+
+                                    <li><a href='@Url.Action("EmploymentTeamLeaderReAllocationToTeamMember", "Verification")'>Re-Allocation Management </a></li>
+                                    <li><a href='@Url.Action("EmploymentTeamLeaderReAllocationToTeamMemberQC", "Verification")'>Re-Allocation Management QC </a></li>
+                                    <li><a href='@Url.Action("BulKClosureEmployement", "Verification")'>Bulk Closure</a></li>
+                                    <li><a href='@Url.Action("UploadMultiDoc", "Verification")'>Upload Doc</a></li>
+                                    <li><a href='@Url.Action("UpdateSuspectedList", "Verification" , new {check = "Employment"})'>Update Suspected List</a></li>
+                                }
+
+                                if (Designation == "Team Leader-Add")
+                                {
+                                    <li><a href='@Url.Action("PartnercloseMIS", "Verification")'>MIS  </a></li>
+                                    //PartnerClose and RejectedRWQC & RejectedPartner MIS
+
+                                }
+                                if (TeamMemberRowID == "153")
+                                {
+                                    <li><a href='@Url.Action("CompressImage", "Verification")'>Compress Image  </a></li>
+                                }
+
+
+
+                                if (Designation == "Team Leader-Emp" || Designation == "Team Leader-Add" || Designation == "Team Leader-Edu" || Designation == "Team Leader-Cri" || Designation == "Team Leader-Ref" || Designation == "Team Leader-Ide")
+                                {
+                                    <li><a href='@Url.Action("ManageReviewRequestedChecksForDepartmentTL", "Insuff")'>Review Requested Management </a></li>
+                                    @*<li><a href='@Url.Action("ManageFundPendingChecksForDeprtTL", "Verification")'>Funds Pending Management </a></li>*@
+                                    @*<li><a href='@Url.Action("TeamLeaderReAllocationToTeamMember", "Verification")'>Re-Allocation Management </a></li>*@
+                                    <li><a href='@Url.Action("E2ETrackerClientWise", "Verification")'>E2ETracker</a></li>
+                                }
+                                if (Designation == "Team Leader-Add")
+                                {
+                                    <li><a href='@Url.Action("PartnercloseMIS", "Verification")'>MIS  </a></li>
+                                    //PartnerClose and RejectedRWQC & RejectedPartner MIS
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Digital Verification<b class="caret"></b></a>
+                                        <ul class="dropdown-menu">
+                                            ]
+                                            <li><a href='@Url.Action("DigitalVerification", "Verification")'>Send Digital Verification Status</a></li>
+                                            <li><a href='@Url.Action("DigitalVerificationlink", "Verification")'>Send Digital Verification link</a></li>
+                                        </ul>
+                                    </li>
+
+
+                                    <li><a href='@Url.Action("DigitalVerification", "Verification")'>Send Digital Verification Status</a></li>
+
+                                }
+                                if (Designation == "Team Leader-Cri")
+                                {
+                                    <li><a href='@Url.Action("CheckMovementProcess", "Verification")'>Case Process</a></li>
+                                    <li><a href='@Url.Action("BulKClosureCRC", "Verification")'>Bulk Closure</a></li>
+                                    <li><a href='@Url.Action("UploadMultiDoc", "Verification")'>Upload Doc</a></li>
+                                }
+
+                                if (Designation == "Manager-DE" || Designation == "Manager-Emp" || Designation == "Manager-Edu" || Designation == "Manager-Cri" || Designation == "Manager-Ref" || Designation == "Manager-Ide")
+                                {
+                                    <li><a href='@Url.Action("E2ETrackerClientWise", "Verification")'>E2ETracker</a></li>
+                                }
+                                if (Designation == "Manager-Ref")
+                                {
+                                    <li><a href='@Url.Action("MISExportREF", "Verification")'>MIS TAT</a></li>
+
+                                }
+                                if (Designation == "Manager-Edu")
+                                {
+                                    <li><a href='@Url.Action("Tracker", "Verification")'>Tracker</a></li>
+                                    <li><a href='@Url.Action("PvCvTracker", "Verification")'>PV-CVTracker</a></li>
+                                    <li><a href='@Url.Action("ReallocationManagerAllocationToTeamLeader", "Verification")'>Reallocation</a></li>
+                                    //<li><a href='@Url.Action("ExportEdu", "Verification")'>Export Excel</a></li>
+                                    <li><a href='@Url.Action("MISExport", "Verification")'>MIS TAT</a></li>
+                                    <li><a href='@Url.Action("MISExportEDUQC", "Verification")'>MISTAT EDUQC</a></li>
+                                    <li><a href='@Url.Action("EducationAutoAllocatedChecks", "Verification")'>Auto Allocated Check</a></li>
+                                    @*<li><a href='@Url.Action("UploadfakelistDetaisbyExceledu", "Verification")'>MasterUpdate fakelist data education</a></li>*@
+                                    if (TeamMemberRowID == "858" || TeamMemberRowID == "1022" || TeamMemberRowID == "918")
+                                    {
+                                        <li><a href='@Url.Action("ManageEduMailMapping", "Master")'>Education Mail Mapping </a></li>
+                                    }
+
+                                }
+                                if (Designation == "Team Leader-Edu")
+                                {
+                                    <li><a href='@Url.Action("Tracker", "Verification")'>Tracker</a></li>
+                                    <li><a href='@Url.Action("ReAllocationTeamLeaderToTeamMemberEducation", "Verification")'>Reallocation</a></li>
+                                    @*<li><a href='@Url.Action("ReAllocationTeamLeaderToTeamMemberPVCV", "Verification")'>Reallocation pv cv</a></li>*@
+                                    //<li><a href='@Url.Action("ExportEdu", "Verification")'>Export Excel</a></li>
+                                    <li><a href='@Url.Action("MISExport", "Verification")'>MIS TAT</a></li>
+                                    <li><a href='@Url.Action("BulKClosure", "Verification")'>Bulk Closure</a></li>
+                                    <li><a href='@Url.Action("UploadMultiDoc", "Verification")'>Upload Doc</a></li>
+                                    <li><a href='@Url.Action("UpdateSuspectedList", "Verification" , new {check = "Education"})'>Update Suspected List</a></li>
+
+                                }
+                                if (Designation == "Team Member-Edu")
+                                {
+                                    <li><a href='@Url.Action("UserDeatilMISExportt", "Verification")'>User details</a></li>
+                                }
+                                if (Designation == "Manager-Add")
+                                {
+                                    <li><a href='@Url.Action("E2ETrackerClientWise", "Verification")'>E2ETracker</a></li>
+                                    <li><a href='@Url.Action("Export_Feedback", "Verification")'>Export Feedback</a></li>
+                                    <li><a href='@Url.Action("CheckMovementProcess", "Verification")'>Case Process</a></li>
+                                    <li><a href='@Url.Action("ExportAllDeptMISAddress", "Verification", new { Department = Department })'>MIS</a></li>
+                                    <li><a href='@Url.Action("MISExportAdress", "Verification")'>MIS TAT</a></li>
+
+
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Digital Verification<b class="caret"></b></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href='@Url.Action("DigitalVerification", "Verification")'>Send Digital Verification Status</a></li>
+                                            <li><a href='@Url.Action("DigitalVerificationlink", "Verification")'>Send Digital Verification link</a></li>
+                                        </ul>
+                                    </li>
+
+                                }
+
+                                if (Designation == "Manager-Emp" || Designation == "Team Leader-Emp")
+                                {
+                                    <li><a href='@Url.Action("EmailAutomationCheckStatus", "Verification")'>Auto MIS</a></li>
+                                    //<li><a href='@Url.Action("ExportEmp", "Verification")'>Export Excel</a></li>
+                                    <li><a href='@Url.Action("MISExport", "Verification")'>MIS TAT</a></li>
+                                    <li><a href='@Url.Action("MISExportEMPQC", "Verification")'>MIS TAT EMPQC</a></li>
+                                    <li><a href='@Url.Action("FakeCompaniesemp", "Verification")'>Suspected List</a></li>
+
+
+                                }
+
+                                if (Designation == "Team Member-Emp")
+                                {
+                                    <li><a href='@Url.Action("UserDeatilMISExportt", "Verification")'>User details</a></li>
+                                    <li><a href='@Url.Action("FakeCompaniesemp", "Verification")'>Suspected List</a></li>
+
+                                }
+
+                                if (Designation == "Manager-Emp" || TeamMemberRowID == "987" || TeamMemberRowID == "924" || TeamMemberRowID == "1185")
+                                {
+                                    <li><a href='@Url.Action("EmploymentAutoAllocatedChecks", "Verification")'>Auto Allocated Check</a></li>
+                                }
+
+                                if (Designation == "Manager-Emp")
+                                {
+                                    @*<li><a href='@Url.Action("UploadfakelistDetaisbyExcel", "Verification")'>MasterUpdate fakelist data employment</a></li>*@
+                                }
+                                if (Designation == "Team Leader-SPL")
+                                {
+                                    <li><a href='@Url.Action("ManageReviewRequestedChecksForDepartmentTL", "Insuff")'>Review Requested Management </a></li>
+                                    <li><a href='@Url.Action("TeamLeaderReAllocationToTeamMember", "Verification")'>Re-Allocation Management </a></li>
+                                    <li><a href='@Url.Action("BulKClosureGlobal", "Verification")'>Bulk Closure</a></li>
+                                    <li><a href='@Url.Action("UploadMultiDoc", "Verification")'>Upload Doc</a></li>
+
+                                }
+                                if (Designation == "Manager-SPL")
+                                {
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Get bulk UAN<b class="caret"></b></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href='@Url.Action("BulkUANDetailsByMobileNo", "Verification")'>UAN Details with Mobile</a></li>
+                                            <li><a href='@Url.Action("BulkUANDetails", "Verification")'>UAN Details with UAN</a></li>
+                                            <li><a href='@Url.Action("GetUANDatafromExcel", "Verification")'>Get UAN Data from Excel</a></li>
+                                            @*<li><a href='@Url.Action("GetBulkUAN", "Verification")'>UAN walsons UCC</a></li>
+                                <li><a href='@Url.Action("GetIdentityNumberDetails", "Verification")'>ID walsons UCC</a></li>*@
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Bulk Process <b class="caret"></b></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href='@Url.Action("BulkFileUploadsfromExcelSheet", "Verification")'>Bulk Doc Upload </a></li>
+
+                                        </ul>
+                                    </li>
+                                    <li><a href='@Url.Action("MISExportSpecialCheck", "Verification")'>MIS TAT</a></li>
+                                }
+                                if (Designation == "Manager-Ide")
+                                {
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">>Bulk Process</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href='@Url.Action("BulkUploadInstantIDCheck", "Verification")'>Bulk Upload Instant ID Check</a></li>
+                                            <li><a href='@Url.Action("GetOfflineIdentityChecksReports", "Verification")'>Bulk Offline Instant ID Check Report Download</a></li>
+                                            <li><a href='@Url.Action("BulKClosureIDE", "Verification")'>Bulk Closure</a></li>
+                                            <li><a href='@Url.Action("UploadMultiDoc", "Verification")'>Upload Doc</a></li>
+                                            <li><a href='@Url.Action("BulkFaceMatchClosure", "Verification")'>Bulk Face Match</a></li>
+
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">ID Check MIS</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href='@Url.Action("GetAPIFailedIdCheckMIS", "Verification")'>API Failed Id Check MIS</a></li>
+                                        </ul>
+                                    </li>
+                                }
+
+
+                                @*if (Department == "Report QC" && Designation == "Manager-Rpt-QC")
+                    {
+                        <li><a href='@Url.Action("Index", "ReportQC")'>Dashboard</a></li>
+                        <li><a href='@Url.Action("ExportAllDeptMIS", "Verification", new { Department = Department })'>MIS</a></li>
+                        <li><a href='@Url.Action("ReallocationManageAllCandidateListForReportQCManager", "ReportQC")'>RE-Allocation Management</a></li>
+                        <li><a href='@Url.Action("REAllocationManagementForReportQCTLIntrim", "ReportQC")'>RE-Allocation Interim</a></li>
+                        <li><a href='@Url.Action("CaseProcess", "ClientServicing")'>Case Process</a></li>
+                        <li><a href='@Url.Action("InterimStatusCheck", "ReportQC")'>Interim Status</a></li>
+                    }*@
+
+                                if (Department == "Quality Check" && Designation == "Manager Quality Check")
+                                {
+                                    <li><a href='@Url.Action("Index", "ReportQC")'>Dashboard</a></li>
+                                    <li><a href='@Url.Action("ExportAllDeptMIS", "Verification", new { Department = Department })'>MIS</a></li>
+                                    <li><a href='@Url.Action("ReallocationManageAllCandidateListForReportQCManager", "ReportQC")'>RE-Allocation Management</a></li>
+                                    <li><a href='@Url.Action("REAllocationManagementForReportQCTLIntrim", "ReportQC")'>RE-Allocation Interim</a></li>
+                                    <li><a href='@Url.Action("REAllocationManagementForReportQCTLIntrimNEW", "ReportQC")'>RE-Allocation Interim-FR</a></li>
+                                    <li><a href='@Url.Action("CaseProcess", "ClientServicing")'>Case Process</a></li>
+                                    <li><a href='@Url.Action("InterimStatusCheck", "ReportQC")'>Interim Status</a></li>
+                                    <li><a href='@Url.Action("RWRejectionTracker", "ReportQC")'>RWQC Rejection Tracker</a></li>
+                                    <li><a href='@Url.Action("UploadoldPortalReport", "ReportQC")'>Upload old Portal Report</a></li>
+                                    <li><a href='@Url.Action("MISExportRWQC", "ReportQC")'>MIS TAT</a></li>
+                                    <li><a href='@Url.Action("GetRWQCTrackerUserDetails", "ReportQC")'>RWQC User Allocation Tracker</a></li>
+                                }
+
+                                @*if (Department == "Report QC" && Designation == "Team Leader-Rpt-QC")
+                                    {
+                                        <li><a href='@Url.Action("Index", "ReportQC")'>Dashboard</a></li>
+                                        <li><a href='@Url.Action("E2ETrackerClientWise", "Verification")'>E2ETracker</a></li>
+                                        <li><a href='@Url.Action("REAllocationManagementForReportQCTL", "ReportQC")'>RE-Allocation Management</a></li>
+                                        <li><a href='@Url.Action("ExportAllDeptMIS", "Verification", new { Department = Department })'>MIS</a></li>
+                                        <li><a href='@Url.Action("CaseTransaction", "ClientServicing")'>Case Transaction History</a></li>
+                                        @*
+                        <li><a href='@Url.Action("ManageAllCandidateListForReportQCTL", "ReportQC")'>Cases For ReportQC TL</a></li>
+                    }
+                                *@
+
+                                if (Department == "Quality Check" && Designation == "Team Leader Quality Check")
+                                {
+                                    <li><a href='@Url.Action("Index", "ReportQC")'>Dashboard</a></li>
+                                    <li><a href='@Url.Action("E2ETrackerClientWise", "Verification")'>E2ETracker</a></li>
+                                    <li><a href='@Url.Action("REAllocationManagementForReportQCTL", "ReportQC")'>RE-Allocation Management</a></li>
+                                    <li><a href='@Url.Action("ExportAllDeptMIS", "Verification", new { Department = Department })'>MIS</a></li>
+                                    <li><a href='@Url.Action("CaseTransaction", "ClientServicing")'>Case Transaction History</a></li>
+                                    <li><a href='@Url.Action("CaseIdTMSearch", "ReportQC")'>Case Search</a></li>
+                                    @*
+                        <li><a href='@Url.Action("ManageAllCandidateListForReportQCTL", "ReportQC")'>Cases For ReportQC TL</a></li>*@
+                                }
+
+                                if (Department == "Quality Check" && Designation == "Team Leader Quality Check 2")
+                                {
+                                    <li><a href='@Url.Action("Index", "ReportQC")'>Dashboard</a></li>
+                                    @*
+                        <li><a href='@Url.Action("ManageAllCandidateListForReportQCTL", "ReportQC")'>Cases For ReportQC TL</a></li>*@
+                                }
+
+                                @*if (Department == "Report QC" && Designation == "Team Member-Rpt-QC")
+                    {
+                        <li><a href='@Url.Action("Index", "ReportQC")'>Dashboard</a></li>
+                        <li><a href='@Url.Action("CompressSize", "ReportQC")'>CompressSize</a></li>
+                        <li><a href='@Url.Action("ScopeVerification", "ReportQC")'>ScopeVerification</a></li>
+                        <li><a href='@Url.Action("PasswordReport", "ReportQC")'>PasswordReport</a></li>
+                        <li><a href='@Url.Action("GetCandidateDetail", "ReportQC")'>TekSystem Info</a></li>
+                    }*@
+
+                                if (Department == "Quality Check" && Designation == "Team Member Quality Check 2")
+                                {
+                                    <li><a href='@Url.Action("Index", "ReportQC")'>Dashboard</a></li>
+
+
+                                }
+
+                                if (Department == "Quality Check" && Designation == "Team Member Quality Check")
+                                {
+                                    <li><a href='@Url.Action("Index", "ReportQC")'>Dashboard</a></li>
+                                    @*<li><a href='@Url.Action("CompressSize", "ReportQC")'>CompressSize</a>
+                        </li>*@
+
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">PDF Oprations<b class="caret"></b></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href='@Url.Action("SplitAndSaveInterval", "ReportQC")'>Split PDF</a></li>
+                                            <li><a href='@Url.Action("MargePdfInterval", "ReportQC")'>Marge PDF</a></li>
+                                            <li><a href='@Url.Action("CompressSize", "ReportQC")'>Compress PDF</a></li>
+                                        </ul>
+                                    </li>
+
+                                    <li><a href='@Url.Action("ScopeVerification", "ReportQC")'>ScopeVerification</a></li>
+                                    <li><a href='@Url.Action("PasswordReport", "ReportQC")'>PasswordReport</a></li>
+                                    <li><a href='@Url.Action("GetCandidateDetail", "ReportQC")'>TekSystem Info</a></li>
+                                    <li><a href='@Url.Action("UpdateReportValue", "ReportQC")'>Update Report Value</a></li>
+                                    <li><a href='@Url.Action("ReportUserUploading", "ReportQC")'>Report User Uploading</a></li>
+                                    <li><a href='@Url.Action("UploadBulkReport", "Verification")'>Upload Bulk Report</a></li>
+                                    if (TeamMemberRowID == "524")
+                                    {
+                                        <li><a href='@Url.Action("CandidateSummary", "ProvidedInfo")'>Cases for API </a></li>
+                                        <li><a href='@Url.Action("IndexDoc", "GetOldDoc")'>LTIMindtree Doc</a></li>
+                                        <li><a href='https://api.weverifyglobal.com/Home/DownloadExcel?Uname=JEb60OkeHVe/p/WXdplrsQ==' target="_blank">LTIMindtree DownloadExcel</a></li>
+
+                                    }
+
+                                    <li><a href='@Url.Action("ReportConversion", "ReportQC")'>Word Conversion TCS</a></li>
+
+
+
+
+                                    <li><a href='@Url.Action("GetDocReportAPI", "GetOldDoc")'>Get Old Report Doc API</a></li>
+                                    <li><a href='@Url.Action("GetOldDocumentDownloadAPI", "GetOldDoc")'>Get Old Doc API</a></li>
+                                }
+
+                                if (Department == "Physical Verification")
+                                {
+                                    <li><a href='@Url.Action("Index", "Verification")'>Dashboard</a></li>
+                                }
+                                if (Department == "Sales Department")
+                                {
+                                    <li><a href='@Url.Action("Index", "Sales")'>Dashboard </a></li>
+                                    <li><a href='@Url.Action("ClientServicingDashboardCaseInfo", "Sales",new { CaseStatus = "Radar" })'>Radar </a></li>
+                                    <li><a href='@Url.Action("ChangeClientPassword", "Sales")'>Change Client Password</a></li>
+                                    <li><a href='@Url.Action("CaseTransaction", "Sales")'>Case Transaction History</a></li>
+                                    <li><a href='@Url.Action("ClientIndex", "Sales")'>Client Management</a></li>
+                                    // <li><a href='@Url.Action("UnBlockedUserClient", "Sales")'>UnBlocked User Client</a></li>
+
+                                }
+                                if (Department == "Client Servicing")
+                                {
+                                    <li><a href='@Url.Action("Index", "ClientServicing")'>Dashboard </a></li>
+                                    <li><a href='@Url.Action("ClientServicingDashboardCaseInfo", "ClientServicing",new { CaseStatus = "Radar" })'>Radar </a></li>
+                                    <li><a href='@Url.Action("InterimRequest", "ClientServicing")'>Interim Request </a></li>
+
+
+                                    <li><a href='@Url.Action("Reverification", "ClientServicing")'>Reverification</a></li>
+                                    if (new[] { "248", "192", "264", "1062", "566", "1061", "444" }.Contains(TeamMemberRowID))
+                                    {
+
+
+                                        <li class="dropdown">
+                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Wipro All</a>
+                                            <ul class="dropdown-menu">
+                                                <li><a href='@Url.Action("ReverificationWipro", "ClientServicing")'>Reverification Wipro API Cases</a></li>
+                                                <li><a href='@Url.Action("QCRejectionsClient", "ClientServicing")'>QCRejection Wipro API Cases</a></li>
+                                                <li><a href='@Url.Action("AddBulkImportsWipro", "ClientServicing")'>Bulk Import Wipro</a></li>
+                                            </ul>
+                                        </li>
+
+                                    }
+
+                                    <li><a href='@Url.Action("BillingApproval", "ClientServicing")'>Approval</a></li>
+
+                                    <li><a href='@Url.Action("ClientManagment", "ClientServicing")'>Client Management</a></li>
+                                    <li><a href='@Url.Action("CommonMISTracker", "ClientServicing")'>Common MIS Tracker</a></li>
+                                    <li><a href='@Url.Action("RecentCommonMISTracker", "ClientServicing")'>Common MIS New</a></li>
+
+                                    <li><a href='@Url.Action("RejectionCheckwiseMIS", "ClientServicing")'>Rejection MIS</a></li>
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Report Compress</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href='@Url.Action("CompressSize", "ReportQC")'>Compress Report Size</a></li>
+                                            <li><a href='@Url.Action("PasswordReport", "ReportQC")'>Password Report Compress</a></li>
+
+                                        </ul>
+                                    </li>
+                                    <li><a href='@Url.Action("MIS_Insuff", "ClientServicing")'>Insuff MIS</a></li>
+                                    if (TeamMemberRowID != "185" && TeamMemberRowID != "210")
+                                    {
+                                        <li><a href='@Url.Action("ReportUploadOnOldPortal", "ClientServicing")'>Upload old Portal Report</a></li>
+
+                                    }
+                                    if (TeamMemberRowID == "192" || TeamMemberRowID == "248")
+                                    {
+                                        <li><a href='@Url.Action("NewMISExcel", "ClientServicing")'>Wipro BGV Tracker</a></li>
+                                    }
+                                    if (TeamMemberRowID == "183")
+                                    {
+                                        <li><a href='@Url.Action("ReminderMailTataElxsi", "ClientServicing")'>Alert Tracker</a></li>
+
+                                    }
+                                    if (TeamMemberRowID == "329")
+                                    {
+                                        <li><a href='@Url.Action("InvestigationGetRWQCTeamMemberDashBoardInfo", "ClientServicing")'>Investigation Report</a></li>
+                                    }
+                                    if (TeamMemberRowID == "319" || TeamMemberRowID == "383" || TeamMemberRowID == "758" /*|| TeamMemberRowID == "170"*/ || TeamMemberRowID == "336" || TeamMemberRowID == "827")
+                                    {
+                                        <li><a href='@Url.Action("GetCandidateDetail", "ClientServicing")'>TekSystem Info </a></li>
+                                        <li><a href='@Url.Action("IndexDoc", "GetOldDoc")'>LTIMindtree Doc</a></li>
+                                    }
+                                    if (TeamMemberRowID == "170")
+                                    {
+                                        <li><a href='@Url.Action("GetCandidateDetail", "ClientServicing")'>TekSystem Info </a></li>
+                                    }
+
+                                    if (Designation == "Team Member-CS")
+                                    {
+                                        <li class="dropdown">
+                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Case Initiation</a>
+                                            x       <ul class="dropdown-menu">
+                                                <li><a href='@Url.Action("AddCandidate", "ClientServicing")'>Single Case Initiation</a></li>
+                                                <li><a href='@Url.Action("AddBulkCandidateImport", "ClientServicing")'>Bulk Case Initiation</a></li>
+
+                                            </ul>
+                                        </li>
+                                    }
+
+                                }
+                                if (Department == "Client Servicing")
+                                {
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Check Action</a>
+                                        <ul class="dropdown-menu">
+
+                                            <li><a href='@Url.Action("StopCheckBySpoc", "ClientServicing")'>Check Move</a></li>
+                                            <li><a href='@Url.Action("StopCheckVerification", "ClientServicing")'>Check Stop</a></li>
+                                            <li><a href='@Url.Action("AddSpocActionRemarkNew", "ClientServicing")'>Spoc Action Remark / check Open</a></li>
+                                        </ul>
+                                    </li>
+
+                                    <li><a href='@Url.Action("ChangeClientPassword", "ClientServicing")'>Change Client Password</a></li>
+
+                                    @*<li><a href='@Url.Action("StopCheckVerification", "ClientServicing")'>Stop Check Verification</a></li>*@
+                                    <li><a href='@Url.Action("CaseProcessSpoc", "ClientServicing")'>Case Process</a></li>
+                                    @*<li><a href='@Url.Action("StopCheckBySpoc", "ClientServicing")'>Stop Check</a></li>*@
+                                    <li><a href='@Url.Action("CaseTransaction", "ClientServicing")'>Case Transaction History</a></li>
+                                    <li><a href='@Url.Action("UnBlockedUserClient", "ClientServicing")'>UnBlocked User Client</a></li>
+                                    <li><a href='@Url.Action("GetCandidateCredential", "ClientServicing")'>Candidate Login Details</a></li>
+                                    <li><a href='@Url.Action("PurgDataDetails","ClientServicing")'>PurgDataDetails</a></li>
+                                    <li><a href='@Url.Action("MIS_MIS2","ClientServicing")'>Single Check Pendency</a></li>
+                                    <li><a href='@Url.Action("CheckStatusDetails","ClientServicing")'>Check Status Details Case-wise</a></li>
+                                    if (TeamMemberRowID == "918" || TeamMemberRowID == "182")
+                                    {
+                                        <li><a href='@Url.Action("TCSmaildata","ClientServicing")'>TCS Initiation</a></li>
+                                    }
+                                    if (TeamMemberRowID == "599")
+                                    {
+                                        <li><a href='@Url.Action("GetCandidateDetail", "ClientServicing")'>TekSystem Info </a></li>
+                                    }
+                                    if (TeamMemberRowID == "336" || TeamMemberRowID == "926" || TeamMemberRowID == "1000" || TeamMemberRowID == "1184" || TeamMemberRowID == "1120" || TeamMemberRowID == "707" || TeamMemberRowID == "1194" || TeamMemberRowID == "1112" || TeamMemberRowID == "1157")
+                                    {
+                                        <li><a href='@Url.Action("CandidateSummary", "ProvidedInfo")'>Cases for API </a></li>
+                                    }
+                                    if (TeamMemberRowID == "701")
+                                    {
+                                        <li><a href='@Url.Action("clientDataMIs","ClientServicing")'>Client Data</a></li>
+                                    }
+                                    if (TeamMemberRowID == "160" || TeamMemberRowID == "182" || TeamMemberRowID == "166" || TeamMemberRowID == "557")
+                                    {
+                                        <li><a href='@Url.Action("MIS_MIS", "ClientServicing")'>MIS</a></li>
+                                        if (TeamMemberRowID == "557")
+                                        {
+                                            <li><a href='@Url.Action("CandidateSummary", "ProvidedInfo")'>Cases for API </a></li>
+                                            <li><a href='@Url.Action("IndexDoc", "GetOldDoc")'>LTIMindtree Doc</a></li>
+                                            <li><a href='https://api.weverifyglobal.com/Home/DownloadExcel?Uname=JEb60OkeHVe/p/WXdplrsQ==' target="_blank">LTIMindtree DownloadExcel</a></li>
+                                            <li><a href='@Url.Action("CheckCaseDetails", "GetOldDoc")'>LTIMindtree Case Details</a></li>
+
+
+                                        }
+                                    }
+                                    if (TeamMemberRowID == "182" || TeamMemberRowID == "884" || TeamMemberRowID == "582" || TeamMemberRowID == "863")
+                                    {
+                                        <li><a href='@Url.Action("SendPerfiosAPILink", "Verification")' target="_blank">Send Perfios Uan Api Link</a></li>
+                                        <li><a href='@Url.Action("PerfiosUanTracker", "Verification")' target="_blank">Perfios Uan Tracker</a></li>
+
+                                    }
+                                    if (TeamMemberRowID == "524")
+                                    {
+                                        <li><a href='@Url.Action("CandidateSummary", "ProvidedInfo")'>Cases for API </a></li>
+                                        <li><a href='@Url.Action("IndexDoc", "GetOldDoc")'>LTIMindtree Doc</a></li>
+                                        <li><a href='https://api.weverifyglobal.com/Home/DownloadExcel?Uname=JEb60OkeHVe/p/WXdplrsQ==' target="_blank">LTIMindtree DownloadExcel</a></li>
+                                        <li><a href='@Url.Action("CheckCaseDetails", "GetOldDoc")'>LTIMindtree Case Details</a></li>
+
+                                    }
+
+                                    if (TeamMemberRowID == "524" || TeamMemberRowID == "160" || TeamMemberRowID == "882" || TeamMemberRowID == "926")
+                                    {
+
+                                        <li><a href='@Url.Action("REALTIMELTmindTRACKER", "ClientServicing")'>Real Time LTIM Tracker</a></li>
+
+
+                                    }
+
+                                    if (Designation == "Manager-CS" || Designation == "Team Leader-CS")
+                                    {
+                                        if (TeamMemberRowID != "170" && TeamMemberRowID != "185" && TeamMemberRowID != "210")
+                                        {
+
+                                            <li><a href='@Url.Action("UploadMultiDoc", "ClientServicing")'>Upload Documents</a></li>
+                                        }
+                                        if (TeamMemberRowID == "251")
+                                        {
+                                            <li><a href='@Url.Action("SendAlertMassageForReportSubmitConcentrix", "ClientServicing")'>Concentrix Manaual Email Trigger</a></li>
+                                        }
+
+
+                                        if (Department == "Client Servicing")
+                                        {
+                                            <li class="dropdown">
+                                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Check MIS</a>
+                                                <ul class="dropdown-menu">
+                                                    <li><a href='@Url.Action("MIS_Excel", "ClientServicing")'>All pending check MIS </a></li>
+                                                    <li><a href='@Url.Action("Completed_check_MIS", "ClientServicing")'>Completed check MIS </a></li>
+
+                                                </ul>
+                                            </li>
+
+                                            if (Designation == "Team Leader-CS")
+                                            {
+                                                <li class="dropdown">
+                                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Case Initiation</a>
+                                                    x       <ul class="dropdown-menu">
+                                                        <li><a href='@Url.Action("AddCandidate", "ClientServicing")'>Single Case Initiation</a></li>
+                                                        <li><a href='@Url.Action("AddBulkCandidateImport", "ClientServicing")'>Bulk Case Initiation</a></li>
+
+                                                    </ul>
+                                                </li>
+                                            }
+                                        }
+                                    }
+
+                                }
+                                if ((Department == "Data Entry" || Department == "Client Servicing") && (Designation == "Team Leader-DE" || Designation == "Team Member-DE" || Designation == "Team Leader-CS" || Designation == "Team Member-DE-Scan" || Designation == "Pending Case"))
+                                {
+                                    <li><a href='@Url.Action("CandidateSummary", "ProvidedInfo")'>Cases for API </a></li>
+                                    if (TeamMemberRowID != "170" && TeamMemberRowID != "185" && TeamMemberRowID != "210")
+                                    {
+                                        <li><a href='@Url.Action("IndexDoc", "GetOldDoc")'>LTIMindtree Doc</a></li>
+                                    }
+                                    if ((TeamMemberRowID == "185") || (Department == "Client Servicing") || Designation == "Pending Case")
+                                    {
+                                        <li class="dropdown">
+                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Bulk Update</a>
+                                            <ul class="dropdown-menu">
+                                                <li><a href='@Url.Action("EmployeeCodeBulkUpdate", "ClientServicing")'>Employee Code – Bulk Update</a></li>
+                                                <li><a href='@Url.Action("DownloadTodayUploadReport", "ClientServicing", new { ReportType = "Interim" })'>Interim Report Bulk Download</a></li>
+                                                <li><a href='@Url.Action("DownloadTodayUploadReport", "ClientServicing", new { ReportType = "Final" })'>Final Report Bulk Download</a></li>
+
+
+                                            </ul>
+                                        </li>
+                                    }
+                                    if (TeamMemberRowID != "185" && TeamMemberRowID != "210")
+                                    {
+                                        <li><a href='@Url.Action("MISExportss", "Verification")'>MIS TAT</a></li>
+                                    }
+
+                                    if (TeamMemberRowID != "185" && TeamMemberRowID != "210")
+                                    {
+                                        <li><a href='@Url.Action("BulkIndex", "ProvidedInfo")'>Bulk Upload Doc</a></li>
+                                    }
+
+
+                                    if (Department == "Client Servicing" || Department == "Pending Case")
+                                    {
+                                        <li><a href='@Url.Action("MIS_Excel", "ClientServicing")'>All pending check MIS </a></li>
+                                    }
+                                    if (TeamMemberRowID == "864")
+                                    {
+                                        <li><a href='https://api.weverifyglobal.com/Home/DownloadExcel?Uname=JEb60OkeHVe/p/WXdplrsQ==' target="_blank">LTIMindtree DownloadExcel</a></li>
+                                        <li><a href='@Url.Action("CheckCaseDetails", "GetOldDoc")'>LTIMindtree Case Details</a></li>
+                                    }
+                                    if (TeamMemberRowID == "558")
+                                    {
+                                        <li><a href='@Url.Action("LatestData", "Verification")'>Latest Data</a></li>
+                                        <li><a href='@Url.Action("RGBSIPLCheckwiseTracker", "ClientServicing")'>RGBSIPL Checkwise Tracker</a></li>
+                                        <li><a href='@Url.Action("TCSIonCriminalAddCheck", "ClientServicing")'>TCSiON Add Check CRC</a></li>
+                                        <li><a href='@Url.Action("TCSIONCRC", "ClientServicing")'>TCS_ION_CRC</a></li>
+
+
+                                    }
+                                    if (Designation == "Team Member-DE")
+                                    {
+                                        <li><a href='@Url.Action("AddCheck", "Insuff")'>Add Check </a></li>
+                                    }
+                                }
+                                if ((Designation == "Team Leader-DE" || Designation == "Team Leader-CS"))
+                                {
+                                    if (TeamMemberRowID == "137")
+                                    {
+                                        <li><a href='@Url.Action("ExportMIS", "ProvidedInfo")'>Detail MIS</a></li>
+                                    }
+                                }
+                                if (TeamMemberRowID == "251")
+                                {
+
+                                    <li><a href='@Url.Action("FirstAmericanActiveUser", "ClientServicing")'>First American Active User </a></li>
+
+                                }
+
+                                if (Department == "Support")
+                                {
+                                    <li><a href='@Url.Action("DeleteCase", "ClientServicing")'>Delete Case</a></li>
+                                    <li><a href='@Url.Action("UpdateCaseStatus", "ClientServicing")'>Update Case Status</a></li>
+                                    <li><a href='@Url.Action("CaseTransaction", "ClientServicing")'>Case Transaction History</a></li>
+                                    <li><a href='@Url.Action("ClientManagment", "ClientServicing")'>Client Management</a></li>
+                                    <li><a href='@Url.Action("ActivateModal", "ClientServicing")'>Scheduled-Maintenance-Activity</a></li>
+                                    <li><a href='@Url.Action("PurgeDetails", "ClientServicing")'>Purging Details</a></li>
+                                    <li><a href='@Url.Action("CheckCaseDetails", "GetOldDoc")'>LTIMindtree Case Details</a></li>
+                                    <li><a href='https://api.weverifyglobal.com/Home/IndexStatus?Uname=JEb60OkeHVe/p/WXdplrsQ==' target="_blank">LTIMindtree Post Status or Report</a></li>
+                                    <li><a href='@Url.Action("clientloginData", "ClientServicing")'>Internal User Data</a></li>
+                                    <li><a href='@Url.Action("InsertToTechSupportClientDetails", "ClientServicing")'>Client Details Documents</a></li>
+                                    <li><a href='@Url.Action("CaseActive", "ClientServicing")'>Case Active</a></li>
+                                    <li><a href='https://api.weverifyglobal.com/Caseinitiate/Caseinitiate?Uname=JEb60OkeHVe/p/WXdplrsQ==' target="_blank">API Case Initiation</a></li>
+                                    <li><a href='https://api.weverifyglobal.com/Caseinitiate/CyientCaseinitiate?Uname=JEb60OkeHVe/p/WXdplrsQ==' target="_blank">Clients API Case Initiation</a></li>
+                                    <li><a href='https://api.weverifyglobal.com/Home/SendReportandStatusDetails?Uname=JEb60OkeHVe/p/WXdplrsQ==' target="_blank">Sutherland send report and stop report</a></li>
+                                    <li><a href='@Url.Action("UpdateDetails", "ClientServicing")'>Update Details</a></li>
+                                    <li><a href='@Url.Action("LTIExcelStatus", "ClientServicing")'>Excel Post Status For LTIMindtree </a></li>
+                                    <li><a href='@Url.Action("HoldForScan", "ClientServicing")'>Hold for scanning </a></li>
+                                    <li><a href='@Url.Action("ManageCase", "ClientServicing")'>CASE ACTIVE / CHECK ACTIVE</a></li>
+                                    <li><a href='https://api.weverifyglobal.com/APITest/APICaseDetails?Uname=JEb60OkeHVe/p/WXdplrsQ==' target="_blank">API Case and Log Details Check for All Client</a></li>
+                                    <li><a href='https://api.weverifyglobal.com/WiproAPI/userlogin' target="_blank">Wipro API Support</a></li>
+                                    <li><a href='@Url.Action("PurgeProcess", "ClientServicing")'>Case Purging</a></li>
+
+
+                                }
+
+                                if (Department == "Super Admin")
+                                {
+                                    <li><a href='@Url.Action("ClientActivation", "Client")'>Client Activation</a></li>
+                                }
+                                if ((Department == "Education" && Designation != "Team Member-Edu-Research") || (Department == "Education" && TeamMemberRowID != "672") || (Department == "Employment" && Designation != "Team Member-Emp-Research") || Department == "Reference" || Department == "Criminal" || Department == "National Identity" || Department == "Special Check")
+                                {
+                                    @*<li><a href='@Url.Action("ExportAllDeptMIS", "Verification", new { Department = Department })'>MIS</a></li>*@
+                                    if (TeamMemberRowID != "662" && TeamMemberRowID != "663" && TeamMemberRowID != "664" && TeamMemberRowID != "665" && TeamMemberRowID != "672" && TeamMemberRowID != "673" && TeamMemberRowID != "681" && TeamMemberRowID != "682" && TeamMemberRowID != "683" && TeamMemberRowID != "684")
+                                    {
+                                        <li><a href='@Url.Action("ExportAllDeptMISDateFilter", "Verification", new { Department = Department })'>MIS </a></li>
+
+                                    }
+
+                                    if (Department == "Employment" && (TeamMemberRowID == "987" || TeamMemberRowID == "924" || TeamMemberRowID == "1153" || TeamMemberRowID == "1044" || TeamMemberRowID == "1185"))
+                                    {
+                                        @*<li><a href='@Url.Action("WiproBulkEmailAuto", "Verification")'>WiproBulkEmailAuto </a></li>
+                            <li><a href='@Url.Action("InfosysBulkEmailAuto", "Verification")'>InfosysBulkEmailAuto </a></li>
+                            <li><a href='@Url.Action("TCSBulkEmailAuto", "Verification")'>TCSBulkEmailAuto </a></li>*@
+                                        if (TeamMemberRowID == "1153" || TeamMemberRowID == "1044")
+                                        {
+                                            <li><a href='@Url.Action("BulkEmailAuto", "Verification")'>Bulk Email Auto </a></li>
+                                            <li><a href='@Url.Action("EmploymentAutoAllocatedChecks", "Verification")'>Auto Allocated Check</a></li>
+                                        }
+                                        else
+                                        {
+                                            <li><a href='@Url.Action("BulkEmailAuto", "Verification")'>Bulk Email Auto </a></li>
+                                            <li><a href='@Url.Action("BulKClosureEmployement", "Verification")'>Bulk Closure</a></li>
+                                            <li><a href='@Url.Action("UploadMultiDoc", "Verification")'>Upload Doc</a></li>
+                                        }
+
+
+                                    }
+                                    if (Department == "Employment" && TeamMemberRowID == "1006")
+                                    {
+                                        @*<li><a href='@Url.Action("WiproBulkEmailAuto", "Verification")'>WiproBulkEmailAuto </a></li>
+                            <li><a href='@Url.Action("InfosysBulkEmailAuto", "Verification")'>InfosysBulkEmailAuto </a></li>
+                            <li><a href='@Url.Action("TCSBulkEmailAuto", "Verification")'>TCSBulkEmailAuto </a></li>*@
+                                        <li><a href='@Url.Action("BulkEmailAuto", "Verification")'>Bulk Email Auto </a></li>
+                                        <li><a href='@Url.Action("BulKClosureEmployement", "Verification")'>Bulk Closure</a></li>
+                                        <li><a href='@Url.Action("UploadMultiDoc", "Verification")'>Upload Doc</a></li>
+
+                                    }
+                                }
+                                @*if (Department == "Address" || (Department == "Education" && Designation != "Team Member-Edu-Research") || (Department == "Employment" && Designation != "Team Member-Emp-Research") || Department == "Reference" || Department == "Criminal" || Department == "Identity" || Department == "Other Checks")
+                    {
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Verification Module <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            @{
+                            if (Designation == "Manager-Add")
+                            {
+                            <li><a href='@Url.Action("ManagerAllocationToTeamLeader", "Verification")'>Allocated Manager Jobs</a></li>
+                            }
+                            if (Designation == "Team Leader-Add")
+                            {
+                            <li><a href='@Url.Action("TeamLeaderAllocationToTeamMember", "Verification")'>Allocated TeamLeader Jobs</a></li>
+                            }
+                            if (Designation == "Team Member-Add")
+                            {
+                            <li><a href='@Url.Action("ManageTeamMemberChecks", "Verification")'>Manage Team Member Checks Jobs</a></li>
+                            }
+                            }
+                        </ul>
+                    </li>
+                    }*@
+
+                                if (Department == "Pending Case")
+                                {
+                                    <li><a href='@Url.Action("InsuffYTRFundsPending", "ClientServicing")'>Dashboard </a></li>
+                                    <li><a href='@Url.Action("ClientServicingDashboardCaseInfo", "ClientServicing",new { CaseStatus = "Radar" })'>Radar </a></li>
+                                    <li><a href='@Url.Action("InterimRequest", "ClientServicing")'>Interim Request </a></li>
+
+
+                                    <li><a href='@Url.Action("Reverification", "ClientServicing")'>Reverification</a></li>
+                                    <li><a href='@Url.Action("BillingApproval", "ClientServicing")'>Approval</a></li>
+
+                                    <li><a href='@Url.Action("ClientManagment", "ClientServicing")'>Client Management</a></li>
+                                    <li><a href='@Url.Action("CommonMISTracker", "ClientServicing")'>Common MIS Tracker</a></li>
+                                    <li><a href='@Url.Action("RejectionCheckwiseMIS", "ClientServicing")'>Rejection MIS</a></li>
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Report Compress</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href='@Url.Action("CompressSize", "ReportQC")'>Compress Report Size</a></li>
+                                            <li><a href='@Url.Action("PasswordReport", "ReportQC")'>Password Report Compress</a></li>
+
+                                        </ul>
+                                    </li>
+                                    <li><a href='@Url.Action("MIS_Insuff", "ClientServicing")'>Insuff MIS</a></li>
+                                    if (TeamMemberRowID != "185" && TeamMemberRowID != "210")
+                                    {
+                                        <li><a href='@Url.Action("ReportUploadOnOldPortal", "ClientServicing")'>Upload old Portal Report</a></li>
+
+                                    }
+                                    if (TeamMemberRowID == "183")
+                                    {
+                                        <li><a href='@Url.Action("ReminderMailTataElxsi", "ClientServicing")'>Alert Tracker</a></li>
+
+                                    }
+                                    if (TeamMemberRowID == "329")
+                                    {
+                                        <li><a href='@Url.Action("InvestigationGetRWQCTeamMemberDashBoardInfo", "ClientServicing")'>Investigation Report</a></li>
+                                    }
+                                    if (TeamMemberRowID == "319" || TeamMemberRowID == "383" || TeamMemberRowID == "758" /*|| TeamMemberRowID == "170"*/ || TeamMemberRowID == "336" || TeamMemberRowID == "827")
+                                    {
+                                        <li><a href='@Url.Action("GetCandidateDetail", "ClientServicing")'>TekSystem Info </a></li>
+                                        <li><a href='@Url.Action("IndexDoc", "GetOldDoc")'>LTIMindtree Doc</a></li>
+                                    }
+                                    if (TeamMemberRowID == "170")
+                                    {
+                                        <li><a href='@Url.Action("GetCandidateDetail", "ClientServicing")'>TekSystem Info </a></li>
+                                    }
+
+
+
+                                }
+                                if (Department == "Pending Case")
+                                {
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Check Action</a>
+                                        <ul class="dropdown-menu">
+
+                                            <li><a href='@Url.Action("StopCheckBySpoc", "ClientServicing")'>Check Move</a></li>
+                                            <li><a href='@Url.Action("StopCheckVerification", "ClientServicing")'>Check Stop</a></li>
+                                            <li><a href='@Url.Action("AddSpocActionRemarkNew", "ClientServicing")'>Spoc Action Remark / check Open</a></li>
+                                        </ul>
+                                    </li>
+
+                                    <li><a href='@Url.Action("ChangeClientPassword", "ClientServicing")'>Change Client Password</a></li>
+
+                                    @*<li><a href='@Url.Action("StopCheckVerification", "ClientServicing")'>Stop Check Verification</a></li>*@
+                                    <li><a href='@Url.Action("CaseProcessSpoc", "ClientServicing")'>Case Process</a></li>
+                                    @*<li><a href='@Url.Action("StopCheckBySpoc", "ClientServicing")'>Stop Check</a></li>*@
+                                    <li><a href='@Url.Action("CaseTransaction", "ClientServicing")'>Case Transaction History</a></li>
+                                    <li><a href='@Url.Action("UnBlockedUserClient", "ClientServicing")'>UnBlocked User Client</a></li>
+                                    <li><a href='@Url.Action("GetCandidateCredential", "ClientServicing")'>Candidate Login Details</a></li>
+                                    <li><a href='@Url.Action("PurgDataDetails","ClientServicing")'>PurgDataDetails</a></li>
+                                    <li><a href='@Url.Action("MIS_MIS2","ClientServicing")'>Single Check Pendency</a></li>
+                                    <li><a href='@Url.Action("CheckStatusDetails","ClientServicing")'>Check Status Details Case-wise</a></li>
+                                    if (TeamMemberRowID == "599")
+                                    {
+                                        <li><a href='@Url.Action("GetCandidateDetail", "ClientServicing")'>TekSystem Info </a></li>
+                                    }
+                                    if (TeamMemberRowID == "336" || TeamMemberRowID == "926" || TeamMemberRowID == "1000")
+                                    {
+                                        <li><a href='@Url.Action("CandidateSummary", "ProvidedInfo")'>Cases for API </a></li>
+                                    }
+                                    if (TeamMemberRowID == "701")
+                                    {
+                                        <li><a href='@Url.Action("clientDataMIs","ClientServicing")'>Client Data</a></li>
+                                    }
+                                    if (TeamMemberRowID == "160" || TeamMemberRowID == "182" || TeamMemberRowID == "166" || TeamMemberRowID == "557")
+                                    {
+                                        <li><a href='@Url.Action("MIS_MIS", "ClientServicing")'>MIS</a></li>
+                                        if (TeamMemberRowID == "557")
+                                        {
+                                            <li><a href='@Url.Action("CandidateSummary", "ProvidedInfo")'>Cases for API </a></li>
+                                            <li><a href='@Url.Action("IndexDoc", "GetOldDoc")'>LTIMindtree Doc</a></li>
+                                            <li><a href='https://api.weverifyglobal.com/Home/DownloadExcel?Uname=JEb60OkeHVe/p/WXdplrsQ==' target="_blank">LTIMindtree DownloadExcel</a></li>
+                                            <li><a href='@Url.Action("CheckCaseDetails", "GetOldDoc")'>LTIMindtree Case Details</a></li>
+
+
+                                        }
+                                    }
+                                    if (TeamMemberRowID == "182" || TeamMemberRowID == "884" || TeamMemberRowID == "582" || TeamMemberRowID == "863")
+                                    {
+                                        <li><a href='@Url.Action("SendPerfiosAPILink", "Verification")' target="_blank">Send Perfios Uan Api Link</a></li>
+                                        <li><a href='@Url.Action("PerfiosUanTracker", "Verification")' target="_blank">Perfios Uan Tracker</a></li>
+
+                                    }
+                                    if (TeamMemberRowID == "524")
+                                    {
+                                        <li><a href='@Url.Action("CandidateSummary", "ProvidedInfo")'>Cases for API </a></li>
+                                        <li><a href='@Url.Action("IndexDoc", "GetOldDoc")'>LTIMindtree Doc</a></li>
+                                        <li><a href='https://api.weverifyglobal.com/Home/DownloadExcel?Uname=JEb60OkeHVe/p/WXdplrsQ==' target="_blank">LTIMindtree DownloadExcel</a></li>
+                                        <li><a href='@Url.Action("CheckCaseDetails", "GetOldDoc")'>LTIMindtree Case Details</a></li>
+
+                                    }
+                                    if (Designation == "Manager-CS" || Designation == "Team Leader-CS")
+                                    {
+                                        if (TeamMemberRowID != "170" && TeamMemberRowID != "185" && TeamMemberRowID != "210")
+                                        {
+                                            <li><a href='@Url.Action("AddBulkImportsWipro", "ClientServicing")'>Bulk Import Wipro</a></li>
+                                            <li><a href='@Url.Action("UploadMultiDoc", "ClientServicing")'>Upload Documents</a></li>
+                                        }
+                                        if (Department == "Pending Case")
+                                        {
+                                            <li class="dropdown">
+                                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Check MIS</a>
+                                                <ul class="dropdown-menu">
+                                                    <li><a href='@Url.Action("MIS_Excel", "ClientServicing")'>All pending check MIS </a></li>
+                                                    <li><a href='@Url.Action("Completed_check_MIS", "ClientServicing")'>Completed check MIS </a></li>
+
+                                                </ul>
+                                            </li>
+                                        }
+                                    }
+
+                                }
+                            }
+                            if (TeamMemberRowID == "785" || TeamMemberRowID == "796" || TeamMemberRowID == "882" || TeamMemberRowID == "1040" || TeamMemberRowID == "1042" || TeamMemberRowID == "1043")
+                            {
+                                <li><a href='@Url.Action("CandidateSummary", "ProvidedInfo")'>Cases for API </a></li>
+                                <li><a href='@Url.Action("IndexDoc", "GetOldDoc")'>LTIMindtree Doc</a></li>
+                                <li><a href='https://api.weverifyglobal.com/Home/DownloadExcel?Uname=JEb60OkeHVe/p/WXdplrsQ==' target="_blank">LTIMindtree DownloadExcel</a></li>
+
+                            }
+                            if (TeamMemberRowID == "182" || TeamMemberRowID == "160" || TeamMemberRowID == "166")
+                            {
+                                <li><a href='@Url.Action("SpecialInstructioncsc", "ClientServicing")'>Special Instruction</a></li>
+                                <li><a href='@Url.Action("AddClientDetails", "ClientServicing")'>Spoc Details</a></li>
+                                <li><a href='@Url.Action("GetEmailDetails", "ClientServicing")'>Notification Details</a></li>
+                            }
+                            if (TeamMemberRowID == "147" || TeamMemberRowID == "148")
+                            {
+                                <li><a href='@Url.Action("ExportExcelDigital", "Verification")'>Export Excel Digital</a></li>
+                            }
+
+                            if (TeamMemberRowID == "147")
+                            {
+                                <li><a href='@Url.Action("MIS_SENDNOMONEYLOG", "Verification")'>Log</a></li>
+                            }
+                            if (TeamMemberRowID == "882")
+                            {
+                                <li><a href='@Url.Action("CheckCaseDetails", "GetOldDoc")'>LTIMindtree Case Details</a></li>
+                            }
+                            if (TeamMemberRowID == "1132" || TeamMemberRowID == "1045" || TeamMemberRowID == "949" || TeamMemberRowID == "1077" || TeamMemberRowID == "1092" || TeamMemberRowID == "1020" || TeamMemberRowID == "1001" || TeamMemberRowID == "957" || TeamMemberRowID == "564" || TeamMemberRowID == "152" || TeamMemberRowID == "1119" || TeamMemberRowID == "1041" || TeamMemberRowID == "1173" || TeamMemberRowID == "1159")
+                            {
+                                <li><a href='@Url.Action("CandidateSummary", "ProvidedInfo")'>Cases for API </a></li>
+                            }
+                            if (TeamMemberRowID == "171")
+                            {
+                                <li><a href='@Url.Action("CheckCaseDetails", "GetOldDoc")'>LTIMindtree Case Details</a></li>
+                            }
+                        }
+                    }
+                </ul>
+
+            </div>
+
+        </nav>
+
+    }
+
+}
+
+
+
+
+
+<script>
+    $(document).ready(function () {
+        let activeIndex = localStorage.getItem('activeNavItem');
+        if (activeIndex !== null) $('.navigation ul li').eq(activeIndex).addClass('active');
+    });
+
+    $(document).on('click', '.navigation ul li', function () {
+        $('.navigation ul li').removeClass('active');
+        $(this).addClass('active');
+        localStorage.setItem('activeNavItem', $(this).index());
+    });
+
+
+</script>

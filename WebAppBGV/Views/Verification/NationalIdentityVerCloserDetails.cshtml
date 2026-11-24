@@ -1,0 +1,209 @@
+﻿@model ViewModels.VerificationViewModel.NationalIdentityVerCloserViewModel
+@{
+    ViewBag.Title = "National Identity  Closer Details";
+}
+
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+@using (Html.BeginForm())
+{
+<table style="width:100%;">
+    <tr>
+        <td>
+            <table style="width:100%;">
+                @Html.HiddenFor(model => model.NationalIdentityRowID)
+                @Html.HiddenFor(model => model.NationalIdentityVerRowID)
+                @Html.HiddenFor(model => model.ClientRowID)
+                @Html.HiddenFor(model => model.PersonalRowID)
+                @Html.HiddenFor(model => model.CheckFamilyRowID)
+                @Html.HiddenFor(model => model.SubCheckRowID)
+                @Html.HiddenFor(model => model.CheckStatusId)
+                <input id="SeverityId" name="SeverityId" type="hidden">
+                <tr class="personal_heading">
+                    <td width="10%">Select Disposition :</td>
+                    <td>
+                        @Html.ListBoxFor(model => model.CDispositionRowId,
+                           (MultiSelectList)ViewBag.Disposition,
+                           new { multiple = "true", @Style = "width:100%;height: 200px;", @id = "selection" })
+                        @Html.ValidationMessageFor(model => model.Disposition, "", new { @class = "text-danger", @id = "selection" })
+                    </td>
+                    @Html.HiddenFor(model => model.DispositionID, new { @id = "hdnDispositionID" })
+                </tr>
+                <tr class="personal_heading">
+                    <td>Report Comment :</td>
+                    <td>
+                        @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control ", @id = "selected", @rows = "4" })
+                        @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td><p>&nbsp;</p></td>
+    </tr>
+    <tr>
+        <td>
+            <table style="width:100%;">
+                <tr class="personal_heading">
+                    <td width="10%">Severity :</td>
+                    <td>
+                        @Html.EditorFor(model => model.Severity, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
+                        @Html.ValidationMessageFor(model => model.Severity, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.Severity, new { @id = "hdnSeverity" })
+                    </td>
+                    <td align="right">Color :</td>
+                    <td>
+                        @Html.EditorFor(model => model.ColorName, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
+                        @Html.ValidationMessageFor(model => model.ColorName, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.ColorName, new { @id = "hdnColorName" })
+                    </td>
+                    <td width="10%">Case Status :</td>
+                    @{
+                        string Designation = Session["Designation"].ToString();
+                        if (Designation == "Team Member-Ide")
+                        {
+                            <td>
+                                @Html.DropDownListFor(model => model.CheckStatus, new List<SelectListItem>
+                                  { new SelectListItem{Text="Completed", Value="Completed"},
+                                      new SelectListItem{Text="Review Requested", Value="Review Requested"}},
+                                  new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.CheckStatus, "", new { @class = "text-danger" })
+                            </td>
+                        }
+                    }
+                </tr>
+                <tr>
+                    <td><p>&nbsp;</p></td>
+                </tr>
+                <tr class="personal_heading">
+                    <td align="right">Action History Remarks :</td>
+                    <td>
+                        @Html.TextAreaFor(model => model.ActionHistory, new { @class = "form-control ", @rows = "4" })
+                        @Html.ValidationMessageFor(model => model.ActionHistory, "", new { @class = "text-danger" })
+                    </td>
+                    @if (Model.ClientRowID == 607)
+                    {
+                        <td>Short Remarks :</td>
+                        <td>
+                            <p class="text-danger">Please fill Short Remaks in the case of no green checks.</p>
+                            @Html.TextAreaFor(model => model.ShortRemarks, new { @class = "form-control", @rows = "4" })
+                        </td>
+                    }
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td><p>&nbsp;</p></td>
+    </tr>
+    <tr>
+        <td class="" align="center">
+            @Html.ActionLink("Back", "AddNationalIdentityInfoByTeamMember", "Verification", new { id = Model.NationalIdentityRowID }, new { @class = "btn bun-bg btn-default" })
+
+            <input class="btn bun-bg btn-default" onclick="return validateForm()" type="submit" value="Submit" style="width:10%!important;padding:.8% 3%;text-align:center;" />
+        </td>
+    </tr>
+    <tr>
+        <td><p>&nbsp;</p></td>
+    </tr>
+</table>
+                            }
+@section Scripts{
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $('#CheckStatus').change(function () {
+            var CheckStatus = $('#CheckStatus').val();
+            if (CheckStatus == "Review Requested") {
+                $('#ActionHistory').focus();
+            }
+        });
+    });
+
+    function validateForm() {
+        $('#hdnSeverity').val($('#Severity').val());
+        $('#hdnColorName').val($('#ColorName').val());
+
+        if ($('#ColorName').val() == '')
+        {
+            alert("Please Select Disposition");
+            $('#ColorName').focus();
+
+            return false;
+        }
+        var CheckStatus = $('#CheckStatus').val();
+        if (CheckStatus == 'Review Requested' && $('#ActionHistory').val() == '') {
+            alert("Please enter Action History");
+            $('#ActionHistory').focus();
+            return false;
+        }
+
+        var ColorNameForShortRemarks = $('#ColorName').val()
+        if (ColorNameForShortRemarks == "Green") {
+            var Remarks = $('#selected').val();
+            $('#ShortRemarks').val(Remarks);
+        }
+        else {
+            if ($('#ShortRemarks').val() == '') {
+                alert("Please Fill Short Remarks For non green");
+                $('#ShortRemarks').focus();
+                return false;
+            }
+        }
+    }
+
+         $("#selection option:selected").each(function () {
+             var $this = $(this);
+
+                 if ($this.length) {
+                     var selText = $this.text();
+                     var SelectDispositionID = $this.val();
+                     $('#hdnDispositionID').append(SelectDispositionID + ',');
+                     SelectDispositionID += $this.val() + ',';
+                     //console.log(selText);
+                     if ($('#selected').val() == '') {
+                         $('#selected').append(selText + '\n');
+                     }
+                 }
+         });
+         $("#selection").change(function () {
+            $('#selected').html(' ');
+            var SelectDispositionID = '';
+            $("#selection option:selected").each(function () {
+                var $this = $(this);
+                if ($this.length) {
+                    var selText = $this.text();
+                    SelectDispositionID += $this.val() + ',';
+                    //console.log(selText);
+                    $('#selected').append(selText + '\n');
+                }
+            });
+            if (SelectDispositionID.length > 0) {
+                SelectDispositionID = SelectDispositionID.substring(0, SelectDispositionID.length - 1);
+            } else { SelectDispositionID = ''; }
+            $('#hdnDispositionID').val(SelectDispositionID);
+    });
+
+    $(function () {
+        $('#selection').change(function () {
+            var url = "/Verification/GetSeverityColor?ClientRowId=" + $("#ClientRowID").val() + "&Dispositions=" + $("#hdnDispositionID").val();
+            $.ajax({
+                url: url,
+                type: 'GET',
+                async: false,
+                dataType: 'json',
+                success: function (colors) {
+                    $('#Severity').val(colors.SeverityName);
+                    $('#ColorName').val(colors.ColorName);
+                    $('#SeverityId').val(colors.SeverityRowId);
+                }
+            });
+        });
+    });
+
+
+    </script>
+}

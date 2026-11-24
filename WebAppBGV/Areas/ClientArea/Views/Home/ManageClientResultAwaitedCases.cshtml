@@ -1,0 +1,242 @@
+@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Manage YTR cases";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+    var ClientRowId = "0";
+    var clid = "";
+    if (Request.QueryString["ClientRowID"] != null)
+    {
+        ClientRowId = Request.QueryString["ClientRowID"].ToString();
+    }
+    clid = Session["ClientRowID"].ToString();
+    string faIcon = string.Format("<i class='bx bx-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "DashboardClient", "Home", new { area = "ClientArea" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+}
+@{
+    string CheckStatus = "";
+    if (Request.QueryString["CheckStatus"] != null)
+    {
+        CheckStatus = @Request.QueryString["CheckStatus"].ToString();
+    }
+    string faIconExportExcel = string.Format("Export Excel <i class='bx bx-export export_btn_icons' ></i>");
+    string hyperLinkExportExcel = "";
+    if (CheckStatus == "YTR")
+    {
+        hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportYTR", "Home", new { ClientRowID = ClientRowId }, new { @class = "export_btn" }).ToString();
+    }
+
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+}
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+@if (Model != null && Model.PQEmployments != null)
+{
+    <div class="container-fluid ps-0 bg_gradient_CaseWise mt-2">
+        <div class="row row-sm">
+            @section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+        </div>
+        <div class="row row-sm ms-2">
+            <div class="col-xl-12 mb-5">
+                <span>@ViewBag.NavigationBtnExportExcel</span>
+                @using (Html.BeginForm("ManageClientResultAwaitedCases", "Home", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <table class="table mb-0 text-md-nowrap fl-table table-responsive table-scroll js-serial items" id="example1" style="border:none; cursor:all-scroll;">
+                        <thead>
+                            <tr>
+                                <th>Candidate Name</th>
+                                <th>Check Name</th>
+                                <th>Company Name</th>
+                                <th>Securitas ID</th>
+                                <th>Result Awaited</th>
+                                @if (clid == "576")
+                                {
+                                    <th>Emailid</th>
+                                    <th>Mobile No</th>
+                                }
+                                else
+                                {
+                                    <th>Client Ref id</th>
+                                }
+                                <th>Created Date</th>
+                                <th>Package</th>
+                                <th>Documents</th>
+                                <th>Candidate Details</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-start tx-10">
+                            @foreach (var a in Model.PQEmployments)
+                            {
+                                if (clid == "576")
+                                {
+                                    <tr>
+                                        <td>@a.CandidateName</td>
+                                        <td>@a.SubCheckName</td>
+                                        <td>@a.CompanyName</td>
+                                        <td>
+                                            <a href='@Url.Action("CheckListForClientByPersonalID", "Home", new { PersonalId = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn_refno iframeYTRCompanyRefNo" id="clip_@a.PersonalRowID">@a.CompanyRefNo</a><i class="las la-clipboard clipboard-icon" data-clipboard-target="#clip_@a.PersonalRowID" style="position:relative; top:5px!important; right:0px!important; padding:10px!important; border:none!important; line-height:0px!important; font-size:30px;"></i>
+                                        </td>
+                                        <td>
+                                            <a href='@Url.Action("EducationResultAwaitedChecksClearByClient", "Home", new { id = clsCommonMethods.PEncrypt(a.EmploymentRowID.ToString()), SubCheckRowID = clsCommonMethods.PEncrypt(a.SubCheckRowID.ToString()), CheckFamilyRowID = clsCommonMethods.PEncrypt(a.CheckFamilyRowID.ToString()) }, null)' class="modal-effect btn btn-outline-primary btn-block table_btn"><span>Clear Result Awaited</span></a>
+                                        </td>
+                                        <td>@a.Emailid</td>
+                                        <td>@a.MobileNo</td>
+                                        <td><a class="td_class"> @a.CreatedDate.ToString("dd/MM/yyyy") </a></td>
+                                        <td><a class="td_class">@a.Package </a></td>
+                                        <td>
+                                            <a href='@Url.Action("UploadCandidateDoc", "Home", new { area = "ClientArea", CompanyRefNo = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),SubCheckRowID=0,personalrowid=clsCommonMethods.PEncrypt(a.PersonalRowID.ToString())})' class="btn btn-outline-primary btn-block table_btn iframeDocument">Show</a>
+                                        </td>
+                                        <td>
+                                            <a href='@Url.Action("PersonalInformation", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="modal-effect btn btn-outline-primary btn-block table_btn"><span>Download</span> </a>
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td>@a.CandidateName</td>
+                                        <td>@a.SubCheckName</td>
+                                        <td>@a.CompanyName</td>
+                                        <td>
+                                            <a href='@Url.Action("CheckListForClientByPersonalID", "Home", new { PersonalId = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn_refno iframeYTRCompanyRefNo" id="clip_@a.PersonalRowID">@a.CompanyRefNo</a><i class="las la-clipboard clipboard-icon" data-clipboard-target="#clip_@a.PersonalRowID" style="position:relative; top:5px!important; right:0px!important; padding:10px!important; border:none!important; line-height:0px!important; font-size:30px;"></i>
+                                        </td>
+                                        <td>
+                                            <a href='@Url.Action("EducationResultAwaitedChecksClearByClient", "Home", new { id = clsCommonMethods.PEncrypt(a.EmploymentRowID.ToString()), SubCheckRowID = clsCommonMethods.PEncrypt(a.SubCheckRowID.ToString()), CheckFamilyRowID = clsCommonMethods.PEncrypt(a.CheckFamilyRowID.ToString()) }, null)' class="btn btn-outline-primary btn-block table_btn"><span>Clear Result Awaited</span> </a>
+                                        </td>
+                                        <td>@a.ClientRefID</td>
+                                        <td><a class="td_class"> @a.CreatedDate.ToString("dd/MM/yyyy") </a></td>
+                                        <td><a class="td_class">@a.Package</a></td>
+                                        <td>
+                                            <a href='@Url.Action("UploadCandidateDoc", "Home", new { area = "ClientArea", CompanyRefNo = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),SubCheckRowID=0,personalrowid=clsCommonMethods.PEncrypt(a.PersonalRowID.ToString())})' class="btn btn-outline-primary btn-block table_btn iframeDocument">Show</a>
+                                        </td>
+                                        <td>
+                                            <a href='@Url.Action("PersonalInformation", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn"><span>Download</span> </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts{
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script type="text/javascript">
+         $(document).ready(function () {
+            $('#Search').val('@Model.ItemSearch.Search');
+            $('#RecievingFromDate').val('@Model.ItemSearch.RecievingToDate');
+            $('#CompletedFromDate ').val('@Model.ItemSearch.CompletedToDate' );
+            $('#RecievingToDate').val('@Model.ItemSearch.RecievingFromDate');
+            $('#CompletedToDate').val('@Model.ItemSearch.CompletedFromDate');
+
+        });
+    </script>
+    <script type="text/javascript">
+        $(".Complete").on("click", function () {
+            var str = $(this).attr("id").split("_");
+           var id = str[1];
+
+           var flag = confirm('Are you sure Clear Check YTR successfully?');
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("EmploymentYTRCheckClear", "Home")',
+                    data: { "id": id },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (result) {
+                        if (result) {
+                            alert("YTR Clear Successfully!");
+                            setTimeout(function () { window.location.replace("ManageClientYTRCases"); }, 300);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeCheckList").colorbox({ iframe: true, width: "80%", height: "65%" });
+            $(".iframeCheckList1").colorbox({ iframe: true, width: "60%", height: "65%" });
+            $('#RecievingToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#RecievingFromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedFromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+        });
+    </script>
+    <script>
+        $("#btnSearch").click(function () {
+            var obj = $('form input[type="text"]').NormalizedString();
+            if (obj == false) {
+                return false;
+            }
+        });
+        $("#Search").SearchString();
+    </script>
+    <script>
+        $(document).ready(function () {
+            $(".iframeYTRCompanyRefNo").colorbox({ iframe: true, width: "88%", height: "70%" });
+            $(".iframeYTRClear").colorbox({ iframe: true, width: "75%", height: "65%" });
+            $(".callbacks").colorbox({
+                onClosed: function () {
+                    window.location.reload(false);
+                }
+            });
+
+            $(".iframeDocument").colorbox({ iframe: true, width: "80%", height: "65%" });
+        });
+    </script>
+}
+<style>
+    .table_btn {
+        color: #8D5FFF !important;
+        transition: 0.3s ease-in-out !important;
+    }
+
+        .table_btn:hover {
+            background: #FFF !important;
+            background-color: rgb(255, 255, 255);
+            color: #fff !important;
+            border: 1px solid #031F30 !important;
+            background-color: #031F30 !important;
+        }
+
+    .table tr td {
+        line-height: 2.757 !important;
+        text-align: left !important;
+    }
+</style>

@@ -1,0 +1,967 @@
+﻿
+@model ViewModels.ReportQCViewModel.InterimReportGenerateViewModel
+
+@if (Model != null && Model.EmploymentProvidedList != null && Model.EmploymentProvidedList.Count() > 0 && Model.AntecedentList != null && Model.AntecedentList.Count() > 0)
+{
+
+    foreach (var ProvidedInfo in Model.EmploymentProvidedList)
+    {
+        var EmploymentVerInfo = Model.EmploymentVerifiedList.Where(ver => ver.EmploymentRowID == ProvidedInfo.EmploymentRowID).FirstOrDefault();
+
+        var antecentList = Model.AntecedentList.Where(a => a.CheckFamilyRowID == ProvidedInfo.CheckFamilyRowID && a.SubCheckRowID == ProvidedInfo.SubCheckRowID).ToList();
+        <style>
+            .padding-td > td {
+                height: 30px;
+                vertical-align: middle;
+                padding-left: 10px;
+            }
+            .border-custom1 {
+                border-collapse: collapse !important;
+                border: 0px solid #000 !important;
+            }
+        </style>
+        <page id="PrintSrc" size="A4">
+            <div style="page-break-after:always ;"></div>
+            <table width="793" @*border="0" *@ cellspacing="0" cellpadding="0" align="center">
+                <!--- Report Header Include -->
+                @*@Html.Partial("_ReportHeader")*@
+                <!--- Report Header Include -->
+
+
+                <tr>
+                    <td width="2%" align="left" valign="bottom" @*style="border-left:2px solid #999999;"*@>&nbsp;</td>
+                    <td valign="top">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+
+                            <tr>
+                                <td valign="top">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                        <tr><td width="20%" align="right"><img src='@Url.Content("/Images/footer-logo.jpg")' height="60"></td></tr>
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td valign="top">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@ProvidedInfo.SubCheckName</p></td>
+
+                                        </tr>
+                                        <tr>
+                                            <td valign="top" align="center"></td>
+                                        </tr>
+                                        <tr>
+                                            <td height="30">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4">
+                                                <table width="100%" class="border-custom1">
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px;font-weight:bold; font-size:12px; width:20%; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">TCS APPLICANT ID </td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for=""></label>@Model.ApplicationId</td>
+                                                        <td style="padding-left:5px;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">VENDOR RF-ID</td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;">@Model.CompanyRefNo</td>
+                                                    </tr>
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">RECRUITMENT BRANCH </td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for="">@Model.Location</label></td>
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">NSR IT_PIN</td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;">NIL</td>
+                                                    </tr>
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">NAME OF CANDIDATE</td>
+                                                        <td colspan="3" style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for="">@Model.PersonalName</label></td>
+                                                        @*<td style="padding-left:5px;font-weight:bold; color-adjust:exact; background:#c0c0c0;"></td>
+            <td style="padding-left:5px;"></td>*@
+
+                                                    </tr>
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">DATE OF BIRTH</td>
+                                                        @if (Model.DOB != null)
+                                                        {
+                                                            <td style="padding-left:5px; font-size:12px; font-family:Calibri;">@Model.DOB.Value.ToString("dd-MM-yyyy")</td>
+                                                        }
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">
+                                                            FINAL BGC STATUS
+                                                            (RED/GREEN)
+                                                        </td>
+                                                        @if (EmploymentVerInfo != null)
+                                                        {
+                                                            if (ProvidedInfo.CheckStatus == "Insuff")
+                                                            {
+                                                                <td style="padding-left:5px; font-size:12px; font-family:Calibri; color:@EmploymentVerInfo.ColorCode"><label for="">WIP</label></td>
+
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="padding-left:5px; font-size:12px; font-family:Calibri; color:@EmploymentVerInfo.ColorCode"><label for="">@ProvidedInfo.CheckStatus</label></td>
+
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            if (@ProvidedInfo.CheckStatus != "")
+                                                            {
+                                                                <td style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for="">@ProvidedInfo.CheckStatus</label></td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for=""></label></td>
+                                                            }
+
+
+                                                        }
+
+
+                                                    </tr>
+
+
+
+                                                    <tr class="padding-td">
+                                                        <td style="padding-left:5px; font-weight:bold; font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;">CATEGORY (CAMPUS/DT/ EP/EP From CAMPUS)</td>
+                                                        <td style="padding-left:5px; font-size:12px; font-family:Calibri;"><label for="">@Model.VerticalLocation</label></td>
+                                                        <td colspan="2" align="left" style="border-top:groove;">
+                                                            <img src='@Url.Content("~/Images/TCS_IT_TwoColor.JPG")' width="265" />
+
+                                                        </td>
+
+
+                                                    </tr>
+                                                    @*<tr class="padding-td">
+                                                        <td colspan="4" style="border:0 !important;"></td>
+                                                    </tr>*@
+                                                </table>
+
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td valign="top" align="center">
+                                                <table class="border-custom1" width="100%" border="1" style="border-left:hidden; border:0 !important; border-right:hidden;border-bottom:hidden" cellpadding="0" cellspacing="0">
+                                                    
+                                                    
+                                                    <tr class="padding-td">
+                                                        @if (ProvidedInfo.EV_OrganisationName != "")
+                                                        {
+                                                            if (Model.VerticalLocation == "Business Associate")
+                                                            {
+                                                                <td colspan="3" style="border:0;"><b>BA Company Name & Place:</b> @ProvidedInfo.EV_OrganisationName , @ProvidedInfo.Organization_City</td>
+
+                                                            }
+                                                            else if (Model.VerticalLocation == "Experience Professional")
+                                                            {
+                                                                if (ProvidedInfo.SubCheckRowID == 68)
+                                                                {
+                                                                    <td colspan="3" style="border:0;"><b>Current Company Name & Place:</b> @ProvidedInfo.EV_OrganisationName , @ProvidedInfo.Organization_City</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td colspan="3" style="border:0;"><b>Previous Company Name & Place:</b> @ProvidedInfo.EV_OrganisationName , @ProvidedInfo.Organization_City</td>
+
+                                                                }
+
+                                                            }
+                                                        }
+                                                        
+
+
+
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td colspan="4" style="border:0 !important;">
+                                                            <table>
+                                                                @{
+                                                                    if (EmploymentVerInfo != null)
+                                                                    {
+                                                                        <tr class="padding-td">
+                                                                            <td width="10%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0; border-top:1px solid #000 !important; text-align:center;   font-weight:700;">Sl. No</td>
+                                                                            <td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0; border-top:1px solid #000 !important; text-align:center;   font-weight:700;">PARTICULARS</td>
+                                                                            <td colspan="2" width="60%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact; border-top:1px solid #000 !important; background:#c0c0c0;text-align:center;   font-weight:700;">REMARKS</td>
+
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;">1 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;">Name of Respondent </td>
+                                                                            <td colspan="2" style="font-size:12px; font-family:Calibri; ">@EmploymentVerInfo.EV_RespondentName</td>
+
+                                                                        </tr>
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;">2 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;">Designation of Respondent </td>
+                                                                            @if (EmploymentVerInfo.EV_RespondentDesignation != null)
+                                                                            {
+
+                                                                                <td colspan="2" style="font-size:12px; font-family:Calibri;">@EmploymentVerInfo.EV_RespondentDesignation</td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td colspan="2" style="font-size:12px; font-family:Calibri;"></td>
+                                                                            }
+                                                                            @*@if (ProvidedInfo.ref != null)
+                    {
+
+                        <td colspan="2" style="font-size:12px; font-family:Calibri;">@ProvidedInfo.EV_RespondentDesignation</td>
+                    }*@
+
+
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;">3 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;">Date & Time Contacted </td>
+                                                                            @if (EmploymentVerInfo.EV_Date_Time_Contacted != null)
+                                                                            {
+
+                                                                            <td colspan="2" style="font-size:12px; font-family:Calibri;">@EmploymentVerInfo.EV_Date_Time_Contacted.Value.ToString("dd-MMM-yyyy") & @EmploymentVerInfo.EV_Details_Verfson_EidPh_Phyvst</td>
+                                                                            }
+
+                                                                           
+                                                                            else
+                                                                            {
+                                                                                <td colspan="2" style="font-size:12px; font-family:Calibri;"></td>
+                                                                            }
+
+
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td colspan="4" style="border:0;"><b>Comments of the Respondent in terms of:</b> All below mentioned details are correct with positive status.</td>
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td width="10%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Sl. No</td>
+                                                                            <td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">PARTICULARS</td>
+                                                                            <td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Provided by the Applicant</td>
+                                                                            <td width="30%" style="font-size:12px;  margin-top:20px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Verified and Confirmed by BGC Agency</td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">1 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Period (Date From : To) served by Applicant </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;text-align:left;">@ProvidedInfo.EV_EmployeeTenure</td>
+                                                                            <td style="font-size:12px; font-family:Calibri;text-align:center;">@EmploymentVerInfo.EV_EmployeeTenure</td>
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">2 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Designation of the Applicant </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;text-align:left;">@ProvidedInfo.EV_Designation </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;text-align:center;">@EmploymentVerInfo.EV_Designation</td>
+                                                                        </tr>
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">3 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Last drawn salary by the Applicant (CTC) </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;text-align:left;">@ProvidedInfo.EV_CmpCost </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;text-align:center;">@EmploymentVerInfo.EV_CmpCost</td>
+                                                                        </tr>
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">4 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Job Type ( Permanent / Temporary / Contractual) </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;text-align:left;">@ProvidedInfo.EV_typ_employ </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;text-align:center;">@EmploymentVerInfo.EV_typ_employ</td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">5 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Reasons for leaving this employment</td>
+                                                                            <td style="font-size:12px; font-family:Calibri;text-align:left;">@ProvidedInfo.EV_leavingReason </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;text-align:center;">@EmploymentVerInfo.EV_leavingReason</td>
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">6 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; font-weight:bold;  ">Professional abilities of the Applicant </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; color-adjust:exact;   background:#c0c0c0;"> </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;text-align:center;">@EmploymentVerInfo.EV_Prof_Ablts_Aplcnt</td>
+                                                                        </tr>
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">7 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; font-weight:bold; ">Duties and responsibilities handled </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; color-adjust:exact;  background:#c0c0c0;"> </td>
+                                                                            @if (EmploymentVerInfo.EV_HandledResponsibilities != null)
+                                                                            {
+                                                                                <td style="font-size:12px; font-family:Calibri;text-align:center; ">@EmploymentVerInfo.EV_HandledResponsibilities </td>
+                                                                            }
+
+                                                                            @*else if (EmploymentVerInfo.EV_HandledResponsibilities != null)
+                                                                            {
+                                                                                <td style="font-size:12px; font-family:Calibri;text-align:center; ">@EmploymentVerInfo.EV_HandledResponsibilities </td>
+                                                                            }
+                                                                            else if (EmploymentVerInfo.EV_ResponsibilitiesHandled != null)
+                                                                            {
+                                                                                <td style="font-size:12px; font-family:Calibri;text-align:center;">@EmploymentVerInfo.EV_ResponsibilitiesHandled </td>
+                                                                            }
+
+                                                                            else if (EmploymentVerInfo.EV_HandledResponsibilities != null)
+                                                                            {
+                                                                                <td style="font-size:12px; font-family:Calibri; text-align:center;">@EmploymentVerInfo.EV_HandledResponsibilities </td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="font-size:12px; font-family:Calibri;text-align:center; ">@EmploymentVerInfo.EV_HandledResponsibilities </td>
+
+                                                                            }*@
+
+                                                                            @*<td style="font-size:12px; font-family:Calibri;">@EmploymentVerInfo.EV_ResponsibilitiesHandled</td>*@
+                                                                            @*<td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.AV_Any_Other_Cmmnts_AV</td>*@
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">8 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Attitude, Honesty and personal reputation of the Applicant</td>
+                                                                            <td style="font-size:12px; font-family:Calibri; color-adjust:exact;  background:#c0c0c0;"> </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;text-align:center;">  @EmploymentVerInfo.EV_Atude_Hon_Per_Aplcnt</td>
+                                                                            @*<td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.AV_Any_Other_Cmmnts_AV</td>*@
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri; font-weight:bold;">9 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; font-weight:bold;">Will you rehire the Applicant if situation arises in future?</td>
+                                                                            @if (EmploymentVerInfo.EV_EligibileForRehire != null)
+                                                                            {
+                                                                                <td style="font-size:12px; font-family:Calibri; color-adjust:exact;   background:#c0c0c0;"> </td>
+                                                                                <td style="font-size:12px; font-family:Calibri;text-align:center;">@EmploymentVerInfo.EV_EligibileForRehire</td>
+                                                                            }
+                                                                            else if (EmploymentVerInfo.EV_EligibilityforRehire != null)
+                                                                            {
+                                                                                <td style="font-size:12px; font-family:Calibri; color-adjust:exact;  background:#c0c0c0;border:hidden"> </td>
+                                                                                <td style="font-size:12px; font-family:Calibri;text-align:center;">@EmploymentVerInfo.EV_EligibilityforRehire</td>
+                                                                            }
+                                                                            else if (EmploymentVerInfo.EV_EligibilityOfRehire != null)
+                                                                            {
+                                                                                <td style="font-size:12px; font-family:Calibri; color-adjust:exact;   background:#c0c0c0;border:hidden"> </td>
+                                                                                <td style="font-size:12px; font-family:Calibri;text-align:center;">@EmploymentVerInfo.EV_EligibilityOfRehire</td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="font-size:12px; font-family:Calibri; color-adjust:exact;   background:#c0c0c0;border:hidden"> </td>
+                                                                                <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                            }
+
+                                                                            @*<td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.AV_Any_Other_Cmmnts_AV</td>*@
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">10 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; font-weight:bold;">Other Remarks:</td>
+
+                                                                            <td colspan="2" style="font-size:12px; font-family:Calibri;text-align:center;">@EmploymentVerInfo.ReportComment</td>
+                                                                            @*<td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.AV_Any_Other_Cmmnts_AV</td>*@
+                                                                        </tr>
+
+
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <tr class="padding-td">
+                                                                            <td width="10%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Sl. No</td>
+                                                                            <td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">PARTICULARS</td>
+                                                                            <td colspan="2" width="60%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">REMARKS</td>
+
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;">1 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;">Name of Respondent </td>
+                                                                            <td colspan="2" style="font-size:12px; font-family:Calibri;text-align:center;">@ProvidedInfo.EV_RespondentName</td>
+
+                                                                        </tr>
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;">2 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;">Designation of Respondent </td>
+                                                                            <td colspan="2" style="font-size:12px; font-family:Calibri; text-align:center;">@ProvidedInfo.EV_RespondentDesignation</td>
+
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;">3 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;">Date & Time Contacted </td>
+                                                                            @*<td colspan="2" style="font-size:12px; font-family:Calibri; text-align:center;">@ProvidedInfo.EV_Date_Time_Contacted.Value.ToString("dd-MM-yyyy")- @ProvidedInfo.EV_Details_Verfson_EidPh_Phyvst </td>*@
+
+                                                                            @if (ProvidedInfo.EV_Date_Time_Contacted != null)
+                                                                            {
+
+                                                                                <td colspan="2" style="font-size:12px; font-family:Calibri;">@ProvidedInfo.EV_Date_Time_Contacted.Value.ToString("dd-MMM-yyyy") & @ProvidedInfo.EV_Details_Verfson_EidPh_Phyvst</td>
+                                                                            }
+
+
+                                                                            else
+                                                                            {
+                                                                                <td colspan="2" style="font-size:12px; font-family:Calibri;"></td>
+                                                                            }
+
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td colspan="4" style="border:0;"><b>Comments of the Respondent in terms of:</b> All below mentioned details are correct with positive status.</td>
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            
+                                                                            <td width="10%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Sl. No</td>
+                                                                            <td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">PARTICULARS</td>
+                                                                            <td width="30%" style="font-size:12px; margin-top:20px;  font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Provided by the Applicant</td>
+                                                                            <td width="30%" style="font-size:12px;  margin-top:20px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Verified and Confirmed by BGC Agency</td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">1 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Period (Date From : To) served by Applicant </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:left;">@ProvidedInfo.EV_EmployeeTenure</td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">2 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Designation of the Applicant </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:left;">@ProvidedInfo.EV_Designation </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                        </tr>
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">3 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Last drawn salary by the Applicant (CTC) </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:left;">@ProvidedInfo.EV_CmpCost </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                        </tr>
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">4 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Job Type ( Permanent / Temporary / Contractual) </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:left;">@ProvidedInfo.EV_typ_employ </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">5 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; font-weight:bold;">Reasons for leaving this employment</td>
+                                                                            <td style="font-size:12px; font-family:Calibri; text-align:left;">@ProvidedInfo.EV_leavingReason </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                        </tr>
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">6 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold;">Professional abilities of the Applicant </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;border:0;text-align:left;"> @ProvidedInfo.EV_Prof_Ablts_Aplcnt</td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                        </tr>
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">7 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri;font-weight:bold; ">Duties and responsibilities handled </td>
+                                                                            @*@if (ProvidedInfo.EV_HandledResponsibilities != null)
+                                                                            {*@
+                                                                                <td style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;border:0;text-align:left;"> </td>
+                                                                            @*}*@
+
+                                                                            @*@if (EmploymentVerInfo.EV_HandledResponsibilities != null)
+                                                                            {*@
+                                                                                <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                                
+                                                                                @*<td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.AV_Any_Other_Cmmnts_AV</td>*@
+                                                                            </tr>
+
+
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">8 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; font-weight:bold;">Attitude, Honesty and personal reputation of the Applicant</td>
+                                                                            <td style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;border:0;text-align:left;">@ProvidedInfo.EV_Atude_Hon_Per_Aplcnt</td>
+                                                                            <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                            @*<td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.AV_Any_Other_Cmmnts_AV</td>*@
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">9 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; font-weight:bold;">Will you rehire the Applicant if situation arises in future?</td>
+                                                                            @if (EmploymentVerInfo != null)
+                                                                            {
+                                                                                if (EmploymentVerInfo.EV_EligibileForRehire != null)
+                                                                                {
+                                                                                    <td style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;border:0;text-align:left;"> </td>
+                                                                                    <td style="font-size:12px; font-family:Calibri;">@EmploymentVerInfo.EV_EligibileForRehire</td>
+                                                                                }
+                                                                                else if (EmploymentVerInfo.EV_EligibilityforRehire != null)
+                                                                                {
+                                                                                    <td style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;border:0;text-align:left;"> </td>
+                                                                                    <td style="font-size:12px; font-family:Calibri;">@EmploymentVerInfo.EV_EligibilityforRehire</td>
+                                                                                }
+                                                                                else if (EmploymentVerInfo.EV_EligibilityOfRehire != null)
+                                                                                {
+                                                                                    <td style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;border:0;text-align:left;"> </td>
+                                                                                    <td style="font-size:12px; font-family:Calibri;">@EmploymentVerInfo.EV_EligibilityOfRehire</td>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <td style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;border:0;text-align:left;"> </td>
+                                                                                    <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="font-size:12px; font-family:Calibri; color-adjust:exact; background:#c0c0c0;border:0;text-align:left;"> </td>
+                                                                                <td style="font-size:12px; font-family:Calibri;"></td>
+                                                                            }
+
+                                                                            @*<td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.AV_Any_Other_Cmmnts_AV</td>*@
+                                                                        </tr>
+
+                                                                        <tr class="padding-td">
+                                                                            <td style="font-size:12px; text-align:center; font-family:Calibri;font-weight:bold;">10 </td>
+                                                                            <td style="font-size:12px; font-family:Calibri; font-weight:bold;">Other Remarks:</td>
+                                                                            <td colspan="2" style="font-size:12px; font-family:Calibri;text-align:center;">@ProvidedInfo.ReportComment </td>
+
+                                                                            @*<td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.AV_Any_Other_Cmmnts_AV</td>*@
+                                                                        </tr>
+
+
+                                                                    }
+
+
+
+                                                                }
+
+                                                            </table>
+
+                                                        </td>
+                                                    </tr>
+
+
+
+                                                    
+                                                    @*<tr>
+                        <td colspan="4" style="font-weight:bold">Additional Comments by BGC agency. If Respondent’s signature is not obtained on this page, please give the reasons for the same here: Nil</td>
+                    </tr>*@
+                                                    @*@if (EmploymentVerInfo != null)
+                    {
+                        <tr><td colspan="4" style="font-weight:bold">@EmploymentVerInfo.ReportComment</td></tr>
+                    }*@
+
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" style=" border:0; text-align:left"><img src='@Url.Content("~/Images/Signature.JPG")'></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" style="padding-left:25px; font-size:12px; font-family:Calibri; border:hidden">
+                                                <label for="">
+                                                    Date:
+                                                    @if (Model.ReportDate != null)
+                                                    {<span>@Model.ReportDate.Value.ToString("dd-MMM-yyyy")</span> }
+                                                else
+                                                { <span>N/A</span>}
+                                                </label>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td @*style="border-right:2px solid #999999;"*@ align="left" valign="top">&nbsp;</td>
+                </tr>
+
+                <!--- Report Footer Address Include -->
+                @*@Html.Partial("_ReportFooterAddress")*@
+                <!--- Report Footer Address Include -->
+                <!--- Report Footer Include -->
+                @*@Html.Partial("_ReportFooter")*@
+                <!--- Report Footer Include -->
+            </table>
+        </page>
+
+                                                                    if (Model.CandidateDocList != null)
+                                                                    {
+                                                                        string DocumentType = string.Empty;
+                                                                        foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == ProvidedInfo.SubCheckRowID))
+                                                                        {
+                                                                            if (Doc.SubCheckRowID == ProvidedInfo.SubCheckRowID)
+                                                                            {
+                                                                                FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                                                                                if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png") || fin.Extension.ToLower().Contains(".jpeg")))
+                                                                                {
+                        <page id="PrintSrc" size="A4">
+                            <div style="page-break-after:always ;"></div>
+                            <table width="793" cellspacing="0" cellpadding="0" align="center" border="0" style="border:3px solid #999999; align-content:center">
+                                <!--- Report Header Include -->
+                                @*@Html.Partial("_ReportHeader")*@
+                                <!--- Report Header Include -->
+                                <tr>
+                                    @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                    <td valign="top" colspan="2" align="center" valign="bottom">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td valign="top">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr><td width="20%" align="right"><img src='@Url.Content("/Images/footer-logo.jpg")' height="60"></td></tr>
+                                                        <tr>
+                                                            <td>
+                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                    <tr>
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                        @*@if (Doc.DocumentType == "Offer Letter")
+        {
+            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT CONFIRMATION – CURRENT EMPLOYMENT</p></td>
+        }*@
+                                                                        if (DocumentType != Doc.DocumentType)
+                                                                        {
+                                                                        if (ProvidedInfo.SubCheckRowID == 68)
+                                                                        {
+                                                                        if (Doc.DocumentType == "Offer Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Offer Letter)</p></td>
+
+                                                                        }
+                                                                        else if (Doc.DocumentType == "Appointment Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Appointment Letter)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Deputation Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Deputation Letter)</p></td>
+
+                                                                        }
+
+
+                                                                        else if (Doc.DocumentType == "Experience Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Experience Letter)</p></td>
+
+                                                                        }
+
+
+                                                                        else if (Doc.DocumentType == "Relieving Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Relieving Letter)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Acceptance of Resignation")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Acceptance of Resignation)</p></td>
+
+                                                                        }
+
+
+                                                                        else if (Doc.DocumentType == "Work Experience")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Work Experience)</p></td>
+
+                                                                        }
+                                                                        else if (Doc.DocumentType == "Relieving Cum Experience Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Relieving Cum Experience Letter)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Employment Confirmation")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT CONFIRMATION – CURRENT EMPLOYMENT</p></td>
+
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@Doc.DocumentType</p></td>
+
+                                                                        }
+
+                                                                        @*else if (Doc.DocumentType == "Employment Confirmation")
+        {
+            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">Employment Confirmation </p></td>
+
+        }*@
+
+                                                                        }
+
+                                                                        if (ProvidedInfo.SubCheckRowID == 69)
+                                                                        {
+                                                                        if (Doc.DocumentType == "Offer Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Offer Letter)</p></td>
+
+                                                                        }
+                                                                        else if (Doc.DocumentType == "Appointment Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Appointment Letter)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Deputation Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Deputation Letter)</p></td>
+
+                                                                        }
+
+
+                                                                        else if (Doc.DocumentType == "Experience Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Experience Letter)</p></td>
+
+                                                                        }
+
+
+                                                                        else if (Doc.DocumentType == "Relieving Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Relieving Letter)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Acceptance of Resignation")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Acceptance of Resignation)</p></td>
+
+                                                                        }
+
+
+                                                                        else if (Doc.DocumentType == "Work Experience")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Work Experience)</p></td>
+
+                                                                        }
+                                                                        else if (Doc.DocumentType == "Relieving Cum Experience Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Relieving Cum Experience Letter)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Employment Confirmation")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT VERIFICATION - PREVIOUS  EMPLOYMENT-I</p></td>
+
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@Doc.DocumentType</p></td>
+
+                                                                        }
+
+                                                                        @*else if (Doc.DocumentType == "Employment Confirmation")
+        {
+            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">Employment Confirmation </p></td>
+
+        }*@
+
+                                                                        }
+
+                                                                        if (ProvidedInfo.SubCheckRowID == 70)
+                                                                        {
+                                                                        if (Doc.DocumentType == "Offer Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Offer Letter)</p></td>
+
+                                                                        }
+                                                                        else if (Doc.DocumentType == "Appointment Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Appointment Letter)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Deputation Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Deputation Letter)</p></td>
+
+                                                                        }
+
+
+                                                                        else if (Doc.DocumentType == "Experience Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Experience Letter)</p></td>
+
+                                                                        }
+
+
+                                                                        else if (Doc.DocumentType == "Relieving Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Relieving Letter)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Acceptance of Resignation")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Acceptance of Resignation)</p></td>
+
+                                                                        }
+
+
+                                                                        else if (Doc.DocumentType == "Work Experience")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Work Experience)</p></td>
+
+                                                                        }
+                                                                        else if (Doc.DocumentType == "Relieving Cum Experience Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Relieving Cum Experience Letter)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Employment Confirmation")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT VERIFICATION - PREVIOUS  EMPLOYMENT-II</p></td>
+
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@Doc.DocumentType</p></td>
+
+                                                                        }
+
+                                                                        @*else if (Doc.DocumentType == "Employment Confirmation")
+        {
+            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">Employment Confirmation </p></td>
+
+        }*@
+
+                                                                        }
+
+                                                                        if (ProvidedInfo.SubCheckRowID == 71)
+                                                                        {
+                                                                        if (Doc.DocumentType == "Offer Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Offer Letter)</p></td>
+
+                                                                        }
+                                                                        else if (Doc.DocumentType == "Appointment Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Appointment Letter)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Deputation Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Deputation Letter)</p></td>
+
+                                                                        }
+
+
+                                                                        else if (Doc.DocumentType == "Experience Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Experience Letter)</p></td>
+
+                                                                        }
+
+
+                                                                        else if (Doc.DocumentType == "Relieving Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Relieving Letter)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Acceptance of Resignation")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Acceptance of Resignation)</p></td>
+
+                                                                        }
+
+
+                                                                        else if (Doc.DocumentType == "Work Experience")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Work Experience)</p></td>
+
+                                                                        }
+                                                                        else if (Doc.DocumentType == "Relieving Cum Experience Letter")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT DOCUMENT (Relieving Cum Experience Letter)</p></td>
+
+                                                                        }
+
+                                                                        else if (Doc.DocumentType == "Employment Confirmation")
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">EMPLOYMENT VERIFICATION - PREVIOUS  EMPLOYMENT-III</p></td>
+
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@Doc.DocumentType</p></td>
+
+                                                                        }
+
+                                                                        @*else if (Doc.DocumentType == "Employment Confirmation")
+        {
+            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">Employment Confirmation </p></td>
+
+        }*@
+
+                                                                        }
+                                                                        DocumentType = Doc.DocumentType;
+                                                                        }
+
+
+                                                                        @*<td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>*@
+                                                                    </tr>
+                                                                    <tr><td colspan="2">&nbsp;</td></tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td valign="top">&nbsp;</td>
+                                                        </tr>
+                                                        <tr style="text-align:center">
+                                                            <td valign="top" style="border:3px solid #000;padding:5px;">
+                                                                @{
+                                                                    FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                    System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                    if (image.Height > 600)
+                                                                    {
+                                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                    }
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>&nbsp;</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                                </tr>
+                                <!--- Report Footer Address Include -->
+                                @*@Html.Partial("_ReportFooterAddress")*@
+                                <!--- Report Footer Address Include -->
+                                <!--- Report Footer Include -->
+                                @*@Html.Partial("_ReportFooter")*@
+                                
+                               
+                                <!--- Report Footer Include -->
+                            </table>
+                        </page>
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,48 @@
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    var list = Model.RiskFactorInfoModel.Where(x => x.RiskType == "Observation").GroupBy(x => x.PersonalRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+}
+
+@if (Model.ClientRowID == 1767)
+{
+    if (list != null)
+    {
+        <page id="PrintSrc" size="A4">
+            <div style="page-break-after:always;"></div>
+            <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; width:100%;">
+                <tr>
+                    <td valign="top" style="height:50rem;">
+                        <table cellpadding="2" cellspacing="5" id="tblDemo" style="width:100%;">
+                            <tr>
+                                <td style="padding: 35px; padding-bottom: 10px;" colspan="3">
+                                    <p style="font-size: 18px;">
+                                        The applicant is suitable for conditional onboarding with financial and reputational monitoring during the first operational year.
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 35px; padding-bottom: 10px;" colspan="3">
+                                    <p style="color: #55419E; font-size: 34px; font-weight: bold; "> 6. Recommendations </p>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                @foreach (var item in list)
+                                {
+                                    <td style="padding: 35px; padding-bottom: 10px; font-size: 18px;" colspan="3">
+                                        <p style="color: #55419E; font-weight: bold; "> @Html.Raw(item.RiskFactor) </p>
+                                    </td>
+                                }
+
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </page>
+    }
+
+}

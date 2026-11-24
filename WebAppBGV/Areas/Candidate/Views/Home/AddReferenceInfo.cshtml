@@ -1,0 +1,481 @@
+﻿
+@model dynamic
+@{
+    ViewBag.Title = "Add Reference Info";
+    Layout = "~/Areas/Candidate/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "Home", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+    string msg = "";
+    if (Request.QueryString["ErrorMsg"] != null)
+    {
+        //hyperLink = Html.ActionLink("linkTitle", "AllocatedDataEntryJob", "ProvidedInfo", new { CaseStatus = Request.QueryString["Casestatus"].ToString() }, new { @class = "headerbacklink" }).ToString();
+        msg = Request.QueryString["ErrorMsg"].ToString();
+    }
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+    string Candidatedocvisibilty = ViewBag.Candidatedocvisibilty;
+
+    PersonalRowid = @ViewBag.PersonalRowid;
+    SubCheckId = @ViewBag.SubCheckId;
+    clientRowId = @ViewBag.clientRowId;
+    string ClientID = WebAppBGV.CommonMethods.clsCommonMethods.PDecrypt(clientRowId);
+
+}
+@section LeftNavigation{ @Html.Partial("_NavLeftCandidateCaseInfoProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@*@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }*@
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+@if (ViewBag.ErrorMsg != null)
+{
+    string err = @ViewBag.ErrorMsg.ToString();
+    string[] err2 = err.Split(',');
+    <script>
+        Swal.fire({
+            icon: 'info',
+            title: 'Mandatory Fields.',
+            timer: 5000,
+            html: '<div class="errormsg" style="text-align:left;"><ol type="1">@foreach(String item in err2){<li> @item</li> }</ol></div>'
+       })
+    </script>
+}
+@if (ViewBag.Success != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'success',
+            html:'<div class="errormsg">@ViewBag.Success.ToString()</div>',
+            showConfirmButton: false,
+            timer: 5000
+        })
+    </script>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <script>
+Swal.fire({
+        icon: 'error',
+        timer: 5000,
+        showConfirmButton: false,
+        html: '<div style="color:#A32D2D; font-weight:500;">@TempData["ErrorMessage"].ToString()</div>'    });
+    </script>
+}
+@if (ClientID == "559")
+{
+    if (ViewBag.Information != null)
+    {
+        <script>
+        Swal.fire({
+            icon: 'info',
+            html:'<div class="errormsg">@ViewBag.Information.ToString()</div>',
+            showConfirmButton: false,
+            timer: 20000
+        })
+        </script>
+    }
+
+}
+@if (ClientID == "1680")
+{
+
+    if (ViewBag.packagename != null)
+    {
+        <div class="row row-sm ps-2">
+            <div class="col-md-12 d-flex mt-3">
+                @if (ViewBag.packagename == "VSSPL_Package G1(07YrsCRC_1YrsEMP_EDUH_PAN_Drug)")
+                {
+                    <p class="text-danger align-content-center">
+                        <b>Note:-</b>
+                    </p>
+                    <p class="text-danger align-content-center ps-2">
+                        Kindly Fill Details of 07 Yrs Address details for Criminal Check, Last 1 Year employments, Highest Education and PAN Card and Drug Test)
+                    </p>
+                }
+                @if (ViewBag.packagename == "VSSPL_Package G2 (10YrsCRC_7YrsEMP_EDUH_ID)")
+                {
+                    <p class="text-danger align-content-center">
+                        <b>Note:-</b>
+                    </p>
+                    <p class="text-danger align-content-center ps-2">
+                        Kindly Fill Details of 10 Yrs Address details for Criminal Check, Last 7 Year employments, Highest Education and PAN / Passport Details)
+
+                    </p>
+                }
+                @if (ViewBag.packagename == "VSSPL_Package G3 (10YrsCRC_10YrsEMP_EDUH_PAN_GSE_CUR-ADD_PER-ADD)")
+                {
+                    <p class="text-danger align-content-center">
+                        <b>Note:-</b>
+                    </p>
+                    <p class="text-danger align-content-center ps-2">
+                        Kindly Fill Details of 10 Yrs Address details for Criminal Check, Last 10 Year employments, Highest Education and PAN / Passport Details, Current and Permanent Adress Details)
+                    </p>
+                }
+                @if (ViewBag.packagename == "VSSPL_Package G4 (7YrsCRC_7YrsEMP_2EDU-PG-UG)")
+                {
+                    <p class="text-danger align-content-center">
+                        <b>Note:-</b>
+                    </p>
+                    <p class="text-danger align-content-center ps-2">
+                        Kindly Fill Details of 07 Yrs Address details for Criminal Check, Last 7 Year employments, Highest Education & Second EDU UG)
+
+                    </p>
+                }
+                @if (ViewBag.packagename == "VSSPL_Package G5 (7YrsCRC_10YrsEMP_5EDU_PG_UG_Diploma_12_10_PAN_Drug)")
+                {
+                    <p class="text-danger align-content-center">
+                        <b>Note:-</b>
+                    </p>
+                    <p class="text-danger align-content-center ps-2">
+                        Kindly Fill Details of 07 Yrs Address details for Criminal Check, Last 10 Year employments, Education (PG_UG_Diploma_12_10) and PAN Details, Drug)
+
+                    </p>
+                }
+                @if (ViewBag.packagename == "VSSPL_Package G6 (7YrsCRC_1YrsEMP)")
+                {
+                    <p class="text-danger align-content-center">
+                        <b>Note:-</b>
+                    </p>
+                    <p class="text-danger align-content-center ps-2">
+                        Kindly Fill Details of 07 Yrs Address details for Criminal Check, Last 1 Year employments
+
+                    </p>
+                }
+
+            </div>
+        </div>
+    }
+
+
+}
+
+<div class="container-fluid form_container">
+
+    @using (Html.BeginForm("AddReferenceInfo", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+        @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+        <input id="SubCheckId" type="hidden" value=@SubCheckId>
+        @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+        <input id="clientRowId" type="hidden" value=@clientRowId>
+        @Html.Hidden("clientRowId", clientRowId.ToString())
+        @Html.ValidationSummary()
+
+        foreach (var category in Model)
+        {
+            <div class="row row-sm ps-3">
+
+                @{
+                    string[] nm = category.Key.Split('_');
+                    if (nm[0] != "document")
+                    {
+                        if (@nm[2] == "textbox")
+                        {
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    @nm[1]
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <sup class="text-danger">*</sup>
+                                        }
+                                    }
+                                </label>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                <span class="text-danger tx-13"> @nm[4] </span>
+                                <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                            </div>
+                        }
+                        if (@nm[2] == "dropdown")
+                        {
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    @nm[1]
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <sup class="text-danger">*</sup>
+                                        }
+                                    }
+                                </label>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                <span class="text-danger tx-13"> @nm[4] </span>
+                                @{
+                                    string[] nmOption = nm[7].Split(',');
+                                }
+                                <select class="form-select" name=@nm[0] id=@nm[0]>
+                                    @for (int i = 0; i < nmOption.Length; i++)
+                                    {
+                                        if (@nmOption[i].Trim() == @nm[6])
+                                        {
+                                            <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                        }
+                                        if (@nmOption[i].Trim() != @nm[6])
+                                        {
+                                            <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        }
+                        if (@nm[2] == "checkbox")
+                        {
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    @nm[1]
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <sup class="text-danger">*</sup>
+                                        }
+                                    }
+                                </label>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                <span class="text-danger tx-13"> @nm[4] </span>
+                                @{
+                                    if (@nm[6] == "TRUE")
+                                    {
+                                        <input type="checkbox" id=@nm[0] name=@nm[0] value="checked" checked>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" id=@nm[0] name=@nm[0] value=@nm[0]>
+                                    }
+                                }
+
+                            </div>
+                        }
+                        if (@nm[2] == "fileUpload")
+                        {
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mt-3 d-flex align-items-center">
+                                <label class="form-label mg-b-0 fw-bolder">
+                                    @nm[1]
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <sup class="text-danger">*</sup>
+                                        }
+                                    }
+                                </label>
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 mt-3">
+                                <span class="text-danger tx-13"> @nm[4] </span>
+                                <input class="form-control dropify" type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        }
+        <div class="row">
+            <div class="col-sm-12 cytoscape-parent">
+                <div class="w-400 h-400 d-inline-block" id="cytoscape-container"></div>
+            </div>
+        </div>
+
+        <div class="row row-sm justify-content-center d-flex mt-3 mb-3">
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 text-center mb-2">
+                <input class="submit-btn ps-5 pe-5" type="submit" value="Save" id="btnSave" />
+            </div>
+        </div>
+    }
+
+    <div class="row row-sm d-flex justify-content-between ms-0">
+        @{
+            string[] NextPreviousButtonsURL = (string[])(Session["NextPreviousButtonsURL"]);
+            for (int I = 0; I < NextPreviousButtonsURL.Length; I++)
+            {
+                if (NextPreviousButtonsURL[I] != null)
+                {
+                    string[] Nenu1 = NextPreviousButtonsURL[I].Split('|');
+                    string NextURL = Nenu1[0];
+                    if (Nenu1[0] == "End")
+                    {
+                        NextURL = Nenu1[1];
+                    }
+                    if (SubCheckId == Nenu1[4].ToString())
+                    {
+                        if (Nenu1[2] != "Start")
+                        {
+                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                <a href="@Nenu1[1]" class="previous_btn text-center">Previous<span></span></a>
+                            </div>
+                        }
+                        else if (Nenu1[2] == "Start")
+                        {
+                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                <a href="~/Candidate/Home/UpdateCandidateDetails/@PersonalRowid" class="previous_btn text-center">Previous<span></span></a>
+                            </div>
+                        }
+
+                        if (Nenu1[3] != "End")
+                        {
+                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                <a href="@NextURL" class="next_btn text-center nextbtn" id="nextss">Next<span></span></a>
+                            </div>
+                        }
+                        else if (Nenu1[3] == "End")
+                        {
+                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-3">
+                                <a id="rtr" href="~/Candidate/Home/Digital_LOA/@PersonalRowid" class="next_btn text-center finalbtn"><span>Next</span></a>
+                            </div>
+                        }
+                    }
+                }
+            }
+        }
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script src="~/Scripts/loginScript.js"></script>
+    <script>
+        //validation for candidatename
+        document.getElementById('158').onkeypress = function (e) {
+            if (!(/[a-z ]/i.test(String.fromCharCode(e.keyCode)))) {
+                e.preventDefault();
+                return false;
+            }
+        }
+
+        document.getElementById('109').onkeypress = function (e) {
+            if (!(/[a-z ]/i.test(String.fromCharCode(e.keyCode)))) {
+                e.preventDefault();
+                return false;
+            }
+        }
+
+        document.getElementById('189').onkeypress = function (e) {
+            if (!(/[a-z ]/i.test(String.fromCharCode(e.keyCode)))) {
+                e.preventDefault();
+                return false;
+            }
+        }
+
+        //validation for candidatename
+        //$("#177").keypress(function (e) {
+        //    $("177").attr("min", "10");
+        //    var valueLength = this.value.length;
+        //    if (valueLength == 10) {
+        //        return false;
+        //    }
+        //    var kk = e.which;
+        //    if (kk < 48 || kk > 57)
+        //        e.preventDefault();
+        //});
+    </script>
+    <script>
+        $("#btnSave").click(function () {
+            var obj = $('form input[type="text"]').NormalizedString();
+            if (obj == false) {
+                return false;
+            }
+        });
+
+    </script>
+    <script>
+        //validation for Mobile Number and Pincode
+        $('#177').keypress(function (event) {
+            // Allow only numbers
+            var charCode = (event.which) ? event.which : event.keyCode;
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                return false;
+            }
+
+            // Limit input to 10 digits
+            var maxLength = 10;
+            var currentValue = $(this).val();
+            if (currentValue.length >= maxLength) {
+                return false;
+            }
+        });
+
+        $("#177")
+            .on("input", function () {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            })
+            .on("paste copy cut drop", function (e) {
+                e.preventDefault();
+            });
+
+
+
+
+        $("#189").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        })
+            .on("paste copy cut drop", function (e) {
+                e.preventDefault();
+            });
+
+      
+
+        $("#581").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        })
+            .on("paste copy cut drop", function (e) {
+                e.preventDefault();
+            });
+
+
+        function file_Doc_Validation(fileInput) {
+
+            var fileName = fileInput.value.split('\\').pop();
+
+            // Block dangerous double extensions
+            var doubleExtensionPattern = /\.(php|asp|aspx|jsp|exe|bat|cmd|sh)\./i;
+
+            if (doubleExtensionPattern.test(fileName)) {
+                alert('Double extension files are not allowed.');
+                fileInput.value = '';
+                return false;
+            }
+
+            if ((fileName.match(/\./g) || []).length > 1) {
+                alert("Double extension files are not allowed.");
+                fileInput.value = '';
+                return false;
+            }
+
+
+        }
+
+        $("#107").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        })
+            .on("paste copy cut drop", function (e) {
+                e.preventDefault();
+            });
+
+        $("#109").on("input", function () {
+            var regexp = /[^a-zA-Z0-9\s-_/(),]/g;
+            if ($(this).val().match(regexp)) {
+                $(this).val($(this).val().replace(regexp, ''));
+            }
+        })
+            .on("paste copy cut drop", function (e) {
+                e.preventDefault();
+            });
+    </script>
+}

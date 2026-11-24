@@ -1,0 +1,330 @@
+﻿
+@{
+    ViewBag.Title = "Manager Case Allocation To TeamLeader";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "Verification", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+
+@{
+    @*//@ViewBag.NavigationBtnAddNew
+        string faIconAddNew = string.Format("<i class='fa fa-plus-circle' aria-hidden='true'></i> Add Branch Office");
+        string hyperLinkAddNew = Html.ActionLink("linkTitle", "BranchOffice", "Master", new { new { @class = "btn bun-bg btn-default" }).ToString();
+        ViewBag.NavigationBtnAddNew = new HtmlString(hyperLinkAddNew.ToString().Replace("linkTitle", faIconAddNew));*@
+
+
+    //@ViewBag.NavigationBtnExportExcel
+    string tatdays1 = "";
+    string CheckStatus1 = "";
+    string AllocatedToTL1 = "";
+    string statusid = ViewBag.statusid;
+    if (Request.QueryString["tatdays"] != null)
+    {
+        tatdays1 = Request.QueryString["tatdays"].ToString();
+    }
+
+    if (Request.QueryString["AllocatedToTL"] != null)
+    {
+        AllocatedToTL1 = Request.QueryString["AllocatedToTL"].ToString();
+    }
+    if (Request.QueryString["CheckStatus"] != null)
+    {
+        CheckStatus1 = @Request.QueryString["CheckStatus"].ToString();
+    }
+    string hyperLinkExportExcel = "";
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    if (Session["Designation"].ToString() == "Manager-Add" || Session["Designation"].ToString() == "Manager-SPL" || Session["Designation"].ToString() == "Manager-Ide" || Session["Designation"].ToString() == "Manager-Cri" || Session["Designation"].ToString() == "Manager-Edu" || Session["Designation"].ToString() == "Manager-Emp" || Session["Designation"].ToString() == "Manager-Ref")
+    {
+        hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportChecksReport", "Verification", new { CheckStatus = CheckStatus1, tatdays = tatdays1, AllocatedToTL = AllocatedToTL1, statusid = statusid }, new { @class = "btn bun-bg btn-default" }).ToString();
+    }
+    else
+    {
+        hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportAddressMge", "Verification", new { CheckStatus = CheckStatus1, tatdays = tatdays1, AllocatedToTL = AllocatedToTL1 }, new { @class = "btn bun-bg btn-default" }).ToString();
+
+    }
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+    @*//@ViewBag.NavigationBtnExportWord
+        //string faIconExportWord = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Word");
+        //string hyperLinkExportWord = Html.ActionLink("linkTitle", "ExportCountryInWord", "Master", null, new { class = "btn bun-bg btn-default" }).ToString();
+        //ViewBag.NavigationBtnExportWord = new HtmlString(hyperLinkExportWord.ToString().Replace("linkTitle", faIconExportWord));
+
+        //@ViewBag.NavigationBtnBackExportPDF
+        //string faIconExportPDF = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export PDF");
+        //string hyperLinkExportPDF = Html.ActionLink("linkTitle", "ExportCountryInPDF", "Master", null, new { class = "btn bun-bg btn-default" }).ToString();
+        //ViewBag.NavigationBtnBackExportPDF = new HtmlString(hyperLinkExportPDF.ToString().Replace("linkTitle", faIconExportPDF));*@
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("ReallocationManagerAllocationToTeamLeader", "Verification", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Client Name :</label>
+                                    @*<div class="col-md-4">
+                                        @Html.DropDownList("ClientRowID",
+                       new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                       "-- Select Client -- ",
+                       new { @class = "form-control", })
+                                    </div>*@
+                                    <label class="col-md-2 control-label">Keyword :</label>
+                                    <div class="col-md-4">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, Ref No,Company name..." })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Select TeamLeader :</label>
+                                    <div class="col-md-4">
+
+                                        @Html.DropDownList("AllocateTL",
+            new SelectList(ViewBag.depTeamLeader, "TeamMemberRowID", "TeamMemberName"),
+            "-- Select Member -- ",
+            new { @class = "form-control" })
+                                    </div>
+                                    @Html.Hidden("VerificationIds", null)
+                                    @Html.Hidden("statusid", statusid)
+
+                                </div>
+                                <div class="all-button-bg">
+                                    <input class="btn bun-bg btn-default" type="submit" onclick="SearchFunction()" value="Search" />
+                                    <input class="btn bun-bg btn-default" type="submit" id="btnAllocation" onclick="return validateForm()" value="Allocate" />
+                                </div>
+                            </div>
+                            if (Request.QueryString["CheckStatus"] != null)
+                            {
+                                @Html.Hidden("CheckStatus", Request.QueryString["CheckStatus"].ToString())
+                            }
+
+
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.PQVerificationInfo != null && Session["Designation"].ToString() == "Manager-Edu")
+                {
+                <div class="row">
+                    <div class="col-md-12 table table-striped">
+                        @{
+
+        WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+        grid.Bind(Model.PQVerificationInfo, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                        }
+
+                        @{
+
+                            @grid.GetHtml(
+          htmlAttributes: new { id = "grid", @class = "table" },
+          headerStyle: "thead-inverse",
+          rowStyle: "ordertxt",
+          footerStyle: "custpaging",
+          mode: WebGridPagerModes.All,
+          columns: new[]
+{
+grid.Column(header: "{checkall}",format: @<text> <input type="checkbox" value="@(item.VerificationRowID+"_"+item.CheckFamilyRowID)" name="verificationId" class="verificationId" /> </text>,style:""),
+
+                                                                                    grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                                                                    grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-2"),
+                                                                                    grid.Column(columnName: "CompanyRefNo", header: "Securitas ID", canSort: false, style:"td-1"),
+
+                                                                                    grid.Column(columnName: "PersonalName", header: "Candidate Name", canSort: false, style:"td-1"),
+                                                                                    grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-1"),
+                                                                                    grid.Column("Ageing", format: (item) => item.InternalOutDate != null ? (item.InternalOutDate - DateTime.Now).Days : "", canSort: false,style:""),
+                                                                                    grid.Column("OutDate", "TAT", format: (item) => item.OutDate != DateTime.MinValue ? item.OutDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"td-1"),
+                                                                                   // grid.Column(columnName: "SecuritasSPOC", header: "SPOC", canSort: false, style:"td-1"),
+                                                                                    grid.Column(columnName: "AllocatedTLName", header: "AllocatedTL", canSort: false, style:"td-1"),
+                                                                                    grid.Column(columnName: "AllocatedTMName", header: "AllocatedTM", canSort: false, style:"td-1"),
+                                                                                    grid.Column(columnName: "AllocatedQCName", header: "AllocatedQC", canSort: false, style: "td-1"),
+                                                                                    grid.Column(header: "Action", format: (item) =>
+                                                                                    {
+                                                                                    var link = Html.ActionLink("History", "CheckActionHistory", "Verification", new { scid = item.SubCheckRowID, pe = item.PersonalRowID }, new { @class = "iframeActionHistories cboxElement callbacks" });
+                                                                                    return link;
+                                                                                    }, style: "edit "),
+                                                                                    grid.Column(columnName: "CheckStatus", header: "Status", canSort: false, style: "td-1")
+})
+
+                        }
+
+                        <div class="total-record">Total Records: @Model.TotalRecords</div>
+
+                    </div>
+                </div>
+                }
+                @if (Model != null && Model.PQVerificationInfo != null && Session["Designation"].ToString() == "Manager-Emp")
+                {
+                    <div class="row">
+                        <div class="col-md-12 table">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.PQVerificationInfo, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                  htmlAttributes: new { id = "grid", @class = "table" },
+                                  headerStyle: "thead-inverse",
+                                  rowStyle: "ordertxt",
+                                  footerStyle: "custpaging",
+                                  mode: WebGridPagerModes.All,
+                                  columns: new[]
+                                  {
+                                                grid.Column(header: "{checkall}",format: @<text> <input type="checkbox" value="@(item.VerificationRowID+"_"+item.CheckFamilyRowID)" name="verificationId" class="verificationId" /> </text>,style:"td-1"),
+                                                                                                                                                                                                                                                                                                                                                                grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                                                                                                                                                                                                                                                                                                                                                grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-2"),
+                                                                                                                                                                                                                                                                                                                                                                grid.Column(columnName: "CompanyRefNo", header: "Securitas ID", canSort: false, style:"td-2"),
+                                                                                                                                                                                                                                                                                                                                                                grid.Column(columnName: "PersonalName", header: "Candidate Name", canSort: false, style:"td-2"),
+                                                                                                                                                                                                                                                                                                                                                                grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-2"),
+                                                                                                                                                                                                                                                                                                                                                                grid.Column(columnName: "UAN", header: "UAN", canSort: false, style:"td-2"),
+
+                                                                                                                                                                                                                                                                                                                                                                   grid.Column("Check Status", canSort: false, format: (item)=> {
+
+                                                                                                                                                                                                                                                                                                                                             var link=@Html.ActionLink("Show", "ClientCheckStatus", "ClientServicing", new { CompanyRefNo=item.CompanyRefNo    }, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" });
+                                                                                                                                                                                                                                                                                                                                                                                return link;}, style:"td-2") ,
+
+                                                                                                                                                                                                                                                                                                                       }
+                                                                                                                                                                                                                                                                                                                )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                }
+                else if (Model != null && Model.PQVerificationInfo != null && Session["Designation"].ToString() != "Manager-Edu")
+                {
+                    <div class="row">
+                        <div class="col-md-12 table">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.PQVerificationInfo, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                  htmlAttributes: new { id = "grid", @class = "table" },
+                                  headerStyle: "thead-inverse",
+                                  rowStyle: "ordertxt",
+                                  footerStyle: "custpaging",
+                                  mode: WebGridPagerModes.All,
+                                  columns: new[]
+                                  {
+                                                grid.Column(header: "{checkall}",format: @<text> <input type="checkbox" value="@(item.VerificationRowID+"_"+item.CheckFamilyRowID)" name="verificationId" class="verificationId" /> </text>,style:""),
+                                                                                                                                                                                                                                                                                                                                                                grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                                                                                                                                                                                                                                                                                                                                                grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-2"),
+                                                                                                                                                                                                                                                                                                                                                                grid.Column(columnName: "CompanyRefNo", header: "Securitas ID", canSort: false, style:"td-2"),
+                                                                                                                                                                                                                                                                                                                                                                grid.Column(columnName: "PersonalName", header: "Candidate Name", canSort: false, style:"td-2"),
+                                                                                                                                                                                                                                                                                                                                                                grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-2"),
+
+                                                                                                                                                                                                                                                                                                                                                                   grid.Column("Check Status", canSort: false, format: (item)=> {
+
+                                                                                                                                                                                                                                                                                                                                             var link=@Html.ActionLink("Show", "ClientCheckStatus", "ClientServicing", new { CompanyRefNo=item.CompanyRefNo    }, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" });
+                                                                                                                                                                                                                                                                                                                                                                                return link;}, style:"td-2") ,
+
+                                                                                                                                                                                                                                                                                                                       }
+                                                                                                                                                                                                                                                                                                                )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @*<script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+        <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+        <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+        <link href="~/Content/colorbox.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery.colorbox-min.js"></script>*@
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "400px", height: "80%" });
+            $(".iframeUpdateStatus").colorbox({ iframe: true, width: "70%", height: "80%" });
+            // 1st replace first column header text with checkbox
+            $("#grid th").each(function () {
+                if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                    $(this).text('');
+                    $("<input/>", { type: "checkbox", id: "select_all", value: "" }).appendTo($(this));
+                    //$(this).append("<span>Select All</span>");
+                }
+            });
+
+            //2nd click event for header checkbox for select /deselect all
+            $('#select_all').change(function () {
+                $('input[class="verificationId"]').prop('checked', $(this).prop('checked'));
+                var VerificationIds = '';
+                $('input[class="verificationId"]').each(function (index, value) {
+                    if (this.checked) {
+                        var id = this.value.split('_');
+                        VerificationIds += id[0] + ',';
+                    }
+                });
+                //if (VerificationIds.length > 0 && OCVerIDs.length > 0) {
+                if (VerificationIds.length > 0) {
+                    VerificationIds = VerificationIds.substring(0, VerificationIds.length - 1);
+                } else {
+                    VerificationIds = '';
+                }
+                $('#VerificationIds').val(VerificationIds.trim());
+            });
+        });
+
+        function SearchFunction() {
+            $('#VerificationIds').val("");
+        }
+
+        //3rd click event for checkbox of each row
+        $(document).on('change', 'input[class="verificationId"]', function (e) {// on change of state
+            var VerificationIds = '';
+            $('input[class="verificationId"]').each(function (index, value) {
+                if (this.checked) {
+                    var id = this.value.split('_');
+                    VerificationIds += id[0] + ',';
+                }
+            });
+
+            if (false == $(this).prop("checked")) { //if this item is unchecked
+                $("#select_all").prop('checked', false); //change "select all" checked status to false
+            }
+            //check "select all" if all checkbox items are checked
+            if ($('.verificationId:checked').length == $('.verificationId').length) {
+                $("#select_all").prop('checked', true);
+            }
+
+            //if (VerificationIds.length > 0 && OCVerIDs.length > 0) {
+            if (VerificationIds.length > 0) {
+                VerificationIds = VerificationIds.substring(0, VerificationIds.length - 1);
+            } else {
+                VerificationIds = '';
+            }
+            $('#VerificationIds').val(VerificationIds.trim());
+        })
+
+        function validateForm() {
+            if ($("#AllocateTL").val() == 0) {
+                alert("Select Team Leader For Allocate.");
+                return false;
+            }
+
+            var count = 0;
+            $('input[class="verificationId"]').each(function (index, value) {
+                if (this.checked) { count += 1; }
+            });
+
+            if (count == 0) {
+                alert("Please select atleast one case.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+}

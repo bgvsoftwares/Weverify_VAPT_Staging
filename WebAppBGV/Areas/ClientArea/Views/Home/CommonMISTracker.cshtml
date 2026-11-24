@@ -1,0 +1,64 @@
+﻿@model  ViewModels.ProvidedInfoViewModel.AddPQPersonalBulkImportViewModel
+
+@{
+    ViewBag.Title = "Common MIS Tracker";
+    int ClientRowID = Convert.ToInt32(Session["ClientRowID"]);
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftProvidedInfo") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="container-fluid form_container">
+    <div class="row">
+        @if (ClientRowID == 992 || ClientRowID == 993 || ClientRowID == 994 || ClientRowID == 1125 || ClientRowID == 1243)
+        {
+            using (Html.BeginForm("CommonMISTrackerAcuity", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="row row-xs align-items-center mg-b-10">
+                    <div class="col-md-2">
+                        @Html.Label("Select Client", htmlAttributes: new { @class = "control-label required form-label mg-b-0 fw-bolder p-3" })
+                    </div>
+                    <div class="col-md-8 mg-t-5 mg-md-t-0">
+                        @Html.DropDownList(
+                         "ClientRowID",
+                         new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                         "-- Select Client --",
+                         new { @class = "form-control", id = "ClientRowID" })
+                    </div>
+                </div>
+
+                <div class="row row-xs align-items-center mt-4 justify-content-center">
+                    <div class="col-md-2">
+                        <input class="submit-btn btn-block rounded-0" type="submit" value="Export" id="ExportMIS" />
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-lg-12 col-md-12 ps-5">
+                @using (Html.BeginForm("CommonMISTracker", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="row row-xs align-items-center mt-4 justify-content-center">
+                        <div class="col-md-2">
+                            <input class="submit-btn btn-block rounded-0" type="submit" onclick="return validateForm()" value="Export" id="ExportMIS" />
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <script type="text/javascript">
+
+    </script>
+}

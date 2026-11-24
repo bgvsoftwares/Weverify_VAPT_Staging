@@ -1,0 +1,582 @@
+﻿
+@model ViewModels.ReportQCViewModel.InterimReportGenerateViewModel
+
+@if (Model != null && Model.EducationProvidedList != null && Model.EducationProvidedList.Count() > 0 && Model.AntecedentList != null && Model.AntecedentList.Count() > 0 && Model.EducationVerifiedList.Count()>0)
+{
+    foreach (var ProvidedInfo in Model.EducationProvidedList)
+    {
+        var EducationVerInfo = Model.EducationVerifiedList.Where(ver => ver.EducationRowID == ProvidedInfo.EducationRowID).FirstOrDefault();
+        var antecentList = Model.AntecedentList.Where(a => a.CheckFamilyRowID == ProvidedInfo.CheckFamilyRowID && a.SubCheckRowID == ProvidedInfo.SubCheckRowID).ToList();
+
+<page id="PrintSrc" size="A4">
+    <table width="793" height="1150" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999;page-break-before:always; ">
+        <!--- Report Header Include -->
+        @*@Html.Partial("_ReportHeader")*@
+        <!--- Report Header Include -->
+        <tr>
+            <td width="2%" align="left" valign="bottom" @*style="border-left:2px solid #999999;"*@>&nbsp;</td>
+            <td valign="top">
+                <table width="793" align="center" style="border-bottom:2px  #ccc;">
+                    <tr>
+                        <td width="85%">
+                            <table width="100%">
+                                @*<tr>
+                                                                <td style="
+                                    padding: 0 1%;" width="20%">
+                                                                    <p style="text-align: left;">
+                                                                        <strong>Subject Name:</strong>
+                                                                    </p>
+                                                                </td>
+                                                                <td style="
+                                    padding: 0 1%;" width="80%">
+                                                                    <p style="text-align: left;">
+                                                                        @Model.PersonalName
+                                                                    </p>
+                                                                </td>
+
+                                                            </tr>*@
+
+                                @*<tr>
+                                        <td style="padding: 0 1%; nowrap">
+                                            <p style="text-align: left; text-wrap:none">
+                                                <strong>Vendor Ref No.:</strong>
+                                            </p>
+                                        </td>
+                                        <td style="padding: 0 1%;">
+                                            <p style="text-align: left;">
+                                                @Model.CompanyRefNo
+                                            </p>
+                                        </td>
+                                    </tr>*@
+
+
+                                @*<tr>
+                                        <td style="padding: 0 1%;">
+                                            <p style="text-align: left;">
+                                                <strong>Vendor Name :</strong>
+                                            </p>
+                                        </td>
+                                        <td style="padding: 0 1%;">
+                                            <p style="text-align: left;">
+                                                Securitas-India
+                                            </p>
+                                        </td>
+                                    </tr>*@
+                            </table>
+                        </td>
+                        <td width="15%" align="right" valign="top" style="padding-top:2%;">
+                            <table>
+                                <tr>
+                                    <td rowspan="3" valign="bottom">
+                                        <img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40">
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                <table width="793" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;position: relative;
+    margin-left: 0;margin-right: 0; margin: auto;">
+
+
+                    <tr>
+
+                        <p style="text-align: center;">
+                            <strong>Education Verification</strong>
+
+                        </p>
+
+                        <p>&nbsp;</p>
+                        <table width="793" border="1" style="border-collapse:collapse;position: relative;
+    margin-left: 0;margin-right: 0; margin: auto;">
+                            <tbody>
+                                <tr>
+                                    <td colspan="2" style="border:hidden;border-right:initial"></td>
+
+                                    <td width="158" border="1" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p style="text-align: center;">
+                                            <strong>Check Status</strong>
+                                        </p>
+                                    </td>
+                                    <td width="158" style="background: @EducationVerInfo.ColorCode;color-adjust:exact;
+    padding: 0 1%;">
+                                        <p style="text-align: center;">
+                                            <strong>@EducationVerInfo.ColorName</strong>
+                                        </p>
+                                    </td>
+
+                                </tr>
+                            <tbody>
+                        </table>
+
+
+                        <table width="793" border="1" style="border-collapse:collapse;position: relative;
+    margin-left: 0;margin-right: 0; margin: auto;">
+                            <tbody>
+                                <tr>
+                                    <td width="158" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p style="text-align: center;">
+                                            <strong>Name of Subject</strong>
+                                        </p>
+                                    </td>
+                                    <td width="158" colspan="3" style="
+    padding: 0 1%;">
+                                        <p style="text-align: center;">
+                                            <strong>@Model.PersonalName</strong>
+                                        </p>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td width="158" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p style="text-align: center;">
+                                            <strong>Vendor Name Id</strong>
+                                        </p>
+                                    </td>
+                                    <td width="158" style="
+    padding: 0 1%;">
+                                        <p style="text-align: center;">
+                                            <strong>@Model.CompanyRefNo</strong>
+                                        </p>
+                                    </td>
+                                    <td width="158" style="background: #ccc;
+    padding: 0 1%;">
+                                        <p style="text-align: center;">
+                                            <strong>Client Reference Id/strong>
+</p>
+                                    </td>
+                                    <td width="158" style="
+    padding: 0 1%;">
+                                        <p style="text-align: center;">
+                                            <strong>@Model.ClientRefID</strong>
+                                        </p>
+                                    </td>
+                                </tr>
+
+
+                            </tbody>
+                        </table>
+
+                        <p>&nbsp;</p>
+
+
+                        <table width="793" border="1" style="border-collapse:collapse;position: relative;
+    margin-left: 0;margin-right: 0; margin: auto;">
+                            <tbody>
+                                <tr>
+                                    <td width="167" colspan="2" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p style="text-align: center;">
+                                            <strong>Details as per Subject’s Application Form</strong>
+                                        </p>
+                                    </td>
+                                    <td width="246" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p style="text-align: center;">
+                                            <strong>Verification Remarks</strong>
+                                        </p>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p>
+                                            <strong>Name of the Degree / Qualification & Specialization</strong>
+                                        </p>
+                                    </td>
+                                    <td width="246" style="padding: 0 1%;">
+                                        <p>@ProvidedInfo.EV_Degree_Name</p>
+                                    </td>
+                                    <td width="220" style="padding: 0 1%;">
+                                        @if (EducationVerInfo != null)
+                                        {
+                                            <p>@EducationVerInfo.EV_Degree_Name</p>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="158" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p>
+                                            <strong>
+                                                Full Time/ Part Time/ Distant Learning course
+                                                (Only Full Time course to be considered)
+                                            </strong>
+                                        </p>
+
+                                    </td>
+                                    <td width="158" style="padding: 0 1%;">
+                                        <p>@ProvidedInfo.EV_Mode_Of_Edu</p>
+                                    </td>
+                                    <td width="158" style="padding: 0 1%;">
+                                        @if (EducationVerInfo != null)
+                                        {
+                                            <p>@EducationVerInfo.EV_Mode_Of_Edu</p>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="158" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p>
+                                            <strong>
+                                                College/Institute
+                                            </strong>
+                                        </p>
+                                    </td>
+                                    <td width="158" style="padding: 0 1%;">
+                                        <p>@ProvidedInfo.EV_Colg_Schl_Inst_Name</p>
+                                    </td>
+                                    <td width="158" style="padding: 0 1%;">
+                                        @if (EducationVerInfo != null)
+                                        {
+                                            <p>@EducationVerInfo.EV_Colg_Schl_Inst_Name</p>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="158" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p>
+                                            <strong> University/Board</strong>
+                                        </p>
+                                    </td>
+                                    <td width="158" style="padding: 0 1%;">
+                                        <p>@ProvidedInfo.EV_Affl_University_Name</p>
+                                    </td>
+                                    <td width="158" style="padding: 0 1%;">
+                                        @if (EducationVerInfo != null)
+                                        {
+                                            <p>@EducationVerInfo.EV_Affl_University_Name</p>
+                                        }
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td width="158" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p>
+                                            <strong>
+                                                Roll No. / Registration No.
+                                            </strong>
+                                        </p>
+                                    </td>
+                                    <td width="158" style="padding: 0 1%;">
+                                        <p>@ProvidedInfo.EV_Enroll_RollNo</p>
+                                    </td>
+                                    <td width="158" style="padding: 0 1%;">
+                                        @if (EducationVerInfo != null)
+                                        {
+                                            <p>@EducationVerInfo.EV_Enroll_RollNo</p>
+                                        }
+                                    </td>
+                                    @*<td width="246" colspan="2">
+                                            <p>@EducationVerInfo.EV_Enroll_RollNo</p>
+                                        </td>*@
+
+                                </tr>
+
+                                <tr>
+                                    <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p>
+                                            <strong>Name & address of the Institute / College / University</strong>
+                                        </p>
+                                    </td>
+                                    <td width="158" style="padding: 0 1%;">
+                                        <p>@ProvidedInfo.EV_Colg_Schl_Inst_Name  @ProvidedInfo.EV_Colg_Schl_Inst_Add_ConDet</p>
+                                    </td>
+                                    <td width="158" style="padding: 0 1%;">
+                                        @if (EducationVerInfo != null)
+                                        {
+                                            <p>@EducationVerInfo.EV_Colg_Schl_Inst_Name  @EducationVerInfo.EV_Colg_Schl_Inst_Add_ConDet</p>
+                                        }
+                                    </td>
+                                    @*<td width="246" colspan="2">
+                                            <p> @EducationVerInfo.EV_Colg_Schl_Inst_Name  @EducationVerInfo.EV_Colg_Schl_Inst_Add_ConDet</p>
+                                        </td>*@
+
+                                </tr>
+
+                                <tr>
+                                    <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p>
+                                            <strong>Passing out Year</strong>
+                                        </p>
+                                    </td>
+                                    <td width="158" style="padding: 0 1%;">
+                                        <p>@ProvidedInfo.EV_Yr_Passing</p>
+                                    </td>
+                                    <td width="158" style="padding: 0 1%;">
+                                        @if (EducationVerInfo != null)
+                                        {
+                                            <p>@EducationVerInfo.EV_Yr_Passing</p>
+                                        }
+                                    </td>
+                                    @*<td width="246" colspan="2">
+                                            <p>@EducationVerInfo.EV_Yr_Passing</p>
+                                        </td>*@
+
+                                </tr>
+
+                                <tr>
+                                    <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p>
+                                            <strong>Date of Verification</strong>
+                                        </p>
+                                    </td>
+                                    <td width="246" colspan="2" style="padding: 0 1%;">
+                                        @if (EducationVerInfo.EV_Date_Time_Verf != null)
+                                        {
+                                            <p>@EducationVerInfo.EV_Date_Time_Verf.Value.ToString("dd MMMM yyyy")</p>
+                                        }
+
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+                                    <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p>
+                                            <strong>Name & Designation of the respondent from the University or Institute</strong>
+                                        </p>
+                                    </td>
+                                    <td width="246" colspan="2" style="padding: 0 1%;">
+                                        <p>@EducationVerInfo.EV_Refre_Name_Dsg</p>
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+                                    <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p>
+                                            <strong> Verifier Contact Details</strong>
+                                        </p>
+                                    </td>
+                                    <td width="246" colspan="2" style="padding: 0 1%;">
+                                        <p>@EducationVerInfo.EV_Refre_ConNo</p>
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+                                    <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p>
+                                            <strong>Autehnticity of University </strong>
+                                        </p>
+                                    </td>
+                                    <td width="246" colspan="2" style="padding: 0 1%;">
+                                        <p>@EducationVerInfo.EV_Colg_Unvrsty_Affl</p>
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+                                    <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p>
+                                            <strong>Mode of Verification </strong>
+                                        </p>
+                                    </td>
+                                    <td width="246" colspan="2" style="padding: 0 1%;">
+                                        <p>@EducationVerInfo.EV_Mode_of_Verf</p>
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+                                    <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p>
+                                            <strong>Document provided by employee </strong>
+                                        </p>
+                                    </td>
+                                    <td width="246" colspan="2" style="padding: 0 1%;">
+                                        <p>@EducationVerInfo.EV_Cand_Name_Supp_Edu_Doc</p>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p>
+                                            <strong>Remarks </strong>
+                                        </p>
+                                    </td>
+                                    <td width="246" colspan="2" style="padding: 0 1%;">
+                                        <p>@EducationVerInfo.ReportComment</p>
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+                                    <td width="167" style="background: #ccc; color-adjust:exact;
+    padding: 0 1%;">
+                                        <p>
+                                            <strong>Additional Comments </strong>
+                                        </p>
+                                    </td>
+                                    <td width="246" colspan="2" style="padding: 0 1%;">
+                                        <p>@EducationVerInfo.EV_Any_Other_Cmmnts_EduV</p>
+                                    </td>
+
+                                </tr>
+
+
+                            </tbody>
+                        </table>
+
+                        @*<p>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Education  Verification :
+                            </p>
+                            <p>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Attach document through which you are getting the authentication if the verification is done through physical
+                                <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  visit, where stamp and seal of the university should be there on the document verified.
+                            </p>
+                            <p>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;		Complete e-mail interaction details to be added in the report.
+                            </p>
+                            <p>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;o &nbsp;  Verification from the College on the letter head or  Verification received from University official e-mail ID
+
+                                <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;or domainname@gmail.com/yahoo.com, which is available on the University website, can be considered,
+
+                                <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;provided Partner to share the Screenshots of the Website (University / College) registered under AICTE
+                                <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; or UGC or HRD Ministry where the above e-mail ID are reflecting. (100% to be followed).
+                            </p>
+
+                            <p>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; o &nbsp;  Verification from the College on the letter head or official e-mail ID, we can consider the verification,
+                                <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;provided Partner to share the Screenshots of the Website (University / College) registered under AICTE
+                                <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;or UGC or HRD Ministry where the above e-mail ID are reflecting. (Check with us, if you are unable
+
+                                <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to get the verification from the University and as per our decision or approval you will further proceed).
+                            </p>
+
+                            <p>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;		If verification is done online from university website, please add the screenshots of the results checking procedure (stepwise).
+                            </p>
+
+                            <p>
+
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	<b>For Company Name.</b>
+                            </p>
+                            <p>
+
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	<b>Name – Designation (QA&C) – Contact No. / xyz@company.com</b>
+                            </p>*@
+
+                        <table width="793" style="border-collapse:collapse;position: relative;
+    margin-left: 0;margin-right: 0; margin: auto;border-top:none;">
+                            <tr>
+                                <td colspan="2">
+                                    <p>&nbsp;</p>
+                                    <p>&nbsp;</p>
+                                    <p>&nbsp;</p>
+                                    <p>&nbsp;</p>
+                                    <p>&nbsp;</p>
+                                    <p>&nbsp;</p>
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td colspan="2">@Html.Partial("_ReportFooterAddress")</td>
+                            </tr>
+                        </table>
+                    </tr>
+
+                </table>
+            </td>
+            <td width="2%" align="left" valign="bottom" @*style="border-left:2px solid #999999;"*@>&nbsp;</td>
+        </tr>
+    </table>
+</page>
+        if (Model.CandidateDocList != null)
+        {
+            foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == ProvidedInfo.SubCheckRowID))
+            {
+                if (Doc.SubCheckRowID == ProvidedInfo.SubCheckRowID)
+                {
+                    FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                    if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                    {
+                        <page id="PrintSrc" size="A4">
+                            @*<div style="page-break-after:always ;"></div>*@
+                            <table width="793" height="1150" cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center;page-break-before:always;">
+                                <!--- Report Header Include -->
+                                @*@Html.Partial("_ReportHeader")*@
+                                <!--- Report Header Include -->
+                                <tr>
+                                    @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                    <td valign="top" colspan="2" align="center" valign="bottom">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td valign="top">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr>
+                                                            <td>
+                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                    <tr>
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@ProvidedInfo.SubCheckName (@Doc.DocumentType)</p></td>
+                                                                        <td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                                                                    </tr>
+                                                                    <tr><td colspan="2">&nbsp;</td></tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td valign="top">&nbsp;</td>
+                                                        </tr>
+                                                        <tr style="text-align:center">
+                                                            <td valign="top">
+                                                                @{
+                                                                    FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                    System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                    if (image.Height > 600)
+                                                                    {
+                                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                    }
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                                </tr>
+                                <!--- Report Footer with Address Include -->
+                                @Html.Partial("_ReportFooterAddress")
+                                <!--- Report Footer with Address Include -->
+                                <!--- Report Footer Include -->
+                                @*@Html.Partial("_ReportFooter")*@
+                                <!--- Report Footer Include -->
+                            </table>
+                        </page>
+                    }
+                }
+            }
+        }
+
+    }
+}

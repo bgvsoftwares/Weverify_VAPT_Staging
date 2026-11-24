@@ -1,0 +1,165 @@
+
+@{
+    ViewBag.Title = "Duplicate Search";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "DashboardClient", "Home", new { area = "ClientArea" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("DuplicateReference", "ClientServicing", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <div class="form-horizontal">
+                <div class="form-group branch">
+
+                    @Html.Hidden("hdnTicketNo")
+                    @Html.Label("Select Ticket", htmlAttributes: new { @class = "col-md-2 control-label required" })
+                    <div class="col-md-5">
+                        @*@Html.DropDownListFor(model => model.TicketId, new SelectList(ViewBag.TicketNos, "TicketNo", "TicketNo"), "-- Select Ticket -- ", new { @class = "form-control" })*@
+
+                        @Html.DropDownList("TicketNo",
+new SelectList(ViewBag.TicketNos, "TicketNo", "TicketNo"),
+"-- Select Ticket -- ",
+new { @class = "form-control" })
+
+                    </div>
+                    <br />
+                    <input type="submit" id="btnduplicate" value="Search" name="submitButton" class="btn bun-bg btn-default" />
+                    <input type="submit" id="btnExport" value="Export to Excel" name="submitButton" class="btn bun-bg btn-default" />
+                </div>
+
+                @if (ViewBag.TicketId != null && ViewBag.TicketId != "")
+                {
+                    <div class="col-md-12" style="text-align:center;color:red;font-weight:bold;"> please find the summary detail of Ticket: @ViewBag.TicketId</div>
+                }
+
+                @*<div class="col-md-12">
+                        <div class="form-group branch text-center">
+
+                            <div class="row">
+
+
+
+
+
+                            </div>
+                        </div>
+
+                        <div class="form-horizontal">
+
+                            <div class="form-group branch search-frame">
+                                <label class="col-md-2 control-label">Case Created date From :</label>
+                                <div class="col-md-3">
+                                    @Html.TextBox("CompletedFromDate", null, new { @class = "form-control", @id = "CompletedFromDate", @placeholder = "dd-mm-yyyy" })
+                                </div>
+                                <label class="col-md-2 control-label">Case Created date To :</label>
+                                <div class="col-md-3">
+                                    @Html.TextBox("CompletedToDate", null, new { @class = "form-control", @id = "CompletedToDate", @placeholder = "dd-mm-yyyy" })
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>*@
+            </div>
+            <div></div>
+        }
+        @if (Model != null && Model.CandidateDuplicateReferenceDetails != null)
+        {
+            <div class="row" style="margin-top:10px">
+                <div class="col-md-12 table">
+                    @{
+
+                        WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                        grid.Bind(Model.CandidateDuplicateReferenceDetails, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                    }
+                    @grid.GetHtml(
+
+                                        htmlAttributes: new { id = "grid", @class = "table" },
+                                        headerStyle: "thead-inverse",
+                                        rowStyle: "ordertxt",
+                                        footerStyle: "custpaging",
+                                        mode: WebGridPagerModes.All,
+                                        columns: new[]
+                                        {
+
+                                        grid.Column(header: "No.", style:"td-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                        grid.Column(columnName: "TicketId", header: "Ticket Id", canSort: false, style:"td-2"),
+                                        grid.Column(columnName: "Name", header: "Name", canSort: false, style:"td-3"),
+                                        grid.Column(columnName: "MiddleName", header: "MiddleName", canSort: false, style:"td-4"),
+                                        grid.Column(columnName: "LastName", header: "LastName", canSort: false, style: "td-5"),
+                                        grid.Column(columnName: "FatherName", header: "FatherName", canSort: false, style: "td-6"),
+                                        grid.Column(columnName: "MobileNo", header: "MobileNo", canSort: false, style: "td-7"),
+                                        grid.Column(columnName: "DOB", header: "DOB", canSort: false, style: "td-8"),
+                                        grid.Column(columnName: "EmailId", header: "EmailId", canSort: false, style: "td-9"),
+                                        grid.Column(columnName: "DuplicateStatus", header: "DuplicateStatus", canSort: false, style: "td-10"),
+                                        })
+
+                    <div class="total-record">Total Records: @Model.TotalRecords</div>
+                    <br />
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts{
+    @*<script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+        <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+        <link href="~/Content/colorbox.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery.colorbox-min.js"></script>*@
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('#ClientRowID').val($('#hdnClientRowID').val());
+
+            $('#CompletedToDate').datepicker({
+                dateFormat: "mm-dd-yy",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedFromDate').datepicker({
+                dateFormat: "mm-dd-yy",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+
+            @*$('#btnduplicate').click(function () {
+                var client = $('#ClientRowID').val();
+                var fromdate = $('#CompletedFromDate').val();
+                var Todate = $('#CompletedToDate').val();
+                if ($('#ClientRowID').val() != '') {
+                    window.location.href = "@Url.Action("ExportCandidateDuplicateSearch", "Home")?ClientRowID="
+                        + client + "&fromdate=" + fromdate + " &Todate=" + Todate+"";
+
+                }
+
+            });*@
+        });
+
+         @*$(function () {
+             $('#TicketNo').change(function () {
+                 alert($("#TicketNo").val());
+                 var ticket = $("#TicketNo").val();
+                 $("#hdnTicketNo").val($("#TicketNo").val());
+                 var url = "/ClientArea/Home/DuplicateReference?" + $.param({ TicketNo: $("#TicketNo").val() });
+                 @Url.Action("DuplicateReference", "Home", new { TicketNo = +ticket });
+
+
+
+            });
+        });*@
+
+
+    </script>
+}

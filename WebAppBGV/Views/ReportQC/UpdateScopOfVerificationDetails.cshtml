@@ -1,0 +1,135 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "Update Scop Of Verification Details";
+    string PersonalRowid = "";
+    string CaseStatus = "";
+    int ClientRowId = 0;
+    PersonalRowid = ViewBag.PersonalRowid;
+    CaseStatus = ViewBag.CaseStatus;
+    ClientRowId = ViewBag.ClientRowId;
+
+    //ReportQC/GetRWQCTeamMemberDashBoardInfo?CaseStatus=Closed&version=New
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "GetRWQCTeamMemberDashBoardInfo", "ReportQC", new { CaseStatus = CaseStatus.ToString(), version = "New" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+@section LeftNavigation{ @Html.Partial("_NavLeftDataEntryProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="col-md-12">
+    @using (Html.BeginForm("UpdateScopOfVerificationDetails", "ReportQC", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+        @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+        <input id="CaseStatus" type="hidden" value=@CaseStatus>
+        @Html.Hidden("CaseStatus", CaseStatus.ToString())
+        @Html.Hidden("ClientRowID", ClientRowId.ToString())
+
+        @Html.ValidationSummary()
+        if (ClientRowId == 317 || ClientRowId == 327)
+        {
+            <a href="javascript:void(0);"
+               class="btn btn-bg btn-default"
+               onclick="addSowReport('@PersonalRowid')">Add SOW</a>
+        }
+        foreach (var category in Model)
+        {
+            <div class="container">
+                @{
+                    string nm = category.Key;
+                    string[] Values1 = category.Value.Split('_');
+                    <div class="container" style="margin:10px!important;">
+                        <div class="row">
+                            <div class="col-sm">
+                                @Values1[0]
+                            </div>
+                            <div class="col-sm">
+                                @if (@nm == "0")
+                                {
+                                    <input type="datetime" class="form-control" name="@nm" id="@nm" value='@Values1[1]' maxlength="200">
+                                }
+                                else if (ClientRowId == 268 && @Values1[0] == "Client Ref ID")
+                                {
+                                    string result = "";
+                                    if (Values1 != null && Values1.Length > 3)
+                                    {
+                                        result = Values1[1] + "_" + Values1[2] + "_" + Values1[3];
+                                    }
+                                    else if (Values1 != null && Values1.Length > 2)
+                                    {
+                                        result = Values1[1] + "_" + Values1[2];
+                                    }
+                                    else if (Values1 != null && Values1.Length > 1)
+                                    {
+                                        result = Values1[1];
+                                    }
+                                    <input type="text" class="form-control" name="@nm" id="@nm" value='@result' maxlength="200">
+                                }
+                                else
+                                {
+                                    <input type="text" class="form-control" name="@nm" id="@nm" value='@Values1[1]' maxlength="200">
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+        }
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12" style="text-align:center!important; margin:10px!important;">
+                    <input class="btn bun-bg btn-default" type="submit" value="Update" name="action" />
+                </div>
+            </div>
+        </div>
+        <br />
+        <br />
+        <br />
+
+
+
+    }
+</div>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('input[type=datetime]').datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            yearRange: "-66:+10",
+
+        });
+    });
+</script>
+
+<script>
+   function addSowReport(personalRowId) {
+    $.ajax({
+        url: '@Url.Action("AddSowReport", "ReportQC")',
+        type: 'POST',
+        data: { PersonalRowId: personalRowId },
+        success: function (response) {
+            if (response.success) {
+                alert("SOW report added successfully!");
+                location.reload();
+            }
+        },
+        error: function (xhr, status, error) {
+            alert("Error: " + error);
+        }
+    });
+}
+</script>

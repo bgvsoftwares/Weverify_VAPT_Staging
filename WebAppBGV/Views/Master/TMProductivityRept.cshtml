@@ -1,0 +1,213 @@
+﻿@model IEnumerable<ViewModels.TeamProductivityReportViewModel>
+@{
+    ViewBag.Title = "Team Productivity Report";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    var timeSlots = ViewBag.TimeSlotsDetailed as List<Tuple<TimeSpan, TimeSpan, string>>;
+    var departmentId = ViewBag.SelectedDepartment;
+    bool isFormSubmitted = Request.QueryString["date"] != null && Request.QueryString["departmentId"] != null;
+
+    DateTime selDate = DateTime.Parse(ViewBag.SelectedDate ?? DateTime.Today.ToString("yyyy-MM-dd"));
+    DateTime today = DateTime.Today;
+    TimeSpan nowTime = DateTime.Now.TimeOfDay;
+}
+@section NavigationButton {@Html.Partial("_NavigationButton")}
+@section DisplayTitle {@Html.Partial("_DisplayTitle")}
+@section DisplayErrorMessage {@Html.Partial("_DisplayErrorMessage")}
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("TMProductivityRept", "Master", FormMethod.Get))
+        {
+            <div class="form-inline d-flex justify-content-between mb-3 w-100">
+                <label class="mr-2 font-weight-bold" style="font-size: large;">Select Date:</label>
+                <input type="date" name="date" value="@ViewBag.SelectedDate" class="form-control mr-3" />
+                <label class="mr-2 font-weight-bold" style="font-size: large;">Select Department:</label>
+                @Html.DropDownList("departmentId", (IEnumerable<SelectListItem>)ViewBag.Departments, "Select Departments", new { @class = "form-control mr-3" })
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <a href="@Url.Action("ExportTeamProductivityReport", "Master", new { date = ViewBag.SelectedDate, departmentId = ViewBag.SelectedDepartment })"
+                   class="btn btn-success ml-3">Export to Excel</a>
+            </div>
+        }
+        @if (isFormSubmitted)
+        {
+            if (Model != null && Model.Any())
+            {
+                <table class="table table-striped" style="margin-bottom: 40px;">
+                    <thead class="font-weight-bold">
+                        <tr class="thead-inverse">
+                            <th>Sr.No.</th>
+                            <th>User Name</th>
+                            @foreach (var slot in timeSlots)
+                            {
+                                <th>@slot.Item3</th>
+                            }
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int srNo = 1;
+                        }
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@srNo</td>
+                                <td>@item.UserName</td>
+
+                                @foreach (var slot in timeSlots)
+                                {
+                                    string slotKey = slot.Item3;
+                                    int count = item.TimeSlotCounts.ContainsKey(slotKey) ? item.TimeSlotCounts[slotKey] : 0;
+
+                                    bool isSlotCompleted;
+                                    if (selDate < today)
+                                    {
+                                        isSlotCompleted = true;
+                                    }
+                                    else if (selDate > today)
+                                    {
+                                        isSlotCompleted = false;
+                                    }
+                                    else
+                                    {
+                                        TimeSpan slotStart = slot.Item1;
+                                        TimeSpan slotEnd = slot.Item2;
+
+                                        if (nowTime >= slotStart)
+                                        {
+                                            isSlotCompleted = true;
+                                        }
+                                        else
+                                        {
+                                            isSlotCompleted = false;
+                                        }
+                                    }
+                                <td class="text-center">
+                                    @if (!isSlotCompleted)
+                                    {
+                                        <span>-</span>
+                                    }
+                                    else
+                                    {
+                                        if (count > 0)
+                                        {
+                                            
+                                            <a href="@Url.Action("GetUserSlotDetails", "Master",  new { userId = item.UserId, selectedDate = ViewBag.SelectedDate, slot = slotKey, deptName = departmentId })" target="_blank">@count</a>
+                                        }
+                                        else
+                                        {
+                                            @count
+                                        }
+                                    }
+                                </td>
+                                }
+
+                                <td class="text-center">
+                                    @{
+                                        int userTotal = item.TimeSlotCounts.Values.Sum();
+                                    }
+                                    @if (userTotal > 0)
+                                    {
+                                        <a href="@Url.Action("GetUserTotalDetails", "Master", new { userId = item.UserId, selectedDate = ViewBag.SelectedDate, deptName = departmentId })"
+                                           target="_blank">@userTotal</a>
+                                    }
+                                    else
+                                    {
+                                        @userTotal
+                                    }
+                                </td>
+                            </tr>
+                            srNo++;
+                        }
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <th></th>
+                            <th class="total-record">Total</th>
+                            @foreach (var slot in timeSlots)
+                            {
+                                string slotKey = slot.Item3;
+                                int slotTotal = Model.Sum(item => item.TimeSlotCounts.ContainsKey(slotKey) ? item.TimeSlotCounts[slotKey] : 0);
+                                bool isSlotCompleted;
+                                if (selDate < today)
+                                {
+                                    isSlotCompleted = true;
+                                }
+                                else if (selDate > today)
+                                {
+                                    isSlotCompleted = false;
+                                }
+                                else
+                                {
+                                    TimeSpan slotEnd = slot.Item2;
+                                    TimeSpan slotStart = slot.Item1;
+                                    isSlotCompleted = nowTime >= slotStart;
+                                }
+
+                                <td class="text-center">
+                                    @if (!isSlotCompleted)
+                                    {
+                                        <span>-</span>
+                                    }
+                                    else if (slotTotal > 0)
+                                    {
+                                        <a href="@Url.Action("GetSlotWiseTotalDetails", "Master", new { selectedDate = ViewBag.SelectedDate, slot = slotKey, deptName = departmentId })" target="_blank">@slotTotal</a>
+                                    }
+                                    else
+                                    {
+                                        @slotTotal
+                                    }
+                                </td>
+                            }
+
+                            @{
+                                int grandTotal = Model.Sum(item => item.TimeSlotCounts.Values.Sum());
+                            }
+                            <td class="text-center">
+                                @if (grandTotal > 0)
+                                {
+                                    <a href="@Url.Action("GetTotalDetailsForAllUser", "Master", new { selectedDate = ViewBag.SelectedDate, deptName = departmentId })"
+                                       target="_blank">@grandTotal</a>
+                                }
+                                else
+                                {
+                                    @grandTotal
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="total-record" colspan="@(timeSlots.Count() + 3)">
+                                Total Records: @Model.Count()
+                            </th>
+                        </tr>
+                    </tfoot>
+                </table>
+            }
+            else
+            {
+                <h3 class="text-center">No records found.</h3>
+            }
+        }
+        else
+        {
+            <h3 class="text-center text-muted mt-5">Please select a date and department to view the report.</h3>
+        }
+    </div>
+</div>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("form").on("submit", function (e) {
+                var selectedDept = $("#departmentId").val();
+                if (selectedDept === "" || selectedDept === null || selectedDept === "Select Departments") {
+                    e.preventDefault();
+                    alert("Please select department.");
+                    return false;
+                }
+            });
+        });
+    </script>
+}
+

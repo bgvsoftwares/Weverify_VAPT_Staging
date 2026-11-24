@@ -1,0 +1,291 @@
+﻿@model ViewModels.UpdateReportCheckMappingViewModel
+
+@{
+    ViewBag.Title = "Edit Report Check Mapping";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManageReportCheckMapping", "Master", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftMaster") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.ClientRowID, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.ClientRowID,
+                        new SelectList(ViewBag.Client, "ClientRowID", "ClientName"),
+                        "-- Select Client -- ",
+                        new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ClientRowID, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.ReportType, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.ReportType, new List<SelectListItem> {
+                        new SelectListItem { Text = "-- Select ReportType -- ", Value = "" },
+                        new SelectListItem { Text = "IR", Value = "IR" },
+                        new SelectListItem { Text = "FR",Value="FR"},
+                    }, new { @id = "ReportTypeDDL", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ReportType, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.ReportCheckMappingRowID)
+                    @Html.HiddenFor(model => model.Status)
+                </div>
+            </div>
+            <div class="col-md-12"></div>
+            <div class="col-md-12">
+                <fieldset class="scheduler-border">
+                    <legend class="scheduler-border">Assign Check Name</legend>
+                    <div class="form-group col-md-12">
+                        <div class="form-group row ">
+                            @Html.LabelFor(model => model.AddressChk, htmlAttributes: new { @class = "col-md-3 control-label" })
+                            <div class="col-md-3">
+                                @Html.RadioButtonFor(model => model.AddressChk, 1, new { @class = "rdoAddressChk", @id = "rdoAddressChkYes" }) Yes
+                                <span class="client_radiobtncr">
+                                    @Html.RadioButtonFor(model => model.AddressChk, 0, new { @class = "rdoAddressChk", @id = "rdoAddressChkNo" }) No
+                                </span>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                @Html.ActionLink("Map Address Artifact", "AddArtifactMapping", "Master", new { RCMRowID = Request.QueryString["RCMRowID"], CheckFamilyRowID = "2" }, new { @id = "btnAddressChk", @class = "iframeActionHistories cboxElement btn btn-default" })
+                            </div>
+                        </div>
+                        <div class="form-group row ">
+                            @Html.LabelFor(model => model.CriminalChk, htmlAttributes: new { @class = "col-md-3 control-label" })
+                            <div class="col-md-3">
+                                @Html.RadioButtonFor(model => model.CriminalChk, 1, new { @class = "rdoCriminalChk", @id = "rdoCriminalChkYes" }) Yes
+                                <span class="client_radiobtncr">
+                                    @Html.RadioButtonFor(model => model.CriminalChk, 0, new { @class = "rdoCriminalChk", @id = "rdoCriminalChkNo" }) No
+                                </span>
+                            </div>
+                            <div class="col-md-3">
+                                @Html.ActionLink("Map Criminal Artifact", "AddArtifactMapping", "Master", new { RCMRowID = Request.QueryString["RCMRowID"], CheckFamilyRowID = "5" }, new { @id = "btnCriminalChk", @class = "iframeActionHistories cboxElement btn btn-default" })
+                            </div>
+                        </div>
+                        <div class="form-group row ">
+                            @Html.LabelFor(model => model.EducationChk, htmlAttributes: new { @class = "col-md-3 control-label" })
+                            <div class="col-md-3">
+                                @Html.RadioButtonFor(model => model.EducationChk, 1, new { @class = "rdoEducationChk", @id = "rdoEducationChkYes" }) Yes
+                                <span class="client_radiobtncr">
+                                    @Html.RadioButtonFor(model => model.EducationChk, 0, new { @class = "rdoEducationChk", @id = "rdoEducationChkNo" }) No
+                                </span>
+                            </div>
+                            <div class="col-md-3">
+                                @Html.ActionLink("Map Education Artifact", "AddArtifactMapping", "Master", new { RCMRowID = Request.QueryString["RCMRowID"], CheckFamilyRowID = "11" }, new { @id = "btnEducationChk", @class = "iframeActionHistories cboxElement btn btn-default" })
+                            </div>
+                        </div>
+                        <div class="form-group row ">
+                            @Html.LabelFor(model => model.EmploymentChk, htmlAttributes: new { @class = "col-md-3 control-label" })
+                            <div class="col-md-3">
+                                @Html.RadioButtonFor(model => model.EmploymentChk, 1, new { @class = "rdoEmploymentChk", @id = "rdoEmploymentChkYes" }) Yes
+                                <span class="client_radiobtncr">
+                                    @Html.RadioButtonFor(model => model.EmploymentChk, 0, new { @class = "rdoEmploymentChk", @id = "rdoEmploymentChkNo" }) No
+                                </span>
+                            </div>
+                            <div class="col-md-3">
+                                @Html.ActionLink("Map Employment Artifact", "AddArtifactMapping", "Master", new { RCMRowID = Request.QueryString["RCMRowID"], CheckFamilyRowID = "12" }, new { @id = "btnEmploymentChk", @class = "iframeActionHistories cboxElement btn btn-default" })
+                            </div>
+                        </div>
+                        <div class="form-group row ">
+                            @Html.LabelFor(model => model.IdentityChk, htmlAttributes: new { @class = "col-md-3 control-label" })
+                            <div class="col-md-3">
+                                @Html.RadioButtonFor(model => model.IdentityChk, 1, new { @class = "rdoIdentityChk", @id = "rdoIdentityChkYes" }) Yes
+                                <span class="client_radiobtncr">
+                                    @Html.RadioButtonFor(model => model.IdentityChk, 0, new { @class = "rdoIdentityChk", @id = "rdoIdentityChkNo" }) No
+                                </span>
+                            </div>
+                            <div class="col-md-3">
+                                @Html.ActionLink("Map Identity Artifact", "AddArtifactMapping", "Master", new { RCMRowID = Request.QueryString["RCMRowID"], CheckFamilyRowID = "26" }, new { @id = "btnIdentityChk", @class = "iframeActionHistories cboxElement btn btn-default" })
+                            </div>
+                        </div>
+                        <div class="form-group row ">
+                            @Html.LabelFor(model => model.ReferenceChk, htmlAttributes: new { @class = "col-md-3 control-label" })
+                            <div class="col-md-3">
+                                @Html.RadioButtonFor(model => model.ReferenceChk, 1, new { @class = "rdoReferenceChk", @id = "rdoReferenceChkYes" }) Yes
+                                <span class="client_radiobtncr">
+                                    @Html.RadioButtonFor(model => model.ReferenceChk, 0, new { @class = "rdoReferenceChk", @id = "rdoReferenceChkNo" }) No
+                                </span>
+                            </div>
+                            <div class="col-md-3">
+                                @Html.ActionLink("Map Reference Artifact", "AddArtifactMapping", "Master", new { RCMRowID = Request.QueryString["RCMRowID"], CheckFamilyRowID = "30" }, new { @id = "btnReferenceChk", @class = "iframeActionHistories cboxElement btn btn-default" })
+                            </div>
+                        </div>
+                        <div class="form-group row ">
+                            @Html.LabelFor(model => model.SpecialChk, htmlAttributes: new { @class = "col-md-3 control-label" })
+                            <div class="col-md-3">
+                                @Html.RadioButtonFor(model => model.SpecialChk, 1, new { @class = "rdoSpecialChk", @id = "rdoSpecialChkYes" }) Yes
+                                <span class="client_radiobtncr">
+                                    @Html.RadioButtonFor(model => model.SpecialChk, 0, new { @class = "rdoSpecialChk", @id = "rdoSpecialChkNo" }) No
+                                </span>
+                            </div>
+                            <div class="col-md-3">
+                                @Html.ActionLink("Map Special Artifact", "AddArtifactMapping", "Master", new { RCMRowID = Request.QueryString["RCMRowID"], CheckFamilyRowID = "40" }, new { @id = "btnSpecialChk", @class = "iframeActionHistories cboxElement btn btn-default" })
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="all-button-bg">
+                @Html.ActionLink("Back", "ManageReportCheckMapping", "Master", null, new { @class = "btn bun-bg btn-default" })
+                <input class="btn bun-bg btn-default" type="submit" value="Submit" />
+            </div>
+        </div>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div id="ManageSction" class="product-frame1"></div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            //Address
+            function fnAddressChk() {
+                var AddressChk = $('input[id=rdoAddressChkYes]:checked').val()
+
+                if (AddressChk == 1) {
+                    $('#btnAddressChk').show();
+                }
+                else {
+                    $('#btnAddressChk').hide();
+                }
+            }
+            //on load (returns to form)
+            fnAddressChk();
+            //Address changes event
+            $('input[class="rdoAddressChk"]').on('change', function () {
+                fnAddressChk();
+            });
+
+            //Criminal
+            function fnCriminalChk() {
+                var CriminalChk = $('input[id=rdoCriminalChkYes]:checked').val()
+
+                if (CriminalChk == 1) {
+                    $('#btnCriminalChk').show();
+                }
+                else {
+                    $('#btnCriminalChk').hide();
+                }
+            }
+            //on load (returns to form)
+            fnCriminalChk();
+            //Criminal changes event
+            $('input[class="rdoCriminalChk"]').on('change', function () {
+                fnCriminalChk();
+            });
+
+            //Education
+            function fnEducationChk() {
+                var EducationChk = $('input[id=rdoEducationChkYes]:checked').val()
+
+                if (EducationChk == 1) {
+                    $('#btnEducationChk').show();
+                }
+                else {
+                    $('#btnEducationChk').hide();
+                }
+            }
+            //on load (returns to form)
+            fnEducationChk();
+            //Education changes event
+            $('input[class="rdoEducationChk"]').on('change', function () {
+                fnEducationChk();
+            });
+
+            //Employment
+            function fnEmploymentChk() {
+                var EmploymentChk = $('input[id=rdoEmploymentChkYes]:checked').val()
+
+                if (EmploymentChk == 1) {
+                    $('#btnEmploymentChk').show();
+                }
+                else {
+                    $('#btnEmploymentChk').hide();
+                }
+            }
+            //on load (returns to form)
+            fnEmploymentChk();
+            //Employment changes event
+            $('input[class="rdoEmploymentChk"]').on('change', function () {
+                fnEmploymentChk();
+            });
+
+            //Identity
+            function fnIdentityChk() {
+                var IdentityChk = $('input[id=rdoIdentityChkYes]:checked').val()
+
+                if (IdentityChk == 1) {
+                    $('#btnIdentityChk').show();
+                }
+                else {
+                    $('#btnIdentityChk').hide();
+                }
+            }
+            //on load (returns to form)
+            fnIdentityChk();
+            //Identity changes event
+            $('input[class="rdoIdentityChk"]').on('change', function () {
+                fnIdentityChk();
+            });
+
+            //Reference
+            function fnReferenceChk() {
+                var ReferenceChk = $('input[id=rdoReferenceChkYes]:checked').val()
+
+                if (ReferenceChk == 1) {
+                    $('#btnReferenceChk').show();
+                }
+                else {
+                    $('#btnReferenceChk').hide();
+                }
+            }
+            //on load (returns to form)
+            fnReferenceChk();
+            //Reference changes event
+            $('input[class="rdoReferenceChk"]').on('change', function () {
+                fnReferenceChk();
+            });
+
+            //Special
+            function fnSpecialChk() {
+                var SpecialChk = $('input[id=rdoSpecialChkYes]:checked').val()
+
+                if (SpecialChk == 1) {
+                    $('#btnSpecialChk').show();
+                }
+                else {
+                    $('#btnSpecialChk').hide();
+                }
+            }
+            //on load (returns to form)
+            fnSpecialChk();
+            //Special changes event
+            $('input[class="rdoSpecialChk"]').on('change', function () {
+                fnSpecialChk();
+            });
+
+        });
+        
+    </script>
+
+}

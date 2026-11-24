@@ -1,0 +1,376 @@
+﻿
+@{
+    ViewBag.Title = "Manage Report Write Check Pending For TeamLeader";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+}
+
+@{
+    string CheckStatus1 = "";
+    string AllocatedToTL1 = "";
+    string version = "";
+    string tatdays1 = "";
+    string designation = "";
+    if (Request.QueryString["CheckStatus"] != null)
+    {
+        CheckStatus1 = @Request.QueryString["CheckStatus"].ToString();
+    }
+
+    if (Request.QueryString["tatdays"] != null)
+    {
+        tatdays1 = Request.QueryString["tatdays"].ToString();
+    }
+
+    if (Request.QueryString["AllocatedToTL"] != null)
+    {
+        AllocatedToTL1 = Request.QueryString["AllocatedToTL"].ToString();
+    }
+    if (Request.QueryString["version"] != null)
+    {
+        version = Request.QueryString["version"].ToString();
+    }
+
+    if (Session["Designation"].ToString() == "Team Leader-Emp" || Session["Designation"].ToString() == "Team Leader-Edu")
+    {
+        if (CheckStatus1 == "Review")
+        {
+            string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+            string hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportChecksReport", "Verification", new { CheckStatus = CheckStatus1, tatdays = tatdays1, AllocatedToTL = AllocatedToTL1 }, new { @class = "btn bun-bg btn-default" }).ToString();
+            ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+        }
+    }
+
+
+
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("ManageRWQCApprovalChecksForDepartmentTL", "Verification", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group row search-frame">
+                                    <label class="col-md-2 control-label">Client Name :</label>
+                                    <div class="col-md-4">
+                                        @Html.DropDownList("ClientRowID",
+                              new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                              "-- Select Client -- ",
+                              new { @class = "form-control" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Keyword :</label>
+                                    <div class="col-md-4">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, Ref No..." })
+                                    </div>
+                                </div>
+                                <div class="all-button-bg">
+                                    <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                                </div>
+                            </div>
+
+                            if (Request.QueryString["CheckStatus"] != null)
+                            {
+                                @Html.Hidden("CheckStatus", Request.QueryString["CheckStatus"].ToString())
+                            }
+
+
+
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.PQVerificationInfo != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12 table">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.PQVerificationInfo, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+
+                            @if (Session["Designation"].ToString() == "Team Leader-Emp")
+                            {
+                                @grid.GetHtml(
+                         htmlAttributes: new { id = "grid", @class = "table" },
+                         headerStyle: "thead-inverse",
+                         rowStyle: "ordertxt",
+                         footerStyle: "custpaging",
+                         mode: WebGridPagerModes.All,
+                         columns: new[]
+                         {
+                                grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-1"),
+                                grid.Column(columnName: "checkFackEdu", header: "checkFackEdu", canSort: false, style:"td-1"),
+                                  grid.Column(header : "Securitas Id", format : (item) => {
+                                        string SecuritasID=item.CompanyRefNo;
+
+                                   if (item.CheckFamilyRowID > 0)
+                                    {
+
+
+
+                                                     if(item.CandidateAsManager=="TRUE")
+                                                     {
+                                                                     //var  link = Html.ActionLink(SecuritasID, "UpdateEmploymentInfoByTMQC", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID },new {@style="color:#000aaa;" } );
+                                                         return @Html.Label(SecuritasID, new{ @style="Color:red;"});
+
+                                                     }
+                                                     else
+                                                     {
+                                                          return @Html.Label(SecuritasID);
+                                                     }
+
+
+                                    }
+                                   else
+                                    {
+                                        return SecuritasID;
+                                    }
+                                    }, style:"edit td-1"),
+                                grid.Column(columnName: "PersonalName", header: "Candidate Name", canSort: false, style:"td-1"),
+                                grid.Column(columnName: "Severity", header: "Severity", canSort: false, style:"td-1"),
+                                grid.Column(columnName: "ColorName", header: "Color Name", canSort: false, style:"td-1"),
+                                grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-1"),
+                                grid.Column(columnName: "TLAllocationDate", header: "Allocation Date", canSort: false, style:"td-1"),
+
+                                grid.Column(header : "Unique Component Id", format : (item) => {
+                                    string ComponentID=item.UniqueComponentID;
+                                    if (item.CheckFamilyRowID==2)
+                                        {
+                                            var link = Html.ActionLink(ComponentID, "UpdateAddressVerInfoByTeamLeader", "Verification", new {  id = item.VerificationRowID ,checkStatusid= item.CheckStatusid,ColorName=item.ColorName,PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID  ,ClientRowId=item.ClientRowID}, new { @class="edit" });
+                                        return link;
+                                        }
+                                     else if (item.CheckFamilyRowID==5)
+                                        {
+                                            var link = Html.ActionLink(ComponentID, "UpdateCriminalVerInfoByTeamLeader", "Verification", new {  id = item.VerificationRowID ,checkStatusid= item.CheckStatusid,ColorName=item.ColorName,PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID  ,ClientRowId=item.ClientRowID}, new { @class="edit" });
+                                        return link;
+                                        }
+                                    else if (item.CheckFamilyRowID==11)
+                                        {
+                                            var link = Html.ActionLink(ComponentID, "UpdateEducationVerInfoByTeamLeader", "Verification", new {  id = item.VerificationRowID ,checkStatusid= item.CheckStatusid,ColorName=item.ColorName,PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID  ,ClientRowId=item.ClientRowID }, new { @class="edit" });
+                                        return link;
+                                        }
+                                    else if (item.CheckFamilyRowID==12)
+                                        {
+                                            var link = Html.ActionLink(ComponentID, "UpdateEmploymentVerInfoByTeamLeader", "Verification", new { id = item.VerificationRowID ,checkStatusid= item.CheckStatusid,ColorName=item.ColorName,PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID  ,ClientRowId=item.ClientRowID}, new { @class="edit" });
+                                        return link;
+                                        }
+                                     else if (item.CheckFamilyRowID==26)
+                                        {
+                                            var link = Html.ActionLink(ComponentID, "UpdateNationalIdentityVerInfoByTeamLeader", "Verification", new {  id = item.VerificationRowID ,checkStatusid= item.CheckStatusid,ColorName=item.ColorName,PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID  ,ClientRowId=item.ClientRowID }, new { @class="edit" });
+                                        return link;
+                                        }
+                                    else if (item.CheckFamilyRowID==30)
+                                        {
+                                            var link = Html.ActionLink(ComponentID, "UpdateReferenceVerInfoByTeamLeader", "Verification", new {  id = item.VerificationRowID ,checkStatusid= item.CheckStatusid,ColorName=item.ColorName,PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID  ,ClientRowId=item.ClientRowID }, new { @class="edit" });
+                                        return link;
+                                        }
+                                    else if (item.CheckFamilyRowID==40)
+                                        {
+                                            var link = Html.ActionLink(ComponentID, "UpdateSpecialVerInfoByTeamLeader", "Verification", new {  id = item.VerificationRowID ,checkStatusid= item.CheckStatusid,ColorName=item.ColorName,PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID  ,ClientRowId=item.ClientRowID }, new { @class="edit" });
+                                        return link;
+                                        }
+                                    else
+                                        {
+                                            return ComponentID;
+                                        }
+                                }, style:"td-1"),
+                                grid.Column(columnName: "TypeOfBusinesses", header: "Type Of Business", canSort: true, style:"td-1"),
+                                 grid.Column("InternalOutDate", "TAT", format: (item) => item.InternalOutDate != null ? item.InternalOutDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"td-1"),
+                                 grid.Column(columnName: "CheckStatus", header: "Status", canSort: false, style:"td-1"),
+                                   grid.Column("Check Status", canSort: false, format: (item)=> {
+
+             var link=@Html.ActionLink("Show", "ClientCheckStatus", "ClientServicing", new { CompanyRefNo=item.CompanyRefNo    }, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" });
+                                                return link;}, style:"td-1" ),
+                                  grid.Column(header : "Action", format : (item) => {
+                                    var link = Html.ActionLink("History", "CheckActionHistory", "Verification", new { scid = item.SubCheckRowID, pe = item.PersonalRowID }, new { @class = "iframeActionHistories cboxElement" });
+                                    return link;
+                                }, style:"edit td-1"),
+
+                         }
+                  )
+                            }
+                            else
+                            {
+                                @grid.GetHtml(
+                         htmlAttributes: new { id = "grid", @class = "table" },
+                         headerStyle: "thead-inverse",
+                         rowStyle: "ordertxt",
+                         footerStyle: "custpaging",
+                         mode: WebGridPagerModes.All,
+                         columns: new[]
+                         {
+                                grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-1"),
+                                  grid.Column(header : "Securitas Id", format : (item) => {
+                                        string SecuritasID=item.CompanyRefNo;
+
+                                   if (item.CheckFamilyRowID > 0)
+                                    {
+
+
+
+                                                     if(item.CandidateAsManager=="TRUE")
+                                                     {
+                                                                     //var  link = Html.ActionLink(SecuritasID, "UpdateEmploymentInfoByTMQC", "Verification", new { id = item.VerificationRowID,CheckStatusId=item.CheckStatusid,Aging=item.aging, PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID,  ClientRowId = item.ClientRowID },new {@style="color:#000aaa;" } );
+                                                         return @Html.Label(SecuritasID, new{ @style="Color:red;"});
+
+                                                     }
+                                                     else
+                                                     {
+                                                          return @Html.Label(SecuritasID);
+                                                     }
+
+
+                                    }
+                                   else
+                                    {
+                                        return SecuritasID;
+                                    }
+                                    }, style:"edit td-1"),
+                                grid.Column(columnName: "PersonalName", header: "Candidate Name", canSort: false, style:"td-1"),
+                                grid.Column(columnName: "Severity", header: "Severity", canSort: false, style:"td-1"),
+                                grid.Column(columnName: "ColorName", header: "Color Name", canSort: false, style:"td-1"),
+                                grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"td-1"),
+                                grid.Column(columnName: "TLAllocationDate", header: "Allocation Date", canSort: false, style:"td-1"),
+
+                                grid.Column(header : "Unique Component Id", format : (item) => {
+                                    string ComponentID=item.UniqueComponentID;
+                                    if (item.CheckFamilyRowID==2)
+                                        {
+                                            var link = Html.ActionLink(ComponentID, "UpdateAddressVerInfoByTeamLeader", "Verification", new {  id = item.VerificationRowID ,checkStatusid= item.CheckStatusid,ColorName=item.ColorName,PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID  ,ClientRowId=item.ClientRowID}, new { @class="edit" });
+                                        return link;
+                                        }
+                                     else if (item.CheckFamilyRowID==5)
+                                        {
+                                            var link = Html.ActionLink(ComponentID, "UpdateCriminalVerInfoByTeamLeader", "Verification", new {  id = item.VerificationRowID ,checkStatusid= item.CheckStatusid,ColorName=item.ColorName,PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID  ,ClientRowId=item.ClientRowID}, new { @class="edit" });
+                                        return link;
+                                        }
+                                    else if (item.CheckFamilyRowID==11)
+                                        {
+                                            var link = Html.ActionLink(ComponentID, "UpdateEducationVerInfoByTeamLeader", "Verification", new {  id = item.VerificationRowID ,checkStatusid= item.CheckStatusid,ColorName=item.ColorName,PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID  ,ClientRowId=item.ClientRowID }, new { @class="edit" });
+                                        return link;
+                                        }
+                                    else if (item.CheckFamilyRowID==12)
+                                        {
+                                            var link = Html.ActionLink(ComponentID, "UpdateEmploymentVerInfoByTeamLeader", "Verification", new { id = item.VerificationRowID ,checkStatusid= item.CheckStatusid,ColorName=item.ColorName,PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID  ,ClientRowId=item.ClientRowID}, new { @class="edit" });
+                                        return link;
+                                        }
+                                     else if (item.CheckFamilyRowID==26)
+                                        {
+                                            var link = Html.ActionLink(ComponentID, "UpdateNationalIdentityVerInfoByTeamLeader", "Verification", new {  id = item.VerificationRowID ,checkStatusid= item.CheckStatusid,ColorName=item.ColorName,PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID  ,ClientRowId=item.ClientRowID }, new { @class="edit" });
+                                        return link;
+                                        }
+                                    else if (item.CheckFamilyRowID==30)
+                                        {
+                                            var link = Html.ActionLink(ComponentID, "UpdateReferenceVerInfoByTeamLeader", "Verification", new {  id = item.VerificationRowID ,checkStatusid= item.CheckStatusid,ColorName=item.ColorName,PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID  ,ClientRowId=item.ClientRowID }, new { @class="edit" });
+                                        return link;
+                                        }
+                                    else if (item.CheckFamilyRowID==40)
+                                        {
+                                            var link = Html.ActionLink(ComponentID, "UpdateSpecialVerInfoByTeamLeader", "Verification", new {  id = item.VerificationRowID ,checkStatusid= item.CheckStatusid,ColorName=item.ColorName,PersonalRowID = item.PersonalRowID,  subCheckId = item.SubCheckRowID  ,ClientRowId=item.ClientRowID }, new { @class="edit" });
+                                        return link;
+                                        }
+                                    else
+                                        {
+                                            return ComponentID;
+                                        }
+                                }, style:"td-1"),
+                                grid.Column(columnName: "TypeOfBusinesses", header: "Type Of Business", canSort: true, style:"td-1"),
+                                grid.Column("InternalOutDate", "TAT", format: (item) => item.InternalOutDate != null ? item.InternalOutDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"td-1"),
+                                grid.Column(columnName: "CheckStatus", header: "Status", canSort: false, style:"td-1"),
+                                   grid.Column("Check Status", canSort: false, format: (item)=> {
+
+             var link=@Html.ActionLink("Show", "ClientCheckStatus", "ClientServicing", new { CompanyRefNo=item.CompanyRefNo    }, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" });
+                                                return link;}, style:"td-1" ),
+                                  grid.Column(header : "Action", format : (item) => {
+                                    var link = Html.ActionLink("History", "CheckActionHistory", "Verification", new { scid = item.SubCheckRowID, pe = item.PersonalRowID }, new { @class = "iframeActionHistories cboxElement" });
+                                    return link;
+                                }, style:"edit td-1"),
+
+                         }
+                  )
+                            }
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @*<script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+
+        <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+        <link href="~/Content/colorbox.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery.colorbox-min.js"></script>*@
+    <script>
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+            $(".iframeUpdateStatus").colorbox({ iframe: true, width: "60%", height: "60%" });
+        });
+    </script>
+
+    @*<script>
+            $("#grid > thead > tr").each(function () {
+                $(this).find('th:nth-child(3)').css("display", "none");
+            });
+            $("#grid > tbody > tr").each(function () {
+                $(this).find('td:nth-child(3)').css("display", "none");
+            });
+        </script>*@
+
+    <script>
+        $("#grid > thead > tr").each(function () {
+            $(this).find('th').each(function (index) {
+                // Check if the header text is "checkFackEdu"
+                if ($(this).text().trim() === "checkFackEdu") {
+                    // Hide the corresponding column header
+                    $(this).css("display", "none");
+
+                    // Now hide the corresponding cells (td) in the body for that column
+                    $("#grid > tbody > tr").each(function () {
+                        $(this).find('td').eq(index).css("display", "none");
+                    });
+                }
+            });
+        });
+    </script>
+    <script>
+        $('#grid > tbody > tr').each(function () {
+            var sixthTdValue = $(this).find('td:nth-child(3)').text();
+            var columnIndex = $("table thead th").filter(function () {
+                return $(this).text().trim() === "Client Name";
+            }).index() + 1;
+            var client = $(this).find("td:nth-child(" + columnIndex + ")").text();
+            if (sixthTdValue == "fake") {
+                if (client == "LTIMindtree Limited") {
+                    $(this).css('background-color', '#7179bf');
+                } else {
+
+
+                    $(this).css('background-color', '#FFFF00');
+                }
+            }
+            else if (sixthTdValue == "Capgeminivendorsupp") {
+                $(this).css('background-color', '#34eb9b');
+            }
+            else {
+                //$(this).css('background-color', '#f2f2f2');
+            }
+        });
+    </script>
+}
+
+

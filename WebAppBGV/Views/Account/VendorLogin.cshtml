@@ -1,0 +1,140 @@
+@model ViewModels.PartnerViewModels.VendorLoginViewModel
+@{
+    ViewBag.Title = "Partner Login";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <form class="sign-in-form forms">
+        <div class="d-flex align-items-center login_error_div" style="width: 440px;height:35px;
+text-align: center;
+font-size: .90rem;
+color:#AA1834!important; display:flex;">
+            @{
+                if (ViewBag.ErrorMsg != null)
+                {
+                    <div class="errormsglogin" style="position: relative;top:0px;">
+                        <div class="drop">
+                            <img src="~/assets/LoginPageImages/marker.png" width="35" />
+                        </div>
+                        <ul class="Error_ul">
+                            <li>
+                                @ViewBag.ErrorMsg.ToString()
+                            </li>
+                        </ul>
+                    </div>
+                }
+                if (ViewBag.SuccessMsg != null)
+                {
+                    <div class="errormsglogin" style="position: relative;top:0px;">
+                        <div class="drop">
+                            <p class="img_p">1</p>
+                            <img src="~/assets/LoginPageImages/marker.png" width="35" />
+                        </div>
+                        <ul class="Error_ul">
+                            <li>
+                                @ViewBag.SuccessMsg.ToString()
+                            </li>
+                        </ul>
+                    </div>
+                }
+            }
+        </div>
+        <div class="heading mt-1 mb-3">
+            <h2>Partner Login</h2>
+        </div>
+        <div class="actual-form">
+            <div class="d-flex align-items-center">
+                <fieldset class="highlight" id="fieldset">
+                    <legend class="legend">UserName</legend>
+                    @Html.EditorFor(model => model.CRPUserName, new { htmlAttributes = new { @placeholder = "User Name", @class = "form-control", @onmousedown = "return noCopyMouse(event);", @onkeydown = "return DisableEscape(event);", @onkeypress = "return BlockBlacklist(event);", @id = "CRPUserName" } })
+                    <div class="loginerror" style="font-size:.70rem; color:#FC273F!important;">@Html.ValidationMessageFor(model => model.CRPUserName, "", new { @class = "text-danger" })</div>
+                </fieldset>
+            </div>
+            <div class="d-flex align-items-center password">
+                <fieldset class="highlight" id="fieldset">
+                    <legend class="legend">Password</legend>
+                    <div class="fake-input" id="testinput" style="overflow:hidden;"></div>
+                    @Html.EditorFor(model => model.CRPPassWord, new { htmlAttributes = new { @placeholder = "Password", @class = "form-control-pass_partner", @onmousedown = "return noCopyMouse(event);", @onkeydown = "return DisableEscape(event);", @onkeypress = "return BlockBlacklist(event);", @autocomplete = "off", @id = "CRPPassWord", @onKeyUp = "RemoveSavedPassword()" } })
+                    <div class="loginerror" style="font-size:.70rem; color:#FC273F!important; margin-top:50px!important;">@Html.ValidationMessageFor(model => model.CRPPassWord, "", new { @class = "text-danger" })</div>
+                </fieldset>
+            </div>
+            <div class="d-flex align-items-center btn_box" style="margin-top:50px!important; margin-bottom:20px!important;">
+                <button type="submit" id="btnSubmit" class="btn  btn-login-submit">Submit</button>
+            </div>
+            <div class="row" style="display:flex; width:380px!important; margin-top:10px;">
+                <div class="col-md-10">
+                    <a class="login_as" href="mailto:bgv.helpdesk@securitas-india.com">
+                        <div class="d-flex align-items-center Login_as_box">
+                            Can't Access The Software
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+}
+
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+}
+<script src='@Url.Content("~/Scripts/jquery.vortex.min.js")'></script>
+<script>
+    $('#submit').click(function () {
+        //alert('i');
+        var pass = $.trim($("[id*=CRPPassWord]").val());
+        var uName = $.trim($("[id*=CRPUserName]").val());
+        //alert(uName);
+        if (uName.includes("alert") || uName.includes("script") || uName.includes("<") || uName.includes(">") || uName.includes("select") || uName.includes("exec") || uName.includes("execute") || uName.includes("drop") || uName.includes("truncate") || uName.includes("insert") || uName.includes("update") || uName.includes("delete")) {
+            alert("You can not use any special text as usename like alert,script,etc.");
+            document.getElementById("CRPUserName").value = "";
+            document.getElementById("CRPPassWord").value = "";
+            return false;
+        }
+    })
+
+</script>
+<script>
+    $(document).ready(function () {
+
+        $("form").attr('autocomplete', 'off');
+
+        $('input').focus(function () {
+            $(this).removeAttr('readonly');
+        });
+
+        $('input').blur(function () {
+            $(this).attr('readonly', true);
+
+        });
+        document.getElementsByName("CRPUserName")[0].value = "";
+        document.getElementsByName("CRPPassWord")[0].value = "";
+    });
+</script>
+<script>
+
+    function RemoveSavedPassword() {
+        inputValue = $('#CRPPassWord').val();
+        numChars = inputValue.length;
+        showText = "";
+        for (i = 0; i < numChars; i++) {
+            showText += "&#9679;";
+        }
+        $('.fake-input').html(showText);
+    }
+</script>
+
+
+
+

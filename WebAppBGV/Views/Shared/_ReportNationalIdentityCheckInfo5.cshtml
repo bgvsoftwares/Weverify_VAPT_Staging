@@ -1,0 +1,1635 @@
+﻿
+@model ViewModels.ReportQCViewModel.InterimReportGenerateViewModel
+
+@if (Model != null && Model.NationalIdentityProvidedList != null && Model.NationalIdentityProvidedList.Count() > 0 && Model.AntecedentList != null && Model.AntecedentList.Count() > 0)
+{
+    foreach (var ProvidedInfo in Model.NationalIdentityProvidedList)
+    {
+        var NationalIdentityVerInfo = Model.NationalIdentityVerifiedList.Where(ver => ver.NationalIdentityRowID == ProvidedInfo.NationalIdentityRowID).FirstOrDefault();
+        var antecentList = Model.AntecedentList.Where(a => a.CheckFamilyRowID == ProvidedInfo.CheckFamilyRowID && a.SubCheckRowID == ProvidedInfo.SubCheckRowID).ToList();
+        <page id="PrintSrc" size="A4">
+            <div style="page-break-after:always ;"></div>
+            <table width="793" @*border="0"*@ cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999;">
+                <!--- Report Header Include -->
+                @*@Html.Partial("_ReportHeader")*@
+                <!--- Report Header Include -->
+                <tr>
+                    <td width="2%" align="left" valign="bottom" @*style="border-left:2px solid #999999;"*@>&nbsp;</td>
+                    <td valign="top">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td valign="top">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                        <tr><td width="20%" align="right"><img src='@Url.Content("/Images/footer-logo.jpg")' height="60"></td></tr>
+                                        <tr>
+                                            <td>
+                                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                    <tr>
+                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@ProvidedInfo.SubCheckName</p></td>
+                        @*<td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>*@
+                    </tr>
+                                                    <tr><td colspan="2">&nbsp;</td></tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td valign="top">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top" align="center">
+                                                <table width="100%" border="2" cellspacing="5" cellpadding="2">
+                                                    <tr border="0">
+                                                        <td width="33%" style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;padding-left:5px; font-weight:bold;">TCS APPLICANT ID</td>
+                                                        <td style="font-size:12px; font-family:Calibri;padding-left:5px;"><label for="">@Model.CompanyRefNo</label></td>
+                                                        <td width="33%" style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;padding-left:5px; font-weight:bold;">VENDOR RF-ID</td>
+                                                        <td style="font-size:12px; font-family:Calibri;padding-left:5px;"><label for=""></label></td>
+                                                    </tr>
+                                                    <tr border="0">
+                                                        <td style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;padding-left:5px; font-weight:bold;">RECRUITMENT BRANCH </td>
+                                                        <td style="font-size:12px; font-family:Calibri; padding-left:5px;"><label for="">@Model.ClientName</label></td>
+                                                        <td style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;padding-left:5px; font-weight:bold;">NSR IT_PIN </td>
+                                                        <td style="font-size:12px; font-family:Calibri; padding-left:5px;"><label for=""></label></td>
+                                                    </tr>
+                                                    <tr border="0">
+                                                        <td style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;padding-left:5px; font-weight:bold;">NAME OF CANDIDATE</td>
+                                                        <td colspan="3" style="font-size:12px; font-family:Calibri; padding-left:5px;"><label for="">@ProvidedInfo.NIC_Cand_Name</label></td>
+
+                                                    </tr>
+
+
+                                                    <tr>
+
+
+                                                        <td style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;padding-left:5px; font-weight:bold;">DATE OF BIRTH </td>
+                                                        <td style="font-size:12px; font-family:Calibri; padding-left:5px;"><label for="">@Model.DOB</label></td>
+                                                        <td style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;padding-left:5px; font-weight:bold;">
+                                                            FINAL BGC STATUS
+                                                            (RED/GREEN)
+                                                        </td>
+                                                        @if (@ProvidedInfo != null && !string.IsNullOrEmpty(ProvidedInfo.ColorName))
+                                                        {
+                                                            <td width="49%" style="color-adjust:exact;background:@ProvidedInfo.ColorCode;font-size:14px;  font-weight:bold; padding:5px; text-align:center;">@ProvidedInfo.ColorName</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td bgcolor="#fff" style="font-size:14px;  font-weight:bold; padding:5px; text-align:center;">@ProvidedInfo.CheckStatus</td>
+                                                        }
+
+                                                        @*<td style="font-size:12px; font-family:Calibri; background:@ProvidedInfo.ColorCode; padding-left:5px;"><label for="">@ProvidedInfo.ColorName</label></td>*@
+                                                    </tr>
+
+                                                    <tr>
+
+                                                        <td style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;padding-left:5px; font-weight:bold;">CATEGORY (CAMPUS/DT/EP/EP From CAMPUS) </td>
+                                                        <td style="font-size:12px; font-family:Calibri; padding-left:5px;"><label for=""></label></td>
+                                                        @*<td colspan="2" style="font-size:12px; font-family:Calibri; padding-left:5px;"><label for="">@ProvidedInfo.ColorName</label></td>*@
+                                                        @if (@ProvidedInfo != null && !string.IsNullOrEmpty(ProvidedInfo.ColorName))
+                                                        {
+
+                                                            <td style="text-align:center">
+                                                                <div style="width:10px; height:10px;background:@ProvidedInfo.ColorCode; "></div>
+                                                            </td>
+
+
+                                                            @*<td width="49%" style="color-adjust:exact;background:@ProvidedInfo.ColorCode;font-size:14px;  font-weight:bold; padding:5px; text-align:center;">@ProvidedInfo.ColorName</td>*@
+                                                        }
+
+
+                                                    </tr>
+
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td height="30">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top" align="center">
+                                                <table width="100%" border="1" cellspacing="5" cellpadding="2">
+                                                    <tr>
+                                                        <td width="3%" style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Sl. No</td>
+                                                        <td width="30%" style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">PARTICULARS</td>
+                                                        <td width="33%" style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Provided by the Applicant</td>
+                                                        <td width="33%" style="font-size:12px; font-family:Calibri; color-adjust:exact;background:#c0c0c0;text-align:center;   font-weight:700;">Details Verified and Confirmed by BGC Agency</td>
+                                                    </tr>
+
+                                                    @{
+                                                        if (NationalIdentityVerInfo != null)
+                                                        {
+                                                            int i = 0;
+                                                            foreach (var item in antecentList)
+                                                            {
+                                                                if (item.FieldName == "NIC_Cand_Name")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Cand_Name</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Cand_Name
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Any_Other_Cmmnts_NIC")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Any_Other_Cmmnts_NIC</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Any_Other_Cmmnts_NIC
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_DOB1")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @if (ProvidedInfo.NIC_DOB1 != null)
+                                                                            {
+                                                                                @ProvidedInfo.NIC_DOB1.Value.ToString("dd/MM/yyyy");
+                                                                            }
+                                                                        </td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @if (NationalIdentityVerInfo.NIC_DOB1 != null)
+                                                                            {
+                                                                                @NationalIdentityVerInfo.NIC_DOB1.Value.ToString("dd/MM/yyyy");
+                                                                            }
+
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_ID_No")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_ID_No</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_ID_No
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Verified_By")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Verified_By</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Verified_By
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Date_Issue")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Date_Issue</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Date_Issue
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Expiry_Date")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Expiry_Date</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Expiry_Date
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Validity_Status")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Validity_Status</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Validity_Status
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Passport_No")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Passport_No</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Passport_No
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_SSN_NO")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_SSN_NO</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_SSN_NO
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Pan_No")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Pan_No</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Pan_No
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Voter_Id_No")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Voter_Id_No</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Voter_Id_No
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Aadhar_Card_No")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Aadhar_Card_No</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Aadhar_Card_No
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Place_Issue")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Place_Issue</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Place_Issue
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Place_Residnce")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Place_Residnce</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Place_Residnce
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Time_Verf")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Time_Verf</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Time_Verf
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Type_Id_Card")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Type_Id_Card</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Type_Id_Card
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Reg_Doc_Type")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Reg_Doc_Type</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Reg_Doc_Type
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_RegNo")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_RegNo</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_RegNo
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Name_Field_Executive")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Name_Field_Executive</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Name_Field_Executive
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_PinCode")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_PinCode</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_PinCode
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Relation_Key_Personal")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Relation_Key_Personal</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Relation_Key_Personal
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Verified_Frm")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Verified_Frm</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Verified_Frm
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Auth_Details_Name")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Auth_Details_Name</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Auth_Details_Name
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Dsg")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Dsg</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Dsg
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Eid")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Eid</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Eid
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_MobNo")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_MobNo</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_MobNo
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Name_Key_Personnel")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Name_Key_Personnel</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Name_Key_Personnel
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_AliasFname")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_AliasFname</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_AliasFname
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Alias_Lname")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Alias_Lname</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Alias_Lname
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Country_Iss_Passport")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Country_Iss_Passport</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Country_Iss_Passport
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Date_Verif")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Date_Verif</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Date_Verif
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Id_CardNo")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Id_CardNo</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Id_CardNo
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Identity_Prov")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Identity_Prov</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Identity_Prov
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Name_Changed_Effect_Frm")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Name_Changed_Effect_Frm</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Name_Changed_Effect_Frm
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Nationality")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Nationality</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Nationality
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_PhotoID_Verif")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_PhotoID_Verif</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_PhotoID_Verif
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Any_Other_Remarks_NIC")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Any_Other_Remarks_NIC</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_Any_Other_Remarks_NIC
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails6")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails6</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_OtherDetails6
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails7")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails7</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_OtherDetails7
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails8")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails8</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_OtherDetails8
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails9")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails9</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_OtherDetails9
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails10")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails10</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_OtherDetails10
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails11")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails11</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_OtherDetails11
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails12")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails12</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_OtherDetails12
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails13")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails13</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_OtherDetails13
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails14")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails14</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_OtherDetails14
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails15")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails15</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.NIC_OtherDetails15
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Reverse_Directory")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Reverse_Directory</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_Reverse_Directory
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Residcl_Commrcl")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Residcl_Commrcl</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_Residcl_Commrcl
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Stock_Exchnge")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Stock_Exchnge</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_Stock_Exchnge
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Telphne_Directry_Srch")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Telphne_Directry_Srch</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_Telphne_Directry_Srch
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Yellow_Pages")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Yellow_Pages</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_Yellow_Pages
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Who_Domain")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Who_Domain</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_Who_Domain
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_GoogleSearch")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_GoogleSearch</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_GoogleSearch
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_InfrastructureOfCmp")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_InfrastructureOfCmp</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_InfrastructureOfCmp
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Just_Dial")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Just_Dial</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_Just_Dial
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Neighbor_Check1")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Neighbor_Check1</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_Neighbor_Check1
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_NASCOM_Empanelment")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_NASCOM_Empanelment</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_NASCOM_Empanelment
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Photograph")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Photograph</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_Photograph
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Physical_Site")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Physical_Site</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_Physical_Site
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Reg_Company")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Reg_Company</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_Reg_Company
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_PO_Courier_Check")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_PO_Courier_Check</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_PO_Courier_Check
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Network_Sol")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Network_Sol</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_Network_Sol
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_ApprxEmpWorking")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_ApprxEmpWorking</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_ApprxEmpWorking
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_CID_No")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_CID_No</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_CID_No
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Cmpny_Addr")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Cmpny_Addr</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_Cmpny_Addr
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Decoy_Call")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Decoy_Call</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_Decoy_Call
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Cmpny_Website")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Cmpny_Website</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @NationalIdentityVerInfo.ATA_Cmpny_Website
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                i++;
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            int i = 0;
+                                                            foreach (var item in antecentList)
+                                                            {
+                                                                if (item.FieldName == "NIC_Cand_Name")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Cand_Name</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Any_Other_Cmmnts_NIC")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Any_Other_Cmmnts_NIC</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_DOB1")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">
+                                                                            @if (ProvidedInfo.NIC_DOB1 != null)
+                                                                            {
+                                                                                @ProvidedInfo.NIC_DOB1.Value.ToString("dd/MM/yyyy");
+                                                                            }
+                                                                        </td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_ID_No")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_ID_No</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Verified_By")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Verified_By</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Date_Issue")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Date_Issue</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Expiry_Date")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Expiry_Date</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Validity_Status")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Validity_Status</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Passport_No")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Passport_No</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_SSN_NO")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_SSN_NO</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Pan_No")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Pan_No</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Voter_Id_No")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Voter_Id_No</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Aadhar_Card_No")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Aadhar_Card_No</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Place_Issue")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Place_Issue</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Place_Residnce")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Place_Residnce</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Time_Verf")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Time_Verf</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Type_Id_Card")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Type_Id_Card</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Reg_Doc_Type")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Reg_Doc_Type</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_RegNo")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_RegNo</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Name_Field_Executive")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Name_Field_Executive</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_PinCode")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_PinCode</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Relation_Key_Personal")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Relation_Key_Personal</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Verified_Frm")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Verified_Frm</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Auth_Details_Name")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Auth_Details_Name</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Dsg")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Dsg</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Eid")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Eid</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_MobNo")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_MobNo</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Name_Key_Personnel")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Name_Key_Personnel</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_AliasFname")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_AliasFname</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Alias_Lname")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Alias_Lname</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Country_Iss_Passport")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Country_Iss_Passport</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Date_Verif")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Date_Verif</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Id_CardNo")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Id_CardNo</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Identity_Prov")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Identity_Prov</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Name_Changed_Effect_Frm")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Name_Changed_Effect_Frm</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Nationality")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Nationality</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_PhotoID_Verif")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_PhotoID_Verif</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_Any_Other_Remarks_NIC")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_Any_Other_Remarks_NIC</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails6")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails6</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails7")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails7</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails8")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails8</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails9")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails9</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails10")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails10</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails11")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails11</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails12")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails12</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails13")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails13</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails14")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails14</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "NIC_OtherDetails15")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.NIC_OtherDetails15</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Reverse_Directory")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Reverse_Directory</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Residcl_Commrcl")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Residcl_Commrcl</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Stock_Exchnge")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Stock_Exchnge</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Telphne_Directry_Srch")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Telphne_Directry_Srch</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Yellow_Pages")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Yellow_Pages</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Who_Domain")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Who_Domain</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_GoogleSearch")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_GoogleSearch</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_InfrastructureOfCmp")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_InfrastructureOfCmp</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Just_Dial")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Just_Dial</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Neighbor_Check1")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Neighbor_Check1</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_NASCOM_Empanelment")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_NASCOM_Empanelment</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Photograph")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Photograph</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Physical_Site")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Physical_Site</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Reg_Company")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Reg_Company</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_PO_Courier_Check")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_PO_Courier_Check</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Network_Sol")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Network_Sol</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_ApprxEmpWorking")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_ApprxEmpWorking</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_CID_No")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_CID_No</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Cmpny_Addr")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Cmpny_Addr</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Decoy_Call")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Decoy_Call</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                if (item.FieldName == "ATA_Cmpny_Website")
+                                                                {
+                                                                    <tr>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@i :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@item.AntecedentName :</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">@ProvidedInfo.ATA_Cmpny_Website</td>
+                                                                        <td style="font-size:12px; font-family:Calibri;">&nbsp;</td>
+                                                                    </tr>
+                                                                }
+                                                                i++;
+                                                            }
+                                                        }
+                                                    }
+                                                    <tr>
+                                                        <td colspan="4">
+                                                            <p>
+                                                                <b>
+                                                                    Additional Comments by BGC agency when details provided by applicant is fake or wrong :
+                                                                </b>
+                                                                <br>(Note: Please attached certificates & mark sheets verified & attested by the Institute / College / University)
+                                                            </p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="4"><img src='@Url.Content("~/Images/Signature.JPG")' width="100%"></td>
+                                                    </tr>
+
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td @*style="border-right:2px solid #999999;"*@ align="left" valign="top">&nbsp;</td>
+                </tr>
+                <!--- Report Footer Address Include -->
+                @*@Html.Partial("_ReportFooterAddress")*@
+                <!--- Report Footer Address Include -->
+                <!--- Report Footer Include -->
+                @*@Html.Partial("_ReportFooter")*@
+                <!--- Report Footer Include -->
+            </table>
+        </page>
+
+        if (Model.CandidateDocList != null)
+        {
+            foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == ProvidedInfo.SubCheckRowID))
+            {
+                if (Doc.SubCheckRowID == ProvidedInfo.SubCheckRowID)
+                {
+                    FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                    if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                    {
+                        <page id="PrintSrc" size="A4">
+                            <div style="page-break-after:always ;"></div>
+                            <table width="793" cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center">
+                                <!--- Report Header Include -->
+                                @*@Html.Partial("_ReportHeader")*@
+                                <!--- Report Header Include -->
+                                <tr>
+                                    @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                    <td valign="top" colspan="2" align="center" valign="bottom">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td valign="top">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr>
+                                                            <td style="font-size:12px; font-family:Calibri;">
+                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                    <tr>
+                                                                        <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@ProvidedInfo.SubCheckName (@Doc.DocumentType)</p></td>
+                                                                        <td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                                                                    </tr>
+                                                                    <tr><td colspan="2">&nbsp;</td></tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td valign="top">&nbsp;</td>
+                                                        </tr>
+                                                        <tr style="text-align:center">
+                                                            <td valign="top" style="border:1px solid #000;padding:5px;">
+                                                                @{
+                                                                    FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                    System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                    if (image.Height > 600)
+                                                                    {
+                                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                    }
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    @*<td style="border-right:2px solid #999999;" align="left" valign="top">&nbsp;</td>*@
+                                </tr>
+                                <!--- Report Footer with Address Include -->
+                                @Html.Partial("_ReportFooterAddress")
+                                <!--- Report Footer with Address Include -->
+                                <!--- Report Footer Include -->
+                                @*@Html.Partial("_ReportFooter")*@
+                                <!--- Report Footer Include -->
+                            </table>
+                        </page>
+                    }
+                }
+            }
+        }
+    }
+}

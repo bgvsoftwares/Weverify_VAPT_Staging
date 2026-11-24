@@ -1,0 +1,818 @@
+﻿@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Manage Hr Approval Pending Cases";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "DashboardClient", "Home", new { area = "ClientArea" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    var clid = "";
+    clid = Session["ClientRowID"].ToString();
+}
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@*@section DisplayTitle{ @Html.Partial("_DisplayTitle") }*@
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+<div class="container-fluid ps-0 bg_gradient_CaseWise mt-2">
+    <div class="row row-sm">
+        @section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+    </div>
+    <div class="row row-sm ms-2">
+        <div class="col-xl-12 mb-5">
+            <span>@ViewBag.NavigationBtnExportExcel</span>
+            @*<input value=@clid class="clientid" hidden/>*@
+            @using (Html.BeginForm("ManageClientHrApprovalCases", "Home", new { area = "ClientArea" }, FormMethod.Post))
+            {
+                <table class="table mb-0 text-md-nowrap fl-table table-responsive table-scroll js-serial items" id="example1" style="border:none; cursor:all-scroll;">
+
+                    <thead>
+                        @if (clid == "576")
+                        {
+                            <tr>
+                                <th>Candidate Name</th>
+                                <th>Personal Details</th>
+                                <th>Client Ref ID</th>
+                                <th>Entity</th>
+                                <th>Mobile NO</th>
+                                <th>Email ID</th>
+                                <th>Package</th>
+                                <th>Created Date</th>
+                                <th>Check Details</th>
+                                <th>Check Doc Details</th>
+                                <th>LOA</th>
+                                <th>Approve</th>
+                                <th>Reject</th>
+                                <th>Stop</th>
+                            </tr>
+                        }
+                        else if (clid == "1680")
+                        {
+                            <tr>
+                                <th>Candidate Name</th>
+                                <th>Personal Details</th>
+                                <th>Client Ref ID</th>
+                                <th>Entity</th>
+                                @if (clid == "684")
+                                {
+                                    <th>PackageName</th>
+                                    <th>HR Recruiter Name </th>
+                                }
+                                @*@if (clid == "992" || clid == "993" || clid == "994" || clid == "1125" || clid == "1243")
+                {
+                    <th>Date Of Joining</th>
+                }*@
+                                <th>Mobile NO</th>
+                                <th>Package</th>
+                                <th>Created Date</th>
+                                <th>Check Details</th>
+                                <th>Check Doc Details</th>
+                                <th>LOA</th>
+                                <th>Approve</th>
+                                <th>Reject</th>
+                                <th>Stop</th>
+
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <th>Candidate Name</th>
+                                <th>Personal Details</th>
+
+                                @if (clid == "869")
+                                {
+                                    <th>EmployeID</th>
+                                }
+                                else
+                                {
+                                    <th>Client Ref ID</th>
+                                }
+                                <th>Entity</th>
+                                @if (clid == "684")
+                                {
+                                    <th>PackageName</th>
+                                    <th>HR Recruiter Name </th>
+                                }
+                                @*@if (clid == "992" || clid == "993" || clid == "994" || clid == "1125" || clid == "1243")
+        {
+            <th>Date Of Joining</th>
+        }*@
+                                <th>Mobile NO</th>
+                                <th>Package</th>
+                                <th>Created Date</th>
+                                <th>Check Details</th>
+                                <th>Check Doc Details</th>
+                                <th>LOA</th>
+                                <th>Approve</th>
+                                <th>Reject</th>
+                                <th>Stop</th>
+
+                            </tr>
+                        }
+                    </thead>
+                    <tbody class="text-start tx-10">
+                        @foreach (var a in Model.TempHrAprvlCases)
+                        {
+                            if (clid == "576")
+                            {
+                                <tr>
+                                    <td>@a.CandidateName</td>
+                                    <td>
+                                        <a href="@Url.Action("CandidateInformation", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="btn btn-outline-primary btn-block table_btn">Download</a>
+                                    </td>
+                                    <td>@a.ClientRefID</td>
+                                    <td>@a.Entity</td>
+                                    <td>@a.MobileNo</td>
+                                    <td>@a.Emailid</td>
+                                    <td>@a.Package</td>
+                                    <td>@a.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <a href="@Url.Action("showCandidateChecksDetail", "Home", new { area = "ClientArea", id = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="iframeCheckDetails btn btn-outline-primary btn-block table_btn">Show</a>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("UploadCandidateCheckDoc", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="iframeUploadCandidateCheckDoc btn btn-outline-primary btn-block table_btn">Show</a>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("ExportPDF", "Home", new { PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="iframeExportPDF btn btn-outline-primary btn-block table_btn">Show</a>
+                                    </td>
+                                    <td>
+                                        <a id="Complete_@a.PersonalRowID" class="Complete btn btn-outline-primary btn-block table_btn">Approve</a>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("RejectCandidatedetails", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="iframeReject btn btn-outline-primary btn-block table_btn">Reject</a>
+                                    </td>
+                                    <td>
+                                        <a id="Stop_@a.PersonalRowID" class="Stop btn btn-outline-primary btn-block table_btn">Stop</a>
+                                    </td>
+                                </tr>
+                            }
+                            else if (clid == "1680")
+                            {
+                                <tr>
+                                    <td>@a.CandidateName</td>
+                                    <td>
+                                        <a href="@Url.Action("CandidateInformation", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="btn btn-outline-primary btn-block table_btn">Download</a>
+                                    </td>
+                                    <td>@a.ClientRefID</td>
+                                    <td>@a.Entity</td>
+                                    @if (clid == "684")
+                                    {
+                                        <td>@a.PackageName</td>
+                                        <td>@a.HRRecruiterName</td>
+                                    }
+                                    @*@if (clid == "992" || clid == "993" || clid == "994" || clid == "1125" || clid == "1243")
+                    {
+                        <td>
+                            <input id="DOJ_@a.PersonalRowID" class="DOJ btn btn-outline-primary btn-block table_btn" type="date" />
+                        </td>
+                    }*@
+                                    <td>@a.MobileNo</td>
+                                    <td>@a.PackageName</td>
+                                    <td>@a.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <a href="@Url.Action("showCandidateChecksDetail", "Home", new { area = "ClientArea", id = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="iframeCheckDetails btn btn-outline-primary btn-block table_btn">Show</a>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("UploadCandidateCheckDoc", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="iframeUploadCandidateCheckDoc btn btn-outline-primary btn-block table_btn">Show</a>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("ExportPDF", "Home", new { PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="iframeExportPDF btn btn-outline-primary btn-block table_btn">Show</a>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(a.CompanyRefNo))
+                                        {
+                                            <a id="Complete_@a.PersonalRowID" class="Complete1 btn btn-outline-primary btn-block table_btn">Re Approve</a>
+
+                                        }
+                                        else
+                                        {
+                                            <a id="Complete_@a.PersonalRowID" class="Complete btn btn-outline-primary btn-block table_btn">Approve</a>
+
+                                        }
+                                    </td>
+                                    @if (clid == "1071")
+                                    {
+                                        <td>
+                                            <a href="@Url.Action("RejectCandidatedetailsCheckWise", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString())})" class="iframeReject btn btn-outline-primary btn-block table_btn">Reject</a>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            <a href="@Url.Action("RejectCandidatedetails", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="iframeReject btn btn-outline-primary btn-block table_btn">Reject</a>
+                                        </td>
+                                    }
+                                    <td>
+                                        <a id="Stop_@a.PersonalRowID" class="Stop btn btn-outline-primary btn-block table_btn">Stop</a>
+                                    </td>
+
+                                </tr>
+                            }
+                            else if (clid == "1125")
+                            {
+                                <tr>
+                                    <td>@a.CandidateName</td>
+                                    <td>
+                                        <a href="@Url.Action("CandidateInformation", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="btn btn-outline-primary btn-block table_btn">Download</a>
+                                    </td>
+                                    <td>@a.ClientRefID</td>
+                                    <td>@a.Entity</td>
+                                    @if (clid == "684")
+                                    {
+                                        <td>@a.PackageName</td>
+                                        <td>@a.HRRecruiterName</td>
+                                    }
+                                    @*@if (clid == "992" || clid == "993" || clid == "994" || clid == "1125" || clid == "1243")
+                    {
+                        <td>
+                            <input id="DOJ_@a.PersonalRowID" class="DOJ btn btn-outline-primary btn-block table_btn" type="date" />
+                        </td>
+                    }*@
+                                    <td>@a.MobileNo</td>
+                                    <td>@a.PackageName</td>
+                                    <td>@a.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <a href="@Url.Action("showCandidateChecksDetail", "Home", new { area = "ClientArea", id = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="iframeCheckDetails btn btn-outline-primary btn-block table_btn">Show</a>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("UploadCandidateCheckDoc", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="iframeUploadCandidateCheckDoc btn btn-outline-primary btn-block table_btn">Show</a>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("ExportPDF", "Home", new { PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="iframeExportPDF btn btn-outline-primary btn-block table_btn">Show</a>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(a.CompanyRefNo))
+                                        {
+                                            <a id="Complete_@a.PersonalRowID" class="Complete2 btn btn-outline-primary btn-block table_btn">Approve</a>
+
+                                        }
+                                        else
+                                        {
+                                            <a id="Complete_@a.PersonalRowID" class="Complete btn btn-outline-primary btn-block table_btn">Approve</a>
+
+                                        }
+                                    </td>
+                                    @if (clid == "1071")
+                                    {
+                                        <td>
+                                            <a href="@Url.Action("RejectCandidatedetailsCheckWise", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString())})" class="iframeReject btn btn-outline-primary btn-block table_btn">Reject</a>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            <a href="@Url.Action("RejectCandidatedetails", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="iframeReject btn btn-outline-primary btn-block table_btn">Reject</a>
+                                        </td>
+                                    }
+                                    <td>
+                                        <a id="Stop_@a.PersonalRowID" class="Stop btn btn-outline-primary btn-block table_btn">Stop</a>
+                                    </td>
+
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td>@a.CandidateName</td>
+                                    <td>
+                                        <a href="@Url.Action("CandidateInformation", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="btn btn-outline-primary btn-block table_btn">Download</a>
+                                    </td>
+                                    <td>@a.ClientRefID</td>
+                                    <td>@a.Entity</td>
+                                    @if (clid == "684")
+                                    {
+                                        <td>@a.PackageName</td>
+                                        <td>@a.HRRecruiterName</td>
+                                    }
+                                    @*@if (clid == "992" || clid == "993" || clid == "994" || clid == "1125" || clid == "1243")
+                    {
+                        <td>
+                            <input id="DOJ_@a.PersonalRowID" class="DOJ btn btn-outline-primary btn-block table_btn" type="date" />
+                        </td>
+                    }*@
+                                    <td>@a.MobileNo</td>
+                                    <td>@a.PackageName</td>
+                                    <td>@a.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <a href="@Url.Action("showCandidateChecksDetail", "Home", new { area = "ClientArea", id = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="iframeCheckDetails btn btn-outline-primary btn-block table_btn">Show</a>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("UploadCandidateCheckDoc", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="iframeUploadCandidateCheckDoc btn btn-outline-primary btn-block table_btn">Show</a>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("ExportPDF", "Home", new { PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="iframeExportPDF btn btn-outline-primary btn-block table_btn">Show</a>
+                                    </td>
+                                    <td>
+                                        <a id="Complete_@a.PersonalRowID" class="Complete btn btn-outline-primary btn-block table_btn">Approve</a>
+                                    </td>
+                                    @if (clid == "1071")
+                                    {
+                                        <td>
+                                            <a href="@Url.Action("RejectCandidatedetailsCheckWise", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString())})" class="iframeReject btn btn-outline-primary btn-block table_btn">Reject</a>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            <a href="@Url.Action("RejectCandidatedetails", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })" class="iframeReject btn btn-outline-primary btn-block table_btn">Reject</a>
+                                        </td>
+                                    }
+                                    <td>
+                                        <a id="Stop_@a.PersonalRowID" class="Stop btn btn-outline-primary btn-block table_btn">Stop</a>
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .table_btn {
+        color: #8D5FFF !important;
+        transition: 0.3s ease-in-out !important;
+    }
+
+        .table_btn:hover {
+            background: #FFF !important;
+            background-color: rgb(255, 255, 255);
+            color: #fff !important;
+            border: 1px solid #031F30 !important;
+            background-color: #031F30 !important;
+        }
+
+    .table tr td {
+        line-height: 2.757 !important;
+        text-align: left !important;
+    }
+
+    .approveclass {
+        width: 70px !important;
+    }
+
+    .stopclass {
+        width: 55px !important;
+    }
+
+    .rejectclass {
+        width: 55px !important;
+    }
+
+    .table tr td {
+        line-height: 2.757 !important;
+    }
+</style>
+@section Scripts{
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script>
+
+
+              $(".Complete1").on("click", function () {
+          debugger
+          //var clid1 = $(".clientid").val();
+
+
+          @*if (clid1 == "992" || clid1 == "993" || clid1 == "994" || clid1 == "1125" || clid1 == "1243")
+       {
+
+    Swal.fire({
+        title: 'Are you sure want to Approve this case?',
+        //showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Approve it!',
+        denyButtonText: 'Cancel !',
+    }).then((result) => {
+        debugger
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+            var str = $(this).attr("id").split("_");
+            var id = str[1];
+            var DOJ = $(".DOJ").val();
+            if (DOJ == "") {
+                DOJ = "Not Provided"
+            }
+            else
+            {
+                var parts = DOJ.split('-');
+                var DOJFormatted = parts[2] + '-' + parts[1] + '-' + parts[0]; // "13-03-2025"
+            }
+
+            if (id != "") {
+                $.ajax({
+           type: "GET",
+           contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("ClientCaseApproveByID", "Home", new { area = "ClientArea" })',
+                    data: { "id": id, "DOJ": DOJFormatted, "clientrowid": clid1 },
+           dataType: "json",
+                    success: function (data) {
+                        if (data.result == true) {
+                            Swal.fire("Approved Successfully!!");
+                            setTimeout(function () { window.location.replace("ManageClientHrApprovalCases"); }, 3000);
+                        }
+                        else if (data.result == false && data.count == 1) {
+                            Swal.fire("Candidate Already Exist!");
+                        }
+                        else {
+                            Swal.fire('There is some error');
+                        }
+                    }
+                });
+            }
+        } else if (result.isDenied) {
+            Swal.fire('Changes are not saved', '', 'info')
+        }
+    })
+       }*@
+       //else
+       //{
+ Swal.fire({
+     title: 'Are you sure want to Approve this case?',
+     //showDenyButton: true,
+     showCancelButton: true,
+     confirmButtonText: 'Yes, Approve it!',
+     denyButtonText: 'Cancel !',
+ }).then((result) => {
+     debugger
+     /* Read more about isConfirmed, isDenied below */
+     if (result.isConfirmed) {
+         var str = $(this).attr("id").split("_");
+         var id = str[1];
+         if (id != "") {
+             $.ajax({
+        type: "GET",
+        contentType: "application/json; charset=utf-8",
+        url: '@Url.Action("ClientCaseApproveByIDNew", "Home", new { area = "ClientArea" })',
+                 data: { "id": id },  /*, "DOJ": "", "clientrowid": clid1 */
+        dataType: "json",
+                 success: function (data) {
+                     if (data.result == true) {
+                         Swal.fire("Approved Successfully!!");
+                         setTimeout(function () { window.location.replace("ManageClientHrApprovalCases"); }, 3000);
+                     }
+                     else if (data.result == false && data.count == 1) {
+                         Swal.fire("Candidate Already Exist!");
+                     }
+                     else {
+                         Swal.fire('There is some error');
+                     }
+                 }
+             });
+         }
+     } else if (result.isDenied) {
+         Swal.fire('Changes are not saved', '', 'info')
+     }
+ })
+       //}
+
+});
+
+
+
+
+        $(".Complete").on("click", function () {
+            debugger
+            var clid1 = @clid;
+
+
+            if (clid1 == "684")
+         {
+
+               Swal.fire({
+                title: 'Are you sure want to Approve this case?',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Approve it!',
+                denyButtonText: 'Cancel !',
+                html: `
+<input type="file" class="file-uploader" id="fileUpload" class="swal2-input" multiple>
+<textarea class="remakers" id="remarkInput" class="swal2-textarea" placeholder="Enter remarks here..."></textarea>
+`,
+                preConfirm: () => {
+                    const files = document.getElementById('fileUpload').files;
+                    const remark = document.getElementById('remarkInput').value;
+                    return { files, remark };
+                }
+   }).then((result) => {
+
+       /* Read more about isConfirmed, isDenied below */
+       if (result.isConfirmed) {
+    var str = $(this).attr("id").split("_");
+    var id = str[1];
+    if (id != "") {
+        const files = document.getElementById('fileUpload').files;
+        const remark = document.getElementById('remarkInput').value;
+
+        const formData = new FormData();
+        formData.append("id", id);
+        formData.append("remark", remark);
+        for (let i = 0; i < files.length; i++) {
+            formData.append("UploadDoc", files[i]); // Note: use same name as in controller
+        }
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("ClientCaseApproveByHRID", "Home", new { area = "ClientArea" })',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                if (data.result === true) {
+                    Swal.fire("Approved Successfully!!");
+                    setTimeout(function () { window.location.replace("ManageClientHrApprovalCases"); }, 3000);
+                } else if (data.result === false && data.count === 1) {
+                    Swal.fire("Candidate Already Exist!");
+                } else {
+                    Swal.fire('There is some error');
+                }
+            },
+            error: function () {
+                Swal.fire('Error occurred during approval');
+            }
+        });
+    }
+}
+ else if (result.isDenied) {
+           Swal.fire('Changes are not saved', '', 'info')
+       }
+   })
+            }
+    else if (clid1 == "1481") {
+    Swal.fire({
+        title: 'Are you sure want to Approve this case?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Approve it!',
+        html: `
+<label class="d-block text-start mb-1">Upload CV (PDF/DOC/DOCX, max 5 MB)</label>
+<input type="file" id="cvUpload" class="form-control" accept=".pdf,.doc,.docx">`,
+        preConfirm: () => {
+            const file = document.getElementById('cvUpload').files[0];
+            if (!file) {
+                Swal.showValidationMessage('Please upload CV');  
+                return false;
+            }
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!['pdf', 'doc', 'docx'].includes(ext)) {
+                Swal.showValidationMessage('Only PDF, DOC or DOCX allowed');
+                return false;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                Swal.showValidationMessage('File size must be under 5 MB');
+                return false;
+            }
+            return { file };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            var id = $(this).attr("id").split("_")[1];
+            if (id != "") {
+                const formData = new FormData();
+                formData.append("id", id);
+                if (result.value && result.value.file) {
+                    formData.append("UploadCV", result.value.file);
+                }
+                // 1) Pehle CV upload
+                $.ajax({
+                    type: "POST",
+                    @*url: '@Url.Action("UploadCandidateCV", "Home", new { area = "ClientArea" })',*@
+                    url: '@Url.Action("UploadCandidateCV", "ClientCandidate", new { area = "ClientArea" })',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (up) {
+                        if (up.result !== true) {
+                            Swal.fire(up.msg || 'CV upload failed');
+                            return;
+                        }
+                        // 2) CV upload hone ke baad existing approve
+                        $.ajax({
+                            type: "GET",
+                            contentType: "application/json; charset=utf-8",
+                            url: '@Url.Action("ClientCaseApproveByID", "Home", new { area = "ClientArea" })',
+                            data: { "id": id },
+                            dataType: "json",
+                            success: function (data) {
+                                if (data.result == true) {
+                                    Swal.fire("Approved Successfully!!");
+                                    setTimeout(function () { window.location.replace("ManageClientHrApprovalCases"); }, 3000);
+                                }
+                                else if (data.result == false && data.count == 1) {
+                                    Swal.fire("Candidate Already Exist!");
+                                }
+                                else {
+                                    Swal.fire('There is some error');
+                                }
+                            }
+                        });
+                    },
+                    error: function () { Swal.fire('Error occurred while uploading CV'); }
+                });
+            }
+        }
+    });
+}
+         else
+         {
+              Swal.fire({
+       title: 'Are you sure want to Approve this case?',
+       //showDenyButton: true,
+       showCancelButton: true,
+       confirmButtonText: 'Yes, Approve it!',
+       denyButtonText: 'Cancel !',
+   }).then((result) => {
+       debugger
+       /* Read more about isConfirmed, isDenied below */
+       if (result.isConfirmed) {
+           var str = $(this).attr("id").split("_");
+           var id = str[1];
+           if (id != "") {
+               $.ajax({
+          type: "GET",
+          contentType: "application/json; charset=utf-8",
+          url: '@Url.Action("ClientCaseApproveByID", "Home", new { area = "ClientArea" })',
+                   data: { "id": id },  /*, "DOJ": "", "clientrowid": clid1 */
+          dataType: "json",
+                   success: function (data) {
+                       if (data.result == true) {
+                           Swal.fire("Approved Successfully!!");
+                           setTimeout(function () { window.location.replace("ManageClientHrApprovalCases"); }, 3000);
+                       }
+                       else if (data.result == false && data.count == 1) {
+                           Swal.fire("Candidate Already Exist!");
+                       }
+                       else {
+                           Swal.fire('There is some error');
+                       }
+                   }
+               });
+           }
+       } else if (result.isDenied) {
+           Swal.fire('Changes are not saved', '', 'info')
+       }
+   })
+
+         }
+
+  });
+
+
+
+
+            $(".Complete2").on("click", function () {
+            debugger
+            var clid1 = @clid;
+
+          Swal.fire({
+       title: 'Are you sure want to Approve this case?',
+       //showDenyButton: true,
+       showCancelButton: true,
+       confirmButtonText: 'Yes, Approve it!',
+       denyButtonText: 'Cancel !',
+   }).then((result) => {
+       debugger
+       /* Read more about isConfirmed, isDenied below */
+       if (result.isConfirmed) {
+           var str = $(this).attr("id").split("_");
+           var id = str[1];
+           if (id != "") {
+               $.ajax({
+          type: "GET",
+          contentType: "application/json; charset=utf-8",
+          url: '@Url.Action("ClientCaseApproveByIDUanAcuity", "Home", new { area = "ClientArea" })',
+                   data: { "id": id },  /*, "DOJ": "", "clientrowid": clid1 */
+          dataType: "json",
+                   success: function (data) {
+                       if (data.result == true) {
+                           Swal.fire("Approved Successfully!!");
+                           setTimeout(function () { window.location.replace("ManageClientHrApprovalCases"); }, 3000);
+                       }
+                       else if (data.result == false && data.count == 1) {
+                           Swal.fire("Candidate Already Exist!");
+                       }
+                       else {
+                           Swal.fire('There is some error');
+                       }
+                   }
+               });
+           }
+       } else if (result.isDenied) {
+           Swal.fire('Changes are not saved', '', 'info')
+       }
+   })
+
+
+
+  });
+
+
+    </script>
+    <script type="text/javascript">
+        $(".Stop").on("click", function () {
+             Swal.fire({
+                 title: 'Are you sure want to Stop this case?',
+                 //showDenyButton: true,
+                 showCancelButton: true,
+                 confirmButtonText: 'Yes, Stop it!',
+                 denyButtonText: 'Cancel !',
+             }).then((result) => {
+                 debugger
+                 /* Read more about isConfirmed, isDenied below */
+                 if (result.isConfirmed) {
+                     var str = $(this).attr("id").split("_");
+                     var id = str[1];
+                     if (id != "") {
+                        $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("ClientCaseStopById", "Home", new { area = "ClientArea" })',
+                    data: { "id": id },
+                    dataType: "json",
+                             success: function (data) {
+                                 if (data.result != "") {
+                                     Swal.fire(data.result);
+                                     setTimeout(function () { window.location.replace("ManageClientHrApprovalCases"); }, 3000);
+                                 }
+                             }
+                         });
+                     }
+                 } else if (result.isDenied) {
+                     Swal.fire('Changes are not saved', '', 'info')
+                 }
+             })
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeCheckDetails").colorbox({ iframe: true, width: "79%", height: "72%" });
+        });
+
+        $(document).ready(function () {
+            $(".iframeUploadCandidateCheckDoc").colorbox({ iframe: true, width: "55%", height: "75%" });
+        });
+
+        $(document).ready(function () {
+            $(".iframeExportPDF").colorbox({ iframe: true, width: "79%", height: "72%" });
+        });
+        $(document).ready(function () {
+            $(".iframeExportClientEmploymentDetails").colorbox({ iframe: true, width: "79%", height: "72%" });
+        });
+        $(document).ready(function () {
+            $(".iframeReject").colorbox({ iframe: true, width: "70%", height: "75%" });
+        });
+    </script>
+    <script>
+        (function ($, window, document, undefined) {
+            //Configure colorbox call back to resize with custom dimensions
+            $.colorbox.settings.onLoad = function () {
+                colorboxResize();
+            }
+
+            //Customize colorbox dimensions
+            var colorboxResize = function (resize) {
+                var width = "90%";
+                var height = "90%";
+
+                if ($(window).width() > 960) { width = "860" }
+                if ($(window).height() > 700) { height = "630" }
+
+                $.colorbox.settings.height = height;
+                $.colorbox.settings.width = width;
+
+                //if window is resized while lightbox open
+                if (resize) {
+                    $.colorbox.resize({
+                        'height': height,
+                        'width': width
+                    });
+                }
+            }
+            //In case of window being resized
+            $(window).resize(function () {
+                colorboxResize(true);
+            });
+
+        })(jQuery, this, this.document);
+
+    </script>
+
+    <script type="text/javascript">
+        $("#btnSearch").click(function () {
+            var obj = $('form input[type="text"]').NormalizedString();
+            if (obj == false) {
+                return false;
+            }
+        });
+        $("#Search").SearchString();
+    </script>
+}
+<style>
+    .table tr td {
+        line-height: 2.757 !important;
+        text-align: left !important;
+    }
+</style>

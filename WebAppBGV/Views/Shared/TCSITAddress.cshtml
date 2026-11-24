@@ -1,0 +1,261 @@
+﻿@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    /**/
+
+    /**/
+
+    var list = Model.AddressInfoModel.Where(T => T.SubcheckRowID != 195).GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+
+
+}
+@if (Model != null && Model.AddressInfoModel != null && Model.AddressInfoModel.Count > 0)
+{
+    if (Model.AddressInfoModel != null)
+    {
+
+        //int j = 0;
+        int annuxureno = Convert.ToInt32(Session["AnnexureNo"]);
+        int k = Convert.ToInt32(annuxureno);
+        foreach (var a in list)
+        {
+            int i = 1;
+            var Anticident = Model.AddressInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+
+            var ReportComment = a.ReportComment;
+            //if (j == 0)
+            //{
+            //    annuxureno = k + 1;
+            //}
+            //else
+            //{
+            //    annuxureno = annuxureno + 1;
+            //}
+            //j = 2;
+            //Session["AnnexureNo"] = annuxureno.ToString();
+
+
+            <page id="PrintSrc" size="A4">
+                <div style="page-break-after:always ;"></div>
+                <table style="width:100%;">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <table style="width:100%; margin: auto; margin-bottom: 10px;">
+                                    <tr>
+                                        <td style="text-align: end;padding: 5px;"><img src="~/Images/Walsons_logo.jpg" style="width: 150px;"></td>
+                                    </tr>
+                                </table>
+                                <table style="width:100%; margin: auto;">
+                                    <tr>
+                                        @if (a.SubcheckRowID == 2)
+                                        {
+                                            <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;font-size: 14px;padding: 5px; text-decoration-line: underline; ">ADDRESS VERIFICATION (Current Address)</td>
+                                        }
+                                        else if (a.SubcheckRowID == 13)
+                                        {
+                                            <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;font-size: 14px;padding: 5px; text-decoration-line: underline;">ADDRESS VERIFICATION (Present Address)</td>
+                                        }
+                                        else
+                                        {
+                                            <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;font-size: 14px;padding: 5px; text-decoration-line: underline;">ADDRESS VERIFICATION </td>
+                                        }
+
+                                    </tr>
+                                </table>
+                                <table style="width:100%; margin: auto; border:2px solid #000; border-collapse: collapse; margin-top: 10px;">
+                                    <tr>
+                                        <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;background: #B3B3B3; border: 2px solid #000; font-size: 14px;padding: 5px;">TCS APPLICANT ID/UNIQUE ID</td>
+                                        <td style="padding:5px; font-size: 14px; font-family: 'Times New Roman', Times, serif;font-weight: bolder;border: 2px solid #000;">@Model.EmploymentId</td>
+                                        <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;background: #B3B3B3; border: 2px solid #000; font-size: 14px;padding: 5px;">VENDOR RF-ID</td>
+                                        <td style="padding:5px; font-size: 14px; font-family: 'Times New Roman', Times, serif;font-weight: bolder;border: 2px solid #000;">@Model.CompanyRefNo</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;background: #B3B3B3; border: 2px solid #000; font-size: 14px;padding: 5px;">RECRUITMENT BRANCH</td>
+                                        <td style="padding:5px; font-size: 14px; font-family: 'Times New Roman', Times, serif;font-weight: bolder;border: 2px solid #000;">@Model.Location</td>
+                                        <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;background: #B3B3B3; border: 2px solid #000; font-size: 14px;padding: 5px;">NSR IT_PIN</td>
+                                        <td style="padding:5px; font-size: 14px; font-family: 'Times New Roman', Times, serif;font-weight: bolder;border: 2px solid #000;">NIL</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;background: #B3B3B3; border: 2px solid #000; font-size: 14px;padding: 5px;">NAME OF CANDIDATE</td>
+                                        <td colspan="3" style="padding:5px; font-size: 14px; font-family: 'Times New Roman', Times, serif;font-weight: bolder;border: 2px solid #000;">@Model.PersonalName</td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="2" style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;background: #B3B3B3; border: 2px solid #000; font-size: 14px;padding: 5px;">DATE OF BIRTH</td>
+                                      
+                                        <td rowspan="2" style="padding:5px; font-size: 14px; font-family: 'Times New Roman', Times, serif;font-weight: bolder;border: 2px solid #000;">
+                                            @try
+                                            {
+                                                @Model.DOB.Value.ToString("dd/MM/yyyy")
+                                            }
+                                            catch
+                                            {
+
+                                            }
+
+                                        </td>
+                                            
+                                         
+                                        <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;background: #B3B3B3; border: 2px solid #000; font-size: 14px;padding: 5px;">FINAL BGC STATUS (RED/GREEN)</td>
+                                        <td style="padding:5px; font-size: 14px; font-family: 'Times New Roman', Times, serif;font-weight: bolder;border: 2px solid #000;color:green;">@Model.FinalColor.ToUpper()</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" rowspan="2" style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border: 2px solid #000; font-size: 14px;padding: 5px;">
+                                            <div style="width: 100%; display: flex;">
+                                                <div style="background: red; width: 10px; height: 10px; border: 1px solid #000; margin-right:5px;"></div>
+                                                <span style="font-size:14px;">RED (DISCREPENCY)</span>
+                                                <div style="background: green; width: 10px; height: 10px; border: 1px solid #000; margin-right:5px; margin-left:5px;"></div><span style="font-size:14px;">GREEN (POSITIVE)</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;background: #B3B3B3; border: 2px solid #000; font-size: 14px;padding: 5px;">CATEGORY (CAMPUS/DT/EP/EP From CAMPUS)</td>
+                                        <td style="padding:5px; font-size: 14px; font-family: 'Times New Roman', Times, serif;font-weight: bolder;border: 2px solid #000;">@Model.EmploymentType</td>
+                                    </tr>
+                                </table>
+                                <table style="width:100%; margin: auto; border:2px solid #000; border-collapse: collapse; margin-top: 10px;">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border: 2px solid #000; font-size: 14px;padding: 5px;">Sl.No</th>
+                                            <th style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border: 2px solid #000; font-size: 14px;padding: 5px;">PARTICULARS</th>
+                                            <th style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder; border: 2px solid #000; font-size: 14px;padding: 5px;width:30%;">Details Provided by the Applicant</th>
+                                            <th style="text-align: center; font-family: 'Times New Roman', Times, serif; font-weight: bolder; border: 2px solid #000; font-size: 14px;padding: 5px; width:30%;">Details Verified and Confirmed by BGC Agency</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        @foreach (var item in Anticident)
+                                        {
+                                            if (@item.AntecedentRowID == "27"  || @item.AntecedentRowID == "36")
+                                            {
+                                                <tr>
+                                                    <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border: 2px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;">@i</td>
+                                                    <td style="text-align: left; font-family: 'Times New Roman', Times, serif; border: 2px solid #000; font-size: 14px;padding: 5px;font-weight: bolder;">@item.DisplayNameRep</td>
+                                                    <td style="text-align: center; font-family: 'Times New Roman', Times, serif; border: 2px solid #000; font-size: 14px;padding: 5px;">@item.DataEntryValue</td>
+                                                    <td style="text-align: center; font-family: 'Times New Roman', Times, serif; border: 2px solid #000; font-size: 14px;padding: 5px;">@item.OpsValue</td>
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border: 2px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;">@i</td>
+                                                    <td style="text-align: left; font-family: 'Times New Roman', Times, serif; border: 2px solid #000; font-size: 14px;padding: 5px;font-weight: bolder;">@item.DisplayNameRep <span style="font-weight: normal;"></span></td>
+                                                    <td style="text-align: center; font-family: 'Times New Roman', Times, serif; border: 2px solid #000; border-bottom:none; font-size: 14px;padding: 5px; background: #adadad84;"></td>
+                                                    <td style="text-align: center; font-family: 'Times New Roman', Times, serif; border: 2px solid #000; font-size: 14px;padding: 5px;">@item.OpsValue</td>
+                                                </tr>
+                                            }
+
+                                            i++;
+                                        }
+                                        @*<tr>
+            <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border: 2px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;">2</td>
+            <td style="text-align: left; font-family: 'Times New Roman', Times, serif; border: 2px solid #000; font-size: 14px;padding: 5px;font-weight: bolder;">Period of Stay <span style="font-weight: normal;">(Date: From/To)</span></td>
+            <td style="text-align: center; font-family: 'Times New Roman', Times, serif; border: 2px solid #000; font-size: 14px;padding: 5px;">Not Provided</td>
+            <td style="text-align: center; font-family: 'Times New Roman', Times, serif; border: 2px solid #000; font-size: 14px;padding: 5px;">01-Feb-2005 to 06-Feb-2024</td>
+        </tr>
+        <tr>
+            <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border: 2px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;">3</td>
+            <td style="text-align: left; font-family: 'Times New Roman', Times, serif; border: 2px solid #000; font-size: 14px;padding: 5px;font-weight: bolder;">Residential Status <span style="font-weight: normal;">(Rental/ Ownership, hostel or paying guest)</span></td>
+            <td style="text-align: center; font-family: 'Times New Roman', Times, serif; border: 2px solid #000; border-bottom:none; font-size: 14px;padding: 5px; background: #adadad84;"></td>
+            <td style="text-align: center; font-family: 'Times New Roman', Times, serif; border: 2px solid #000; font-size: 14px;padding: 5px;">Ownership</td>
+        </tr>
+        <tr>
+            <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-weight: bolder;border: 2px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;">4</td>
+            <td style="text-align: left; font-family: 'Times New Roman', Times, serif; border: 2px solid #000; font-size: 14px;padding: 5px;font-weight: bolder;">Residential Status <span style="font-weight: normal;">(Rental/ Ownership, hostel or paying guest)</span></td>
+            <td style="text-align: center; font-family: 'Times New Roman', Times, serif; border: 2px solid #000; font-size: 14px;padding: 5px; background: #adadad84;"></td>
+            <td style="text-align: center; font-family: 'Times New Roman', Times, serif; border: 2px solid #000; font-size: 14px;padding: 5px;">Ownership</td>
+        </tr>*@
+                                    </tbody>
+                                </table>
+                                <table style="width:100%; margin: auto;">
+                                    <tr>
+                                        <td style="font-size:14px; font-weight: bolder; font-family: 'Times New Roman', Times, serif; padding:5px; text-align: left;">STAMP / SEAL OF BGC AGENCY </td>
+                                        <td style="font-size:14px; font-weight: bolder; font-family: 'Times New Roman', Times, serif; padding:5px; text-align: left;width: 30%;">NAME & SIGNATURE OF BRANCH MANAGER / TEAM LEAD: Subhash Priyadarshi. </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left;"><img style="width: 100px;" src="~/Images/BGCAGENCY.png"></td>
+                                        <td style="text-align: left;"><img style="width: 100px;" src="~/Images/SIGNATUREBRANCHMANAGER.jpg"></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" style="font-size:14px; font-weight: bolder; font-family: 'Times New Roman', Times, serif; padding:5px; text-align: left;">Date: @DateTime.Now.Date.ToString("dd MMMM yyyy")</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </page>
+
+            if (Model.CandidateDocList != null)
+            {
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                {
+                    if (Doc.SubCheckRowID == a.SubcheckRowID)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                            <page id="PrintSrc" size="A4">
+                                <div style="page-break-after:always ;"></div>
+                                <table width="793" cellspacing="0" height="1100" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center">
+                                  
+                                    <tr>
+                                        @*<td width="2%" align="left" valign="bottom" style="border-left:2px solid #999999;">&nbsp;</td>*@
+                                        <td valign="top" colspan="2" align="center" valign="bottom">
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td valign="top">
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tr>
+                                                                <td style="font-size:10px; font-family:Calibri;">
+                                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                        <tr>
+                                                                            <td width="88%"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@a.SubCheckName (@Doc.DocumentType)</p></td>
+                                                                            <td width="6%" valign="top"><img src='@Url.Content("~/Images/logo.jpg")' width="71" height="40"></td>
+                                                                        </tr>
+                                                                        <tr><td colspan="2">&nbsp;</td></tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td valign="top">&nbsp;</td>
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td valign="top">
+                                                                    @{
+                                                                        FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                        System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                        if (image.Height > 600)
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" height="550" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="730" />
+                                                                        }
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                       
+                                    </tr>
+                                  
+                                    @Html.Partial("_ReportFooterAddress")
+                                   
+                                </table>
+                            </page>
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+}

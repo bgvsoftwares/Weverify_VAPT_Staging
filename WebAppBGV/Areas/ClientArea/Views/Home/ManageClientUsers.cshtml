@@ -1,0 +1,271 @@
+﻿@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Manage Client User";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+}
+
+@{
+
+    string faIconAddNew = string.Format("<i class='fa fa-plus-circle' aria-hidden='true'></i> Add New User");
+    string hyperLinkAddNew = Html.ActionLink("linkTitle", "AddClientUser", "Home", null, new { @class = "btn bun-bg btn-default adduser_btn" }).ToString();
+    ViewBag.NavigationBtnAddNew = new HtmlString(hyperLinkAddNew.ToString().Replace("linkTitle", faIconAddNew));
+}
+<style>
+    .adduser_btn {
+        background: #8D5FFF !important;
+        color: #FFF;
+        font-family: 'Securitas Pro';
+        font-size: .90rem !important;
+        border-radius: 0px;
+        display: inline-block;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: center;
+        text-decoration: none;
+        vertical-align: middle;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+        background-color: transparent;
+        border: 1px solid transparent;
+        padding: .35rem 1rem .35rem 1rem;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+        .adduser_btn:hover {
+            color: #000 !important;
+            background: #FFF !important;
+            border: 1px solid #8D5FFF !important;
+        }
+</style>
+
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="container-fluid ps-0 bg_gradient_CaseWise">
+    <div class="row row-sm">
+        @section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+    </div>
+    <div class="row row-sm ms-2">
+        <div class="col-xl-12 mb-5 mt-1 client-table-responsive">
+            @Html.Partial("_NavigationButton")
+
+            @if (Model != null && Model.ClientUsers != null)
+            {
+                <table class="mb-0 client--table-responsive js-serial items mt-1 table" id="example1" style="border:none; cursor:grab;">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>User Password</th>
+                            <th>User Email</th>
+                            <th>Sent Mail</th>
+                            <th>Sent Date</th>
+                            <th>Created Date</th>
+                            <th>Active</th>
+                        </tr>
+                    </thead>
+                    <tbody class="tx-10 text-start">
+                        @foreach (var a in Model.ClientUsers)
+                        {
+
+                            <tr>
+                                <td>@a.UserID</td>
+                                <td>@a.UPass</td>
+                                <td>@a.UserEmail</td>
+                                <td>
+                                    @if (a.SentMailStatus == 1)
+                                    {
+                                        <span>YES</span>
+                                    }
+                                    else
+                                    {
+                                        <span>NO</span>
+                                    }
+                                </td>
+                                <td>@a.SentMailDate</td>
+                                <td>@a.CreatedTime</td>
+                                <td>
+                                    @{
+                                        string strActive = string.Empty;
+                                        if (a.Status == 1)
+                                        {
+                                            <input name="+ a.ClientUserRowID +" id="@clsCommonMethods.PEncrypt( a.ClientUserRowID.ToString())" checked="true" type='checkbox' onchange='adchange(this)' />
+                                        }
+                                        else
+                                        {
+                                            <input name="+ a.ClientUserRowID +" id="@clsCommonMethods.PEncrypt( a.ClientUserRowID.ToString())" type="checkbox" onchange='adchange(this)' />
+
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+
+    <script type="text/javascript">
+           $(document).ready(function () {
+            $('#Search').val('@Model.ItemSearch.Search');
+        });
+
+    $(document).ready(function () {
+          // 1st replace first column header text with checkbox
+            $("#grid th").each(function () {
+                if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                    $(this).text('');
+                    $("<input/>", { type: "checkbox", id: "cbSelectAll", value: "" }).appendTo($(this));
+                    //$(this).append("<span>Select All</span>");
+                }
+            });
+            //2nd click event for header checkbox for select /deselect all
+            $("#cbSelectAll").click(function () {
+                var ischecked = this.checked;
+                $('#grid').find("input:checkbox").each(function () {
+                    this.checked = ischecked;
+                });
+            });
+            //3rd click event for checkbox of each row
+            $("input[name='ids']").click(function () {
+                var totalRows = $("#grid td :checkbox").length;
+                var checked = $("#grid td :checkbox:checked").length;
+                if (checked == totalRows) {
+                    $("#grid").find("input:checkbox").each(function () {
+                        this.checked = true;
+                    });
+                }
+                else {
+                    $("#cbSelectAll").removeAttr("checked");
+                }
+            });
+
+        });
+
+        function adchange(ChkData) {
+            var id = ChkData.id;
+            var checkeds = ChkData.checked;
+            var flag = "";
+            if (ChkData.checked == true) {
+                flag = confirm('Are you sure to Enable this Record ?');
+            }
+            if (ChkData.checked == false) {
+                flag = confirm('Are you sure to Disable this Record ?');
+            }
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("ActiveClientLogin", "Home")',
+                    data: { "ids": id, "checkeds": checkeds },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Record Update Successfully!!");
+                            setTimeout(function () { window.location.replace("ManageClientUsers"); }, 500);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+            else {
+                if (ChkData.checked == false) {
+                    ChkData.checked = true;
+                }
+                else {
+                    ChkData.checked = false;
+                }
+            }
+        }
+
+
+
+        function reportchange(ChkData) {
+            var id = ChkData.id;
+            var checkeds = ChkData.checked;
+            var flag = "";
+            if (ChkData.checked == true) {
+                flag = confirm('Are you sure to visible the Report ?');
+            }
+            if (ChkData.checked == false) {
+                flag = confirm('Are you sure to not visible the Report ?');
+            }
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("updateReportVisible", "Home")',
+                    data: { "ids": id, "checkeds": checkeds },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Record Update Successfully!!");
+                            setTimeout(function () { window.location.replace("ManageClientUsers"); }, 500);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+            else {
+                if (ChkData.checked == false) {
+                    ChkData.checked = true;
+                }
+                else {
+                    ChkData.checked = false;
+                }
+            }
+        }
+
+        $(".sendmail").on("click", function () {
+            var str = $(this).attr("id").split("_");
+            id = str[1];
+
+            var flag = confirm('Do you want to send client login details?');
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("SendMailToClient", "Client")',
+                    data: { "id": id },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Login Details Sent Successfully!!");
+                            setTimeout(function () { window.location.replace("ManageClientUsers"); }, 200);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+        });
+               
+
+    </script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script>
+        $("#btnSearch").click(function () {
+            var obj = $('form input[type="text"]').NormalizedString();
+            if (obj == false) {
+                return false;
+            }
+        });
+
+        $("#Search").SearchString();
+
+    </script>
+}

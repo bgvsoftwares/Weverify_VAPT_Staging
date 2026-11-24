@@ -1,0 +1,352 @@
+﻿@model dynamic
+
+
+@{
+    ViewBag.Title = "Report Value Update";
+
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+    string countryid = "";
+   
+
+
+    PersonalRowid = @ViewBag.PersonalRowid;
+    SubCheckId = @ViewBag.SubCheckId;
+    clientRowId = @ViewBag.clientRowId;
+
+   
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftDataEntryProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+
+        @using (Html.BeginForm("UpdateReportValue", "ReportQC", FormMethod.Get, new { enctype = "multipart/form-data" }))
+        {
+            <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+            @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+            <input id="SubCheckId" type="hidden" value=@SubCheckId>
+            @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+            <input id="clientRowId" type="hidden" value=@clientRowId>
+            @Html.Hidden("clientRowId", clientRowId.ToString())
+
+          
+           
+
+            @Html.ValidationSummary()
+
+            foreach (var category in Model)
+            {
+                <div class="container">
+                    @{
+                        string[] nm = category.Key.Split('_');
+                        string[] temp = category.Value.Split('_');
+
+                        if (@nm[2] == "textbox")
+                        {
+                            <div class="row" style="margin-bottom:.10rem!important; width:70rem;">
+
+                                <div class="col-sm-4" style="padding-top:10px!important;">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-sm-4">
+                                    @if (temp.Count() > 1)
+                                    {
+                                        <p>@temp[0]</p>
+                                    }
+                                </div>
+
+                                <div class="col-sm-4">
+                                    <p>@nm[4]</p>
+                                    @if (temp.Count() > 1)
+                                    {
+
+                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@temp[1]'>
+                                    }
+                                    else
+                                    {
+                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0]>
+                                    }
+                                </div>
+
+
+                            </div>
+                        }
+                        if (@nm[2] == "dropdown")
+                        {
+                            <div class="row">
+
+                                <div class="col-sm-4">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-sm-4">
+                                    @{
+                                        string[] nmOption = nm[7].Split(',');
+                                    }
+                                    <select name=@nm[0] id=@nm[0]>
+                                        @for (int i = 0; i < nmOption.Length; i++)
+                                        {
+                                            if (@nmOption[i].Trim() == @nm[6])
+                                            {
+                                                <option value=@nmOption[i] selected>@nmOption[i]</option>
+                                            }
+                                            if (@nmOption[i].Trim() != @nm[6])
+                                            {
+                                                <option value=@nmOption[i]>@nmOption[i]</option>
+                                            }
+                                        }
+                                    </select>
+                                   
+
+                                </div>
+                                <div class="col-sm-4">
+                                    @nm[4]
+                                </div>
+                            </div>
+
+                        }
+                        if (@nm[2] == "checkbox")
+                        {
+                            <div class="row">
+                                <div class="col-sm-4" style="padding-top:10px!important;">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-sm-2" style="padding-top:10px!important; text-align:left;">
+
+                                    @{
+                                        if (@nm[6] == "TRUE")
+                                        {
+                                            <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value="checked" checked>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value=@nm[0]>
+                                        }
+                                    }
+
+                                </div>
+                                <div class="col-sm-4">
+                                    @nm[4]
+                                </div>
+                            </div>
+                        }
+                        if (@nm[2] == "fileUpload")
+                        {
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-sm-4">
+                                    <input type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                                </div>
+                                <div class="col-sm-4">
+                                    @nm[4]
+                                </div>
+                            </div>
+
+                        }
+                    }
+
+                </div>
+
+            }
+            <div class="row">
+                <div class="col-sm-12 cytoscape-parent">
+                    <div class="w-400 h-400 d-inline-block" id="cytoscape-container"></div>
+                </div>
+            </div>
+            @*<div class="col-md-12">
+                    <div class="form-group branch row ">
+
+                        @Html.Label("Check Status", htmlAttributes: new { @class = "col-md-4 control-label text-right" })
+                        <div class="col-md-3">
+                            @Html.DropDownList("CheckStatus", new List<SelectListItem>
+                                   { new SelectListItem{Text="Completed", Value="Completed"},
+                                     new SelectListItem{Text="Insufficent", Value="Insufficent"},
+                                     new SelectListItem{Text="Rejected", Value="Rejected"},
+                                     new SelectListItem{Text="Review Requested", Value="Review Requested"},
+                                     new SelectListItem { Text = "WIP-Pending", Value = "WIP-Pending" },
+                                     new SelectListItem { Text = "Not Applicable", Value = "Not Applicable" }},
+                                     new { @class = "form-control",@id= "CheckStatus" })
+
+                        </div>
+                    </div>
+                </div>*@
+
+            <div class="row">
+                <div class="col-sm-2" style="margin-left:15%; margin-bottom:3rem;">
+                    <input type="submit" value="Submit" style="width:15rem!important; padding:2% 0 2% 0; border-radius:.90rem; font-size:1.6rem!important;" />
+
+                   
+                </div>
+                <div class="col-sm-6" style="margin-left:15%;">
+
+
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+             var CountryName = '@(ViewBag.CountryName)';
+            var StateName = '@(ViewBag.StateName)';
+            var CityName = '@(ViewBag.CityName)';
+
+            var Countryid = '@(ViewBag.countryid)';
+            var Stateid = '@(ViewBag.StateId)';
+            var Cityid = '@(ViewBag.CityId)';
+
+            if ($('#34').val() != null) {
+
+                $.getJSON('/Master/BindCountry/', function (data) {
+                    var items = '<option value="">-- Select Country --</option>';
+                    $.each(data, function (i, countries) {
+                        items += "<option value='" + countries.Value + "'>" + countries.Text + "</option>";
+                    });
+                    $('#34').html(items);
+                    $("#34 option").filter(function () {
+                        return this.text == CountryName;
+                    }).attr('selected', true);
+                    //$('#34').val($('#hdnAV_State').val());
+                    //$('#AV_District').val('');
+                    //$('#AV_City').val('');
+                    //$('#AV_Pincode').val('');
+
+                });
+            }
+
+            if ($('#44').val() != null) {
+
+                $.getJSON('/Master/BindState/' + Countryid, function (data) {
+                    var items = '<option value="">-- Select State --</option>';
+                    $.each(data, function (i, States) {
+                        items += "<option value='" + States.Value + "'>" + States.Text + "</option>";
+                    });
+                    $('#44').html(items);
+                    $("#44 option").filter(function () {
+                        return this.text == StateName;
+                    }).attr('selected', true);
+                    //$('#34').val($('#hdnAV_State').val());
+                    //$('#AV_District').val('');
+                    //$('#AV_City').val('');
+                    //$('#AV_Pincode').val('');
+
+                });
+            }
+
+            if ($('#32').val() != null) {
+
+                $.getJSON('/Master/BindDistrict/' + Stateid, function (data) {
+                    var items = '<option value="">-- Select District --</option>';
+                    $.each(data, function (i, Districts) {
+                        items += "<option value='" + Districts.Value + "'>" + Districts.Text + "</option>";
+                    });
+                    $('#32').html(items);
+                    $("#32 option").filter(function () {
+                        return this.text == CityName;
+                    }).attr('selected', true);
+                    //$('#34').val($('#hdnAV_State').val());
+                    //$('#AV_District').val('');
+                    //$('#AV_City').val('');
+                    //$('#AV_Pincode').val('');
+
+                });
+            }
+
+
+
+
+
+
+
+
+        });
+
+        $(function () {
+
+            //Bind State base on CountryRowID
+            $('#34').change(function () {
+                $.getJSON('/Master/BindState/' + $('#34').val(), function (data) {
+                    var items = '<option value="">-- Select State --</option>';
+                    $.each(data, function (i, States) {
+                        items += "<option value='" + States.Value + "'>" + States.Text + "</option>";
+                    });
+                    $('#44').html(items);
+                    $('#HfCountryName').val($('#34 option:selected').html());
+
+                    //$('#AV_District').val('');
+                    //$('#AV_City').val('');
+                    //$('#AV_Pincode').val('');
+                });
+            });
+
+            //Bind District base on StateRowID
+            $('#44').change(function () {
+                $.getJSON('/Master/BindDistrict/' + $('#44').val(), function (data) {
+                    var items = '<option value="">-- Select District --</option>';
+                    $.each(data, function (i, Districts) {
+                        items += "<option value='" + Districts.Value + "'>" + Districts.Text + "</option>";
+                    });
+                    $('#32').html(items);
+                    $('#HfStateName').val($('#44 option:selected').html());
+
+
+                });
+            });
+
+            $('#32').change(function () {
+
+                $('#HfCityName').val($('#32 option:selected').html());
+
+            });
+
+
+
+        });
+
+
+    </script>
+
+}

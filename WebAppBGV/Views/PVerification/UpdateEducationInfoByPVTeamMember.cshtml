@@ -1,0 +1,927 @@
+﻿
+@model ViewModels.VerificationViewModel.PQEducationVerViewModel
+@{
+    ViewBag.Title = "Add Education Info By PV TeamMember";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    if (Session["Designation"] != null)
+    {
+
+        string Designation = Session["Designation"].ToString();
+        if (Designation == "Manager-PV")
+        {
+            string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+            string hyperLink = Html.ActionLink("linkTitle", "EducationManagerPVAllocated", "PVerification", null, new { @class = "headerbacklink" }).ToString();
+            ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+        }
+        else if (Designation == "Team Leader-PV")
+        {
+            string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+            string hyperLink = Html.ActionLink("linkTitle", "EducationManagerPVAllocated", "PVerification", new { dtm = 1 }, new { @class = "headerbacklink" }).ToString();
+            ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+        }
+        else if (Designation == "Team Member-PV")
+        {
+            string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+            string hyperLink = Html.ActionLink("linkTitle", "EducationPVTMDashboardInfo", "PVerification", null, new { @class = "headerbacklink" }).ToString();
+            ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+        }
+        else if (Designation == "Team Member-PV-QC")
+        {
+            string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+            string hyperLink = Html.ActionLink("linkTitle", "EducationPVTMDashboardInfo", "PVerification", null, new { @class = "headerbacklink" }).ToString();
+            ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+        }
+    }
+    else
+    {
+        string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+        string hyperLink = Html.ActionLink("linkTitle", "Index", "Verification", null, new { @class = "headerbacklink" }).ToString();
+        ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    }
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="main-tableframe personal-details-frame" border="0">
+            <tr>
+                <td>@Html.Partial("_PersonalDetails")</td>
+            </tr>
+            <tr>
+                <td>@Html.Partial("_DocumentList")</td>
+            </tr>
+            <tr>
+                <td>
+                    @using (Html.BeginForm("UpdateEducationInfoByPVTeamMember", "PVerification", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(model => model.EducationVerRowID)
+                        @Html.HiddenFor(model => model.EducationRowID)
+                        @Html.HiddenFor(model => model.ClientRowID)
+                        @Html.HiddenFor(model => model.CheckFamilyRowID)
+                        @Html.HiddenFor(model => model.SubCheckRowID)
+                        @Html.HiddenFor(model => model.PersonalRowID)
+                        @Html.HiddenFor(model => model.CheckStatus)
+                        @Html.HiddenFor(model => model.EV_Cand_Name)
+
+                        <table>
+                            <tr>
+                                <td valign="top">
+                                    <table>
+                                        <tr class="personal-details-head">
+                                            <td width="33%" class="head_lft">Antecedents :</td>
+                                            <td width="33%">Check Details Information :</td>
+                                            <td width="33%">Information Verified :</td>
+                                            <td width="1%">&nbsp;</td>
+                                        </tr>
+
+                                        @{
+                                            if (ViewBag.ListEducationVer != null)
+                                            {
+                                                foreach (var item in ViewBag.ListEducationVer)
+                                                {
+                                                    if (item.FieldName == "EV_Cand_Name")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Cand_Name</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.EV_Cand_Name, new { htmlAttributes = new { @class = "form-control" } })
+
+                                                                @Html.ValidationMessageFor(model => model.EV_Cand_Name, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+
+                                                    if (item.FieldName == "EV_Cand_Name_Supp_Edu_Doc")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Cand_Name_Supp_Edu_Doc</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.EV_Cand_Name_Supp_Edu_Doc, new { htmlAttributes = new { @class = "form-control" } })
+
+                                                                @Html.ValidationMessageFor(model => model.EV_Cand_Name_Supp_Edu_Doc, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Colg_Schl_Inst_Name")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>
+                                                                @{
+                                                                    if (ViewBag.modelBind.EV_Colg_Schl_Inst_Name != null)
+                                                                    {
+                                                                        string CollegeName = ViewBag.modelBind.EV_Colg_Schl_Inst_Name;
+                                                                        @Html.ActionLink(CollegeName, "CollegeDetails", "Master", new { id = ViewBag.modelBind.EV_Colg_Schl_Inst_NameId }, new { @target = "_blank" })
+                                                                    }
+
+                                                                }
+                                                                @*<a target="_blank" href='+@ViewBag.modelBind.EV_Colg_Schl_Inst_NameId)'>@ViewBag.modelBind.EV_Colg_Schl_Inst_Name</a>*@
+                                                            </td>
+                                                            <td>
+                                                                @Html.DropDownListFor(model => model.EV_Colg_Schl_Inst_Name,
+                                                                    new SelectList(ViewBag.CollegeList, "CollegeRowID", "CollegeName"),
+                                                                    "-- Select -- ",
+                                                                    new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Colg_Schl_Inst_NameId, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Colg_Schl_Inst_Add_ConDet")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Colg_Schl_Inst_Add_ConDet</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.EV_Colg_Schl_Inst_Add_ConDet, new { htmlAttributes = new { @class = "form-control" } })
+                                                                @Html.ValidationMessageFor(model => model.EV_Colg_Schl_Inst_Add_ConDet, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Affl_University_Name")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Affl_University_Name</td>
+                                                            <td>
+                                                                @Html.DropDownListFor(model => model.EV_Colg_Unvrsty_Affl,
+                                                       new SelectList(ViewBag.AffliatiatedFromList, "Value", "Text"),
+                                                       "-- Select -- ",
+                                                       new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Affl_University_Name, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Degree_Name")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Degree_Name</td>
+                                                            <td>
+                                                                @Html.DropDownListFor(model => model.EV_Degree_Name,
+                                                   new SelectList(ViewBag.DegreeList, "DegreeRowID", "DegreeName"),
+                                                   "-- Select -- ",
+                                                   new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Degree_Name, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Mode_Of_Edu")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Mode_Of_Edu</td>
+                                                            <td>
+                                                                @Html.DropDownListFor(model => model.EV_Mode_Of_Edu, new List<SelectListItem>
+                                                { new SelectListItem{Text="Full Time", Value="Full Time"},
+                                                new SelectListItem{Text="Part Time", Value="Part Time"},
+                                                new SelectListItem{Text="Distance", Value="Distance"},
+                                                }, "-- Select --", new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Mode_Of_Edu, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Enroll_RollNo")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Enroll_RollNo</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.EV_Enroll_RollNo, new { htmlAttributes = new { @class = "form-control" } })
+
+                                                                @Html.ValidationMessageFor(model => model.EV_Enroll_RollNo, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_RegNo_RegCode")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_RegNo_RegCode</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.EV_RegNo_RegCode, new { htmlAttributes = new { @class = "form-control" } })
+
+                                                                @Html.ValidationMessageFor(model => model.EV_RegNo_RegCode, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Dur_Course")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Dur_Course</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.EV_Dur_Course, new { htmlAttributes = new { @class = "form-control" } })
+
+                                                                @Html.ValidationMessageFor(model => model.EV_Dur_Course, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Course_Status")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Course_Status</td>
+                                                            <td>
+                                                                @Html.DropDownListFor(model => model.EV_Course_Status, new List<SelectListItem>
+                                                { new SelectListItem{Text="Completed", Value="Completed"},
+                                                new SelectListItem{Text="Pursuing", Value="Pursuing"},
+                                                new SelectListItem{Text="Result Awaited", Value="Result Awaited"},
+                                                new SelectListItem{Text="Dropout", Value="Dropout"},
+                                                new SelectListItem{Text="Back Logs", Value="Back Logs"},
+                                                new SelectListItem{Text="Others", Value="Others"},
+                                                }, "-- Select --", new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Course_Status, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Specialization")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Specialization</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Specialization, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Specialization, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Period_Course")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Period_Course</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.EV_Period_Course, new { htmlAttributes = new { @class = "form-control" } })
+                                                                @Html.ValidationMessageFor(model => model.EV_Period_Course, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+
+                                                    }
+                                                    if (item.FieldName == "EV_Yr_Passing")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Yr_Passing</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.EV_Yr_Passing, new { htmlAttributes = new { @class = "form-control" } })
+
+                                                                @Html.ValidationMessageFor(model => model.EV_Yr_Passing, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Rslt_Obtain")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Rslt_Obtain</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.EV_Rslt_Obtain, new { htmlAttributes = new { @class = "form-control" } })
+
+                                                                @Html.ValidationMessageFor(model => model.EV_Rslt_Obtain, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Mode_of_Verf")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Mode_of_Verf</td>
+                                                            <td>
+                                                                @Html.DropDownListFor(model => model.EV_Mode_of_Verf, new List<SelectListItem>
+                                                { new SelectListItem{Text="Verbal", Value="Verbal"},
+                                                new SelectListItem{Text="Written", Value="Written"},
+                                                new SelectListItem{Text="Other", Value="Other"},
+                                                }, "-- Select --", new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Mode_of_Verf, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Refre_Name_Dsg")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Refre_Name_Dsg</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Refre_Name_Dsg, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Refre_Name_Dsg, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Refre_Eid")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Refre_Eid</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.EV_Refre_Eid, new { htmlAttributes = new { @class = "form-control" } })
+
+                                                                @Html.ValidationMessageFor(model => model.EV_Refre_Eid, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Refre_ConNo")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Refre_ConNo</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.EV_Refre_ConNo, new { htmlAttributes = new { @class = "form-control" } })
+
+                                                                @Html.ValidationMessageFor(model => model.EV_Refre_ConNo, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Attch_Doc_Genuine")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Attch_Doc_Genuine</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.EV_Attch_Doc_Genuine, new { htmlAttributes = new { @class = "form-control" } })
+
+                                                                @Html.ValidationMessageFor(model => model.EV_Attch_Doc_Genuine, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Any_Other_Cmmnts_EduV")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Any_Other_Cmmnts_EduV</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.EV_Any_Other_Cmmnts_EduV, new { htmlAttributes = new { @class = "form-control" } })
+
+                                                                @Html.ValidationMessageFor(model => model.EV_Any_Other_Cmmnts_EduV, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Refre_Name_Dsg")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Refre_Name_Dsg</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Refre_Name_Dsg, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Refre_Name_Dsg, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+
+                                                    if (item.FieldName == "EV_Verb_Verf_Date")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Verb_Verf_Date</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.EV_Verb_Verf_Date, new { htmlAttributes = new { @class = "form-control" } })
+
+                                                                @Html.ValidationMessageFor(model => model.EV_Verb_Verf_Date, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Wrtn_Verf_Date")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Wrtn_Verf_Date</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.EV_Wrtn_Verf_Date, new { htmlAttributes = new { @class = "form-control" } })
+
+                                                                @Html.ValidationMessageFor(model => model.EV_Wrtn_Verf_Date, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Other_Remarks")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Other_Remarks</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Other_Remarks, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Other_Remarks, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+
+                                                    if (item.FieldName == "EV_Division_CGPA")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Division_CGPA</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.EV_Division_CGPA, new { htmlAttributes = new { @class = "form-control" } })
+
+                                                                @Html.ValidationMessageFor(model => model.EV_Division_CGPA, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Official_Fee_Proof")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Official_Fee_Proof</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.EV_Official_Fee_Proof, new { htmlAttributes = new { @class = "form-control" } })
+                                                                @Html.ValidationMessageFor(model => model.EV_Official_Fee_Proof, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Colg_Unvrsty_Affl")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Colg_Unvrsty_Affl</td>
+                                                            <td>
+                                                                @Html.DropDownListFor(model => model.EV_Colg_Unvrsty_Affl,
+                                                    new SelectList(ViewBag.AffliatiatedFromList, "Value", "Text"),
+                                                    "-- Select -- ",
+                                                    new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Colg_Unvrsty_Affl, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Others")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Others</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Others, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Others, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Others2")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Others2</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Others2, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Others2, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Others3")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Others3</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Others3, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Others3, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Others4")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Others4</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Others4, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Others4, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Others5")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Others5</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Others5, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Others5, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Others6")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Others6</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Others6, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Others6, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Others7")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Others7</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Others7, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Others7, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Others8")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Others8</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Others8, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Others8, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Others9")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Others9</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Others9, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Others9, "", new { @class = "text-danger" })
+
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Others10")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Others10</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Others10, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Others10, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Others11")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Others11</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Others11, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Others11, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Others12")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Others12</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Others12, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Others12, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Others13")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Others13</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Others13, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Others13, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Others14")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Others14</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Others14, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Others14, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "EV_Others15")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.EV_Others15</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.EV_Others15, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.EV_Others15, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_Reverse_Directory")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_Reverse_Directory</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_Reverse_Directory, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_Reverse_Directory, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_Residcl_Commrcl")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_Residcl_Commrcl</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_Residcl_Commrcl, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_Residcl_Commrcl, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_Stock_Exchnge")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_Stock_Exchnge</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_Stock_Exchnge, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_Stock_Exchnge, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_Telphne_Directry_Srch")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_Telphne_Directry_Srch</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_Telphne_Directry_Srch, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_Telphne_Directry_Srch, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_Yellow_Pages")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_Yellow_Pages</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_Yellow_Pages, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_Yellow_Pages, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_Who_Domain")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_Who_Domain</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_Who_Domain, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_Who_Domain, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_GoogleSearch")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_GoogleSearch</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_GoogleSearch, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_GoogleSearch, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_InfrastructureOfCmp")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_InfrastructureOfCmp</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_InfrastructureOfCmp, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_InfrastructureOfCmp, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_Just_Dial")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_Just_Dial</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_Just_Dial, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_Just_Dial, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_Neighbor_Check1")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_Neighbor_Check1</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_Neighbor_Check1, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_Neighbor_Check1, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_NASCOM_Empanelment")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_NASCOM_Empanelment</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_NASCOM_Empanelment, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_NASCOM_Empanelment, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_Photograph")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_Photograph</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_Photograph, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_Photograph, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_Physical_Site")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_Physical_Site</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_Physical_Site, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_Physical_Site, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_Reg_Company")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_Reg_Company</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_Reg_Company, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_Reg_Company, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_PO_Courier_Check")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_PO_Courier_Check</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_PO_Courier_Check, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_PO_Courier_Check, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_Network_Sol")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_Network_Sol</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_Network_Sol, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_Network_Sol, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_ApprxEmpWorking")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_ApprxEmpWorking</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_ApprxEmpWorking, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_ApprxEmpWorking, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_CID_No")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_CID_No</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_CID_No, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_CID_No, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_Cmpny_Addr")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_Cmpny_Addr</td>
+                                                            <td>
+                                                                @Html.TextAreaFor(model => model.ATA_Cmpny_Addr, new { @class = "form-control", @rows = "2" })
+                                                                @Html.ValidationMessageFor(model => model.ATA_Cmpny_Addr, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_Decoy_Call")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_Decoy_Call</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.ATA_Decoy_Call, new { htmlAttributes = new { @class = "form-control" } })
+
+                                                                @Html.ValidationMessageFor(model => model.ATA_Decoy_Call, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    if (item.FieldName == "ATA_Cmpny_Website")
+                                                    {
+                                                        <tr class="personal_heading btmborder">
+                                                            <td>@item.AntecedentName :</td>
+                                                            <td>@ViewBag.modelBind.ATA_Cmpny_Website</td>
+                                                            <td>
+                                                                @Html.EditorFor(model => model.ATA_Cmpny_Website, new { htmlAttributes = new { @class = "form-control" } })
+
+                                                                @Html.ValidationMessageFor(model => model.ATA_Cmpny_Website, "", new { @class = "text-danger" })
+                                                            </td>
+                                                        </tr>
+                                                    }
+
+
+                                                }
+                                            }
+                                        }
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="personal-details-head" align="center">
+                                    @{
+                                        if (Session["Designation"] != null)
+                                        {
+                                            string Designation = Session["Designation"].ToString();
+                                            @Html.ActionLink("Back", "EducationPVTMDashboardInfo", "PVerification", new { dtm = 1 }, new { @class = "btn btn-default VerEmailDetails" })
+                                            if (Designation == "Team Member-PV" && (Model.CheckStatus == "WIP-Pending" || Model.CheckStatus == "Allocated-TM"))
+                                            {
+                                                <input class="btn bun-bg btn-default" type="submit" value="Submit" />
+
+                                                @Html.ActionLink("Attachment", "UplodEducationVerDocs", "Verification", new { scid = Model.SubCheckRowID, pe = Model.PersonalRowID, cstatus = Model.CheckStatus }, new { @class = "iframeUpdateVerDoc cboxElement callbacks btn btn-default", @id = "UplodVerificationDocs" })
+                                            }
+                                            if (Designation == "Team Member-PV-QC" && Model.CheckStatus == "Completed-TM")
+                                            {
+                                                <input class="btn bun-bg btn-default" onclick="return validateFormApprove()" type="submit" value="Approve" />
+                                                <input class="btn bun-bg btn-default" onclick="return validateFormReject()" type="submit" value="Reject" />
+                                            }
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                        </table>
+                    }
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('input[type=datetime]').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: "-66:+10",
+                //onClose: function (dateText, inst) {
+                //    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
+                //}
+            });
+
+        $(".iframeUpdateVerDoc").colorbox({ iframe: true, width: "60%", height: "60%" });
+        $(".callbacks").colorbox({
+            onClosed: function () {
+                window.location.reload(true);
+            }
+        });
+
+        $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+        });
+
+        function validateFormApprove() {
+            var CheckStatus = $('#CheckStatus').val();
+            return true;
+        }
+
+        function validateFormReject() {
+            $('#CheckStatus').val('Rejected');
+            return true;
+        }
+    </script>
+}

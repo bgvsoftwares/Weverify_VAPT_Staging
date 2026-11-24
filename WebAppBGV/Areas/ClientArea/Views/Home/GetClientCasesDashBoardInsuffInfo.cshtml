@@ -1,0 +1,350 @@
+﻿@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Manage Insufficiency";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+    var ClientRowId = "0";
+    var clid = "";
+    if (Request.QueryString["ClientRowID"] != null)
+    {
+        ClientRowId = Request.QueryString["ClientRowID"].ToString();
+    }
+    clid = Session["ClientRowID"].ToString();
+
+    string faIcon = string.Format("<i class='bx bx-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "DashboardClient", "Home", new { area = "ClientArea" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+}
+
+@{
+
+    string tatHours1 = "";
+    string CaseStatus1 = "";
+    string AllocatedToTL1 = "";
+    if (Request.QueryString["tatHours"] != null)
+    {
+        tatHours1 = Request.QueryString["tatHours"].ToString();
+    }
+    if (Request.QueryString["AllocatedToTL"] != null)
+    {
+        AllocatedToTL1 = Request.QueryString["AllocatedToTL"].ToString();
+    }
+    if (Request.QueryString["CaseStatus"] != null)
+    {
+        CaseStatus1 = @Request.QueryString["CaseStatus"].ToString();
+    }
+    string faIconExportExcel = string.Format("Export Excel <i class='bx bx-export export_btn_icons' ></i>");
+    string hyperLinkExportExcel = "";
+
+
+
+    if (CaseStatus1 == "Insufficiency")
+    {
+        hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportInsufficency", "Home", new { ClientRowID = ClientRowId }, new { @class = "edit-export-btn" }).ToString();
+
+    }
+
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+
+}
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+@if (ViewBag.ErrorMsg != null)
+{
+    <div class="row"><div class="col-12"><p style="text-align:center;color:red">@ViewBag.ErrorMsg</p></div></div>
+}
+<div class="container-fluid ps-0 bg_gradient_CaseWise mt-2">
+    <div class="row row-sm">
+        @section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+    </div>
+    <div class="row row-sm ms-2">
+        @using (Html.BeginForm("GetClientCasesDashBoardInsuffInfo", "Home", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <span>@ViewBag.NavigationBtnExportExcel</span>
+            <div class="col-xl-12 mb-5 client-table-responsive">
+                @if (Model != null && Model.DashboardClientCandidates != null)
+                {
+                    <table class="mb-0 table-responsive table-scroll js-serial items table" id="example1" style="border:none;cursor:all-scroll;">
+                        <thead>
+                            @if (clid == "576")
+                            {
+                                <tr>
+                                    <th>Candidate Name</th>
+                                    <th>Securitas ID</th>
+                                    <th>Client Ref ID</th>
+                                    <th>Status</th>
+                                    <th>Package</th>
+                                    <th>Entity</th>
+                                    @*<th>Insuff Created Date</th>*@
+                                    <th>EmailID</th>
+                                    <th>Mobile No</th>
+                                    <th>Created Date</th>
+                                    @if (clid == "635")
+                                    {
+                                        <th>Insuff Detail</th>
+                                    }
+                                    <th>Documents</th>
+                                    <th>Candidate Details</th>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <th>Candidate Name</th>
+                                    <th>Securitas ID</th>
+                                    @if (clid == "869")
+                                    {
+                                        <th>EmployeID</th>
+                                    }
+                                    else
+                                    {
+                                        <th>ClientRefID</th>
+                                    }
+                                    <th>Status</th>
+                                    <th>Package</th>
+                                    <th>Entity</th>
+                                    <th>Insuff Created Date</th>
+                                    <th>Created Date</th>
+                                    @if (clid == "635")
+                                    {
+                                        <th>Insuff Detail</th>
+                                    }
+                                    @if (clid != "1834")
+                                    {
+                                        <th>Documents</th>
+                                        <th>Candidate Details</th>
+                                    }
+                                </tr>
+                            }
+                        </thead>
+                        <tbody class="tx-10 text-start">
+                            @foreach (var a in Model.DashboardClientCandidates)
+                            {
+                                if (clid == "576")
+                                {
+                                    <tr>
+                                        <td>@a.CandidateName</td>
+                                        <td>
+                                            <a href='@Url.Action("CheckListForClientByPersonalID", "Home", new { PersonalId = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn_refno iframeCompanyRefNoInsuff" id="clip_@a.PersonalRowID">@a.CompanyRefNo</a><i class="las la-clipboard clipboard-icon" data-clipboard-target="#clip_@a.PersonalRowID" style="position:relative; top:5px!important; right:0px!important; padding:10px!important; border:none!important; line-height:0px!important; font-size:25px;"></i>
+                                        </td>
+                                        <td>@a.ClientRefID</td>
+                                        <td>
+                                            <a href='@Url.Action("InsufficiencyClearByClient", "ClientInsuff", new { ClientRowId = clsCommonMethods.PEncrypt(a.ClientRowID.ToString()), ChFamilRowId = clsCommonMethods.PEncrypt(a.CheckFamilyRowID.ToString()), subCheckId = clsCommonMethods.PEncrypt(a.SubCheckRowID.ToString()), PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()), CompanyRefNo = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()) }, null)' class="btn btn-outline-primary btn-block table_btn">Clear Insuff</a>
+                                        </td>
+                                        <td>@a.Package</td>
+                                        <td>@a.Entity</td>
+                                        @*<td>@a.insuffCreatedate</td>*@
+                                        <td>@a.Emailid</td>
+                                        <td>@a.MobileNo</td>
+                                        <td>@a.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                        @if (clid == "635")
+                                        {
+                                            <td>
+                                                <a href='@Url.Action("InsuffJob", "Home", new { ClientRowId = clsCommonMethods.PEncrypt(a.ClientRowID.ToString()), PersonalRowID = a.PersonalRowID, CompanyRefNo = a.CompanyRefNo }, null)' class="btn btn-outline-primary btn-block table_btn">Download</a>
+                                            </td>
+                                        }
+                                        <td>
+                                            <a href='@Url.Action("UploadCandidateDoc", "Home", new { area = "ClientArea", CompanyRefNo = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),SubCheckRowID=0,personalrowid=clsCommonMethods.PEncrypt(a.PersonalRowID.ToString())})' class="btn btn-outline-primary btn-block table_btn iframeCheckDocInsuff">Documents</a>
+                                        </td>
+                                        <td>
+                                            <a href='@Url.Action("PersonalInformation", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Download</a>
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                        <tr>
+                            <td>@a.CandidateName</td>
+                            <td>
+                                <a href='@Url.Action("CheckListForClientByPersonalID", "Home", new { PersonalId = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn_refno iframeCompanyRefNoInsuff" id="clip_@a.PersonalRowID">@a.CompanyRefNo</a><i class="las la-clipboard clipboard-icon" data-clipboard-target="#clip_@a.PersonalRowID" style="position:relative; top:5px!important; right:0px!important; padding:10px!important; border:none!important; line-height:0px!important; font-size:25px;"></i>
+                            </td>
+                            <td>@a.ClientRefID</td>
+                            <td>
+                                <a href='@Url.Action("InsufficiencyClearByClient", "ClientInsuff", new { ClientRowId = clsCommonMethods.PEncrypt(a.ClientRowID.ToString()), ChFamilRowId = clsCommonMethods.PEncrypt(a.CheckFamilyRowID.ToString()), subCheckId = clsCommonMethods.PEncrypt(a.SubCheckRowID.ToString()), PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()), CompanyRefNo = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()) }, null)' class="btn btn-outline-primary btn-block table_btn">Insuff Clear</a>
+                            </td>
+                            <td>@a.Package</td>
+                            <td>@a.Entity</td>
+                            <td>@a.insuffCreatedate</td>
+                            <td>@a.CreatedDate.ToString("dd/MM/yyyy")</td>
+                            @if (clid == "635" && clid != "1834")
+                            {
+                                <td>
+                                    <a href='@Url.Action("InsuffJob", "Home", new { ClientRowId = clsCommonMethods.PEncrypt(a.ClientRowID.ToString()), PersonalRowID = a.PersonalRowID, CompanyRefNo = a.CompanyRefNo }, null)' class="btn btn-outline-primary btn-block table_btn">Download</a>
+                                </td>
+                            }
+                            @if (Session["ClientUserRowID"].ToString() != "5342" && (clid != "1834"))
+                            {
+                                <td>
+                                    <a href='@Url.Action("UploadCandidateDoc", "Home", new { area = "ClientArea", CompanyRefNo = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()), SubCheckRowID = 0, personalrowid = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn iframeCheckDocInsuff">Documents</a>
+                                </td>
+                                <td>
+                                    <a href='@Url.Action("PersonalInformation", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Download</a>
+                                </td>
+                            }
+                            </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        }
+    </div>
+</div>
+<style>
+    .table_btn {
+        color: #8d5fff !important;
+        transition: 0.3s ease-in-out !important;
+    }
+
+        .table_btn:hover {
+            background: #FFF !important;
+            background-color: rgb(255, 255, 255);
+            color: #fff !important;
+            border: 1px solid #031F30 !important;
+            background-color: #031F30 !important;
+        }
+
+    .table tr td {
+        line-height: 2.757 !important;
+    }
+
+    .search-btn {
+        background: #8D5FFF !important;
+        color: #FFF;
+        font-family: 'Securitas Pro';
+        font-size: .90rem !important;
+        border-radius: 0px;
+        display: inline-block;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: center;
+        text-decoration: none;
+        vertical-align: middle;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+        background-color: transparent;
+        border: 1px solid transparent;
+        padding: .35rem 1rem .35rem 1rem;
+        width: 100%;
+        transition: color .3s ease-in-out,background-color .3s ease-in-out,border-color .3s ease-in-out,box-shadow .3s ease-in-out;
+    }
+
+        .search-btn:hover {
+            background: #fff !important;
+            color: #031F30 !important;
+            border: 1px solid #8D5FFF;
+        }
+
+    .edit-export-btn {
+        margin-left: 12px;
+        margin-bottom: 10px;
+    }
+</style>
+@section Scripts{
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script type="text/javascript">
+         $(document).ready(function () {
+            $('#Search').val('@Model.ItemSearch.Search');
+            $('#RecievingFromDate').val('@Model.ItemSearch.RecievingToDate');
+            $('#RecievingToDate').val('@Model.ItemSearch.RecievingFromDate');
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#RecievingToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#RecievingFromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedFromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+
+        });
+
+        function SearchFunction() {
+            var obj = $('form input[type="text"]').NormalizedString();
+            if (obj == false) {
+                return false;
+            }
+        }
+        $("#Search").SearchString();
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeCompanyRefNoInsuff").colorbox({ iframe: true, width: "90%", height: "72%" });
+        });
+        $(document).ready(function () {
+            $(".iframeCheckDocInsuff").colorbox({ iframe: true, width: "79%", height: "72%" });
+        });
+        $(document).ready(function () {
+            $(".iframeExportClientEmploymentDetails").colorbox({ iframe: true, width: "79%", height: "72%" });
+        });
+        $(document).ready(function () {
+            $(".iframeReject").colorbox({ iframe: true, width: "55%", height: "75%" });
+        });
+    </script>
+
+}
+
+<style>
+    .table tr td {
+        line-height: 2.757 !important;
+        text-align: left !important;
+    }
+
+
+    #searchid {
+        width: 375px;
+        height: 37px;
+    }
+
+    .searchbox {
+        display: flex !important;
+        position: absolute;
+        top: 155px;
+        right: 32px;
+        z-index: 9999;
+        width: 375px;
+    }
+
+    .table-search {
+        width: 35px;
+        padding: 7px;
+        font-size: 1.3rem;
+        background: red;
+        color: #fff;
+        height: 35px;
+        transition: ease-in-out 0.3s;
+    }
+
+        .table-search:hover {
+            background: #fff !important;
+            color: #000 !important;
+            border: 1px solid red;
+        }
+</style>

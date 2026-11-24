@@ -1,0 +1,223 @@
+﻿@{
+    ViewBag.Title = "PV Team Member Case Allocation To Partner Manager";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "PVerification", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+@{
+
+    //@ViewBag.NavigationBtnExportExcel
+    string tatdays1 = "";
+    string CheckStatus1 = "";
+    string AllocatedToTL1 = "";
+    if (Request.QueryString["tatdays"] != null)
+    {
+        tatdays1 = Request.QueryString["tatdays"].ToString();
+    }
+
+    if (Request.QueryString["AllocatedToTL"] != null)
+    {
+        AllocatedToTL1 = Request.QueryString["AllocatedToTL"].ToString();
+    }
+    if (Request.QueryString["CheckStatus"] != null)
+    {
+        CheckStatus1 = @Request.QueryString["CheckStatus"].ToString();
+    }
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    string hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportCriminalPV", "PVerification", new { CheckStatus = CheckStatus1, tatdays = tatdays1, AllocatedToTL = AllocatedToTL1 }, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+    @*//@ViewBag.NavigationBtnExportWord
+        //string faIconExportWord = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Word");
+        //string hyperLinkExportWord = Html.ActionLink("linkTitle", "ExportCountryInWord", "Master", null, new { class = "btn bun-bg btn-default" }).ToString();
+        //ViewBag.NavigationBtnExportWord = new HtmlString(hyperLinkExportWord.ToString().Replace("linkTitle", faIconExportWord));
+
+        //@ViewBag.NavigationBtnBackExportPDF
+        //string faIconExportPDF = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export PDF");
+        //string hyperLinkExportPDF = Html.ActionLink("linkTitle", "ExportCountryInPDF", "Master", null, new { class = "btn bun-bg btn-default" }).ToString();
+        //ViewBag.NavigationBtnBackExportPDF = new HtmlString(hyperLinkExportPDF.ToString().Replace("linkTitle", faIconExportPDF));*@
+}
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("CriPTRPVTeamMemberAllocationToPartnerMgr", "PVerification", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch search-frame">
+                                    <label class="col-md-2 control-label">State Name :</label>
+                                    <div class="col-md-4">
+                                        @Html.DropDownList("StateRowID",
+                                        new SelectList(ViewBag.StateList, "StateRowID", "StateName"),
+                                        "-- Select State -- ",
+                                        new { @class = "form-control" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Keyword :</label>
+                                    <div class="col-md-4">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, Ref No..." })
+                                    </div>
+                                </div>
+                                <div class="form-group branch search-frame">
+                                    <label class="col-md-2 control-label">Select Vendor :</label>
+                                    <div class="col-md-4">
+                                        @Html.DropDownList("AllocatePTR",
+                                        new SelectList(ViewBag.VendorList, "VendorRowID", "VendorName"),
+                                        "-- Select Member -- ",
+                                        new { @class = "form-control" })
+                                    </div>
+                                    @Html.Hidden("VerificationIds", null)
+                                </div>
+                                <div class="all-button-bg">
+                                    <input class="btn bun-bg btn-default" type="submit" onclick="SearchFunction()" value="Search" />
+                                    <input class="btn bun-bg btn-default" type="submit" id="btnAllocation" onclick="return validateForm()" value="Allocate" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.PQVerificationInfo != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.PQVerificationInfo, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                    htmlAttributes: new { id = "grid", @class = "table" },
+                                    headerStyle: "thead-inverse",
+                                    rowStyle: "ordertxt",
+                                    footerStyle: "custpaging",
+                                    mode: WebGridPagerModes.All,
+                                    columns: new[]
+                                    {
+                                    grid.Column(header: "{checkall}",format: @<text> <input type="checkbox" value="@(item.VerificationRowID+"_"+item.CheckFamilyRowID)" name="verificationId" class="verificationId" /> </text>,style:""),
+                                    grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                    grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"col-md-2"),
+                                    grid.Column(columnName: "CompanyRefNo", header: "Securitas ID", canSort: false, style:"col-md-2"),
+                                    grid.Column(columnName: "PersonalName", header: "Candidate Name", canSort: false, style:"col-md-2"),
+                                    grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"col-md-2"),
+                                    grid.Column(columnName: "UniqueComponentID", header: "Unique Component Id", canSort: false, style:"col-md-2"),
+
+                                    grid.Column("OutDate", "TAT", format: (item) => item.OutDate != DateTime.MinValue ? item.OutDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"col-md-1"),
+                                    grid.Column("InternalOutDate", "Internal TAT", format: (item) => item.InternalOutDate != DateTime.MinValue ? item.InternalOutDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"col-md-1"),
+                                    grid.Column(columnName: "CheckStatus", header: "Status", canSort: false, style:""),
+                                    }
+                             )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                                }
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // 1st replace first column header text with checkbox
+            $("#grid th").each(function () {
+                if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                    $(this).text('');
+                    $("<input/>", { type: "checkbox", id: "select_all", value: "" }).appendTo($(this));
+                    //$(this).append("<span>Select All</span>");
+                }
+            });
+            //2nd click event for header checkbox for select /deselect all
+            $('#select_all').change(function () {
+                $('input[class="verificationId"]').prop('checked', $(this).prop('checked'));
+                var VerificationIds = '';
+                var OCVerIDs = '';
+                $('input[class="verificationId"]').each(function (index, value) {
+                    if (this.checked) {
+                        var id = this.value.split('_');
+                        VerificationIds += id[0] + ',';
+                        OCVerIDs += this.value + ',';
+                    }
+                });
+                if (VerificationIds.length > 0 && OCVerIDs.length > 0) {
+                    VerificationIds = VerificationIds.substring(0, VerificationIds.length - 1);
+                    OCVerIDs = OCVerIDs.substring(0, OCVerIDs.length - 1);
+                } else {
+                    VerificationIds = '';
+                    OCVerIDs = '';
+                }
+                $('#VerificationIds').val(VerificationIds.trim());
+                $('#OCVerIDs').val(OCVerIDs.trim());
+            });
+        });
+
+        function SearchFunction() {
+            $('#VerificationIds').val("");
+        }
+
+        //3rd click event for checkbox of each row
+        $(document).on('change', 'input[class="verificationId"]', function (e) {// on change of state
+            var VerificationIds = '';
+            var OCVerIDs = '';
+            $('input[class="verificationId"]').each(function (index, value) {
+                if (this.checked) {
+                    var id = this.value.split('_');
+                    VerificationIds += id[0] + ',';
+                    OCVerIDs += this.value + ',';
+                }
+            });
+
+            if (false == $(this).prop("checked")) { //if this item is unchecked
+                $("#select_all").prop('checked', false); //change "select all" checked status to false
+            }
+            //check "select all" if all checkbox items are checked
+            if ($('.verificationId:checked').length == $('.verificationId').length) {
+                $("#select_all").prop('checked', true);
+            }
+
+            if (VerificationIds.length > 0 && OCVerIDs.length > 0) {
+                VerificationIds = VerificationIds.substring(0, VerificationIds.length - 1);
+                OCVerIDs = OCVerIDs.substring(0, OCVerIDs.length - 1);
+            } else {
+                VerificationIds = '';
+                OCVerIDs = '';
+            }
+            $('#VerificationIds').val(VerificationIds.trim());
+            $('#OCVerIDs').val(OCVerIDs.trim());
+        })
+
+        function validateForm() {
+            if ($("#AllocateTM").val() == 0) {
+                alert("Select Team Member For Allocate.");
+                return false;
+            }
+
+            if ($("#AllocateTMQC").val() == 0) {
+                alert("Select TM-QC For Allocate.");
+                return false;
+            }
+
+            var count = 0;
+            $('input[class="verificationId"]').each(function (index, value) {
+                if (this.checked) { count += 1; }
+            });
+
+            if (count == 0) {
+                alert("Please select atleast one case.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+}

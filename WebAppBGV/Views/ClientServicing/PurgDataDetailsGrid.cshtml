@@ -1,0 +1,139 @@
+﻿@model IEnumerable<ViewModels.ClientViewModel.PurgDataDetailsModel>
+
+@{
+    ViewBag.Title = "PurgDataDetailsGrid";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    WebGrid grid = new WebGrid(Model);
+}
+
+<h2 style="margin-left: 414px;
+    display: inline-block;
+    width: 177px;">
+    Purg Data Details
+</h2>
+
+@grid.GetHtml(
+    htmlAttributes: new { id = "grid", @class = "table table-striped table-bordered nowrap" },
+   headerStyle: "thead-inverse",
+   rowStyle: "ordertxt",
+   footerStyle: "custpaging",
+   mode: WebGridPagerModes.All,
+   columns: new[]
+    {
+
+
+       grid.Column(header: "No.", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+       grid.Column("ClientName","Client Name",canSort:false),
+       grid.Column("DateFrom","Purg Date From", canSort:false,format: (item) => item.DateFrom != DateTime.MinValue ? item.DateFrom.ToString("dd/MM/yyyy") : ""),
+       grid.Column("DateTo","Purg Date To",canSort:false, format: (item) => item.DateTo != DateTime.MinValue ? item.DateTo.ToString("dd/MM/yyyy") : ""),
+       grid.Column("ApprovalByOperationHead","Approval By Operation Head",canSort:false,format: (item) =>
+                {
+                    if (item.ApprovalByOperationHead == true)
+                    {
+                        return Html.Raw(string.Format("<text><img src=\"{0}\" alt=\"Image\"/></text>", Url.Content("~/Content/images/purg_approved.png")));
+                    }
+                    else
+                    {
+                        return Html.Raw(string.Format("<text><img src=\"{0}\" alt=\"Image\"/></text>", Url.Content("~/Content/images/purg_unapproved.png")));
+                    }
+                }
+            ),
+       grid.Column("ApprovalByIT","Approval By IT",canSort:false,format: (item) =>
+                {
+                    if (item.ApprovalByIT == true)
+                    {
+                        return Html.Raw(string.Format("<text><img src=\"{0}\" alt=\"Image\"/></text>", Url.Content("~/Content/images/purg_approved.png")));
+                    }
+                    else
+                    {
+                        return Html.Raw(string.Format("<text><img src=\"{0}\" alt=\"Image\"/></text>", Url.Content("~/Content/images/purg_unapproved.png")));
+                    }
+                }
+            ),
+       grid.Column("ReportDump","Report Dump",canSort:false,format: (item) =>
+                {
+                    if (item.ReportDump == true)
+                    {
+                        return Html.Raw(string.Format("<text><img src=\"{0}\" alt=\"Image\"/></text>", Url.Content("~/Content/images/purg_approved.png")));
+                    }
+                    else
+                    {
+                        return Html.Raw(string.Format("<text><img src=\"{0}\" alt=\"Image\"/></text>", Url.Content("~/Content/images/purg_unapproved.png")));
+                    }
+                }
+            ),
+       //grid.Column("ApprovalByOperationHead","Approval By Operation Head", format: (item) => item.ApprovalByOperationHead==false?"X":"✔"),
+       //grid.Column("ApprovalByIT","Approval By IT",format: (item) => item.ApprovalByIT==false?"X":"✔"),
+       //grid.Column("ReportDump","Report Dump",format: (item) => item.ReportDump==false?"X":"✔"),
+       grid.Column("CheckDocDump","CheckDoc Dump",canSort:false,format: (item) =>
+                {
+                    if (item.CheckDocDump == true)
+                    {
+                        return Html.Raw(string.Format("<text><img src=\"{0}\" alt=\"Image\"/></text>", Url.Content("~/Content/images/purg_approved.png")));
+                    }
+                    else
+                    {
+                        return Html.Raw(string.Format("<text><img src=\"{0}\" alt=\"Image\"/></text>", Url.Content("~/Content/images/purg_unapproved.png")));
+                    }
+                }
+            ),
+               grid.Column("FileName",canSort:false),
+                //grid.Column("FilePath"),
+               grid.Column(header: "DOWNLOAD", format:@<text><a class="btn" href="~/ClientServicing/DownloadFile?filePath=@item.FilePath"><span class="txt" style="color:#FFF!important;">Download</span></a></text>)})
+
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}
+
+<div class="adjacement"></div>
+@Html.ActionLink("Back to Form", "PurgDataDetails")
+
+<style>
+    img {
+        width: 27px;
+    }
+
+    .adjacement {
+        margin-top: 50px;
+    }
+    /*.container_dounload {
+      padding: 64px;
+      position: relative;
+    }*/
+
+    .btn, .status {
+        padding: 8px 16px;
+        color: #fff;
+        border-radius: 4px;
+    }
+
+    .btn {
+        background: #11c9b7;
+        /*box-shadow: 0 8px 6px -6px #555;*/
+        transition: all 0.4s ease;
+        border: 1px solid #11c9b7;
+        margin-bottom: 5px;
+    }
+
+        .btn:hover {
+            color: #310f30;
+            background: #fff !important;
+            box-shadow: none;
+        }
+
+    .txt {
+        margin-left: 10px;
+    }
+</style>
+
+@*@section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }*@
+

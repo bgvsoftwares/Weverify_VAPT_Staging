@@ -1,0 +1,159 @@
+@{
+    ViewBag.Title = "TCSiON Bulk Add Check";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitleWoutNav") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<style>
+    /* Full Screen Wrapper */
+    .full-screen-wrapper {
+        min-height: 80vh; /* Takes most of the screen height */
+        display: flex;
+        align-items: center; /* Vertical center */
+        justify-content: center; /* Horizontal center */
+    }
+
+    .upload-container {
+        width: 100%;
+        max-width: 700px; /* Professional width */
+        background: #fff;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        border-top: 5px solid #337ab7;
+        margin-top: 12px;
+    }
+
+    .instruction-box {
+        background-color: #fff9f9;
+        border: 1px solid #f5c6cb;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
+
+        .instruction-box h4 {
+            color: #d9534f;
+            font-weight: bold;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+
+            .instruction-box h4 i {
+                margin-right: 10px;
+            }
+
+        .instruction-box ul {
+            margin-bottom: 0;
+            padding-left: 20px;
+            color: #721c24;
+        }
+
+    .file-input-wrapper {
+        border: 2px dashed #337ab7;
+        padding: 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        background-color: #f8fbff;
+        transition: all 0.3s ease;
+    }
+
+        .file-input-wrapper:hover {
+            background-color: #f0f7ff;
+            border-color: #23527c;
+        }
+
+    .btn-upload {
+        padding: 12px 30px;
+        font-size: 16px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .btn-download {
+        padding: 12px 20px;
+        margin-left: 10px;
+    }
+
+    /* Custom file input look */
+    #fileUpload {
+        height: auto;
+        padding: 10px;
+        border: 1px solid #ccc;
+    }
+</style>
+
+<div class="full-screen-wrapper">
+    <div class="upload-container">
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-info alert-dismissible text-center" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <strong>Status:</strong> @ViewBag.Message
+            </div>
+        }
+
+        <!-- Header -->
+        <div class="text-center" style="margin-bottom: 30px;">
+            <h2 style="font-weight: bold; color: #333;">Bulk Add Check</h2>
+            <p class="text-muted">Fill the template and upload to add checks in bulk.</p>
+        </div>
+
+        <!-- Instructions Section -->
+        <div class="instruction-box">
+            <h4><i class="glyphicon glyphicon-exclamation-sign"></i> Before you upload:</h4>
+            <ul>
+                <li>Follow the <strong>Dummy Excel format</strong> strictly.</li>
+                <li>Only <strong>.xlsx</strong> files are supported.</li>
+                <li>Format all Excel columns as <strong>Text</strong>.</li>
+                <li>Max <strong>500 rows</strong> per upload.</li>
+            </ul>
+        </div>
+
+        <!-- Form Section -->
+        <form id="uploadForm" action="@Url.Action("TCSIonCriminalAddCheck", "ClientServicing")" method="post" enctype="multipart/form-data" class="text-center">
+
+            <div class="file-input-wrapper">
+                <label for="fileUpload" style="display: block; margin-bottom: 15px; font-size: 15px; color: #555;">
+                    <i class="glyphicon glyphicon-file"></i> Choose your Excel file:
+                </label>
+                <input type="file" name="fileUpload" id="fileUpload" accept=".xlsx" class="form-control" style="width: 100%;" />
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-upload">
+                    <i class="glyphicon glyphicon-cloud-upload"></i> Start Upload
+                </button>
+
+                <a href="@Url.Action("DownloadDummyExcel1", "ClientServicing")" class="btn btn-default btn-download">
+                    <i class="glyphicon glyphicon-download-alt"></i> Template
+                </a>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#uploadForm').submit(function () {
+                var file = $('#fileUpload').val();
+                if (file == "") {
+                    // Modern alert can be added here
+                    alert("⚠️ Please select an Excel file before clicking upload.");
+                    return false;
+                }
+
+                // Optional: Show a loading state on the button
+                var btn = $(this).find('.btn-upload');
+                btn.html('<i class="glyphicon glyphicon-refresh"></i> Uploading...').addClass('disabled');
+            });
+        });
+    </script>
+}

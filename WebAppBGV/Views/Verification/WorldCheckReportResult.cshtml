@@ -1,0 +1,217 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "World Check Report Result";
+    int Personalrowid = ViewBag.PersonalRowId;
+}
+
+
+
+<div class="container">
+    @using (Html.BeginForm("WorldCheckReportResult", "Verification", FormMethod.Get, new { enctype = "multipart/form-data" }))
+    {
+
+        <input type="hidden" id="groupId" value="@Model.groupId" />
+        <input type="hidden" id="caseSystemId" value="@Model.caseSystemId" />
+        <input type="hidden" id="caseId" value="@Model.caseId" />
+        <input type="hidden" id="PersonalRowId" value="@Personalrowid" />
+        if (Model != null)
+        {
+            <div class="card m-3" style="height: 490px; overflow-y: scroll; scrollbar-width: thin;">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-md-6 text-left align-items-center">
+                            <span style="color:blue;">LSEG </span>World-Check One <br>Case Report
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <img src="https://bgv.securitas-india.com/Content/images/LSEGLogo2.png" style="width:250px;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Case ID</th>
+                                <th>Name</th>
+                                <th>Entity Type</th>
+                                <th>Lifecycle State</th>
+                                <th>Creation Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@Model.caseId</td>
+                                <td>@Model.name</td>
+                                <td>@Model.entityType</td>
+                                <td>@Model.lifecycleState</td>
+                                <td>@Model.creationDate</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table table-bordered mt-3 table-striped">
+                        <thead>
+                            <tr>
+                                <th>Field Type</th>
+                                <th>Value</th>
+                                <th>Date Time Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.secondaryFields)
+                            {
+                                <tr>
+                                    @if (Convert.ToString(item.typeId) == "SFCT_1")
+                                    {
+                                        <td>GENDER</td>
+                                    }
+                                    else if (Convert.ToString(item.typeId) == "SFCT_2")
+                                    {
+                                        <td>DATE_OF_BIRTH</td>
+                                    }
+                                    else if (Convert.ToString(item.typeId) == "SFCT_3")
+                                    {
+                                        <td>COUNTRY</td>
+                                    }
+                                    else if (Convert.ToString(item.typeId) == "SFCT_4")
+                                    {
+                                        <td>PLACE_OF_BIRTH</td>
+                                    }
+                                    else if (Convert.ToString(item.typeId) == "SFCT_")
+                                    {
+                                        <td>NATIONALITY</td>
+                                    }
+                                    else
+                                    {
+                                        <td>@Convert.ToString(item.typeId)</td>
+                                    }
+
+                                    <td>@Convert.ToString(item.value)</td>
+                                    <td>@Convert.ToString(item.dateTimeValue)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <div class="card mt-3">
+                        <div class="card-header" style="font-size:1.6rem;">
+                         Results
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Matched Term</th>
+                                        <th>Match Strength</th>
+                                        <th>Match Score</th>
+                                        <th>Result Id</th>
+                                        <th>Gender</th>
+                                        <th>Provider Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.results.Length > 0)
+                                    {
+                                        foreach (var item in Model.results)
+                                        {
+                                            <tr style="font-weight:bolder;">
+                                                <td>@Convert.ToString(item.matchedTerm)</td>
+                                                <td>@Convert.ToString(item.matchStrength)</td>
+                                                <td>@Convert.ToString(item.matchScore)</td>
+                                                <td><a href="~/Verification/WorldCheckReportResultDetails?PersonalRowId=@Personalrowid&resultId=@item.referenceId" target="_blank">@Convert.ToString(item.resultId)</a></td>
+                                                <td>@Convert.ToString(item.gender)</td>
+                                                <td>@Convert.ToString(item.providerType)</td>
+                                            </tr>
+                                            <tr class="results_First">
+                                                <td>Type Id</td>
+                                                <td>Submitted Value</td>
+                                                <td>Submitted DateTime</td>
+                                                <td>Matched Value</td>
+                                                <td>Matched DateTime</td>
+                                                <td>Field Result</td>
+                                            </tr>
+                                            foreach (var review in item.secondaryFieldResults)
+                                            {
+                                                <tr>
+                                                    @if (Convert.ToString(review.typeId) == "SFCT_1")
+                                                    {
+                                                        <td>GENDER</td>
+                                                    }
+                                                    else if (Convert.ToString(review.typeId) == "SFCT_2")
+                                                    {
+                                                        <td>DATE_OF_BIRTH</td>
+                                                    }
+                                                    else if (Convert.ToString(review.typeId) == "SFCT_3")
+                                                    {
+                                                        <td>COUNTRY</td>
+                                                    }
+                                                    else if (Convert.ToString(review.typeId) == "SFCT_4")
+                                                    {
+                                                        <td>PLACE_OF_BIRTH</td>
+                                                    }
+                                                    else if (Convert.ToString(review.typeId) == "SFCT_")
+                                                    {
+                                                        <td>NATIONALITY</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>@Convert.ToString(review.typeId)</td>
+                                                    }
+                                                    <td>@Convert.ToString(review.submittedValue)</td>
+                                                    <td>@Convert.ToString(review.submittedDateTimeValue)</td>
+                                                    <td>@Convert.ToString(review.matchedValue)</td>
+                                                    <td>@Convert.ToString(review.matchedDateTimeValue)</td>
+                                                    <td>@Convert.ToString(review.fieldResult)</td>
+                                                </tr>
+
+                                            }
+                                            <tr>
+                                                <td colspan="6">&nbsp;</td>
+                                            </tr>
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+<style>
+    body{
+        font-family:'Securitas Pro';
+    }
+    .card-header {
+        color: #031F30 !important;
+        font-size: 2rem;
+        padding: .55rem 1.25rem !important;
+        text-align: center;
+        font-weight: bolder;
+        font-family: LSEG Motto,Helvetica Neue,Arial;
+    }
+    td{
+        padding:.50rem!important;
+    }
+    th {
+        padding: .50rem!important;
+    }
+    thead {
+        background: #031F30;
+        color: #FFF;
+        text-align: center;
+    }
+    .results_First {
+        background: #42638C!important;
+        font-weight:bolder;
+        color: #FFF;
+        text-align: center;
+    }
+    .results_Secondry {
+        background: #8D5FFF;
+        color: #FFF;
+        text-align: center;
+    }
+</style>

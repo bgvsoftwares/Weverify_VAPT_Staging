@@ -1,0 +1,254 @@
+﻿
+@model ViewModels.ProvidedInfoViewModel.UploadedDocListForRWQCTMPagedModel
+@{Layout = null; }
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/colorbox.css" rel="stylesheet" />
+<link href="~/Content/Site.css" rel="stylesheet" />
+
+
+
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("UpdateReportArtifactsDocByRWQCTM", "ReportQC", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="form-horizontal" style="position:absolute;">
+                @*<div class="form-group branch">*@
+                <div class='all-button-bg personal-details-head' style="font-size:15px; margin-top:1px!important; width:120%!important;">Map Artifacts For Candidate (@Convert.ToString(Session["CandidateName"])) For Check @Model.SubCheckName </div>
+                @*</div>*@
+                <div>
+                    @if (ViewBag.SuccessMsg != null)
+                    {
+                        <div class="successmsg">@ViewBag.SuccessMsg.ToString()</div>
+                    }
+
+                    @if (ViewBag.ErrorMsg != null)
+                    {
+                        <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+                    }
+                    <hr />
+                </div>
+
+                @if (Model.UploadedDocForRQQCTM != null)
+                {
+                    @Html.HiddenFor(model => model.ClientRowId)
+                    <div class=" container edit-container">
+                        <div class='row edit-row'>
+                            <div class="col-sm-2">
+                                <label type='checkbox' class='branchname control-label'><strong>DocumentType</strong> </label>
+                            </div>
+                            <div class="col-sm-1">
+                                <input type='checkbox' value="{checkall}" id="select_all" /><strong class="branchname control-label">Map Artifact </strong>
+                            </div>
+                            <div class="col-sm-1">
+                                <label class='branchname control-label' style="text-align: center;"> <strong>Order Sequence </strong></label>
+                            </div>
+                            @* @if (Model.ClientRowId == 268)
+        {*@
+                            <div class="col-sm-2">
+                                <label class='branchname control-label' style="text-align: center;"> <strong>Doc Type </strong></label>
+                            </div>
+                            @* } *@
+
+                            <div class="col-sm-2">
+                                <label class='branchname control-label' style="text-align: center;"> <strong>Upload From </strong></label>
+                            </div>
+                            <div class="col-sm-2">
+                                <label class='branchname control-label' style="text-align: center;"> <strong>UploadDate </strong></label>
+                            </div>
+                            <div class="col-sm-2">
+                                <label class='branchname control-label' style="text-align: center;"> <strong>Remarks </strong></label>
+                            </div>
+                            <div class="col-sm-2">
+                                <label class='branchname control-label' style="text-align: center;"> <strong>File </strong></label>
+                            </div>
+                        </div>
+                    </div>
+                    foreach (var item in Model.UploadedDocForRQQCTM)
+                    {
+                        bool chkArt = item.RptArtiFacts == 1 ? true : false;
+
+                        <div class="container edit-container">
+                            <div class="row edit-row">
+                                <div class="col-sm-2">
+                                    <label class='branchname control-label'>@item.DocumentType</label>
+                                    <input type="hidden" name="doctype_@item.VerifiedUploadRowID" value="@item.DocumentType" />
+                                </div>
+                                @* @if (Model.CheckStatusid == 36)
+        {
+            <div class="col-sm-1" style="text-align:center;">
+                <input type='checkbox' name='chkVDId_@item.VerifiedUploadRowID' value="@item.VerifiedUploadRowID" class='chkVDId' checked />
+            </div>
+        }
+        else
+        { *@
+                                <div class="col-sm-1" style="text-align:center;">
+                                    <input type='checkbox' name='chkVDId_@item.VerifiedUploadRowID' value="@item.VerifiedUploadRowID" class='chkVDId' checked="@chkArt" />
+                                </div>
+                                @* }*@
+                                <div class="col-sm-1" style="text-align:center;">
+                                    <input type="text" id="txtRkSeq_@item.VerifiedUploadRowID" name="txtRkSeq_@item.VerifiedUploadRowID" value="@item.RptArtiFactOrder" onkeypress="return isNumberKey(event,false)" style="width:60%" />
+                                </div>
+                                @* @if (Model.ClientRowId == 268)
+        {*@
+                                <div class="col-sm-2" style="text-align:center;">
+                                    @Html.DropDownList("ddl_" + item.VerifiedUploadRowID.ToString(), new SelectList(ViewBag.TCSDocList, "DocumentType", "DocumentType"),
+                                  "-- Select DocumentType -- ", new { @id = "ddl" + item.VerifiedUploadRowID, @class = "form-control" })
+                                </div>
+                                @* } *@
+                                <div class="col-sm-2" style="text-align:center;">
+                                    <label class='branchname control-label'>@item.DocumentUploadFrom</label>
+                                    <input type="hidden" name="docFrom_@item.VerifiedUploadRowID" value="@item.DocumentUploadFrom" />
+                                </div>
+                                <div class="col-sm-2" style="text-align:center;">
+                                    <label class='branchname control-label'>@item.UploadDate</label>
+                                </div>
+                                <div class="col-sm-2" style="text-align:center;">
+                                    <label class='branchname control-label'>@item.Remarks</label>
+                                </div>
+                                <div class="col-sm-2" style="text-align:center; font-size:11px!important;">
+                                    <input type="hidden" name="docName_@item.VerifiedUploadRowID" value="@item.FileName" />
+                                    <input type="hidden" name="docPath_@item.VerifiedUploadRowID" value="@Url.Content("~/Documents/CandidateDocuments/ProvidedDocuments/")" />
+                                    @if (@item.DocumentType == "Insuff Document by API" || @item.DocumentType == "Check wise Document by API")
+                                    {
+                                        <a target="_blank" href='@Url.Content("https://api.weverifyglobal.com/CaseDocsFromAPI?fileName=" + @item.FileName)'>@item.FileName</a>
+                                    }
+                                    else if (item.DocumentType == "OFAC_Artifact" && !item.FileName.Contains(".jpg") && !item.FileName.Contains(".JPG") && !item.FileName.Contains(".pdf"))
+                                    {
+                                        <a target="_blank" href='@Url.Content("~/Documents/CandidateDocuments/ProvidedDocuments/" + @item.FileName+".jpg")'>@item.FileName</a>
+                                    }
+                                    else
+                                    {
+                                        <a target="_blank" href='@Url.Content("~/Documents/CandidateDocuments/ProvidedDocuments/" + @item.FileName)'>@item.FileName</a>
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+
+                @Html.HiddenFor(model => model.PersonalRowID)
+                @Html.HiddenFor(model => model.SubCheckRowID)
+                @Html.HiddenFor(model => model.AllDocIds, new { @id = "hdnAllDocIds" })
+                @Html.HiddenFor(model => model.AllUnCheckIds, new { @id = "AllUnCheckIds" })
+
+                @if (Session["casestatusid"].ToString() == "30")
+                {
+                    if (Model.ClientRowId == 317 || Model.ClientRowId == 327)
+                    {
+                        <div class="all-button-bg" style="margin-bottom:2%!important; margin-top:1px!important;">
+                            <input class="btn bun-bg btn-default" type="submit" value="Submit" />
+                        </div>
+                    }
+                }
+                else
+                {
+
+                    <div class="all-button-bg" style="margin-bottom:2%!important; margin-top:1px!important;">
+                        <input class="btn bun-bg btn-default" type="submit" value="Submit" />
+                    </div>
+                }
+
+                @*<div class="all-button-bg" style="margin-bottom:2%!important; margin-top:1px!important;">
+                        <input class="btn bun-bg btn-default" type="submit" value="Submit" />
+                    </div>*@
+            </div>
+        }
+    </div>
+</div>
+
+
+<script src="~/Scripts/jquery-3.7.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/modernizr-2.8.3.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var chkVDId = '';
+        var UnchkVDId = '';
+        $('input.chkVDId:checkbox').each(function (index, value) {
+            UnchkVDId += this.value + ',';
+            if (this.checked) {
+                chkVDId += this.value + ',';
+            }
+
+        });
+        if (chkVDId.length > 0) {
+            chkVDId = chkVDId.substring(0, chkVDId.length - 1);
+        } else {
+            chkVDId = '';
+        }
+        $('#hdnAllDocIds').val(chkVDId.trim());
+
+        if (UnchkVDId.length > 0) {
+            UnchkVDId = UnchkVDId.substring(0, UnchkVDId.length - 1);
+        } else {
+            UnchkVDId = '';
+        }
+        $('#AllUnCheckIds').val(UnchkVDId.trim());
+        @* Start Changed By Anil on 23 Aug 2024 *@
+        if ($('.chkVDId:checked').length == $('.chkVDId').length) {
+            $("#select_all").prop('checked', true);
+        }
+        @* End Changed By Anil on 23 Aug 2024 *@
+
+    });
+
+    $(document).on('change', 'input.chkVDId:checkbox', function (e) {// on change
+        var chkVDId = '';
+        $('input.chkVDId:checkbox').each(function (index, value) {
+            if (this.checked) {
+                chkVDId += this.value + ',';
+            }
+        });
+        @* Start Changed By Anil on 23 Aug 2024 *@
+        if (false == $(this).prop("checked")) { //if this item is unchecked
+            $("#select_all").prop('checked', false); //change "select all" checked status to false (unchecked)
+        }
+        //check "select all" if all checkbox items are checked
+        if ($('.chkVDId:checked').length == $('.chkVDId').length) {
+            $("#select_all").prop('checked', true);
+            $('#hdnAllDocIds').val(chkVDId.trim());
+        }
+        @* End Changed By Anil on 23 Aug 2024 *@
+        if (chkVDId.length > 0) {
+            chkVDId = chkVDId.substring(0, chkVDId.length - 1);
+        } else {
+            chkVDId = '';
+        }
+        $('#hdnAllDocIds').val(chkVDId.trim());
+
+    });
+
+    @* Start Changed By Anil on 23 Aug 2024 *@
+
+    //2nd click event for header checkbox for select /deselect all
+    $('#select_all').change(function () {
+        $('input[class="chkVDId"]').prop('checked', $(this).prop('checked'));
+        var chkVDIds = '';
+        $('input[class="chkVDId"]').each(function (index, value) {
+            if (this.checked) { chkVDIds += this.value + ','; }
+        });
+        if (chkVDIds.length > 0) {
+            chkVDIds = chkVDIds.substring(0, chkVDIds.length - 1);
+        }
+        else {
+            chkVDIds = '';
+        }
+        $('#hdnAllDocIds').val(chkVDIds.trim());
+    });
+
+    @* End Changed By Anil on 23 Aug 2024 *@
+
+</script>
+
+<style>
+    .edit-container .edit-row{
+        flex-wrap:nowrap !important;
+    }
+</style>

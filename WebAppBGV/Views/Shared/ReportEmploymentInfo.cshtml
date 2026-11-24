@@ -1,0 +1,339 @@
+﻿
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    /**/
+
+    var list = Model.EmploymentInfoModel.GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+
+
+
+}
+
+
+@if (Model != null && Model.EmploymentInfoModel != null && Model.EmploymentInfoModel.Count > 0)
+{
+
+    if (Model.EmploymentInfoModel != null)
+    {
+        int i = 0;
+        foreach (var a in list)
+        {
+            var Anticident = Model.EmploymentInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+            var ReportComment = a.ReportComment;
+            <page id="PrintSrc" size="A4">
+                <div style="page-break-after:always ;"></div>
+                <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; height:72rem!important; width:100%;">
+                    <tr>
+                        <td valign="top">
+                            <table border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                                <tr>
+                                    <td valign="top">
+                                        <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                            <tr>
+                                                <td>
+                                                    <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                                        @if (Model.ClientRowID == 926 || Model.ClientRowID == 881 || Model.ClientRowID == 588 || Model.ClientRowID == 1509 || Model.ClientRowID == 1396 || Model.ClientRowID == 1460 || Model.ClientRowID == 1459 || Model.ClientRowID == 1507 || Model.ClientRowID == 1487 
+                                                            || Model.ClientRowID == 336 || Model.ClientRowID == 1381 || Model.ClientRowID == 1202 || Model.ClientRowID == 871 || Model.ClientRowID == 1480 || Model.ClientRowID == 1306 || Model.ClientRowID == 1391 || Model.ClientRowID == 1509 || Model.ClientRowID == 1396 
+                                                            || Model.ClientRowID == 1465 || Model.ClientRowID == 1565 || Model.ClientRowID == 754 || Model.ClientRowID == 1279 || Model.ClientRowID == 1572 || Model.ClientRowID == 259)
+                                                        {
+                                                            <tr>
+                                                                <td valign="top" style="width:100%; text-align:end;"><img src='@Url.Content("~/Content/images/walsons_Logo.png")' style="width:5rem; margin-top:10px; margin-right:10px;"></td>
+                                                            </tr>
+                                                        }
+                                                        else
+                                                        {
+                                                            <tr>
+                                                                <td valign="top" style="width:100%; text-align:end;"><img src='@Url.Content("~/Content/images/Securitas-logo.png")' style="width:5rem; margin-top:10px; margin-right:10px;"></td>
+                                                            </tr>
+                                                        }
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width:100%;"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;"><a name="@a.SubcheckRowID">@a.SubCheckName.TrimEnd(' ')</a></p></td>
+                                            </tr>
+                                            <tr>
+                                                <td sstyle="width:100%;">&nbsp;</td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top" align="right">
+                                                    <table border="1" cellspacing="5" cellpadding="5" style="width:30%; margin-right:8px;">
+                                                        @if (Model.ClientRowID == 1671)
+                                                        {
+                                                            <tr>
+                                                                @if (!string.IsNullOrEmpty(a.CheckColorName))
+                                                                {
+                                                                    if (a.CheckColorName.ToLower() == "green")
+                                                                    {
+                                                                        <td width="49%" style="color-adjust:exact;background:@a.CheckColorCode;font-size:14px;  font-weight:bold; padding:5px; text-align:center;">Verified</td>
+                                                                    }
+                                                                    else if (a.CheckColorName.ToLower() == "red")
+                                                                    {
+                                                                        <td width="49%" style="color-adjust:exact;background:@a.CheckColorCode;font-size:14px;  font-weight:bold; padding:5px; text-align:center;">Attention Required</td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td width="49%" style="color-adjust:exact;background:@a.CheckColorCode;font-size:14px;  font-weight:bold; padding:5px; text-align:center;">@a.CheckColorName</td>
+                                                                    }
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td bgcolor="#fff" style="font-size:14px;  font-weight:bold; padding:5px; text-align:center;"></td>
+                                                                }
+                                                            </tr>
+                                                        }
+                                                        else
+                                                        {
+                                                            <tr>
+                                                                @if (!string.IsNullOrEmpty(a.CheckColorName))
+                                                                {
+                                                                    if (Model.ClientRowID == 1803)
+                                                                    {
+                                                                        if (a.CheckColorName.ToLower() == "yellow" || a.CheckColorName.ToLower() == "orange")
+                                                                        {
+                                                                            <td width="49%" style="color-adjust: exact; background: yellow; font-size: 14px; font-weight: bold; padding: 5px; text-align: center;">@a.CheckColorName</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td width="49%" style="color-adjust:exact;background:@a.CheckColorCode;font-size:14px;  font-weight:bold; padding:5px; text-align:center;">@a.CheckColorName</td>
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td width="49%" style="color-adjust:exact;background:@a.CheckColorCode;font-size:14px;  font-weight:bold; padding:5px; text-align:center;">@a.CheckColorName</td>
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td bgcolor="#fff" style="font-size:14px;  font-weight:bold; padding:5px; text-align:center;"></td>
+                                                                }
+                                                            </tr>
+                                                        }
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top" align="center">
+                                                    <table border="1" cellspacing="5" cellpadding="2" style="width:98%;">
+                                                        <tr>
+                                                            @if (Model.ClientRowID == 1671)
+                                                            {
+                                                                <td width="33%" style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Name</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td width="33%" style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Name of Candidate</td>
+                                                            }
+
+                                                            <td style="font-size:10px; font-family:Calibri;padding-left:5px;">@Model.PersonalName</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Securitas Reference ID </td>
+                                                            <td style="font-size:10px; font-family:Calibri; padding-left:5px;">@Model.CompanyRefNo</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:12px; font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;font-weight:bold; padding-left:5px;">Report Comment </td>
+                                                            @if (a.CheckColorName.ToLower() == "insuff" || a.CheckColorName.ToLower() == "ytr on hold")
+                                                            {
+                                                                <td style="font-size:10px; font-family:Calibri; padding-left:5px;"></td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="font-size:10px; font-family:Calibri; padding-left:5px;">@Html.Raw(ReportComment)</td>
+                                                            }
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top" align="center">
+                                                    <table border="1" cellspacing="5" cellpadding="2" style="width:98%; margin-top:10px;">
+                                                        <tr>
+                                                            <td width="33%" style="font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;text-align:center; font-size:14px;  font-weight:700;">Details</td>
+                                                            <td width="33%" style="font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;text-align:center; font-size:14px;  font-weight:700;">Information Provided</td>
+                                                            <td width="33%" style="font-family:Calibri; -webkit-print-color-adjust:exact;background:#c0c0c0;text-align:center; font-size:14px;  font-weight:700;">Information Verified</td>
+                                                        </tr>
+                                                        @foreach (var item in Anticident)
+                                                        {
+
+                                                            <tr>
+                                                                <td width="33%" style="font-size:10px; font-family:Calibri;">@item.DisplayNameRep :</td>
+                                                                <td width="33%" style="font-size:10px; font-family:Calibri;">@item.DataEntryValue</td>
+                                                                @if ( a.CheckColorName.ToUpper() == "YTR ON HOLD" || a.CheckColorName.ToUpper() == "INSUFF")
+                                                                {
+                                                                    <td style="font-size:10px; font-family:Calibri;">
+                                                                    </td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td width="33%" style="font-size:10px; font-family:Calibri;">
+
+                                                                        @item.OpsValue
+                                                                    </td>
+                                                                }
+
+                                                            </tr>
+                                                        }
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td align="left" valign="top">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" height="100">
+                            <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                <tr>
+                                    <td colspan="3" style="border-top:3px solid #c0c0c0;">&nbsp;</td>
+                                </tr>
+                                @if (Model.ClientRowID == 926 || Model.ClientRowID == 881 || Model.ClientRowID == 588 || Model.ClientRowID == 1509 || Model.ClientRowID == 1396 || Model.ClientRowID == 1460 || Model.ClientRowID == 1459 || Model.ClientRowID == 1507 || Model.ClientRowID == 1487 || Model.ClientRowID == 336 || Model.ClientRowID == 1381 || Model.ClientRowID == 1202 || Model.ClientRowID == 871 || Model.ClientRowID == 1480 || Model.ClientRowID == 1306 || Model.ClientRowID == 1391 || Model.ClientRowID == 1509 || Model.ClientRowID == 1396 || Model.ClientRowID == 1465 || Model.ClientRowID == 1565 || Model.ClientRowID == 754 || Model.ClientRowID == 1279 || Model.ClientRowID == 1572)
+                                {
+                                    <tr>
+                                        <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                        <td width="1%">&nbsp;</td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr style="background-image: url('@Url.Content("~/Images/Footer-image-confident.jpg")'); background-repeat: no-repeat; background-size: cover;" >
+                                        <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                        <td width="1%">&nbsp;</td>
+
+                                        <td width="79%">
+                                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                            <p style="font-size:16px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                        </td>
+
+                                    </tr>
+                                }
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </page>
+
+            if (Model.CandidateDocList != null)
+            {
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                {
+                    if (Doc.SubCheckRowID == a.SubcheckRowID)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        //FileInfo fin = new FileInfo(("D:\\wwwroot2" + Model.DocPath + Doc.DocFile).Replace("~", ""));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                            <page id="PrintSrc" size="A4">
+                                <div style="page-break-after:always ;"></div>
+                                <table width="793" cellspacing="0" height="1100" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center; width:100%; height:65rem;">
+                                    <tr>
+                                        <td valign="top" colspan="2" align="center">
+                                            <table border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                                                <tr>
+                                                    <td valign="top">
+                                                        <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                                            <tr>
+                                                                <td>
+                                                                    <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                                                        @if (Model.ClientRowID == 926 || Model.ClientRowID == 881 || Model.ClientRowID == 588 || Model.ClientRowID == 1509 || Model.ClientRowID == 1396 || Model.ClientRowID == 1460 || Model.ClientRowID == 1459 || Model.ClientRowID == 1507 || Model.ClientRowID == 1487 || Model.ClientRowID == 336 || Model.ClientRowID == 1381 || Model.ClientRowID == 1202 || Model.ClientRowID == 871 || Model.ClientRowID == 1480 || Model.ClientRowID == 1306 || Model.ClientRowID == 1391 || Model.ClientRowID == 1509 || Model.ClientRowID == 1396 || Model.ClientRowID == 1465 || Model.ClientRowID == 1565 || Model.ClientRowID == 754 || Model.ClientRowID == 1279 || Model.ClientRowID == 1572 || Model.ClientRowID == 259)
+                                                                        {
+                                                                            <tr>
+                                                                                <td valign="top" style="width:100%; text-align:end;"><img src='@Url.Content("~/Content/images/walsons_Logo.png")' style="width:5rem; margin-top:10px; margin-right:10px;"></td>
+                                                                            </tr>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <tr>
+                                                                                <td valign="top" style="width:100%; text-align:end;"><img src='@Url.Content("~/Content/images/Securitas-logo.png")' style="width:5rem; margin-top:10px; margin-right:10px;"></td>
+                                                                            </tr>
+                                                                        }
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="width:100%;"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@a.SubCheckName (@Doc.DocumentType)</p></td>
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td valign="top">
+                                                                    @{
+                                                                        FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                        //FileStream fs = new FileStream(("D:\\wwwroot2" + Model.DocPath + Doc.DocFile).Replace("~", ""), FileMode.Open, FileAccess.Read);
+
+                                                                        System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                        if (image.Height > 600)
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" style="width: 100%;height:55rem;" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" style="width: 100%;height:55rem;" />
+                                                                        }
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <!--- Report Footer with Address Include -->
+                                    <tr>
+                                        <td colspan="2" height="100">
+                                            <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                                <tr>
+                                                    <td colspan="3" style="border-top:3px solid #c0c0c0;">&nbsp;</td>
+                                                </tr>
+                                                @if (Model.ClientRowID == 926 || Model.ClientRowID == 881 || Model.ClientRowID == 588 || Model.ClientRowID == 1509 || Model.ClientRowID == 1396 || Model.ClientRowID == 1460 || Model.ClientRowID == 1459 || Model.ClientRowID == 1507 || Model.ClientRowID == 1487 || Model.ClientRowID == 336 || Model.ClientRowID == 1381 || Model.ClientRowID == 1202 || Model.ClientRowID == 871 || Model.ClientRowID == 1480 || Model.ClientRowID == 1306 || Model.ClientRowID == 1391 || Model.ClientRowID == 1509 || Model.ClientRowID == 1396 || Model.ClientRowID == 1465 || Model.ClientRowID == 1565 || Model.ClientRowID == 754 || Model.ClientRowID == 1279 || Model.ClientRowID == 1572)
+                                                {
+                                                    <tr>
+                                                        <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                                        <td width="1%">&nbsp;</td>
+                                                    </tr>
+                                                }
+                                                else
+                                                {
+                                                    <tr style="background-image: url('@Url.Content("~/Images/Footer-image-confident.jpg")'); background-repeat: no-repeat; background-size: cover;" >
+                                                        <td width="20%"><br><br><br><img src='@Url.Content("~/Images/footer-logo.jpg")' width="120" height="50"></td>
+                                                        <td width="1%">&nbsp;</td>
+
+                                                        <td width="79%">
+                                                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:500; text-align:center; margin:0px 0px 0px 0px;"><img src="~/Images/StampSignatureUpdated.jpg" width="60" height="60"></p>
+                                                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#000080; font-weight:700; text-align:center; margin:0px 0px 0px 0px;">SECURITAS INDIA</p>
+                                                            <p style="font-size:16px;font-family: Calibri, sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp; &nbsp;Tel: + 91 124 4718888</p>
+                                                            <p style="font-size:16px; font-family: Calibri, sans-serif; color:#3a00ff; text-align:center; margin:5px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a> <span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                                        </td>
+
+                                                    </tr>
+                                                }
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <!--- Report Footer Include -->
+                                </table>
+                            </page>
+                        }
+                    }
+                }
+            }
+
+            i++;
+        }
+    }
+
+}
+
+
+
+
+

@@ -1,0 +1,230 @@
+﻿@model ViewModels.ProvidedInfoViewModel.InsuffCheckInfoCandidateViewModel
+@{
+    ViewBag.Title = "Insufficiency Check Info By Candidate";
+
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<style>
+    body {
+        font-family: "Poppins", sans-serif;
+        font-weight: 300;
+        font-size: 15px;
+        line-height: 1.7;
+        /*color: #c4c3ca;*/
+        /*background-color: #1f2029;*/
+        overflow-x: hidden;
+    }
+
+    .logo {
+        position: absolute;
+        top: 10px !important;
+        right: 30px;
+        display: block;
+        z-index: 100;
+        transition: all 250ms linear;
+    }
+
+    .smart {
+        /*padding: 15px 0px 0px 0;*/
+        font-size: 30px;
+        line-height: 25px;
+        font-family: 'Open Sans', sans-serif;
+        font-weight: 500;
+        color: #fff;
+    }
+
+    a {
+        cursor: pointer;
+        transition: all 200ms linear;
+    }
+
+        a:hover {
+            text-decoration: none;
+        }
+
+    .link {
+        color: #c4c3ca;
+    }
+
+        .link:hover {
+            color: #ffeba7;
+        }
+
+    .header {
+        display: none !important;
+    }
+
+    .master-middle {
+        margin-top: 60px !important;
+    }
+
+    .navbar {
+        display: none !important;
+    }
+
+    .navbars {
+        padding: 0 !important;
+        min-height: 0;
+        display: flex;
+        align-items: center;
+        height: 55px !important;
+        margin-bottom: 10px !important;
+    }
+
+    #main_nav {
+        display: inline flow-root list-item;
+        float: right !important;
+    }
+
+    .header {
+        display: none !important;
+    }
+
+    .navbar-brand {
+        margin-top: 15px !important;
+    }
+</style>
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+<script src="~/Scripts/sweetalert2.all.min.js"></script>
+<nav class="navbars fixed-top navbar-expand-lg navbar-dark" style="background-color:#11c9b7;">
+    <div class="container-fluid w-100">
+        <a class="navbar-brand smart" href="#"><b>We</b>Verify</a>
+        <div class="collapse navbar-collapse" id="main_nav">
+            <ul class="navbar-nav ms-auto" style="width:68rem;">
+                <li class="nav-item" style="margin-left:auto;">
+                    <a class="nav-link" href="https://www.securitas.in/" target="_blank"><img src="/Images/logo.png" alt="Securitas" title="Securitas" class="float-md-right login-logo-mob" style="height:40px;width:auto;"></a>
+                </li>
+            </ul>
+        </div>
+        <!-- navbar-collapse.// -->
+    </div> <!-- container-fluid.// -->
+</nav>
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("GetInsufficiencyCheckInfoByCandidate", "ClientInsuff", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.CheckRowID)
+            @Html.HiddenFor(model => model.SubCheckName)
+            @Html.HiddenFor(model => model.INFReason)
+            <input type="hidden" value="@Model.ClientRowID" id="ClientRowID" name="ClientRowID" />
+            <input type="hidden" value="@Model.ChFamilRowId" id="ChFamilRowId" name="ChFamilRowId" />
+            <input type="hidden" value="@Model.SubCheckRowID" id="SubCheckRowID" name="SubCheckRowID" />
+            <input type="hidden" value="@Model.PersonalRowID" id="PersonalRowID" name="PersonalRowID" />
+            <input type="hidden" value="@Model.SecuritasID" id="SecuritasID" name="SecuritasID" />
+
+            <div class="form-horizontal">
+                <div class="form-group row branch">
+                    @Html.LabelFor(model => model.SubCheckName, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-6" style="margin-top:7px;"> @Model.SubCheckName </div>
+                </div>
+                <div class="form-group row branch">
+                    @Html.Label("Insuff Remark:", htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-6" style="margin-top:7px;color:red"> @Model.INFReason </div>
+                </div>
+                <div class="form-group row branch">
+                    <div id="dvUplodDoc">
+                    </div>
+                </div>
+                <div class="form-group row branch" style="display:none;">
+                    @Html.LabelFor(model => model.EmployeeID, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-2">
+                        @Html.TextAreaFor(model => model.EmployeeID, new { @class = "form-control", @rows = "2" })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.ActionLink("Download", "InsuffClientAddresspdf", "ClientInsuff", new { PersonalRowID = Model.PersonalRowID, SubCheckRowID = Model.SubCheckRowID }, new { @class = "btn btn-success btn-lg" })
+                    </div>
+                </div>
+
+
+                @Html.Hidden("UploadHid", null)
+                <div class="form-group row branch">
+                    @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-8">
+                        @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @rows = "2" })
+                    </div>
+                </div>
+
+                <div class="all-button-bg">
+                    @*@Html.ActionLink("Dashboard", "DashboardClient", "Home", new { area = "ClientArea" }, new { @class = "btn bun-bg btn-default" })*@
+                    @*<input class="btn bun-bg btn-default" type="submit" value="Back" onclick="window.history.back()" />*@
+                    <input class="btn bun-bg btn-default" type="submit" value="Submit" onclick="return validateForm();" />
+                </div>
+
+            </div>
+
+        }
+
+    </div>
+</div>
+
+@section Scripts{
+
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var url1 = "/ClientInsuff/GetDocumentTypeListBySubCheckIDForInsuffCandidate/" + $("#SubCheckRowID").val();
+            $.ajax({
+                url: url1,
+                type: 'GET',
+                async: false,
+                dataType: 'json',
+                success: function (allData) {
+                    if (allData != null && allData != "") {
+                        $('#dvChksPcks').show();
+                        var items = '';
+                        jQuery.each(allData, function (index, allData) {
+
+                            items += "<div class='container'><div class='row'><div class='col-md-4'><label class='control-label'> " + allData.Text + " :</label></div><div class='col-md-2'><input type='checkbox' name='chkDoc' value=" + allData.Value + " class='form-control' style='width:20px;' /></div><div class='col-md-4'><input data-val='true' name='UploadDoc' disabled='true' type='file' value=" + allData.Value + " id=" + allData.Value + "></div></div></div>"
+                        });
+                        $('#dvUplodDoc').html(items);
+                    }
+                    else {
+                        $('#dvChksPcks').hide();
+                        alert("No Doc Selected");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("some error");
+                }
+            });
+        });
+
+        $(document).on('change', 'input[name="chkDoc"]', function (e) {// on change of state
+            var chkDocs = '';
+            $('input[name="chkDoc"]').each(function (index, value) {
+                if (this.checked) {
+                    chkDocs += this.value + ',';
+                    $("#" + this.value + "").removeAttr("disabled");
+                }
+                else {
+                    $("#" + this.value + "").attr("disabled", "disabled");
+                }
+            });
+
+            if (chkDocs.length > 0) {
+                chkDocs = chkDocs.substring(0, chkDocs.length - 1);
+            } else { chkDocs = ''; }
+            $('#UploadHid').val(chkDocs.trim());
+        });
+
+        function validateForm() {
+            var rmk = $("#Remarks").val();
+            if (rmk == '') {
+                $("#Remarks").focus();
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Info',
+                    html: '<div class="errormsg" style="text-align:center;">Please Enter Remarks</div>'
+                });
+
+                return false;
+            }
+        }
+
+    </script>
+}
+

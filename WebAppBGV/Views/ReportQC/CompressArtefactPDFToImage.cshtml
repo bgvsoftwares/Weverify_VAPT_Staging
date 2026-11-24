@@ -1,0 +1,140 @@
+﻿@model  ViewModels.ProvidedInfoViewModel.AddPQPersonalBulkImportViewModel
+
+@{
+    ViewBag.Title = "Compress Artefact Pdf To Image";
+    var Data = ViewBag.Image;
+    var Dataimage = "/ReportQC/DownloadZip?zipPath=" + ViewBag.Path + "&Filename=" + ViewBag.Image;
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+}
+
+<div class="submit-progress hidden">
+    <i class="fa fa-2x fa-spinner fa-spin"></i>
+</div>
+
+<div class="rProvidedInfoow">
+    <div class="col-md-12">
+
+        @using (Html.BeginForm("CompressArtefactPDFToImage", "ReportQC", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="form-horizontal">
+                <div class="form-group branch row justify-content-center">
+                    <div class="col-md-2 text-right branch">
+                        <label class="form-label fw-bolder">Upload Document<sup class="text-danger text-bold">*</sup></label>
+                    </div>
+                    <div class="col-md-3">
+                        @Html.TextBoxFor(model => model.UploadDoc, new { type = "file", @accept = "xls, xlsx", @class = "form-control h-auto" })
+                        @Html.ValidationMessageFor(model => model.UploadDoc, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+               
+                <div class="form-group branch row"></div>
+                @Html.HiddenFor(model => model.CandidateCheckOrPackage)
+                <div class="form-group branch row"></div>
+                <div class="all-button-bg">
+                    <input class="btn bun-bg btn-default" type="submit" id="btnSubmit" onclick="return validateForm(this,'Saving...')" value="Submit" />
+
+                </div>
+            </div>
+            if (Data != null)
+            {
+                <div class="all-button-bg">
+
+                    <a class="btn bun-bg btn-default" href="@Dataimage" target="_blank">Download</a>
+                </div>
+
+            }
+            <br />
+            <p class="p-4" style="font-size:20px;text-align: center;color: blueviolet;">@ViewBag.Error</p>
+
+        }
+
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dvChksPcks').hide();
+        });
+
+        $(document).on('change', 'input[class="chkPkgChks"]', function (e) {
+            var selectedIds = '';
+            $('input[class="chkPkgChks"]').each(function (index, value) {
+                if (this.checked) { selectedIds += this.value + ','; }
+            });
+            if (selectedIds.length > 0) {
+                selectedIds = selectedIds.substring(0, selectedIds.length - 1);
+            } else { selectedIds = ''; }
+
+            $('#CandidateCheckOrPackage').val(selectedIds.trim());
+        });
+
+        $(function () {
+            $('#ClientRowID').change(function () {
+                $('#PricingType').val(0);
+                $('#dvChksPcks').hide();
+            });
+
+        });
+
+        function validateForm(ctl, msg) {
+            if ($('#UploadDoc').val() == '') {
+                alert("Upload Document");
+                return false;
+            }
+            return true;
+        }
+        function ckChange(el) {
+            var ckName = document.getElementsByName(el.name);
+            for (var i = 0, c; c = ckName[i]; i++) {
+                c.disabled = !(!el.checked || c === el);
+            }
+        }
+    </script>
+    <style>
+        .submit-progress-bg {
+            background-color: lightgray;
+            opacity: .5;
+        }
+
+        .submit-progress {
+            position: fixed;
+            top: 45%;
+            left: 60%;
+            height: 5em;
+            padding-top: 2.3em;
+            z-index: 1;
+            /* The following properties are the ones most likely to change */
+            width: 20em;
+            /* Set 'margin-left' to a negative number that is 1/2 of 'width' */
+            margin-left: -10em;
+            padding-left: 1.1em;
+            color: white;
+            -webkit-border-radius: 0.4em;
+            -moz-border-radius: 0.4em;
+            border-radius: 0.4em;
+        }
+
+        /* Changing style for spinner */
+        .submit-progress {
+            padding-top: 0em;
+            width: 19em;
+            margin-left: -11.5em; /* Set to a negative number that is 1/2 of the width */
+        }
+
+            .submit-progress i {
+                margin-right: 0.5em;
+                color: black
+            }
+
+        .hidden {
+            display: none;
+        }
+
+        .fa-2x {
+            font-size: 4em;
+        }
+    </style>
+}

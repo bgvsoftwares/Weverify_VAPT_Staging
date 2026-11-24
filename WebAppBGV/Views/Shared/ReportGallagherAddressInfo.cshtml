@@ -1,0 +1,229 @@
+
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    var list = Model.AddressInfoModel.GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+
+
+
+}
+<style>
+
+    #PrintSrc {
+        min-height: 297mm;
+    }
+
+    #PrintSrc {
+        page-break-before: always;
+    }
+
+    @@media print {
+        #PrintSrc {
+            display: block;
+            page-break-before: always;
+        }
+    }
+</style>
+
+
+@if (Model != null && Model.AddressInfoModel != null && Model.AddressInfoModel.Count > 0)
+{
+    if (Model.AddressInfoModel != null)
+    {
+        int i = 0;
+        var D1 = "";
+        foreach (var a in list)
+        {
+            var Anticident = Model.AddressInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+            var ReportComment = a.ReportComment;
+            <div style="page-break-after: always !important; "></div>
+            <page id="PrintSrc" size="A4">
+                <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; width:100%; height:72rem; page-break-after:always!important;">
+                    <tr>
+                        <td valign="top">
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td style="text-align: right; padding: 10px;">
+                                        <img src="@Url.Content("~/Content/Securitas_AB_logo.svg.png")" style="width:5rem;" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <table style="width:98%; margin:auto; border-collapse: collapse;">
+                                            <tr>
+                                                <td colspan="2" style="border:1px solid gray; background:#A6A6A6; padding:6px; text-align:center;font-size:16px;font-family:Calibri,sans-serif;">
+                                                    <strong><a name="@a.SubcheckRowID">@a.SubCheckName</a></strong>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style="width:140pt;border:solid gray 1.0pt;border-top:none;padding:1.95pt 5.95pt 1.95pt 5.95pt;height:24.75pt;">
+                                                    <p style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:0cm;line-height:normal;font-size:16px;font-family:"Calibri",sans-serif;color:black;'><span style="font-family: Calibri, sans-serif; font-size: 16px;"><strong><span style="color:windowtext;">Check Status</span></strong></span></p>
+                                                </td>
+                                                <td style="width:354.35pt;border-top:none;border-left:none;border-bottom:solid gray 1.0pt;border-right:solid gray 1.0pt;background:@a.CheckColorCode;padding:1.95pt 5.95pt 1.95pt 5.95pt;height:24.75pt;">
+                                                    <p style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:0cm;line-height:normal;font-size:16px;font-family:"Calibri",sans-serif;color:black;'><span style="font-family: Calibri, sans-serif; font-size: 16px;"><strong>@a.CheckColorName</strong></span></p>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td colspan="2" style="width: 566.55pt;border: medium none;padding: 0cm;height: 263.5pt;vertical-align: top;">
+                                                    <table style="border-collapse:collapse;border:none;">
+                                                        <tr>
+                                                            <td style="width:200.15pt;border:solid gray 1.0pt;background:    #A6A6A6;padding:1.95pt 5.95pt 1.95pt 5.95pt;height:29.7pt;">
+                                                                <p style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:0cm;line-height:normal;font-size:16px;font-family:"Calibri",sans-serif;color:black;text-align:center;'><span style="font-family: Calibri, sans-serif; font-size: 16px;"><strong>Verified Data</strong></span></p>
+                                                            </td>
+                                                            <td style="width:272.8pt;border:solid gray 1.0pt;border-left:    none;background:#A6A6A6;padding:1.95pt 5.95pt 1.95pt 5.95pt;height:29.7pt;">
+                                                                <p style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:0cm;line-height:normal;font-size:16px;font-family:"Calibri",sans-serif;color:black;text-align:center;'><span style="font-family: Calibri, sans-serif; font-size: 16px;"><strong>Details submitted by the candidate</strong></span></p>
+                                                            </td>
+                                                            <td style="width:300.7pt;border:solid gray 1.0pt;border-left:    none;background:#A6A6A6;padding:1.95pt 5.95pt 1.95pt 5.95pt;height:29.7pt;">
+                                                                <p style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:0cm;line-height:normal;font-size:16px;font-family:"Calibri",sans-serif;color:black;text-align:center;'><span style="font-family: Calibri, sans-serif; font-size: 16px;"><strong>Verification Remarks</strong></span></p>
+                                                            </td>
+                                                        </tr>
+
+                                                        @if (a != null)
+                                                        {
+                                                            foreach (var item in Anticident)
+                                                            {
+                                                                if (item.AntecedentRowID != "296")
+                                                                {
+                                                                    var isTwoCol = item.AntecedentRowID == "27";
+                                                                    if (isTwoCol)
+                                                                    {
+                                                                        <tr>
+                                                                            <td style="width: 213.15pt;border:1px solid gray; padding:6px; font-size:16px;font-family:Calibri,sans-serif; word-break: break-word;"><strong>@item.DisplayNameRep</strong></td>
+                                                                            <td style="width: 213.15pt;border:1px solid gray; border-left:none; padding:6px; font-size:16px;font-family:Calibri,sans-serif;word-break: break-word;">@item.DataEntryValue</td>
+                                                                            <td style="width: 213.15pt;border:1px solid gray; border-left:none; padding:6px; font-size:16px;font-family:Calibri,sans-serif;word-break: break-word;">@item.OpsValue</td>
+                                                                        </tr>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <tr>
+                                                                            <td style="width: 213.15pt;border:1px solid gray; padding:6px; font-size:16px;font-family:Calibri,sans-serif;" colspan="1"><strong>@item.DisplayNameRep</strong></td>
+                                                                            <td style="width: 213.15pt;border:1px solid gray; border-left:none; padding:6px; font-size:16px;font-family:Calibri,sans-serif;" colspan="2">@item.OpsValue</td>
+                                                                        </tr>
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            <tr>
+                                                                <td style="border:1px solid gray; padding:6px; font-size:16px;font-family:Calibri,sans-serif;"><strong>Remarks</strong></td>
+                                                                <td colspan="2" style="border:1px solid gray; border-left:none; padding:6px; font-size:16px;font-family:Calibri,sans-serif;">
+                                                                    @Html.Raw(a.ReportComment)
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" height="100">
+                            <table border="0" cellspacing="0" cellpadding="0" style="width:100%;" id="tblDemo2">
+                                <tr>
+                                    <td colspan="3" style="border-top:3px solid #c0c0c0;">&nbsp;</td>
+                                </tr>
+                                <tr style="background-image: url('@Url.Content("~/Images/Footer-image-confident.jpg")'); background-repeat: no-repeat; background-size: cover;" >
+                                    <td valign="bottom" width="20%"><img src="~/Images/Walsons-Report-footer.png" style="width:7rem; margin-left: 15px; margin-bottom: 15px;"></td>
+                                    <td width="1%">&nbsp;</td>
+                                    <td width="79%">
+                                        <p style="font-size:16px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#000080; font-weight:500; text-align:center; margin:10px 0px 0px 0px;"><img src='@Url.Content("~/Images/StampSignatureUpdated.jpg")' width="60" height="60"></p>
+                                        <p style="font-size:16px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#000080; font-weight:700; text-align:center; margin:15px 0px 0px 0px;">SECURITAS INDIA</p>
+                                        <p style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp;&nbsp; Tel: + 91 124 4718888</p>
+                                        <p style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin: 0px 0px 5px 0px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a>&nbsp;<span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </page>
+
+
+            if (Model.CandidateDocList != null)
+            {
+                foreach (var Doc in Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID))
+                {
+                    if (Doc.SubCheckRowID == a.SubcheckRowID)
+                    {
+                        FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                        if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                        {
+                            <div style="page-break-after: always !important; "></div>
+                            <page id="PrintSrc" size="A4">
+                                <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center;width:100%; height:60rem;">
+                                    <tr>
+                                        <td valign="top" colspan="2" align="center">
+                                            <table border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                                                <tr>
+                                                    <td valign="top">
+                                                        <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                                            <tr>
+                                                                <td>
+                                                                    <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                                                        <tr>
+                                                                            <td valign="top" style="width:100%; text-align:end;"><img src='~/Content/Securitas_AB_logo.svg.png' style="width:5rem; margin-top:10px; margin-right:10px;"></td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="width:100%;"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@a.SubCheckName (@Doc.DocumentType)</p></td>
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td valign="top">
+                                                                    @{
+                                                                        FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                                        System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                                        if (image.Height > 600)
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" style="width: 100%!important; height:55rem!important;" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" style="width: 100%!important; height:55rem!important;" />
+                                                                        }
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" height="100">
+                                            <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                                <tr>
+                                                    <td colspan="3" style="border-top:3px solid #c0c0c0;">&nbsp;</td>
+                                                </tr>
+                                                <tr style="background-image: url('@Url.Content("~/Images/Footer-image-confident.jpg")'); background-repeat: no-repeat; background-size: cover;" >
+                                                    <td valign="bottom" width="20%"><img src="~/Images/Walsons-Report-footer.png" style="width:7rem; margin-left: 15px; margin-bottom: 15px;"></td>
+                                                    <td width="1%">&nbsp;</td>
+                                                    <td width="79%">
+                                                        <p style="font-size:16px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#000080; font-weight:500; text-align:center; margin:10px 0px 0px 0px;"><img src='@Url.Content("~/Images/StampSignatureUpdated.jpg")' width="60" height="60"></p>
+                                                        <p style="font-size:16px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#000080; font-weight:700; text-align:center; margin:15px 0px 0px 0px;">SECURITAS INDIA</p>
+                                                        <p style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#828484; text-align:center; margin:0px;">496, Udyog Vihar, Phase-3, Gurgaon-122016 &nbsp;&nbsp; Tel: + 91 124 4718888</p>
+                                                        <p style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin: 0px 0px 5px 0px;"><a href="http://www.securitas.in/" target="_blank">www.securitas.in</a>&nbsp;<span style="font-size:12px; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#3a00ff; text-align:center; margin:0px; padding-left:60px;"><a href="http://www.walsons.com/" target="_blank">www.walsons.com</a></span></p>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </page>
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+}

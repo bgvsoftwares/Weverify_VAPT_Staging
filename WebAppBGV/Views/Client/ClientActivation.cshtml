@@ -1,0 +1,186 @@
+﻿@model  ViewModels.ProvidedInfoViewModel.ClientsActivation
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ClientActivation</title>
+</head>
+<body>
+    <div>
+        <table width="100%">
+            <tr>
+                <td colspan="3">
+                    <h4>View Remark</h4>
+                    @if (ViewBag.SuccessMsg != null)
+                    {
+                        <div class="successmsg">@ViewBag.SuccessMsg.ToString()</div>
+                    }
+
+                    @if (ViewBag.ErrorMsg != null)
+                    {
+                        <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+                    }
+                    <hr />
+                </td>
+            </tr>
+        </table>
+        <div class="row">
+            <div class="col-md-12">
+                @using (Html.BeginForm("ClientActivation", "Client", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+                        <div class="form-group branch">
+                            @Html.LabelFor(model => model.ClientRowID, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                            <div class="col-md-8">
+                                @Html.DropDownListFor(model => model.ClientRowID,
+                     new SelectList(ViewBag.AllClientList, "ClientRowID", "ClientName"),
+                     "-- Select Client -- ",
+                     new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ClientRowID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group branch">
+                            <label class="col-md-2 control-label">Active Status : </label>
+                            <div class="col-md-3">
+                                @Html.DropDownListFor(model => model.ActiveStatus, new List<SelectListItem>
+                                    { new SelectListItem { Text = "-- Select --", Value = "0" },
+                                       new SelectListItem { Text = "Active", Value = "1" },
+                                        new SelectListItem { Text = "DeActive", Value = "2" }},
+                     new { @class = "form-control" })
+                            </div>
+                        </div>
+
+                        <div class="form-group branch">
+                            @Html.LabelFor(model => model.ApprovalMail, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                            <div class="col-md-3">
+                                @*@Html.TextBoxFor(model => model.ApprovalMail, new { type = "file" })*@
+                                @Html.TextBoxFor(model => model.ApprovalMail, new { @accept = "image/gif, image/jpeg, image/png, image/jpg", type = "file", multiple = "multiple" })
+                                @Html.ValidationMessageFor(model => model.ApprovalMail, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+
+                        <div class="form-group branch">
+                            @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                            <div class="col-md-8">
+                                @Html.TextAreaFor(T => T.Remark, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="all-button-bg">
+                            @*@Html.ActionLink("Back", "Index", "ProvidedInfo", null, new { @class = "btn bun-bg btn-default" })*@
+                            <input class="btn bun-bg btn-default" id="btnSubmit" type="submit" onclick="return validateForm()" name="submitButton" value="Submit" />
+                        </div>
+
+
+
+
+                    </div>
+
+
+                }
+
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('#ActiveStatus').change(function () {
+
+                if ($('#ClientRowID').val() == 0) {
+                    alert("Please Select Client Name");
+                    $('#ClientRowID').focus();
+                    return false;
+                }
+                var clientstatus = $('#ClientRowID option:selected').html();
+
+                var selectedText = $(this).find('option:selected').text();
+
+                if (clientstatus.indexOf('-' + selectedText) != -1) {
+                    alert('It is already in' + ' ' + selectedText + ' ' + 'state ');
+
+                    $('#ActiveStatus').val(0);
+                    return false;
+                }
+
+
+
+            });
+        });
+
+        function validateForm() {
+
+
+
+
+            if ($('#ClientRowID').val() == 0) {
+
+                alert("Please Select Client Name");
+                $('#ClientRowID').focus();
+                return false;
+            }
+
+            if ($('#ActiveStatus').val() == 0) {
+
+                $('#ActiveStatus').focus();
+                return false;
+            }
+
+            if ($("#ApprovalMail").val() == "") {
+                alert("Upload Approval Mail ducument");
+                $('#ApprovalMail').focus();
+                return false;
+            }
+           // var remark = $('#Remark').val().length;
+
+
+            if ($.trim($('#Remark').val()) == '') {
+                
+                alert("please fill Remark");
+                return false;
+            }
+            //if (remark===0) {
+            //    alert("please fill Remark");
+               
+            //    return false;
+            //}
+
+            var clientstatus = $('#ClientRowID option:selected').html();
+
+            var selectedText = $('#ActiveStatus option:selected').html();
+
+            if (clientstatus.indexOf('-' + selectedText) != -1) {
+                alert('It is already in' + ' ' + selectedText + ' ' + 'state ');
+                $('#ActiveStatus').val(0);
+                return false;
+            }
+            return true;
+
+        }
+    </script>
+
+
+}
+

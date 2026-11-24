@@ -1,0 +1,619 @@
+﻿
+@model dynamic
+@{
+    ViewBag.Title = "Selfie Capture";
+    Layout = "~/Areas/Candidate/Views/Shared/_Layout.cshtml";
+    string ClientRowId = Convert.ToString(Session["ClientRowID"]);
+    string CompanyRefNo = Convert.ToString(Session["CompanyRefNo"]);
+}
+@section LeftNavigation{ @Html.Partial("_NavLeftCandidateCaseInfoProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+@using (Html.BeginForm("AddlivenessInfo", "Account", FormMethod.Post, new { @onsubmit = "return validateForm()", @autocomplete = "off", @class = "sign-in-form index_form" }))
+{
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" id="PersonalRowId" value="@Model.PersonalRowId" />
+    <input type="hidden" id="SubCheckRowId" value="@Model.SubCheckRowId" />
+    <input type="hidden" id="CandidateName" value="@Model.CandidateName" />
+    <input type="hidden" id="RendomOTP" value="@Model.RendomOTP" />
+
+    <input type="hidden" id="LivenessWithAdharStatus" value="@Model.LivenessWithAdharStatus" />
+    <input type="hidden" id="Face_Match" />
+    <input type="hidden" id="Face_MatchStatus" />
+    <input type="file" id="videoFile" name="file" hidden />
+
+    <div class="face-match">
+
+        <div>
+            <div class="pro-tips">
+                <h3>Instructions</h3>
+                <ul>
+                    @if (Model.LivenessWithAdharStatus == 1)
+                    {
+                        <li>Click on UIDAI verification link.</li>
+                        <li>Authorize DigiLocker to access and retrieve your Aadhaar details</li>
+                        <li>Input your Aadhaar number to complete the verification request</li>
+                        <li>Once verified, proceed by clicking the camera icon to continue</li>
+                        <li>Ensure the proper position within the camera frame.</li>
+                        <li>Ensure the room has good lighting.</li>
+                        <li>Do not wear a mask or sunglasses</li>
+                        <li>Use the front camera of your device.</li>
+                        <li>When the video begins, speak the displayed numbers clearly within 10 seconds.</li>
+                    }
+                    else
+                    {
+                        <li>Ensure the proper position within the camera frame.</li>
+                        <li>Ensure the room has good lighting.</li>
+                        <li>Do not wear a mask or sunglasses.</li>
+                        <li>Use the front camera of your device.</li>
+                        <li>When the video begins, speak the displayed numbers clearly within 10 seconds.</li>
+                    }
+                </ul>
+                <div class="uploadfile">
+                    @if (Model.LivenessWithAdharStatus == 1)
+                    {
+                        <div class="d-flex gap-3 align-items-center">
+                            @*<label class="pt-3">Upload ID</label>*@
+                            <div class="col-md-12 mt-3 p-0">
+                                <a href="@Url.Action("DigilockerlinkGeneration", "Home", new { area = "Candidate",Pid=Model.PersonalRowId,Sid=Model.SubCheckRowId   })" class="GFG btn btn-primar"><span>UIDAI Verification via Digilocker – Click Here</span></a>
+                                @*<a href="https://myaadhaar.uidai.gov.in/genricDownloadAadhaar/en" target="_blank">Click here to Digilocker Link for UIDAI Verification</a>*@
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex gap-3 align-items-center">
+                            <label class="pt-3">Upload ID Exp.(VoterId,Aadhaar,PAN,DL{Ex. .jpg,.jpeg})</label>
+                        </div>
+                        <input type="file" id="idtype" name="idtype" accept=".jpg,.jpeg" />
+                    }
+
+                </div>
+            </div>
+
+            <div class="">
+
+              
+            </div>
+        </div>
+        <div class="camera-capture">
+
+            <!-- CAMERA ICON -->
+            <div id="camera-icon" style="cursor:pointer;">
+                <img src="~/Images/camera.png" />
+                <p style="margin:10px 0px 0px 20px;" class="GFG btn btn-primar">Click On Camera</p>
+            </div>
+
+            <!-- CAMERA STREAM -->
+            <div id="camera-container" style="display:none;">
+                <div id="statusId" style="display:none;">
+                    <div id="digitBox" class="digit-container"></div>
+                    <p id="status">Not recording</p>
+                    <p>⏱ Duration: <span id="counter">0</span> seconds</p>
+                </div>
+
+                <video id="video" autoplay playsinline></video>
+
+                <div id="Startbtn" style="cursor:pointer;background:#8D5FFF;color:#fff;padding:10px;text-align:center;">
+                    Start Recording
+                </div>
+
+                <div id="Stopbtn" style="cursor:pointer;background:#8D5FFF;color:#fff;padding:10px;text-align:center;display:none;">
+                    Stop Recording
+                </div>
+            </div>
+
+
+
+            <!-- PREVIEW -->
+            <div id="images-container">
+                <canvas id="canvas" width="350" height="350" style="display:none;"></canvas>
+
+                <div id="main_FaceMatchBox" style="display:none;">
+                    <video id="preview" controls></video>
+                </div>
+
+                <button id="Proceedbtn" type="button" style="display:none;background:#28a745;color:#fff;padding:10px;width:100%;margin-top:10px;">
+                    SUBMIT
+                </button>
+
+                <button id="refresh_page" type="button" style="display:none;background:#28a745;color:#fff;padding:10px;width:100%;margin-top:10px;">
+                    REUPLOAD
+                </button>
+            </div>
+
+            <!-- PRO TIPS -->
+
+        </div>
+    </div>
+    <div class="row row-sm justify-content-center mb-2">
+        @if (CompanyRefNo == "")
+        {
+            <div class="col-md-2">
+                <a href="@Url.Action("Digital_LOA","Home",new { area = "Candidate" })" class="GFG btn btn-primar"><span>Next</span></a>
+            </div>
+        }
+
+    </div>
+    <!-- SPINNER -->
+    <div id="Face_Matchspinner" class="overlay1">
+        <div class="popup-live" style="display:block !important;">
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border" role="status"></div>
+            </div>
+        </div>
+    </div>
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/assets/plugins/jquery/jquery.min.js"></script>
+<style>
+    .GFG {
+        background-color: #8D5FFF !important;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0px;
+        border: 1px solid #8D5FFF !important;
+        color: #FFF;
+        text-align: center;
+        display: inline-block;
+        font-size: 19px;
+        margin: 0px 0px;
+        cursor: pointer;
+        transition: all 0.5s;
+        width: 100%;
+        text-align: center;
+    }
+
+        .GFG:hover {
+            color: #000;
+            background: #FFF !important;
+        }
+
+        .GFG span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            transition: 0.5s;
+        }
+
+            .GFG span:after {
+                content: '\00bb';
+                position: absolute;
+                opacity: 0;
+                top: 0;
+                right: -20px;
+                transition: 0.5s;
+            }
+
+        .GFG:hover span {
+            padding-right: 15px;
+            color: #000;
+        }
+
+            .GFG:hover span:after {
+                opacity: 1;
+                right: 0;
+            }
+
+    .Instr_text {
+        white-space: break-spaces;
+        -webkit-box-flex: 1;
+        -ms-flex: 1 1 auto;
+        flex: 1 1 auto;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-align-items: center;
+        align-items: center;
+        color: #031F30 !important;
+        position: relative;
+        font-size: 13px;
+        line-height: 1.5;
+        vertical-align: middle;
+        font-weight: 400;
+        padding-left: 5px;
+    }
+
+    .Ins_img {
+        width: 27.5px;
+        height: 22px;
+    }
+
+    #camera-icon {
+        display: flex;
+        align-items:;
+        flex-direction: column;
+        gap: 25px;
+    }
+</style>
+
+
+<script>
+    $(document).ready(function () {
+
+        let stream;
+        let mediaRecorder;
+        let recordedChunks = [];
+        let blob;
+        let counterInterval;
+        let snapshotDataUrl;
+
+        // Open Camera
+        $("#camera-icon").click(async function () {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: "user",
+                        width: 720,
+                        height: 1280
+                    },
+                    audio: true
+                });
+
+                $("#video")[0].srcObject = stream;
+
+                mediaRecorder = new MediaRecorder(stream);
+
+                mediaRecorder.ondataavailable = e => {
+                    if (e.data.size > 0) recordedChunks.push(e.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    blob = new Blob(recordedChunks, { type: "video/webm" });
+                    let url = URL.createObjectURL(blob);
+                    $("#preview").attr("src", url);
+                    $("#Proceedbtn").show();
+                    $("#refresh_page").show();
+                    clearInterval(counterInterval);
+
+                    // Stop camera
+                    stream.getTracks().forEach(t => t.stop());
+                };
+
+                $('#camera-container').show();
+                $('#camera-icon').hide();
+                $("#Startbtn").show();
+
+            } catch (error) {
+                console.error("Camera error:", error);
+                alert("Camera access denied: " + error.message);
+            }
+        });
+
+        // Start Recording
+        $("#Startbtn").click(function () {
+            recordedChunks = [];
+            mediaRecorder.start();
+
+            $("#Startbtn").hide();
+            $("#Stopbtn").show();
+            $("#statusId").show();
+            $("#status").text("Recording...");
+
+            let count = 0;
+            $("#counter").text(count);
+
+            counterInterval = setInterval(() => {
+                count++;
+                $("#counter").text(count);
+            }, 1000);
+
+            let Randomcount = $("#RendomOTP").val();
+            showDigitsOneByOne(Randomcount);
+        });
+
+        // Stop Recording + Snapshot (single function reused)
+        function stopRecordingAndSnapshot() {
+            mediaRecorder.stop();
+
+            let canvas = $("#canvas")[0];
+            let ctx = canvas.getContext("2d");
+
+            ctx.save();
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(90 * Math.PI / 180);
+            ctx.drawImage($("#video")[0], -canvas.height / 2, -canvas.width / 2, canvas.height, canvas.width);
+            ctx.restore();
+
+            snapshotDataUrl = canvas.toDataURL("image/png");
+
+            $('#camera-container').hide();
+            $('#main_FaceMatchBox').show();
+            $("#Stopbtn").hide();
+        }
+
+        $("#Stopbtn").click(stopRecordingAndSnapshot);
+
+        function showDigitsOneByOne(number) {
+            let digits = number.toString().split("");
+            let index = 0;
+            let box = document.getElementById("digitBox");
+            box.innerHTML = "";
+
+            let interval = setInterval(() => {
+                if (index < digits.length) {
+                    let span = document.createElement("span");
+                    span.className = "digit";
+                    span.textContent = digits[index];
+                    box.appendChild(span);
+                    index++;
+                } else {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        stopRecordingAndSnapshot();
+                    }, 1000);
+                }
+            }, 2000);
+        }
+
+        // Upload Video + Image
+        $("#Proceedbtn").click(async function () {
+            $("#Face_Matchspinner").show();
+            try {
+                var pid = $('#PersonalRowId').val();
+                var Cname = $('#CandidateName').val();
+                var ROTP = $('#RendomOTP').val();
+                var livenessStatus = $('#LivenessWithAdharStatus').val();
+                if (livenessStatus === '1') {
+                 
+                        let formData = new FormData();
+                        let file = new File([blob], "capture.webm", { type: "video/webm" });
+
+                        formData.append("videoFile", file);
+                        formData.append("Pid", pid);
+                        formData.append("name", Cname);
+                        formData.append("otp", ROTP);
+                        $.ajax({
+                            url: '@Url.Action("SaveVideoWithDigilocker", "Home", new { area = "Candidate" })',
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (response) {
+                                if (response.success) {
+                                    alert("Video Saved Successfully and Liveness has been Successfully Complete");
+                                } else {
+                                    alert(response.message);
+                                }
+                                $("#Face_Matchspinner").hide();
+                            }
+                        });                   
+                }
+                else {
+                    if ($('#idtype').val()) {
+                        let formData = new FormData();
+                        let file = new File([blob], "capture.webm", { type: "video/webm" });
+
+                        formData.append("videoFile", file);
+                        formData.append("IdImage", $('#idtype')[0].files[0]);
+                        formData.append("Pid", pid);
+                        formData.append("name", Cname);
+                        formData.append("otp", ROTP);
+
+                        $.ajax({
+                            url: '@Url.Action("SaveVideo", "Home", new { area = "Candidate" })',
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (response) {
+                                if (response.success) {
+                                    alert("Video Saved Successfully and Liveness has been Successfully Complete");
+                                } else {
+                                    alert(response.message);
+                                }
+                                $("#Face_Matchspinner").hide();
+                            }
+                        });
+                    } else {
+                        $("#Face_Matchspinner").hide();
+                        alert("Please Upload Id File");
+                    }
+                }
+            } catch (err) {
+                $("#Face_Matchspinner").hide();
+                alert("Conversion failed: " + err.message);
+            }
+        });
+
+        $("#refresh_page").click(function () {
+            location.reload();
+        });
+
+    });
+</script>
+
+
+<style>
+    #video {
+        width: 300px; /* Equal width */
+        height: 300px; /* Equal height */
+        border-radius: 50%; /* Circle shape */
+        border: 5px solid #333; /* Frame border */
+        object-fit: cover; /* Crop video to fit circle */
+        overflow: hidden; /* Hide corners outside circle */
+    }
+
+    .main-sidebar-header-bottom {
+        position: absolute !important;
+    }
+
+    .uploadfile label {
+        font-size: 19px;
+        font-weight: 700;
+    }
+
+    .uploadfile input#idtype {
+        border: 1px solid #a13bbf;
+        padding: 9px;
+        border-radius: 4px;
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .face-match {
+        DISPLAY: flex;
+        GAP: 37PX;
+        ALIGN-ITEMS: START;
+        PADDING: 17PX 39px;
+    }
+
+    #camera-icon img {
+        width: 204px;
+    }
+
+    .camera-capture {
+        display: flex;
+        justify-content: start;
+        gap: 30px;
+        margin-top: 20px;
+        align-items: center;
+        flex-direction: row-reverse;
+        padding: 10px;
+    }
+
+    .pro-tips {
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+        color: #000;
+        padding: 11px;
+        border-radius: 10px;
+        height: max-content;
+        width: 412px;
+    }
+
+        .pro-tips ul li {
+            font-size: 12px;
+            font-weight: 300;
+            border-bottom: 1px solid #c7c7c7;
+            padding-bottom: 8px;
+            font-weight: 600;
+        }
+
+    .message {
+        display: none;
+    }
+
+    @@media(max-width:768px) {
+        .camera-capture {
+            flex-direction: column;
+            padding: 10px;
+        }
+
+        .pro-tips {
+            margin-top: 15px;
+        }
+
+        #camera-container {
+            justify-content: center;
+        }
+    }
+
+    a#UserLogo {
+        margin-left: 83px;
+    }
+
+    .modal-content {
+        border: none !important;
+    }
+
+    .modal-dialog-centered::before {
+        display: none !important;
+    }
+
+    .spinner-border {
+        width: 12rem !important;
+        height: 12rem !important;
+        border: .25em solid rgb(251 252 255) !important;
+        border-right-color: transparent !important;
+    }
+
+    .modal-header {
+        border-bottom: unset !important;
+    }
+
+    .modal-content {
+        background-color: none !important;
+    }
+
+    .overlay1 {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        z-index: 9999;
+    }
+
+    .popup-live {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: unset;
+        padding: 20px;
+        border-radius: 8px;
+    }
+
+    /* Portrait camera rotation */
+    #video, #preview {
+        transform: rotate(0deg);
+        width: 350px;
+        height: 350px;
+        object-fit: cover;
+    }
+
+    .digit-container {
+        text-align: center;
+        font-size: 48px;
+        font-weight: bold;
+        letter-spacing: 15px;
+        display: flex;
+    }
+
+    .digit {
+        opacity: 0;
+        animation: fadeIn 0.3s forwards;
+    }
+    #Startbtn{
+        width:150px;
+    }
+    #camera-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .GFG, #Startbtn, .btn {
+        border-radius: 8px;
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    }
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+
+    @@media(max-width:543px) {
+        .pro-tips {
+            width: 318px;
+        }
+
+        .face-match {
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        #video, #preview {
+            height: 283px;
+        }
+        }
+</style>

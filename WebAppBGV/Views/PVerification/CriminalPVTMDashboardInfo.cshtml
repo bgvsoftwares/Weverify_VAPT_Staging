@@ -1,0 +1,227 @@
+﻿
+@{
+    ViewBag.Title = "Manager PV Allocation To TeamLeader";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "PVerification", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+@{
+    string tatdays1 = "";
+    string CheckStatus1 = "";
+    string AllocatedToTL1 = "";
+    if (Request.QueryString["tatdays"] != null)
+    {
+        tatdays1 = Request.QueryString["tatdays"].ToString();
+    }
+
+    if (Request.QueryString["AllocatedToTL"] != null)
+    {
+        AllocatedToTL1 = Request.QueryString["AllocatedToTL"].ToString();
+    }
+    if (Request.QueryString["CheckStatus"] != null)
+    {
+        CheckStatus1 = @Request.QueryString["CheckStatus"].ToString();
+    }
+    //string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    //string hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportEmploymentPV", "PVerification", new { CheckStatus = CheckStatus1, tatdays = tatdays1, AllocatedToTL = AllocatedToTL1 }, new { @class = "btn bun-bg btn-default" }).ToString();
+    //ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+}
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("CriminalPVTMDashboardInfo", "PVerification", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch search-frame">
+                                    <label class="col-md-2 control-label">Client Name :</label>
+                                    <div class="col-md-8">
+                                        @Html.DropDownList("ClientRowID",
+                                    new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                                    "-- Select Client -- ",
+                                    new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch search-frame">
+                                    <label class="col-md-2 control-label">Keyword :</label>
+                                    <div class="col-md-8">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, Ref No..." })
+                                    </div>
+                                </div>
+                                <div class="form-group branch search-frame">
+                                    <label class="col-md-2 control-label">Recieving From Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("RecievingfromDate", null, new { @class = "form-control", @id = "RecievingToDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Recieving To Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("RecievingToDate", null, new { @class = "form-control", @id = "RecievingFromDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch search-frame">
+                                    <label class="col-md-2 control-label">Completed From Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("CompletedFromDate", null, new { @class = "form-control", @id = "CompletedToDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Completed To Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("CompletedToDate", null, new { @class = "form-control", @id = "CompletedFromDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch search-frame">
+                                    <label class="col-md-2 control-label">CheckStatus :</label>
+                                    <div class="col-md-3">
+                                        @Html.DropDownList("DCheckStatus",
+                                    new SelectList(ViewBag.CheckStatusOptionList, "Value", "Text"),
+                                    "-- Select Check -- ",
+                                    new { @class = "form-control" })
+                                    </div>
+                                    <label class="col-md-2 control-label">Case Status :</label>
+                                    <div class="col-md-3">
+                                        @Html.DropDownList("CaseStatus",
+                                    new SelectList(ViewBag.CaseStatusOptionList, "Value", "Text"),
+                                    "-- Select Case -- ",
+                                    new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                @{
+                                    if (Request.QueryString["CheckStatus"] != null)
+                                    {
+                                        @Html.Hidden("CheckStatus", Request.QueryString["CheckStatus"].ToString())
+                                    }
+
+                                    if (Request.QueryString["tatdays"] != null)
+                                    {
+                                        @Html.Hidden("tatdays", Request.QueryString["tatdays"].ToString())
+                                    }
+
+                                    if (Request.QueryString["AllocatedToTL"] != null)
+                                    {
+                                        @Html.Hidden("AllocatedToTL", Request.QueryString["AllocatedToTL"].ToString())
+                                    }
+                                }
+                                <div class="all-button-bg">
+                                    <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                                </div>
+                            </div>
+                                    }
+                    </div>
+                </div>
+                @if (Model != null && Model.PQVerificationInfo != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12">
+                            @{
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.PQVerificationInfo, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                                @grid.GetHtml(
+                                htmlAttributes: new { id = "grid", @class = "table" },
+                                headerStyle: "thead-inverse",
+                                rowStyle: "ordertxt",
+                                footerStyle: "custpaging",
+                                mode: WebGridPagerModes.All,
+                                columns: new[]
+                                {
+                                 grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"col-md-1"),
+                                grid.Column(header : "Securitas ID", format : (item) => {
+                                string SecuritasID=item.CompanyRefNo;                                   
+                                var link = Html.ActionLink(SecuritasID, "UpdateCriminalInfoByPVTeamMember", "PVerification", new { id = item.VerificationRowID,CheckStatusid=item.CheckStatusid }, new { @class="edit" });
+                                return link;
+                                }, style:"col-md-1"),
+                                grid.Column(columnName: "PersonalName", header: "Candidate Name", canSort: false, style:"col-md-1"),
+                                grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"col-md-1"),
+                                grid.Column("Ageing", format: (item) => item.InternalOutDate != null ? (item.InternalOutDate - DateTime.Now).Days : "", canSort: false,style:""),
+                                grid.Column("InternalOutDate", "TAT", format: (item) => item.InternalOutDate != DateTime.MinValue ? item.InternalOutDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"col-md-1"),
+                                grid.Column(columnName: "SecuritasSPOC", header: "SPOC", canSort: false, style:"col-md-2"),
+                                grid.Column(header: "Action", format: (item) =>
+                                {
+                                var link = Html.ActionLink("History", "CheckActionHistory", "Verification", new { scid = item.SubCheckRowID, pe = item.PersonalRowID }, new { @class = "iframeActionHistories cboxElement callbacks" });
+                                return link;
+                                }, style: "edit "),
+                                grid.Column(columnName: "CheckStatus", header: "Status", canSort: false, style: "col-md-1"),
+                                     }
+                                     )
+
+                                <div class="total-record">Total Records: @Model.TotalRecords</div>
+                            }
+                        </div>
+                    </div>
+                                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+            
+            $('#RecievingToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#RecievingFromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedFromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+        });
+
+        function AllocatebtnShow() {
+            $("#btnAllocation").attr("disabled", false);
+            $("#AllocateTL").attr("disabled", false);
+        }        
+           
+        function validateForm() {
+            if ($("#AllocateTL").val() == 0) {
+                alert("Select Team Leader For Allocate.");
+                return false;
+            }
+
+            var count = 0;
+            $('input[class="verificationId"]').each(function (index, value) {
+                if (this.checked) { count += 1; }
+            });
+
+            if (count == 0) {
+                alert("Please select atleast one case.");
+                return false;
+            }
+            return true;
+        }
+
+    </script>
+}

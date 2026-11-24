@@ -1,0 +1,1180 @@
+﻿@model dynamic
+@{
+    string Department = Convert.ToString(Session["Department"]);
+    ViewBag.Title = "Add Address Info (" + Convert.ToString(Session["CandidateName"]) + ")";
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = string.Empty;
+    if (Request.QueryString["window"] == "TLDE")
+    {
+        hyperLink = Html.ActionLink("linkTitle", "ManageCandidateChecksForReportQCTM", "ProvidedInfo", new { PersonalRowID = @ViewBag.PersonalRowid, dispFor = "TeamMember" }, new { @class = "headerbacklink" }).ToString();
+        ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    }
+
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+    //string countryid = "";
+    string StateId = "";
+    string CityId = "";
+    string CheckStatusId = "";
+
+    PersonalRowid = @ViewBag.PersonalRowid;
+    SubCheckId = @ViewBag.SubCheckId;
+    clientRowId = @ViewBag.clientRowId;
+
+    //countryid = @ViewBag.countryid;
+    StateId = @ViewBag.stateId != null ? @ViewBag.stateId  : "" ;
+    CityId = @ViewBag.Cityid != null ? @ViewBag.Cityid  : "";
+
+    //string CountryName = "";
+    //CountryName = @ViewBag.CountryName.Trim();
+    CheckStatusId = @ViewBag.checkstatusid;
+
+
+
+
+}
+@{
+    string CountryName = "";
+    if (@ViewBag.CountryName != null)
+    {
+        CountryName = @ViewBag.CountryName.Trim();
+    }
+    else
+    {
+        CountryName = "";
+    }
+
+    string countryid = "";
+    if (@ViewBag.CountryName != null)
+    {
+        countryid = @ViewBag.countryid.Trim();
+    }
+    else
+    {
+        countryid = "";
+    }
+    string StateName = "";
+    if (@ViewBag.StateName != null)
+    {
+        StateName = @ViewBag.StateName.Trim();
+
+    }
+    else
+    {
+        StateName = "";
+    }
+
+
+    string CityName = "";
+    if (@ViewBag.CityName != null)
+    {
+        CityName = @ViewBag.CityName.Trim();
+
+    }
+    else
+    {
+        CityName = "";
+    }
+
+
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftDataEntryProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+@if (ViewBag.ErrorMsg != null)
+{
+    <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+}
+
+<div class="container">
+    @using (Html.BeginForm("AddAddressInfo", "ProvidedInfo", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+        @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+        <input id="SubCheckId" type="hidden" value=@SubCheckId>
+        @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+        <input id="clientRowId" type="hidden" value=@clientRowId>
+        @Html.Hidden("clientRowId", clientRowId.ToString())
+
+        <input id="Hfcountryid" type="hidden" value=@countryid>
+        @Html.Hidden("Hfcountryid", countryid.ToString())
+
+        <input id="HfStateId" type="hidden" value=@StateId>
+        @Html.Hidden("HfStateId", StateId.ToString())
+
+        <input id="HfCityId" type="hidden" value=@CityId>
+        @Html.Hidden("HfCityId", CityId.ToString())
+
+        <input id="HfCountryName" type="hidden" value=@CountryName>
+
+        <input id="HfStateName" type="hidden" value=@StateName>
+
+        <input id="HfCityName" type="hidden" value=@CityName>
+
+        @Html.ValidationSummary()
+        @Html.Partial("_PersonalDetails")
+        @Html.Partial("_UploadedDocumentList")
+        @Html.Partial("_CaseDocumentList")
+        @Html.Partial("_ClientSpecialInstructionsDE")
+        //
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-2 col-md-2 col-sm-12">
+                    <label>Copy Paste Text</label>
+                </div>
+                <div class="col-lg-7 col-md-7 col-sm-12">
+                    <textarea class="form-control" id="CopyPaste_Text"></textarea>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-12">
+                    <input type="button" class="btn" value="Paste" id="btnCopyPaste" onclick="CopyPasteText()" style="border:1px solid #11c9b7; color: #FFF; background: #11c9b7;" />
+                </div>
+            </div>
+        </div>
+        //
+        //
+        //if (clientRowId != "1255")
+        //{
+            <div class="row row-sm p-2 mt-2 ms-5" id="NADiv" style="background:#11c9b7; margin:5px 20px 5px 20px;padding: 3px 0px;">
+                <div class="col-md-12 d-flex pr-0">
+                    @Html.CheckBox("Notraised", false, new { onchange = "NotRaised(this)", @class = "form-check-input", @style = "height: 20px;width:20px;margin: 0px 5px;" })<b style="color:white;padding-left:30px;font-size:1.3rem;">Not Applicable</b>
+                </div>
+            </div>
+      //  }
+
+        //
+        <div class="container" id="container">
+            <div class="container-fluid mb-2 p-0" id="top_div">
+                @foreach (var category in Model)
+                {
+                    <div class="row row-sm mt-3">
+                        @{
+                            string[] nm = category.Key.Split('_');
+
+                            if (@nm[2] == "textbox")
+                            {
+                                <div class="col-md-6 col-sm-6">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <span> @nm[4] </span>
+                                    @if (@Session["ClientRowID"].ToString() == "990" && @nm[0] == "36")
+                                    {
+                                        if (ViewBag.SubCheckId.ToString() == "2" || ViewBag.SubCheckId.ToString() == "4" || ViewBag.SubCheckId.ToString() == "5" || ViewBag.SubCheckId.ToString() == "6" || ViewBag.SubCheckId.ToString() == "7" || ViewBag.SubCheckId.ToString() == "13" || ViewBag.SubCheckId.ToString() == "23" || ViewBag.SubCheckId.ToString() == "24" || ViewBag.SubCheckId.ToString() == "25" || ViewBag.SubCheckId.ToString() == "26" || ViewBag.SubCheckId.ToString() == "27" || ViewBag.SubCheckId.ToString() == "30" || ViewBag.SubCheckId.ToString() == "315" || ViewBag.SubCheckId.ToString() == "373" || ViewBag.SubCheckId.ToString() == "374" || ViewBag.SubCheckId.ToString() == "399")
+                                        {
+                                            <p style="color:red">POS / Duration of Stay  Date format should be DD-MMM-YYYY ( Eg. 02-Jan-2002 To 21-Mar-2024 )</p>
+                                        }
+                                    }
+                                    <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                </div>
+                            }
+                            if (@nm[2] == "dropdown")
+                            {
+                                <div class="col-md-6 col-sm-6">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <span> @nm[4] </span>
+                                    @{
+                                        string[] nmOption = nm[7].Split(',');
+                                    }
+                                    @if (@nm[0] == "591")
+                                    {
+                                        <input type="text" class="form-control" value="@category.Value" readonly />
+                                    }
+                                    else
+                                    {
+                                        <select name=@nm[0] id=@nm[0]>
+                                            @for (int i = 0; i < nmOption.Length; i++)
+                                            {
+                                                if (@nmOption[i].Trim() == @nm[6])
+                                                {
+                                                    <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                                }
+                                                if (@nmOption[i].Trim() != @nm[6])
+                                                {
+                                                    <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                                }
+                                            }
+                                        </select>
+                                        @Html.Hidden("HfCountryName")
+                                        @Html.Hidden("HfStateName")
+                                        @Html.Hidden("HfCityName")
+                                    }
+                                </div>
+                            }
+                            if (@nm[2] == "checkbox")
+                            {
+                                <div class="col-md-6 col-sm-6">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <span> @nm[4] </span>
+                                    @{
+                                        if (@nm[6] == "TRUE")
+                                        {
+                                            <input type="checkbox" id=@nm[0] name=@nm[0] value="checked" checked>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id=@nm[0] name=@nm[0] value=@nm[0]>
+                                        }
+                                    }
+                                </div>
+                            }
+                            if (@nm[2] == "fileUpload")
+                            {
+                                <div class="col-md-6 col-sm-6">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <span> @nm[4] </span>
+                                    <input type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col-md-6 col-sm-6">
+                        @Html.Label("Check Status", htmlAttributes: new { @class = " control-label text-right" })
+                    </div>
+                    @if (@ViewBag.clientRowId == "990")
+                    {
+                        <div class="col-md-6 col-sm-6">
+                            @Html.DropDownList("CheckStatus", new List<SelectListItem>
+                   { new SelectListItem{Text="Completed", Value="Completed"},
+                     new SelectListItem{Text="Insufficent", Value="Insufficent"},
+                     new SelectListItem{Text="Rejected", Value="Rejected"},
+                     new SelectListItem{Text="Review Requested", Value="Review Requested"},
+                     new SelectListItem { Text = "WIP-Pending", Value = "WIP-Pending" } },
+                                                new { @class = "checkStatus", @id = "CheckStatus" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-6 col-sm-6">
+                            @Html.DropDownList("CheckStatus", new List<SelectListItem>
+               { new SelectListItem{Text="Completed", Value="Completed"},
+                 new SelectListItem{Text="Insufficent", Value="Insufficent"},
+                 new SelectListItem{Text="Rejected", Value="Rejected"},
+                 new SelectListItem{Text="Review Requested", Value="Review Requested"},
+                 new SelectListItem { Text = "WIP-Pending", Value = "WIP-Pending" },
+                 new SelectListItem { Text = "Not Applicable", Value = "Not Applicable" }},
+                                                                                    new { @class = "checkStatus", @id = "CheckStatus" })
+                        </div>
+                    }
+                </div>
+
+                @*//////////////////////////////////*@
+
+                <div class="row">
+                    <div class="col-md-6 col-sm-6">Check</div>
+                    <div class="col-md-6 col-sm-6">
+                        <select name="CheckRemarks" id="datalist"></select>
+                    </div>
+                </div>
+
+                @* ///////////////////////////////// *@
+                <div class="row">
+                    <div class="col-md-6 col-sm-6">
+                        @Html.Label("INFRemarks", htmlAttributes: new { @class = "control-label" })
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                        @Html.TextArea("INFRemarks", new { @class = "form-control", @rows = "2", @disabled = "disabled" })
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    @if (CheckStatusId != "1")
+                    {
+
+                        <input id="WithQcval" name="WithQcval" value="" hidden />
+                        <div class="col-md-12" style="text-align:center; justify-content:center;display:flex; margin-top:10px;">
+                            <input type="submit" class="btn" value="Submit" style="width:15rem!important;  border-radius:.90rem; font-size:1.6rem!important;" onclick="validateForm()" />
+                            <div class="w-100 d-flex justify-content-end">
+                                <input class="btn" type="submit" id="SubmitWithQC" style="width: 19rem !important; margin-left: 15PX; border-radius: .90rem; font-size: 1.6rem !important" value="SubmitWithQC" onclick="validateFormWithQc()" disabled />
+                            </div>
+                        </div>
+
+                      
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script>
+        $(document).ready(function () {
+             if ('@TempData["MessageRejection"]' != '') {
+                 Swal.fire({
+                     icon: 'info',
+                     title: 'Rejection Reason',
+                     html: '<div class="errormsg" style="text-align:center;">@TempData["MessageRejection"].ToString()</div>'
+                 });
+             }
+        });
+
+        function showPicture(url) {
+            var sourceOfPicture = url + '?embedded = true';
+            var exe = getExtension(url);
+            //var url1 = Url.Content(url);
+            if (exe = 'pdf') {
+                var img = document.getElementById('bigpdf');
+                img.src = sourceOfPicture.replace('90x90', '225x225');
+                img.style.display = "block";
+            }
+            else {
+                var img = document.getElementById('bigpic')
+                img.src = sourceOfPicture.replace('90x90', '225x225');
+                img.style.display = "block";
+            }
+
+        }
+        function getExtension(path) {
+            var basename = path.split(/[\\/]/).pop(),  // extract file name from full path ...
+                // (supports `\\` and `/` separators)
+                pos = basename.lastIndexOf(".");       // get last position of `.`
+
+            if (basename === "" || pos < 1)            // if file name is empty or ...
+                return "";                             //  `.` not found (-1) or comes first (0)
+
+            return basename.slice(pos + 1);            // extract extension ignoring `.`
+        }
+
+
+    </script>
+    <script>
+        $('#CheckStatus').change(function () {
+            debugger
+            $("#datalist").empty();
+            var Curlist = $("#CheckStatus").val();
+
+            if (Curlist == "Insufficent") {
+                $('#vs').css('display', 'flex');
+                var url = "/ProvidedInfo/GetCandidatesRemarks/"
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    //dataType: 'json',
+                    success: function (data) {
+                        //$('#vs').css('display', 'flex');
+                        var items = '<option>--Select Team--</option>';
+                        $.each(data, function (Remarks, val) {
+                            items += "<option value='" + val.Remarks + "'>" + val.Remarks + "</option>";
+                        });
+                        items += '<option>Other</option>';
+                        $("#datalist").append(items);
+                    }
+                });
+
+            }
+            else {
+                $('#vs').css('display', 'none');
+            }
+
+            if ($("#CheckStatus").val() == "Completed") {
+                $("#SubmitWithQC").prop("disabled", false);
+
+            } else {
+                $("#SubmitWithQC").prop("disabled", true);
+            }
+
+        });
+    </script>
+    <script>
+        $('#datalist').change(function () {
+            if ($('#datalist').val() == 'Other') {
+                $('#INFRemarks').val('')
+                document.getElementById("INFRemarks").placeholder = "Write Other Remarks...";
+            }
+            else { $('#INFRemarks').val($('#datalist').val()); }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected" || $("#CheckStatus").val() == "Review Requested") {
+                $("#INFRemarks").prop("disabled", false);
+            }
+            else {
+                $("#INFRemarks").prop("disabled", true);
+            }
+
+            if ($("#CheckStatus").val() == "Completed") {
+                $("#SubmitWithQC").prop("disabled", false);
+
+            } else {
+                $("#SubmitWithQC").prop("disabled", true);
+            }
+
+             var CountryName = '@(ViewBag.CountryName)';
+            var StateName = '@(ViewBag.StateName)';
+            var CityName = '@(ViewBag.CityName)';
+
+            var Countryid = '@(ViewBag.countryid)';
+            var Stateid = '@(ViewBag.StateId)';
+            var Cityid = '@(ViewBag.CityId)';
+
+            if ($('#34').val() != null) {
+
+                $.getJSON('/Master/BindCountry/', function (data) {
+                    var items = '<option value="">-- Select Country --</option>';
+                    $.each(data, function (i, countries) {
+                        items += "<option value='" + countries.Value + "'>" + countries.Text + "</option>";
+                    });
+                    $('#34').html(items);
+                    $("#34 option").filter(function () {
+                        return this.text == CountryName;
+                    }).attr('selected', true);
+                    //$('#34').val($('#hdnAV_State').val());
+                    //$('#AV_District').val('');
+                    //$('#AV_City').val('');
+                    //$('#AV_Pincode').val('');
+
+                });
+            }
+
+            if (StateName != null) {
+                $.getJSON('/Master/BindState/' + Countryid, function (data) {
+                    var items = '<option value="">-- Select State --</option>';
+                    $.each(data, function (i, States) {
+                        items += "<option value='" + States.Value + "'>" + States.Text + "</option>";
+                    });
+                    $('#44').html(items);
+                    //$('#44').val($('#HfStateId').val());
+                    $("#44 option").filter(function () {
+                        return this.text == StateName;
+                    }).attr('selected', true);
+                    //$('#AV_District').val('');
+                    //$('#AV_City').val('');
+                    //$('#AV_Pincode').val('');
+                });
+            }
+
+            if (CityName != null) {
+                $.getJSON('/Master/BindDistrict/' + Stateid, function (data) {
+                    var items = '<option value="">-- Select District --</option>';
+                    $.each(data, function (i, Districts) {
+                        items += "<option value='" + Districts.Value + "'>" + Districts.Text + "</option>";
+                    });
+                    $('#32').html(items);
+                    //$('#32').val($('#HfCityId').val());
+                    $("#32 option").filter(function () {
+                        return this.text == CityName;
+                    }).attr('selected', true);
+                    //$('#AV_District').val('');
+                    //$('#AV_City').val('');
+                    //$('#AV_Pincode').val('');
+                });
+            }
+
+
+            if ($('#hdnAV_Country').val() != null) {
+                $.getJSON('/Master/BindState/' + $('#hdnAV_Country').val(), function (data) {
+                    var items = '<option value="">-- Select State --</option>';
+                    $.each(data, function (i, States) {
+                        items += "<option value='" + States.Value + "'>" + States.Text + "</option>";
+                    });
+                    $('#AV_State').html(items);
+                    $('#AV_State').val($('#hdnAV_State').val());
+                    //$('#AV_District').val('');
+                    //$('#AV_City').val('');
+                    //$('#AV_Pincode').val('');
+                });
+            }
+
+            //Bind District base on StateRowID
+            if ($('#hdnAV_State').val() != null) {
+                $.getJSON('/Master/BindDistrict/' + $('#hdnAV_State').val(), function (data) {
+                    var items = '<option value="">-- Select District --</option>';
+                    $.each(data, function (i, Districts) {
+                        items += "<option value='" + Districts.Value + "'>" + Districts.Text + "</option>";
+                    });
+                    $('#AV_District').html(items);
+                    $('#AV_District').val($('#hdnAV_District').val());
+                });
+            }
+
+            //Bind Location base on DistrictRowID
+            if ($('#hdnAV_District').val() != null) {
+                $.getJSON('/Master/BindLocation/' + $('#hdnAV_District').val(), function (data) {
+                    var items = '<option value="">-- Select City --</option>';
+                    $.each(data, function (i, Cities) {
+                        items += "<option value='" + Cities.Value + "'>" + Cities.Text + "</option>";
+                    });
+                    $('#AV_City').html(items);
+                    $('#AV_City').val($('#hdnAV_City').val());
+                    //$('#AV_Pincode').val('');
+                });
+            }
+
+            //PinCode Bind
+            if ($("#hdnAV_City").val() == null) {
+                var url = "/Master/GetPinCodeByLocationId/" + $("#hdnAV_City").val();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+                    success: function (pinCode) {
+                        $('#AV_Pincode').val(pinCode);
+                        //$('#AV_Pincode').val($('#hdnAV_Pincode').val());
+                    }
+                });
+            }
+
+            // add calender for valuemomentum
+            var id = $("#clientRowId").val();
+            if (id == 1680) {
+                $("#619").attr("placeholder", "DD-MM-YYYY");
+                $("#619").datepicker({
+                    dateFormat: 'MM-yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: 'c-100:c+100',
+                    startDate: new Date(),
+                    maxDate: 0,
+                    autoclose: true,
+                    onSelect: function () {
+                        updateDurationStay();
+                    }
+                });
+                $("#618").attr("placeholder", "DD-MM-YYYY");
+                $("#618").datepicker({
+                    dateFormat: 'MM-yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: 'c-100:c+100',
+                    startDate: new Date(),
+                    maxDate: 0,
+                    autoclose: true,
+                    onSelect: function () {
+                        updateDurationStay();
+                    }
+                });
+
+                function updateDurationStay() {
+                    var fromVal = $("#619").val();
+                    var toVal = $("#618").val();
+
+                    if (fromVal && toVal) {
+                        $("#36").val(fromVal + " to " + toVal);
+                    }
+                }
+            }
+
+            if (id == 446) {
+                $("#282").attr("placeholder", "MM-YYYY");
+                $("#282").datepicker({
+                    dateFormat: 'M-yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: 'c-100:c+100',
+                    startDate: new Date(),
+                    maxDate: 0,
+                    autoclose: true
+                });   
+
+                $("#36").attr("placeholder", "MM-YYYY");
+                $("#36").datepicker({
+                    dateFormat: 'M-yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: 'c-100:c+100',
+                    startDate: new Date(),
+                    maxDate: 0,
+                    autoclose: true
+                });  
+            }
+
+            if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected" || $("#CheckStatus").val() == "Review Requested") {
+                $("#INFRemarks").prop("disabled", false);
+            }
+            else {
+                $("#INFRemarks").prop("disabled", true);
+            }
+        });
+
+        $(function () {
+
+            //Bind State base on CountryRowID
+            $('#34').change(function () {
+                $.getJSON('/Master/BindState/' + $('#34').val(), function (data) {
+                    var items = '<option value="">-- Select State --</option>';
+                    $.each(data, function (i, States) {
+                        items += "<option value='" + States.Value + "'>" + States.Text + "</option>";
+                    });
+                    $('#44').html(items);
+                    $('#HfCountryName').val($('#34 option:selected').html());
+
+                    //$('#AV_District').val('');
+                    //$('#AV_City').val('');
+                    //$('#AV_Pincode').val('');
+                });
+            });
+
+            //Bind District base on StateRowID
+            $('#44').change(function () {
+                $.getJSON('/Master/BindDistrict/' + $('#44').val(), function (data) {
+                    var items = '<option value="">-- Select District --</option>';
+                    $.each(data, function (i, Districts) {
+                        items += "<option value='" + Districts.Value + "'>" + Districts.Text + "</option>";
+                    });
+                    $('#32').html(items);
+                    $('#HfStateName').val($('#44 option:selected').html());
+
+
+                });
+            });
+
+            $('#32').change(function () {
+
+                $('#HfCityName').val($('#32 option:selected').html());
+
+            });
+
+
+
+
+            $("#CheckStatus").change(function () {
+                if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected" || $("#CheckStatus").val() == "Review Requested") {
+                    $("#INFRemarks").prop("disabled", false);
+                    $('#INFRemarks').focus();
+                }
+                else {
+                    $("#INFRemarks").prop("disabled", true);
+                }
+            });
+        });
+
+        function validateForm() {
+            if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected") {
+                if ($("#INFRemarks").val().trim() == '') {
+                    alert("Please mention the reason!");
+                    $('#INFRemarks').focus();
+                    event.preventDefault();
+                    return false;
+                }
+                else
+                {
+                    const infRemarks = $("#INFRemarks").val().trim();
+                    if (infRemarks.length < 15) {
+                        alert("Please provide a reason that is at least 15 characters long!");
+                        $('#INFRemarks').focus();
+                        event.preventDefault();
+                        return false;
+                    }
+                    return true;
+                }
+            }
+        }
+
+        function validateFormWithQc() {
+            $('#WithQcval').val('SubmitWithQCApprove')
+            return true;
+        }
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input[type=datetime]').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: "-66:+10",
+                //onClose: function (dateText, inst) {
+                //    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
+                //}
+            });
+        });
+        $(document).ready(function () {
+            $("#618").on("input", function () {
+                var toDate = $("#618").val();
+                var fromDate = $("#619").val();
+
+                var formattedToDate = formatIfValid(toDate);
+                var formattedFromDate = formatIfValid(fromDate);
+
+                if (fromDate && toDate) {
+                    $("#36").val(formattedFromDate + " To " + formattedToDate);
+                } else {
+                    $("#36").val("");
+                }
+            });
+
+            function formatIfValid(date) {
+                if (/^\d{2}-\d{2}-\d{4}$/.test(date)) {
+                    var parts = date.split("-");
+                    var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                    var monthIndex = parseInt(parts[1], 10) - 1; // Convert month to zero-based index
+                    return parts[0] + "-" + monthNames[monthIndex] + "-" + parts[2];
+                }
+                return date;
+            }
+        });
+
+
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            function checkConditions() {
+                var Pincode = $('#42').val();
+                if (Pincode.length == 6) {
+                    var url = "/ProvidedInfo/GetLocationByPincode?Pincode=" + Pincode.trim();
+                    $.ajax({
+                        type: 'GET',
+                        url: url,
+                        async: false,
+                        dataType: 'json',
+                        success: function (data) {
+                            debugger
+                            // Clear the select tag before appending new options
+                            if (data.DistrictName != null || data.StateName != null || data.CountryName != null) {
+                                $('#32').empty();
+                                $('#44').empty();
+                                $('#34').empty();
+                                // Append options to the select tag
+                                $('#32').append("<option value='" + data.DistrictRowID + "'>" + data.DistrictName + "</option>");
+                                $('#44').append("<option value='" + data.StateRowID + "'>" + data.StateName + "</option>");
+                                $('#34').append("<option value='" + data.CountryRowID + "'>" + data.CountryName + "</option>");
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            //console.error(xhr, status, error);
+                        }
+                    });
+                }
+            }
+            // Check conditions on page load
+            checkConditions();
+            // Check conditions on input
+            $('#42').on('input', function () {
+                checkConditions();
+            });
+        });
+    </script>
+
+    <script>
+        function NotRaised(element) {
+            if ($('#Notraised').is(':checked')) {
+                $("#382").attr('checked', true);
+                $("#27").val('Not Applicable');
+                $("#36").val('Not Applicable');
+                $("#40").val('Not Applicable');
+                $("#42").val('Not Applicable');
+                $("#132").val('Not Applicable');
+                $("#504").val('Not Applicable');
+                $("#CheckStatus").val('Not Applicable');
+            }
+            else {
+                $("#382").attr('checked', false);
+                $("#27").val('');
+                $("#36").val('');
+                $("#40").val('');
+                $("#42").val('');
+                $("#132").val('');
+                $("#504").val('');
+                $("#CheckStatus").val('');
+
+            }
+
+        }
+    </script>
+    <script>
+        $(".docShow").click(function () {
+            $("#top_div").addClass("topdiv");
+            $("#bottom_div").addClass("bottomdiv");
+        });
+    </script>
+
+
+    <script>
+        function CopyPasteText() {
+            var CopyPaste_Text = $('#CopyPaste_Text').val().replace(/[\n\r]+/g, "•");;
+            if (CopyPaste_Text != '') {
+                var url = "/ProvidedInfo/GetCopyPasteText?CheckId=Address&Copytext=" + CopyPaste_Text;
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    async: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.DistrictName != null) {
+                            $('#32').empty();
+                            $('#32').append("<option value='" + data.DistrictRowID + "'>" + data.DistrictName + "</option>");
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '32',
+                                    Value: data.DistrictName,
+                                    CheckFamilyRowid: 2
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+
+
+                        }
+                        if (data.StateName != null) {
+                            $('#44').empty();
+                            $('#44').append("<option value='" + data.StateRowID + "'>" + data.StateName + "</option>");
+
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '44',
+                                    Value: data.StateName,
+                                    CheckFamilyRowid: 2
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+
+
+
+                        }
+                        if (data.CountryName != null) {
+                            $('#34').empty();
+                            $('#34').append("<option value='" + data.CountryRowID + "'>" + data.CountryName + "</option>");
+
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '34',
+                                    Value: data.CountryName,
+                                    CheckFamilyRowid: 2
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+                        }
+                        if (data.AddressLine1 != "") {
+                            $('#27').val(data.AddressLine1);
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '27',
+                                    Value: data.AddressLine1,
+                                    CheckFamilyRowid: 2
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+
+                        }
+                        if (data.FromDate != "") {
+                            $('#36').val(data.FromDate + " To " + data.ToDate);
+
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '36',
+                                    Value: data.FromDate + " To " + data.ToDate,
+                                    CheckFamilyRowid: 2
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+                        }
+                        if (data.IsPermanentAddresssameasCurrentAddress != null) {
+                            $('#133').empty();
+                            $('#133').append("<option value='" + data.IsPermanentAddresssameasCurrentAddress + "'>" + data.IsPermanentAddresssameasCurrentAddress + "</option>");
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '133',
+                                    Value: data.IsPermanentAddresssameasCurrentAddress,
+                                    CheckFamilyRowid: 2
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+                        }
+                        if (data.PincodeZipCode != null) {
+                            $('#42').val(data.PincodeZipCode);
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '42',
+                                    Value: data.PincodeZipCode,
+                                    CheckFamilyRowid: 2
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+                        }
+
+
+                    },
+                    error: function (xhr, status, error) {
+                        //console.error(xhr, status, error);
+                    }
+                });
+            }
+        }
+    </script>
+}
+
+<style>
+
+    .btn {
+        padding: 10px 40px 10px 40px !important;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 22px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    input[type=text], textarea {
+        width: 100%;
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 0px;
+        resize: vertical;
+        height: 40px !important;
+    }
+
+    select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 0px;
+        resize: vertical;
+    }
+
+    label {
+        padding: 12px 12px 12px 0;
+        display: inline-block;
+    }
+
+    input[type=submit] {
+        background-color: #04AA6D;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        float: right;
+    }
+
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+
+    .container {
+        border-radius: 5px;
+        /*background-color: #f2f2f2;*/
+        padding: 8px;
+        font-size: 1.2rem !important;
+    }
+
+    .col-25 {
+        float: left;
+        width: 25%;
+        margin-top: 6px;
+    }
+
+    .col-75 {
+        float: left;
+        width: 40%;
+        margin-top: 6px;
+        margin-left: 90px;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+
+    /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+    @@media screen and (max-width: 600px) {
+        .col-25, .col-75, input[type=submit] {
+            width: 100%;
+            margin-top: 0;
+        }
+    }
+
+    .ui-menu {
+        height: 200px;
+        overflow: scroll;
+        z-index: 999;
+        width: 470px;
+    }
+
+    /*///////////////////////////*/
+
+    .topdiv {
+        height: 300px;
+        overflow-y: scroll;
+        border-bottom: 2px solid #11c9b7;
+    }
+
+    .bottomdiv {
+        height: 300px;
+    }
+</style>

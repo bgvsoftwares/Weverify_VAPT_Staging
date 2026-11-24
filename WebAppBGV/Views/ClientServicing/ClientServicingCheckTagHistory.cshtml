@@ -1,0 +1,91 @@
+﻿@using WebAppBGV.CommonMethods;
+
+@{
+    ViewBag.Title = "CheckTag History";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ClientServicingCheckTagInfo", "ClientServicing", new { CaseStatus = "CheckTag" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+}
+
+@{
+    
+    //@ViewBag.NavigationBtnExportExcel
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    string hyperLinkExportExcel = Html.ActionLink("linkTitle", "ClientServicingCheckTagExport", "ClientServicing", new { strExportType = "CheckTagHistory" }, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));       
+
+}
+
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                @using (Html.BeginForm("CheckTagHistory", "ClientServicing", FormMethod.Get))
+                {
+
+                }
+            </div>
+        </div>
+        @if (Model != null && Model.DashboardClientCandidates != null && Request.QueryString["CaseStatus"].ToString() == "CheckTag")
+        {
+            <div class="row">
+                <div class="col-md-12 table table-striped">
+                    @{
+                        WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                        grid.Bind(Model.DashboardClientCandidates, autoSortAndPage: false, rowCount: Model.TotalRecords);
+
+                        var columns = new List<WebGridColumn>();
+                        columns.Add(grid.Column(header: "S.No.", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex));
+                        columns.Add(grid.Column(columnName: "ClientName", header: "Client Name", canSort: false));
+                        columns.Add(grid.Column(columnName: "CompanyRefNo", header: "SecuritasID", canSort: false));
+                        var teamMemberRowId = Session["TeamMemberRowID"].ToString();
+                        if ((teamMemberRowId == "160") || (teamMemberRowId == "492") || (teamMemberRowId == "638") || (teamMemberRowId == "703") || (teamMemberRowId == "1060") || (teamMemberRowId == "965") || (teamMemberRowId == "981") || (teamMemberRowId == "1031"))
+                        {
+                            columns.Add(grid.Column(columnName: "EmployeeID", header: "Candidate ID", canSort: false)); 
+                        }
+                        else
+                        {
+                            columns.Add(grid.Column(columnName: "EmployeeID", header: "Applicant ID", canSort: false));
+                        }
+                        columns.Add(grid.Column(columnName: "CandidateName", header: "Candidate Name", canSort: false));
+                        columns.Add(grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false));
+                        columns.Add(grid.Column(columnName: "ClientRefID", header: "Check ID", canSort: false));
+                        columns.Add(grid.Column(columnName: "ColorCode", header: "Color Name", canSort: false));
+                        columns.Add(grid.Column("CreatedDate", "Created Date", format: (item) =>
+                                    item.CreatedDate != DateTime.MinValue ? item.CreatedDate.ToString("dd/MM/yyyy") : "", canSort: false, style: "td-1"));
+                        columns.Add(grid.Column("VerificationDate", "Verification Date", format: (item) =>
+                            item.VerificationDate != DateTime.MinValue ? item.VerificationDate.ToString("dd/MM/yyyy") : "", canSort: false, style: "td-1"));
+                        columns.Add(grid.Column(columnName: "OutDate", header: "Completion Date", canSort: false));
+                        columns.Add(grid.Column(columnName: "Entity", header: "CheckTag By", canSort: false));
+                        columns.Add(grid.Column(columnName: "CheckTagDate", header: "CheckTag Date", canSort: false));
+
+                    }
+
+                    @grid.GetHtml(
+                            htmlAttributes: new { id = "grid", @class = "table" },
+                            headerStyle: "thead-inverse",
+                            rowStyle: "ordertxt",
+                            footerStyle: "custpaging",
+                            mode: WebGridPagerModes.All,
+                            columns: columns
+
+                    )
+                    <div class="total-record">Total Records: @Model.TotalRecords</div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section Scripts{
+    <script type="text/javascript">
+
+    </script>
+}

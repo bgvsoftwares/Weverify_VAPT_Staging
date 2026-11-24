@@ -1,0 +1,274 @@
+﻿@{
+    ViewBag.Title = "Manage Candidate List For Report QC Manager";
+}
+@{
+    string tatHours1 = "";
+    string CaseStatus1 = "";
+    string AllocatedToTL1 = "";
+    string Search1 = "";
+    string Statusid1 = "";
+    string ClientRowId1 = "";
+    string RecievingDate1 = "";
+    string CompletedDate1 = "";
+    if (Request.QueryString["tatHours"] != null)
+    {
+        tatHours1 = Request.QueryString["tatHours"].ToString();
+    }
+    if (Request.QueryString["AllocatedToTL"] != null)
+    {
+        AllocatedToTL1 = Request.QueryString["AllocatedToTL"].ToString();
+    }
+    if (Request.QueryString["CaseStatus"] != null)
+    {
+        CaseStatus1 = @Request.QueryString["CaseStatus"].ToString();
+    }
+    if (Request.QueryString["Search"] != null)
+    {
+        Search1 = Request.QueryString["Search"].ToString();
+    }
+    if (Request.QueryString["Statusid"] != null)
+    {
+        Statusid1 = Request.QueryString["Statusid"].ToString();
+    }
+    if (Request.QueryString["ClientRowId"] != null)
+    {
+        ClientRowId1 = Request.QueryString["ClientRowId"].ToString();
+    }
+    if (Request.QueryString["RecievingDate"] != null)
+    {
+        RecievingDate1 = Request.QueryString["RecievingDate"].ToString();
+    }
+    if (Request.QueryString["CompletedDate"] != null)
+    {
+        CompletedDate1 = Request.QueryString["CompletedDate"].ToString();
+    }
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    string hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportReportMIS", "ReportQC", new { CaseStatus = CaseStatus1, tatHours = tatHours1, Search = Search1, Statusid = Statusid1, ClientRowId = ClientRowId1, RecievingDate = RecievingDate1, CompletedDate = CompletedDate1 }, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+}
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@*@section LeftNavigation{ @Html.Partial("_NavLeftReportQC") }*@
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("GetRWQCTeamLeaderDashBoardInfo", "ReportQC", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Client Name :</label>
+                                    <div class="col-md-8">
+                                        @Html.DropDownList("ClientRowID",
+                     new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                     "-- Select Client -- ",
+                     new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Keyword :</label>
+                                    <div class="col-md-8">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, Securitas Id...", @autocomplete = "off" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">From Date :</label>
+                                    @*<label class="col-md-2 control-label">Recieving Date :</label>*@
+                                    <div class="col-md-3">
+                                        @Html.TextBox("RecievingDate", null, new { @class = "form-control", @id = "RecievingDate", @placeholder = "dd-MMM-yyyy", @autocomplete = "off" })
+                                    </div>
+                                    <label class="col-md-2 control-label">To Date :</label>
+                                    @*<label class="col-md-2 control-label">Completed Date :</label>*@
+                                    <div class="col-md-3">
+                                        @Html.TextBox("CompletedDate", null, new { @class = "form-control", @id = "CompletedDate", @placeholder = "dd-MMM-yyyy", @autocomplete = "off" })
+                                    </div>
+                                </div>
+                                <div class="form-group branch row search-frame">
+                                    <div style="text-align:center;">
+                                        @if (Request.QueryString["CaseStatus"] != null)
+                                        {
+                                            @Html.Hidden("CaseStatus", Request.QueryString["CaseStatus"].ToString())
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-md-12 text-center">
+                                    <input class="btn bun-bg btn-default" type="submit" onclick="SearchFunction()" value="Search" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.DashboardDetailsRWQC != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12 table">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.DashboardDetailsRWQC, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                    htmlAttributes: new { id = "grid", @class = "table table-striped table-bordered nowrap" },
+                                    headerStyle: "thead-inverse",
+                                    rowStyle: "ordertxt",
+                                    footerStyle: "custpaging",
+                                    mode: WebGridPagerModes.All,
+                                    columns: new[]
+                                    {
+                                    grid.Column(header: "No.", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                    grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-3"),
+                                    grid.Column(columnName: "IsSeniorCase", header: "IsSeniorCase", canSort: false, style:"td-3"),
+                                    grid.Column(header : "Securitas ID", format : (item) => {
+                                        string CompanyRefNo=item.CompanyRefNo;
+                                                var link = Html.ActionLink(CompanyRefNo, "ManageCandidateChecksForReportQC", "ReportQC", new { PersonalRowID = item.PersonalRowID, dispFor="Dashboard"  }, new { @class="edit" });
+                                             return link;
+                                    }),
+
+                                    grid.Column(columnName: "CandidateName", header: "Candidate Name", canSort: false),
+                                     grid.Column(columnName: "SpocName", header: "SpocName", canSort: false),
+                                       grid.Column(columnName: "Caseageing", header: "Case Ageing ", canSort: false),
+                                    grid.Column("CreatedDate", "Created-Date", format: (item) => item.CreatedDate != DateTime.MinValue ? item.CreatedDate.ToString("dd-MMM-yyyy") : "", canSort: false),
+                                    grid.Column("ReportUploadedDate", "Uploded-Date", format: (item) => item.ReportUploadedDate != DateTime.MinValue ? item.ReportUploadedDate.ToString("dd-MMM-yyyy") : "", canSort: false),
+
+
+                                    //  grid.Column(header : "Interim", format : (item) => {
+                                    //    if (item.InterimReport==1)
+                                    //     {
+                                    //        var link = Html.ActionLink("Report","ReportInterim", "ReportQC", new { id = item.PersonalRowID }, new { @class="edit" });
+                                    //        return link;
+                                    //      }
+                                    // return "";
+                                    //}, style:"td-1"),
+
+                                     grid.Column("Report", canSort: false, format: (item)=> {
+                                        if (item.IsReportUploaded && !string.IsNullOrEmpty(item.ReportUploadedName))
+                                        {
+                                            string FldPathDoc = System.Configuration.ConfigurationManager.AppSettings["CandidateReportdoc"].ToString();
+                                             string DownloadLink = string.Format("<a class='edit' href=\"{0}\" target=\"_blank\">Download</a>",Url.Content(FldPathDoc + item.ReportUploadedName));
+                                             return new HtmlString(DownloadLink);
+                                        }
+                                            return null;
+                                    }),
+                                     grid.Column(columnName: "AllocatedTmem", header: "Allocated To", canSort: false),
+                                    grid.Column(columnName: "CaseStatus", header: "Status", canSort: false),
+                                    grid.Column(header : "Action", format : (item) => {
+                                        var link = Html.ActionLink("History", "CaseActionHistories", "ReportQC", new { pid = item.PersonalRowID }, new { @class = "edit iframeActionHistories cboxElement" });
+                                        return link;
+                                    }),
+
+                                }
+                             )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @*<script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+        <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+        <link href="~/Content/colorbox.css" rel="stylesheet" />*@
+    @*<script src="~/Scripts/jquery.colorbox-min.js"></script>*@
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+
+            $("#grid th").each(function () {
+                if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                    $(this).text('');
+                    $("<input/>", { type: "checkbox", id: "select_all", value: "" }).appendTo($(this));
+                    //$(this).append("<span>Select All</span>");
+                }
+            });
+
+            $('#RecievingDate').datepicker({
+                dateFormat: "dd-M-yy",
+                changeMonth: true,
+                changeYear: true,
+                //showButtonPanel: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedDate').datepicker({
+                dateFormat: "dd-M-yy",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+        });
+    </script>
+}
+
+<script>
+    $(document).ready(function () {
+        var table = $('#grid').DataTable({
+            responsive: true,
+        });
+
+        new $.fn.dataTable.FixedHeader(table);
+    });
+</script>
+<script>
+    $("#grid > thead > tr").each(function () {
+        $(this).find('th').each(function (index) {
+            // Check if the header text is "checkFackEdu"
+            if ($(this).text().trim() === "IsSeniorCase") {
+                // Hide the corresponding column header
+                $(this).css("display", "none");
+
+                // Now hide the corresponding cells (td) in the body for that column
+                $("#grid > tbody > tr").each(function () {
+                    $(this).find('td').eq(index).css("display", "none");
+                });
+            }
+        });
+    });
+</script>
+<script>
+    $('#grid > tbody > tr').each(function () {
+        var sixthTdValue = $(this).find('td:nth-child(3)').text();
+        if (sixthTdValue == "1") {
+            $(this).css('background-color', '#ffbf80');
+        }
+        else {
+            //$(this).css('background-color', '#f2f2f2');
+        }
+    });
+</script>
+<style>
+    #select_all {
+        width: 30px !important;
+    }
+
+    .personalId {
+        width: 30px !important;
+    }
+
+    @@media screen and (max-width: 1450px) and (min-width: 600px) {
+        #grid {
+            font-size: .90rem;
+            width: 100%;
+        }
+
+        .table td, .table th {
+            padding: .60rem !important;
+        }
+
+        .thead-inverse {
+            font-size: .90rem !important;
+        }
+
+        .table, td, .edit {
+            font-size: .95rem !important;
+        }
+    }
+</style>

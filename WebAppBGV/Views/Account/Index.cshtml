@@ -1,0 +1,239 @@
+﻿@model ViewModels.HRViewModels.CompanyLoginViewModel
+@{
+    ViewBag.Title = "Company Login";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+
+    string SecretDataSitekeyHcaptcha = System.Configuration.ConfigurationManager.AppSettings["Secret_data-sitekey_hcaptcha"].ToString();
+
+
+    string msg = "";
+    if (ViewBag.ErrorMsg != null)
+    {
+        msg = ViewBag.ErrorMsg.ToString();
+    }
+}
+
+@using (Html.BeginForm("Index", "Account", FormMethod.Post, new { @onsubmit = "return validateForm()", @autocomplete = "off", @class = "sign-in-form index_form" }))
+{
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" id="GenCaptchaVal" value="@Model.GenerateCaptchaVal" />
+    @Html.HiddenFor(T => T.GenerateCaptchaVal)
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="d-flex align-items-center login_error_div" style="width: 440px;height:40px;
+        text-align: center;
+        font-size: .90rem;
+        color:#AA1834!important; display:flex;">
+
+        @{
+            var valCaptcha = Convert.ToString(Session["CaptchaVal"]);
+            if (valCaptcha != null)
+            {
+                <input type="hidden" id="valCaptcha" value="@valCaptcha.ToString()" />
+            }
+            if (ViewBag.EncData != null)
+            {
+                <input type="hidden" id="EnSalt" value="@ViewBag.EncData.ToString()" />
+            }
+            if (msg != "")
+            {
+                <div class="errormsglogin" style="position: relative;top:0px;">
+                    <div class="drop">
+                        <p class="img_p">1</p>
+                        <img src="~/assets/LoginPageImages/marker.png" width="35" />
+                    </div>
+                    <ul class="Error_ul">
+                        <li>
+                            @msg.ToString()
+                        </li>
+                    </ul>
+                </div>
+            }
+        }
+
+        @{
+
+            <div class="errormsg">@Html.ValidationMessage("")</div>
+        }
+    </div>
+    <div class="heading mb-3">
+        <h2>User Login</h2>
+    </div>
+    <div class="actual-form">
+        <div class="d-flex align-items-center mt-1 mb-3">
+            <fieldset class="highlight" id="fieldset">
+                <legend class="legend">UserName</legend>
+                @Html.EditorFor(model => model.CRPUserName, new { htmlAttributes = new { @placeholder = "User Name", required = "required", @maxlength = "50", @id = "Username", @class = "form-control", @onmousedown = "return noCopyMouse(event);", @onkeydown = "return DisableEscape(event);", @onkeypress = "return BlockBlacklist(event);", @autocomplete = "off", onfocus = "handleClick(event)" } })
+            </fieldset>
+        </div>
+        <div class="d-flex align-items-center  mt-2 mb-4">
+            <fieldset class="highlight" id="fieldset">
+                <legend class="legend">Password</legend>
+                <div class="fake-input" id="testinput" style="overflow:hidden;">Password</div>
+                @Html.EditorFor(model => model.CRPPassWord, new { htmlAttributes = new { @placeholder = "Password", @class = "form-control-pass", @id = "CRPPassWord", @autocomplete = "off", @onKeyUp = "RemoveSavedPassword()" } })
+            </fieldset>
+        </div>
+
+        <div class="mt-2 mb-4 gap-2">
+            <img id="captchaImg" src="@Url.Action("GetImgCaptcha", "Account")" style="width:200px; height:50px;" alt="CAPTCHA" />
+            <button type="button" class="btn  btn-login-submit" style=" background:none !important; border:none !important; height:50px !important; padding:0px !important; display:unset; width:50px; font-size:24px !important; color:#fff;" onclick="reloadCaptcha()">&#x21bb;</button>
+
+            <input type="text" name="CaptchaVal" id="CaptchaVal" class="form-control" style="top:0px!important; margin-top:12px; " placeholder="Enter CAPTCHA" />
+        </div>
+
+
+        <div class="d-flex align-items-center btn_box">
+            @Html.Hidden("hdnEnptStatus", "false")
+            <button type="submit" id="btnSubmit" class="btn btn-login-submit" onclick="return SubmitsEncry();">Submit</button>
+        </div>
+        <div class="row mb-3 mt-2">
+            <div class="col-md-12">
+                <div class="d-flex align-items-center login_as_div">
+                    <span class="login_as">Login As</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-4">
+                <a href='@Url.Action("ClientNGR", "Account")' class="Login_as_box">
+                    Client
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-4">
+                <a href='@Url.Action("VendorLogin", "Account")' class="Login_as_box">
+                    Partner
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-4">
+                <a href='@Url.Action("CandidateLogin", "Account")' class="Login_as_box candidate_box">
+                    Candidate
+                </a>
+            </div>
+        </div>
+    </div>
+}
+@section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+  function reloadCaptcha() {
+    document.getElementById("captchaImg").src = '@Url.Action("GetImgCaptcha", "Account")?'+ new Date().getTime();
+        }
+     $(document).ready(function () {
+     document.getElementById("captchaImg").src = '@Url.Action("GetImgCaptcha", "Account")?' + new Date().getTime();
+ });
+    </script>
+
+    <script>
+
+        function RemoveSavedPassword() {
+            inputValue = $('#CRPPassWord').val();
+            numChars = inputValue.length;
+            showText = "";
+            for (i = 0; i < numChars; i++) {
+                showText += "&#9679;";
+            }
+            $('.fake-input').html(showText);
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#CRPUserName').val("");
+            var captchaVal = $("#valCaptcha").val();
+            var iNumber = captchaVal;
+            $("#divGenerateRandomValues").html("<p id='txtNewInput'></p>");
+            $("#txtNewInput").text(iNumber);
+            $("#txtNewInput").prop('disabled', true);
+
+        });
+
+        function blankInput() {
+            document.getElementById("textInput").value = "";
+        }
+        blankInput();
+        $(document).ready(function () {
+
+            $("form").attr('autocomplete', 'off');
+
+            $('input').focus(function () {
+                $(this).removeAttr('readonly');
+            });
+
+            $('input').blur(function () {
+                $(this).attr('readonly', true);
+
+            });
+            document.getElementsByName("CRPUserName")[0].value = "";
+            document.getElementsByName("CRPPassWord")[0].value = "";
+        });
+        $('#btnSubmit').click(function () {
+            var pass = $.trim($("[id*=CRPPassWord]").val());
+            var uName = $.trim($("[id*=CRPUserName]").val());
+            if (uName.includes("alert") || uName.includes("script") || uName.includes("select") || uName.includes("exec") || uName.includes("execute") || uName.includes("drop") || uName.includes("truncate") || uName.includes("insert") || uName.includes("update") || uName.includes("delete")) {
+                alert("You can not use any special text as usename like alert,script,etc.");
+                document.getElementsByName("CRPUserName")[0].value = "";
+                document.getElementsByName("CRPPassWord")[0].value = "";
+                return false;
+            }
+        });
+    </script>
+    <script>
+        String.prototype.trim = function () {
+            var trimmed = this.replace(/^\s+|\s+$/g, '');
+            return trimmed;
+        };
+        String.prototype.ltrim = function () {
+            var trimmed = this.replace(/^\s+/g, '');
+            return trimmed;
+        };
+        String.prototype.rtrim = function () {
+            var trimmed = this.replace(/\s+$/g, '');
+            return trimmed;
+        };
+    </script>
+    <script type="text/javascript">
+        function toBase64(str) {
+            const bytes = new TextEncoder().encode(str);
+            let binary = '';
+            for (let byte of bytes) {
+                binary += String.fromCharCode(byte);
+            }
+            return btoa(binary);
+        }
+        function SubmitsEncry() {
+            var txtpassword = document.getElementsByName("CRPPassWord")[0].value.trim();
+            var encrypted = document.getElementById('CRPPassWord');
+            encrypted.value = encryptPassword(txtpassword);
+        }
+
+        function encryptPassword(password) {
+
+            var key = CryptoJS.enc.Utf8.parse('1234567890123456');
+            var iv = CryptoJS.enc.Utf8.parse('1234567890123456');
+
+            var encrypted = CryptoJS.AES.encrypt(
+                password,
+                key,
+                {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+            return encrypted.toString();
+        }
+
+    </script>
+    <script>
+        function validateForm() {
+            var response = document.getElementsByName("CaptchaVal")[0].value;
+            if (response.length == 0) {
+                alert("Please Enter Captcha.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+}

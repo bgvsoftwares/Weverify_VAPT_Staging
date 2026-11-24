@@ -1,0 +1,120 @@
+﻿@model ViewModels.VerificationViewModel.VerificationInfoListPagedModel
+<html>
+<head>
+    @{Layout = null; }
+
+
+</head>
+<body>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/modernizr-2.8.3.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script> 
+
+   
+    <table>
+
+        <tr>
+            <td style="margin-top:10px">
+                <div>
+                    @{
+
+                        WebGrid grid = new WebGrid(rowsPerPage: 10, ajaxUpdateContainerId: "grid");
+                        grid.Bind(@Model.GroupAutoManualDetail, autoSortAndPage: false, rowCount: 5);
+                    }
+                    @{
+                        string Designation = Convert.ToString(Session["Designation"]);
+
+                       
+                            @grid.GetHtml(
+                                              htmlAttributes: new { id = "grid", @class = "table" },
+                                              headerStyle: "thead-inverse",
+                                              rowStyle: "ordertxt",
+                                              footerStyle: "custpaging",
+                                              mode: WebGridPagerModes.All,
+                                              columns: new[]
+                                              {
+                            grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                            grid.Column(columnName: "CandidateName", header: "Candidate Name", canSort: false, style:"col-md-1"),
+                            //grid.Column(columnName: "CompanyRefNo", header: "Securitas ID", canSort: false, style:"col-md-1"),
+
+                            grid.Column(columnName: "FatherName", header: "Father Name", canSort: false, style:"col-md-1"),
+                            grid.Column(columnName: "DOB", header: "DOB", canSort: false, style:"col-md-1"),
+                            grid.Column(columnName: "UniqueComponentID", header: "UniqueComponentID", canSort: false, style:"col-md-1")
+
+                            }
+
+                                          )
+                        
+
+                    }
+                </div>
+
+
+            </td>
+
+
+        </tr>
+
+
+    </table>
+
+</body>
+</html>
+
+<script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+<script>
+
+
+    $(document).ready(function () {
+        ////subject
+        //var CheckStatusId = $('#CheckStatusId').val();
+        //alert(CheckStatusId);
+        //if (CheckStatusId == 82) {
+        //    alert('Hi');
+        //    //$("#subject").prop("readonly", true);
+        //    ('#subject').prop('readonly', 'false');
+        //    //$('#subject').attr("disabled", true);
+        //    //$("#subject").prop("readonly", true);
+        //}
+        //else {
+        //    $("#subject").prop("readonly", false);
+        //}
+        // $('#MailBody').html($('#HFMailBody').val());
+    });
+    //function ValidateForm() {
+    //    if ($("#CheckStatus").val() == "Funds Pending") {
+    //        var flag = false;
+    //        if ($("#ClientRowID").val() > 0) {
+    //            var url = "/Verification/GetClientExtraExpensesAllowed/" + $("#ClientRowID").val();
+    //            $.ajax({
+    //                url: url,
+    //                type: 'GET',
+    //                async: false,
+    //                dataType: 'json',
+    //                success: function (allowed) {
+    //                    if (allowed.ExtraExpenses == 1) {
+    //                        alert("Extra Expenses Already Accepted By Client. Please Select Another Option!");
+    //                        flag = false;
+    //                    }
+    //                    else {
+    //                        flag = true;
+    //                    }
+    //                }
+    //            });
+    //        }
+    //        else {
+    //            alert("ClientId is missing please close the popup!");
+    //            return false;
+    //        }
+    //        return flag;
+    //    }
+    //}
+</script>
+

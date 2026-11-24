@@ -1,0 +1,272 @@
+﻿@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "CheckTag Details";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Index", "ClientServicing", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+    string CheckStatus1 = "";
+    string AllocatedToTL1 = "";
+    string CaseStatus1 = "";
+    string ClientRowID1 = "";
+
+
+    if (Request.QueryString["AllocatedToTL"] != null)
+    {
+        AllocatedToTL1 = Request.QueryString["AllocatedToTL"].ToString();
+    }
+    if (Request.QueryString["CheckStatus"] != null)
+    {
+        CheckStatus1 = @Request.QueryString["CheckStatus"].ToString();
+    }
+    if (Request.QueryString["CaseStatus"] != null)
+    {
+        CaseStatus1 = @Request.QueryString["CaseStatus"].ToString();
+    }
+    if (Request.QueryString["cr"] != null)
+    {
+        ClientRowID1 = @Request.QueryString["cr"].ToString();
+    }
+    string DeryptClientRowID = "";
+    if (ClientRowID1 != null && ClientRowID1 != "")
+    {
+        DeryptClientRowID = clsCommonMethods.PDecrypt(ClientRowID1);
+    }
+    else
+    {
+        if (ViewBag.ClientRowIDForLOA != null)
+        {
+            DeryptClientRowID = clsCommonMethods.PDecrypt(ViewBag.ClientRowIDForLOA);
+        }
+    }
+
+
+}
+
+@{
+    //string hyperLinkExportExcel = "";
+    //string faIconExportExcel = "";
+    //faIconExportExcel = string.Format("<i class='fa fa-file-excel-o'></i> Export Excel");
+    //hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportPendingcandidateSpoc", "ClientServicing", new { ClientRowID = ClientRowID1, CaseStatus = CaseStatus1, }, new { @class = "excel_export" }).ToString();
+    //ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+}
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("ClientServicingCheckTagInfo", "ClientServicing", FormMethod.Get))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch row search-frame">
+                                    <label class="col-md-2 control-label">Keyword :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, Securitas Id..." })
+                                    </div>
+                                    <label class="col-md-2 control-label">Completed Date :</label>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("CompletedDate", null, new { @class = "form-control", @id = "CompletedDate", @placeholder = "yyyy-mm-dd" })
+                                    </div>
+                                </div>
+
+                                <div class="all-button-bg">
+                                    @{
+                                        if (Request.QueryString["CaseStatus"] != null)
+                                        {
+                                            @Html.Hidden("CaseStatus", Request.QueryString["CaseStatus"].ToString())
+                                        }
+                                    }
+                                    @Html.Hidden("CandCheckRowIDs", null)
+                                    <input class="btn bun-bg btn-default" type="submit" value="Search" />
+                                    <input class="btn bun-bg btn-default" type="submit" id="btnAllocation" onclick="return validateForm()" value="Check Tag" />
+                                    @Html.ActionLink("CheckTag History", "ClientServicingCheckTagHistory", "ClientServicing", new { CaseStatus = "CheckTag" }, new { @class = "btn bun-bg btn-default" })
+                                    @Html.ActionLink("Export Excel", "ClientServicingCheckTagExport", "ClientServicing", new { strExportType = "CheckTagInfo" }, new { @class = "btn bun-bg btn-default" })
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @if (Model != null && Model.DashboardClientCandidates != null && Request.QueryString["CaseStatus"].ToString() == "CheckTag")
+                {
+                    <div class="row">
+                        <div class="col-md-12 table table-striped">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.DashboardClientCandidates, autoSortAndPage: false, rowCount: Model.TotalRecords);
+
+                                var columns = new List<WebGridColumn>();
+                                columns.Add(grid.Column(header: "", format: @<text><input type="checkbox" value="@item.CandCheckRowID" name="candCheckRowId" class="candCheckRowId" /> </text>, style: "td-1"));
+                                columns.Add(grid.Column(header: "No.", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex));
+                                columns.Add(grid.Column(columnName: "ClientName", header: "Client Name", canSort: false));
+
+                                // SecuritasID column with complex link logic
+                                columns.Add(grid.Column(header: "SecuritasID", format: (item) =>
+                                {
+                                    string SecuritasID = item.CompanyRefNo;
+
+                                    if (item.CheckFamilyRowID > 0)
+                                    {
+                                        var routeParams = new
+                                        {
+                                            id = item.CandCheckRowID,
+                                            CheckStatusId = item.CheckStatusid,
+                                            PersonalRowID = item.PersonalRowID,
+                                            subCheckId = item.SubCheckRowID,
+                                            ClientRowId = item.ClientRowID
+                                        };
+
+                                        switch ((int)item.CheckFamilyRowID)
+                                        {
+                                            case 2:
+                                                return Html.ActionLink(SecuritasID, "AddAddressInfoByTeamMember", "Verification", routeParams, new { target = "_blank" });
+                                            case 5:
+                                                return Html.ActionLink(SecuritasID, "UpdateCriminalInfoByTMQC", "Verification", routeParams, new { target = "_blank" });
+                                            case 11:
+                                                return Html.ActionLink(SecuritasID, "UpdateEducationInfoByTMQC", "Verification", routeParams, new { target = "_blank" });
+                                            case 12:
+                                                return Html.ActionLink(SecuritasID, "UpdateEmploymentInfoByTMQCForOpsQCValue", "Verification", routeParams, new { target = "_blank" });
+                                            case 26:
+                                                return Html.ActionLink(SecuritasID, "UpdateNationalIdentityInfoByTMQC", "Verification", routeParams, new { target = "_blank" });
+                                            case 30:
+                                                return Html.ActionLink(SecuritasID, "UpdateReferenceInfoByTMQC", "Verification", routeParams, new { target = "_blank" });
+                                            case 40:
+                                                return Html.ActionLink(SecuritasID, "UpdateSpecialCheckInfoByTMQC", "Verification", routeParams, new { target = "_blank" });
+                                            default:
+                                                return SecuritasID;
+                                        }
+                                    }
+
+                                    return SecuritasID;
+                                }, style: "edit td-2"));
+
+
+                                var teamMemberRowId = Session["TeamMemberRowID"].ToString();
+                                if ((teamMemberRowId == "160") || (teamMemberRowId == "492") || (teamMemberRowId == "638") || (teamMemberRowId == "703") || (teamMemberRowId == "1060") || (teamMemberRowId == "965") || (teamMemberRowId == "981") || (teamMemberRowId == "1031"))
+                                {
+                                    columns.Add(grid.Column(columnName: "EmployeeID", header: "Candidate ID", canSort: false)); 
+                                }
+                                else
+                                {
+                                    columns.Add(grid.Column(columnName: "EmployeeID", header: "Applicant ID", canSort: false));
+                                }
+                                columns.Add(grid.Column(columnName: "CandidateName", header: "Candidate Name", canSort: false));
+                                columns.Add(grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false));
+                                columns.Add(grid.Column(columnName: "ClientRefID", header: "Check ID", canSort: false));
+                                columns.Add(grid.Column(columnName: "ColorCode", header: "Color Name", canSort: false));
+                                columns.Add(grid.Column("CreatedDate", "Created Date", format: (item) =>
+                                    item.CreatedDate != DateTime.MinValue ? item.CreatedDate.ToString("dd/MM/yyyy") : "", canSort: false, style: "td-1"));
+                                columns.Add(grid.Column("VerificationDate", "Verification Date", format: (item) =>
+                                    item.VerificationDate != DateTime.MinValue ? item.VerificationDate.ToString("dd/MM/yyyy") : "", canSort: false, style: "td-1"));
+                                columns.Add(grid.Column(columnName: "OutDate", header: "Completion Date", canSort: false));
+
+                            }
+
+
+                            @grid.GetHtml(
+                            htmlAttributes: new { id = "grid", @class = "table" },
+                            headerStyle: "thead-inverse",
+                            rowStyle: "ordertxt",
+                            footerStyle: "custpaging",
+                            mode: WebGridPagerModes.All,
+                            columns: columns
+
+                            )
+
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "60%", height: "80%" });
+
+        });
+    </script>
+
+    
+    
+
+    <script type="text/javascript">
+        function validateForm() {
+            var count = 0;
+            $('input[class="candCheckRowId"]').each(function (index, value) {
+                if (this.checked) { count += 1; }
+            });
+
+            if (count == 0) {
+                alert("Please select atleast one check.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+
+    <script type="text/javascript">
+
+        //click event for checkbox of each row
+        $(document).on('change', 'input[class="candCheckRowId"]', function (e) {// on change of state
+            var candCheckRowIds = '';
+            $('input[class="candCheckRowId"]').each(function (index, value) {
+                if (this.checked) { candCheckRowIds += this.value + ','; }
+            });
+
+            if (candCheckRowIds.length > 0) {
+                candCheckRowIds = candCheckRowIds.substring(0, candCheckRowIds.length - 1);
+            } else { candCheckRowIds = ''; }
+            $('#CandCheckRowIDs').val(candCheckRowIds.trim());
+        })
+
+    </script>
+}
+
+<style>
+    .total-record {
+        margin-bottom: 30px;
+        font-size: 1.4rem;
+    }
+
+    #select_all {
+        width: 30px !important;
+    }
+
+    .candCheckRowId {
+        width: 30px !important;
+    }
+
+    
+
+    .excel_export {
+        padding: .8% 5%;
+        font-size: 13px;
+        background: #11c9b7;
+        color: #fff;
+        font-weight: 400;
+        text-shadow: none;
+        border-radius: 0 !important;
+        border: none;
+    }
+</style>

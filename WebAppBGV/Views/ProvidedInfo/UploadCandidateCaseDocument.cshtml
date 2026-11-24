@@ -1,0 +1,304 @@
+﻿@using ViewModels.ProvidedInfoViewModel;
+@model ViewModels.ProvidedInfoViewModel.AddPQVerifiedUploadCaseDocViewModel
+@{
+    ViewBag.Title = "Upload Document (" + Convert.ToString(Session["CandidateName"]) + ")";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManageUploadDocmentList", "ProvidedInfo", new { pid = Model.PersonalRowID }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+
+@*@section LeftNavigation{ @Html.Partial("_NavLeftProvidedInfo") }*@
+@section LeftNavigation{ @Html.Partial("_NavLeftDataEntryProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="container">
+    @using (Html.BeginForm("UploadCandidateCaseDocument", "ProvidedInfo", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.PersonalRowID)
+        var cid = Model.ClientRowId;
+        int Clientid = Model.ClientID;
+        @Html.Hidden("ClientRowId", cid)
+        <div class="row">
+            <table width="100%"><tr><td>@Html.Partial("_CaseDocumentList")</td></tr></table>
+        </div>
+        <div class="row" style="margin-top:15px;">
+            <div class="col-md-1 text-right">
+                @Html.CheckBoxFor(model => model.LOABool, new { htmlAttributes = new { @class = "chkPkgChks form-control" } })
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.LOA, htmlAttributes: new { @class = "form-label" })
+            </div>
+            <div class="col-md-5">
+                @Html.TextBoxFor(model => model.LOADoc, new { @accept = ".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg , .gif , .docx , .xlsx", type = "file", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.LOADoc, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row" style="margin-top:15px;">
+            <div class="col-md-1 text-right">
+                @Html.CheckBoxFor(model => model.CandidatePhotoBool, new { htmlAttributes = new { @class = "chkPkgChks form-control" } })
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.CandidatePhoto, htmlAttributes: new { @class = "form-label" })
+            </div>
+            <div class="col-md-5">
+                @Html.TextBoxFor(model => model.CandidatePhotoDoc, new { @accept = ".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg , .gif , .docx , .xlsx", type = "file", @class = "form-control" })
+                <p style="color:red">please upload jpg/.jpeg/.png file</p>
+                @Html.ValidationMessageFor(model => model.CandidatePhotoDoc, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        if (Clientid == 1803 || cid == 1803)
+        {
+            <div class="row" style="margin-top:15px;">
+                <div class="col-md-1 text-right">
+                    @Html.CheckBoxFor(model => model.AadharCardBool, new { htmlAttributes = new { @class = "chkPkgChks form-control" } })
+                </div>
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.AadharCard, htmlAttributes: new { @class = "form-label" })
+                </div>
+                <div class="col-md-5">
+                    @Html.TextBoxFor(model => model.AadharCardDoc, new { @accept = ".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg , .gif , .docx , .xlsx", type = "file", multiple = "multiple", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.AadharCardDoc, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+
+        <div class="row" style="margin-top:15px;">
+            <div class="col-md-1 text-right">
+                @Html.CheckBoxFor(model => model.BGVPageBool, new { htmlAttributes = new { @class = "chkPkgChks form-control" } })
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.BGVPage, htmlAttributes: new { @class = "form-label" })
+            </div>
+            <div class="col-md-5">
+                @Html.TextBoxFor(model => model.BGVPageDoc, new { @accept = ".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg , .gif , .docx , .xlsx", type = "file", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.BGVPageDoc, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row" style="margin-top:15px;">
+            <div class="col-md-1 text-right">
+                @Html.CheckBoxFor(model => model.BGVResumeBool, new { htmlAttributes = new { @class = "chkPkgChks form-control" } })
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.BGVResume, htmlAttributes: new { @class = "form-label" })
+            </div>
+            <div class="col-md-5">
+                @Html.TextBoxFor(model => model.BGVResumeDoc, new { @accept = ".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg , .gif , .docx , .xlsx", type = "file", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.BGVResumeDoc, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row" style="margin-top:15px;">
+            <div class="col-md-1 text-right">
+                @Html.CheckBoxFor(model => model.OtherBool, new { htmlAttributes = new { @class = "chkPkgChks form-control" } })
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.Other, htmlAttributes: new { @class = "form-label" })
+            </div>
+            <div class="col-md-5">
+                @Html.TextBoxFor(model => model.OtherDoc, new { @accept = ".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg , .gif , .docx , .xlsx", type = "file", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.OtherDoc, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row" style="margin-top:15px;">
+            <div class="col-md-1 text-right">
+                @Html.CheckBoxFor(model => model.DocOtherBool, new { htmlAttributes = new { @class = "chkPkgChks form-control" } })
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.docOther, htmlAttributes: new { @class = "form-label" })
+            </div>
+            <div class="col-md-5">
+                @Html.TextBoxFor(model => model.IdOtherDoc, new { @accept = ".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg , .gif , .docx , .xlsx", type = "file", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.IdOtherDoc, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        @*<div class="row" style="margin-top:15px;">
+                <div class="col-md-1 text-right">
+                    @Html.CheckBoxFor(model => model.NABool, new { htmlAttributes = new { @class = "chkPkgChks form-control" } })
+                </div>
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.NA, htmlAttributes: new { @class = "form-label" })
+                </div>
+                <div class="col-md-5">9
+                    @Html.TextBoxFor(model => model.IdOtherDoc, new { @accept = ".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg , .gif , .docx , .xlsx", type = "file", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.IdOtherDoc, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
+        if (Clientid == 446 || cid == 446)
+
+        {
+            <div class="row" style="margin-top:15px;">
+                <div class="col-md-1 text-right">
+                    @Html.CheckBoxFor(model => model.AddendumFormBool, new { htmlAttributes = new { @class = "chkPkgChks form-control" } })
+                </div>
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.AddendumForm, htmlAttributes: new { @class = "form-label" })
+                </div>
+                <div class="col-md-5">
+                    @Html.TextBoxFor(model => model.AddendumFormbIdOtherDoc, new { @accept = ".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg , .gif , .docx , .xlsx", type = "file", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.AddendumFormbIdOtherDoc, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row" style="margin-top:15px;">
+                <div class="col-md-1 text-right">
+                    @Html.CheckBoxFor(model => model.NABool, new { htmlAttributes = new { @class = "chkPkgChks form-control" } })
+                </div>
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.NA, htmlAttributes: new { @class = "form-label" })
+                </div>
+                <div class="col-md-5">
+                    @Html.TextBoxFor(model => model.IdOtherDoc, new { @accept = ".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg , .gif , .docx , .xlsx", type = "file", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.IdOtherDoc, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+        if (Clientid == 446 || cid == 446)
+        {
+            <div class="row" style="margin-top:15px;">
+                <div class="col-md-1 text-right">
+                    @Html.CheckBoxFor(model => model.TechBool, new { htmlAttributes = new { @class = "chkPkgChks form-control" } })
+                </div>
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.TechDoc, htmlAttributes: new { @class = "form-label" })
+                </div>
+                <div class="col-md-5">
+                    @Html.TextBoxFor(model => model.Tech, new { @accept = ".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg , .gif , .docx , .xlsx", type = "file", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Tech, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+        <div class="row" style="margin-top:15px;">
+            <div class="col-md-3" style="padding-left:52px;">
+                @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "form-label" })
+            </div>
+            <div class="col-md-6" style="padding-left:100px;">
+                @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @rows = "4" })
+            </div>
+        </div>
+
+        <div class="all-button-bg" style="margin-bottom:15px;">
+            @Html.ActionLink("Back", "ManageUploadDocmentList", "ProvidedInfo", new { pid = Model.PersonalRowID }, new { @class = "btn bun-bg btn-default" })
+            <input class="btn bun-bg btn-default" type="submit" value="Submit" />
+        </div>
+
+    }
+</div>
+<style>
+    input[type="checkbox"], input[type="radio"] {
+        width: 25px;
+        height: 25px;
+    }
+
+    .form-label {
+        font-size: 1.5rem;
+        padding-top: 3px;
+    }
+
+    .form-control {
+        font-size: 13px;
+    }
+</style>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <script>
+        $('#SubCheckRowID').change(function () {
+            var url1 = "/ProvidedInfo/GetDocumentTypeListBySubCheckID/" + $("#SubCheckRowID").val();
+            $.ajax({
+                url: url1,
+                type: 'GET',
+                async: false,
+                dataType: 'json',
+                success: function (allData) {
+                    if (allData != null && allData != "") {
+                        $('#dvChksPcks').show();
+                        var items = '';
+                        jQuery.each(allData, function (index, allData) {
+
+                            items += "<div  class='col-md-8'><label class='col-md-3 branch row name control-label'>" + allData.Text + " :</label><input type='checkbox' name='chkPkgChks'  value=" + allData.Value + " class='col-md-1'/><div class='col-md-2'><input data-val='true' name='UploadDoc' disabled='true' type='file' value=" + allData.Value + "  id=" + allData.Value + " onchange='return fileValidation(this)' accept='.png, .jpg, .jpeg, .pdf, .doc, .zip, .msg' > </div></div>";
+                            });
+                        $('#dvUplodDoc').html(items);
+                    }
+                    else {
+                        $('#dvChksPcks').hide();
+                        alert("No Doc Selected");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("some error");
+                }
+            });
+        });
+
+        $(document).on('change', 'input[class="chkPkgChks"]', function (e) {// on change of state
+            var chkPkgChkss = '';
+            $('input[class="chkPkgChks"]').each(function (index, value) {
+                if (this.checked) {
+                    chkPkgChkss += this.value + ',';
+                    $("#" + this.value + "").removeAttr("disabled");
+                }
+                else {
+                    $("#" + this.value + "").attr("disabled", "disabled");
+                }
+            });
+
+            if (chkPkgChkss.length > 0) {
+                chkPkgChkss = chkPkgChkss.substring(0, chkPkgChkss.length - 1);
+            } else { chkPkgChkss = ''; }
+            $('#UploadHid').val(chkPkgChkss.trim());
+        });
+
+        function fileValidation(fileInput) {
+            var filePath = fileInput.value;
+            var allowedExtensions = /(\.gif|\.GIF\.doc|\.docx|\.xls|\.xlsx|\.pdf|\.rtf|\.txt|\.jpeg|\.jpg|\.png|\.eml|\.email|\.msg|\.DOC|\.DOCX|\.XLS|\.XLSX|\.PDF|\.RTF|\.TXT|\.JPEG|\.JPG|\.PNG|\.EML|\.EMAIL|\.MSG|\.zip|\.ZIP|\.rar|\.RAR|\.WEBP|\.webp)$/i;
+            if (!allowedExtensions.exec(filePath)) {
+                alert('Please upload file having extensions .doc/.gif/.GIF/.docx/.xls/.xlsx/.pdf/.rtf/.txt/.jpeg/.jpg/.png/.eml/.email/.msg/.DOC/.DOCX/.XLS/.XLSX/.PDF/.RTF/.TXT/.JPEG/.JPG/.PNG/.EML/.EMAIL/.MSG/.ZIP/.zip/.WEBP/.webp only.');
+                fileInput.value = '';
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+
+        //=================================
+        $(".delete").on("click", function () {
+       debugger;
+       // alert($('#hdnTeamMemberRowID').val());
+        var str = $(this).attr("id").split("_");
+        //console.log(str)
+       var id = str[1];
+       debugger;
+     SubCheckRowID = 0;
+       var flag = confirm('Do you want to Delete the Record ?');
+       if (id != "" && flag) {
+           $.ajax({
+               type: "GET",
+               contentType: "application/json; charset=utf-8",
+               url: '@Url.Action("DeleteCandidateUploadedDocs", "ProvidedInfo")',
+               data: { "id1": id, "SubCheckRowID": SubCheckRowID},
+               dataType: "json",
+               beforeSend: function () { },
+               success: function (result) {
+                   if (result == true) {
+                       alert("Record Deleted Successfully!!");
+                        window.location.reload();
+                   }
+                   else {
+                       alert('There is some error');
+                   }
+               }
+           });
+       }
+   });
+
+        //====================================
+
+    </script>
+}

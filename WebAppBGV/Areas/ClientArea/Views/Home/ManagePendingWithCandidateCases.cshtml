@@ -1,0 +1,186 @@
+﻿@using WebAppBGV.CommonMethods;
+
+@{
+    ViewBag.Title = "Manage Pending With Candidate Cases";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "DashboardClient", "Home", new { area = "ClientArea" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    var clid = "";
+    clid = Session["ClientRowID"].ToString();
+    var ClientRowId = "0";
+    var ClientUserRowID = Session["ClientUserRowID"] != null
+      ? Session["ClientUserRowID"].ToString()
+      : "";
+    if (Request.QueryString["ClientRowID"] != null)
+    {
+        ClientRowId = Request.QueryString["ClientRowID"].ToString();
+    }
+}
+
+@*@{
+        string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' ></i> Export Excel");
+        string hyperLinkExportExcel = "";
+        hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportPendingcandidate", "Home", new { ClientRowID = ClientRowId }, new { @class = "export-btn_CandidatePending" }).ToString();
+        ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+    }*@
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<script src="~/assets/NewScript/jquery-3.7.1.min.js"></script>
+<div class="row">
+    <div class="col-md-2 m-3">
+
+        <a href='@Url.Action("ExportPendingcandidate","Home", new {ClientRowID = ClientRowId})' , class="export-btn_CandidatePending">Export Excel</a>
+    </div>
+</div>
+@if (ViewBag.ErrorMsg != null)
+{
+    <div class="row"><div class="col-12"><p style="text-align:center;color:red">@ViewBag.ErrorMsg</p></div></div>
+}
+
+@using (Html.BeginForm("ManagePendingWithCandidateCases", "Home", new { area = "ClientArea" }, FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div class="container-fluid ps-0 bg_gradient_CaseWise mt-2">
+        @if (Model != null && Model.TempHrAprvlCases != null)
+        {
+            <div class="row row-sm ms-2">
+                <div class="col-xl-12 mb-5">
+                    <table class="mb-0 table-scroll js-serial items table table-responsive-sm table-responsive-md table-responsive" id="example1" style="border:none; cursor:grab;">
+                        <thead>
+                            <tr>
+                                <th>Candidate Name</th>
+                                <th>Email ID</th>
+                                <th>Mobile No</th>
+                                <th>Mail Send</th>
+                                <th>Mail Sent Date</th>
+                                <th>Mail history</th>
+                                @if (clid == "869")
+                                {
+                                    <th>EmployeID</th>
+                                }
+                                else
+                                {
+                                    <th>ClientRefID</th>
+                                }
+                                <th>Entity</th>
+                                <th>Pacakage</th>
+                                <th>Created Date</th>
+                                <th>Stop Case</th>
+                            </tr>
+                        </thead>
+                        <tbody class="tx-10 text-start">
+                            @foreach (var a in Model.TempHrAprvlCases)
+                            {
+                                <tr>
+                                    <td>@a.CandidateName</td>
+                                    <td>@a.Emailid</td>
+                                    <td>@a.MobileNo</td>
+                                    <td>
+                                        @if (a.SentMailStatus == 1)
+                                        {
+                                            <span>Yes</span>
+                                        }
+                                        else
+                                        {
+                                            <span>No</span>
+                                        }
+                                    </td>
+                                    <td>@a.SentMailDate.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <a href='@Url.Action("showmailhistory", "Home", new { area = "ClientArea", personalrowid=clsCommonMethods.PEncrypt(a.PersonalRowID.ToString())})' class="btn btn-outline-primary btn-block table_btn iframeDocument">Show</a>
+                                    </td>
+                                    <td>@a.ClientRefID</td>
+                                    <td>@a.Entity</td>
+                                    <td>@a.PackageName</td>
+                                    <td>@a.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                    @if (ClientUserRowID != "5342")
+                                    {
+                                        <td>
+                                            <a id="@a.PersonalRowID" class="Stop btn btn-outline-primary btn-block">STOP</a>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts{
+    <script type="text/javascript">
+         $(".Stop").on("click", function () {
+             Swal.fire({
+                 title: 'Are you sure want to stop this case?',
+                 //showDenyButton: true,
+                 showCancelButton: true,
+                 confirmButtonText: 'Yes, delete it!',
+                 denyButtonText: 'Cancel !',
+             }).then((result) => {
+                 /* Read more about isConfirmed, isDenied below */
+                 if (result.isConfirmed) {
+                     var str = $(this).attr("id");
+                     var id = str;
+                     if (id != "") {
+                         $.ajax({
+                             type: "GET",
+                             contentType: "application/json; charset=utf-8",
+                             url: '@Url.Action("ClientCaseStopById", "Home", new { area = "ClientArea" })',
+                             data: { "id": id },
+                             dataType: "json",
+                             success: function (data) {
+                                 if (data.result !="") {
+                                     swal.fire(data.result);
+                                     setTimeout(function () { window.location.replace("ManagePendingWithCandidateCases"); }, 5000);
+                                 }
+                             }
+                         });
+                     }
+                 } else if (result.isDenied) {
+                     Swal.fire('Changes are not saved', '', 'info')
+                 }
+             })
+         });
+
+    </script>
+    <style>
+        .export-btn_CandidatePending {
+            background: #8D5FFF !important;
+            color: #FFF;
+            font-family: 'Securitas Pro';
+            font-size: .90rem !important;
+            border-radius: 0px;
+            display: inline-block;
+            font-weight: 400;
+            line-height: 1.5;
+            text-align: center;
+            text-decoration: none;
+            vertical-align: middle;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+            background-color: transparent;
+            border: 1px solid transparent;
+            padding: .35rem 1rem .35rem 1rem;
+            transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+            position: absolute;
+            left: 100px;
+            top: 24px;
+            width: 100%;
+            z-index: 100;
+        }
+
+            .export-btn_CandidatePending:hover {
+                color: #000 !important;
+                color: #000 !important;
+                background: #FFF !important;
+                border: 1px solid #8D5FFF !important;
+            }
+    </style>
+}

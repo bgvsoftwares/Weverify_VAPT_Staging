@@ -1,0 +1,46 @@
+﻿@model ViewModels.HRViewModels.AddRepoToTeamMemberViewModel
+
+@{
+    ViewBag.Title = "Add Member for reporting For " + Session["TMName"].ToString();
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManageReportedTeamMembers", "HRMgmt", new { tdid = Request.QueryString["tdid"] }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+@section LeftNavigation{ @Html.Partial("_NavLeftHRMgmt") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("AddReportingTeamMember", "HRMgmt", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.TeamDepartmentRowID)
+            <div class="form-horizontal">
+                <div class="form-group branch">
+                    @Html.LabelFor(model => model.TeamMemberName, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-8">
+                        @{
+                            if (ViewBag.RepoToTeamMember != null)
+                            {
+                                @Html.DropDownListFor(model => model.RepoToIds,
+                                    (MultiSelectList)ViewBag.RepoToTeamMember,
+                                    new { multiple = "true", @Style = "width:100%" })
+                                @Html.ValidationMessageFor(model => model.TeamMemberName, "", new { @class = "text-danger" })
+                            }
+                            else
+                            {
+                                <span class="text-danger">No member found!</span>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="all-button-bg">
+                    @Html.ActionLink("Back", "ManageReportedTeamMembers", "HRMgmt", new { tdid = Request.QueryString["tdid"] }, new { @class = "btn bun-bg btn-default" })
+                    <input class="btn bun-bg btn-default" type="submit" onclick="return validateForm()" value="Submit" />
+                </div>
+            </div>
+        }
+    </div>
+</div>

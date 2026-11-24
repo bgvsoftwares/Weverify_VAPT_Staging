@@ -1,0 +1,1642 @@
+@{
+    bool hideHeader = ViewBag.HideReportHeader != null
+                      && (bool)ViewBag.HideReportHeader;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BGV - @ViewBag.Title</title>
+    <link href='@Url.Content("~/Images/report.css")' rel="stylesheet" />
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script>
+        function btnsubmitC() {
+
+            $("input[name='userhtml']").val($("#repo").html());
+        }
+    </script>
+</head>
+<body>
+    <div>
+        @RenderSection("DisplayTitle", required: false)
+        @RenderSection("DisplayErrorMessage", required: false)
+    </div>
+    @if ((Model.ClientRowID == 1483 || Model.ClientRowID == 679 || Model.ClientRowID == 1606) && Model.ReportPart == "liveness")
+    {
+
+    }
+    else if (Model.ClientRowID == 1071 || Model.ClientRowID == 317 || Model.ClientRowID == 327 || Model.ClientRowID == 50) 
+    { 
+
+    }
+    else
+    {
+        if (!hideHeader)
+        {
+            <table id="tblReportHeader" width="793" align="center" style="background-color: #ffffff;border: 4px solid #999999;margin-bottom: 10px;">
+                <tr>
+                    <td colspan="2">
+                        <p style=" margin-bottom:24px; text-align:center">
+                            <input type="button" class="btn bun-bg btn-default" style="padding: 5px 10px 5px 10px;font-weight: bold;" value="Print Report" onclick="CallPrint('repo')" />
+                            <input type="button" class="btn bun-bg btn-default" style="padding: 5px 15px 5px 15px;font-weight: bold; text-align:right" value="Close" onclick="window.close()" />
+                            @if (Model.ClientRowID == 268 || Model.ClientRowID == 3)
+                            {
+                                <input type="button" class="btn bun-bg btn-default" style="padding: 5px 10px 5px 10px;font-weight: bold;" value="Print Report Word" onclick="GenerateWordReport('repo')" />
+                            }
+                            @if (Model.ClientRowID == 268 || Model.ClientRowID == 3)
+                            {
+                                <a href='@Url.Action("UpdateExecutive", "ReportQC", new { PersonalRowID = Model.PersonalRowID, ClientRowId = Model.ClientRowID })' class="btn bun-bg btn-default iframeCompanyRefNo" style="padding: 5px 10px 5px 10px; font-weight: bold;" id="clip">Update Excutive</a>
+                            }
+                            <input type="button" class="btn bun-bg btn-default" style="padding: 5px 10px 5px 10px;font-weight: bold;" value="Print auto report" onclick="GenerateWordReport('repo')" id="processReportsBtn" hidden />
+                        </p>
+                    </td>
+                </tr>
+
+
+
+                <!--<form id="pdfForm" method="post" action="/ReportQC/ConverdReportPDFFileToWord" enctype="multipart/form-data">
+                <input type="hidden" name="userhtml" />
+                <input type="hidden" value="@Model.CompanyRefNo" name="Refno" id="Refno" />
+                <input type="hidden" value="@Model.ClientRowID" name="ClientRowID" />
+                <input type="file" name="file" accept="pdf" onchange="return fileValidation1(this)" />-->
+                @*<button id="processReportsBtn"></button>*@
+
+                @* Conditional Download Button *@
+                <!--@if (new List<int> { 75, 860, 446, 944, 1128, 1130, 990, 762, 317, 327, 1160, 950, 885, 1218, 679, 1315, 787, 392, 1340, 1557, 932, 876, 1362, 1370 }.Contains(Model.ClientRowID))
+                {
+                        <button type="button" id="downloadBtn" style="border: outset; border-width: thick; padding: 8px 22px; background-color: #0896C4; border-style: none; color: #fff; cursor:pointer;">Download</button>
+
+                }
+                </form>-->
+                @using (Html.BeginForm("ConverdReportPDFFileToWord", "ReportQC", FormMethod.Post, new { enctype = "multipart/form-data", id = "pdfForm" }))
+                {
+                    <tr>
+                        <td align="center">
+                            <p style=" margin-bottom:24px;">
+                                @Html.TextBox("file", "", new { type = "file", @class = "btn bun-bg btn-default", @accept = "pdf", @onchange = "return fileValidation1(this)", @style = "padding: 5px 10px 5px 10px;font-weight: bold;" })
+                            </p>
+                        </td>
+                        <td align="center">
+                            @if (Model.ClientRowID == 75 || Model.ClientRowID == 860 || Model.ClientRowID == 446 || Model.ClientRowID == 944 || Model.ClientRowID == 1128 || Model.ClientRowID == 1130 || Model.ClientRowID == 990 || Model.ClientRowID == 762 || Model.ClientRowID == 317 || Model.ClientRowID == 327 || Model.ClientRowID == 1160 || Model.ClientRowID == 950 || Model.ClientRowID == 885 || Model.ClientRowID == 1218 || Model.ClientRowID == 679 || Model.ClientRowID == 1315 || Model.ClientRowID == 787 || Model.ClientRowID == 392 || Model.ClientRowID == 1340 || Model.ClientRowID == 1557 || Model.ClientRowID == 932 || Model.ClientRowID == 876 || Model.ClientRowID == 1362 || Model.ClientRowID == 1370)
+                            {
+                                <form method="post" action="/ReportQC/ConverdReportPDFFileToWord">
+                                    <input type="hidden" name="userhtml" />
+                                    <input type="hidden" value="@Model.CompanyRefNo" name="Refno" />
+                                    <input type="hidden" value="@Model.ClientRowID" name="ClientRowID" />
+                                    <input type="submit" id="btnsubmit" onclick="btnsubmitC();" value="Download" style="border: outset; border-width: thick; padding: 8px 22px; background-color: #0896C4; border-style: none; color: #fff; cursor:pointer!important;" />
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+
+                @using (Html.BeginForm("UploadReportPDFFileBYRWTM", "ReportQC", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    if (Model.ReportPart != "OFAC")
+                    {
+                        <tr>
+                            <td style="font-weight:bold" align="center">Report Type</td>
+                            <td align="center">
+                                @Html.DropDownList("ddlReportType", new List<SelectListItem>
+                {
+                new SelectListItem() {Text = "--Select--", Value="--Select--"},
+                new SelectListItem() {Text = "Interim", Value="Interim"},
+                new SelectListItem() {Text = "Final", Value="Final"}
+
+                }, new { style = "width: 150px;" })
+                            </td>
+                        </tr>
+                        <tr>
+
+                            <td><input type="hidden" value="@Model.ClientRowID" name="ClientRowID" /></td>
+                            <td><input type="hidden" value="@Model.SubCheckRowID" name="SubCheckRowID" /></td>
+
+
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:bold" align="center">Color Code</td>
+                            <td align="center">
+                                <div class="col-md-3">
+                                    @Html.DropDownList("ddlColor",
+              new SelectList(ViewBag.Color, "ColorId", "ColorName"),
+
+                                                  new { style = "width: 150px;" })
+
+                                </div>
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <td align="center">
+                                <p style="margin-bottom:24px;">
+                                    @Html.Label("click here to upload  report pdf file", new { @style = "padding: 5px 10px 5px 10px;font-weight: bold;" })
+                                    @Html.TextBox("file", "", new { type = "file", @class = "btn bun-bg btn-default", @accept = "pdf", @onchange = "return fileValidation(this)", @style = "padding: 5px 10px 5px 10px;font-weight: bold;" })
+                                </p>
+                            </td>
+                            <td align="center">
+                                <input id="pdfupload" type="submit" style="padding: 5px 10px 5px 10px;font-weight: bold;" class="btn bun-bg btn-default" value="Upload Final Report" disabled="disabled" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center">
+                                <p style="margin-bottom:24px;">
+                                    @Html.Label("click here to upload  report word file", new { @style = "padding: 5px 10px 5px 10px;font-weight: bold;" })
+                                    @Html.TextBox("file1", "", new { type = "file", @class = "btn bun-bg btn-default", @accept = "docx", @onchange = "return fileValidationDoc(this)", @style = "padding: 5px 10px 5px 10px;font-weight: bold;" })
+                                </p>
+                            </td>
+                            <td align="center">
+                                <input id="docupload" type="submit" style="padding: 5px 10px 5px 10px;font-weight: bold;" class="btn bun-bg btn-default" value="Upload Final Report" disabled="disabled" />
+                            </td>
+                        </tr>
+                    }
+                }
+
+            </table>
+        }
+
+    }
+
+
+    <div id="repo" style="width: 793px;align-content: center;margin: auto; ">
+        <table width="793" align="center" style="letter-spacing: 0.1px!important;">
+            <tr>
+                <td valign="top">
+                    @if (Model.ReportPart == "OFAC" && Model.ClientRowID == 762)
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportChecksShortInfo", required: false)
+                        @RenderSection("ReportSpecialCheckInfo", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+
+                    }
+                    else if ((Model.ClientRowID == 317 || Model.ClientRowID == 327) && (Model.ReportStatus == "BGV2"))
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportChecksShortInfo", required: false)
+                        @RenderSection("ReportEmploymentCheckInfo", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+                        @RenderBody()
+
+                    }
+
+                    else if ((Model.ClientRowID == 1160 || Model.ClientRowID == 1199) && Model.ReportPart == "")
+                    {
+                        @RenderSection("IBMCoverImage", required: false)
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportBGVPage11", required: false)
+                        @RenderSection("ReportEducationCheckInfo", required: false)
+                        @RenderSection("ReportEmploymentCheckInfo", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+                    }
+
+                    else if ((Model.ClientRowID == 1160 || Model.ClientRowID == 1199) && Model.ReportPart == "CRC")
+                    {
+                        @RenderSection("IBMCoverImage", required: false)
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportBGVPage11", required: false)
+                        @RenderSection("ReportCriminalDataBaseCheckInfo", required: false)
+                        @RenderSection("ReportCriminalCheckInfo", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+
+
+
+
+                    }
+
+                    else if (Model.ClientRowID == 860 && (Model.CaseType.ToLower() == "standard" || Model.CaseType.Trim() == ""))
+                    {
+                        if (Model.SubCheckRowID == 405)
+                        {
+                            @RenderSection("ReportCriminalCourtCheck", required: false)
+                        }
+                        else if (Model.SubCheckRowID == 417)
+                        {
+                            @RenderSection("ReportCriminalDatabaseCheckInfo", required: false)
+                            @RenderSection("ReportCriminalDatabaseCheckInfo1", required: false)
+
+                        }
+                        else if (Model.SubCheckRowID == 440)
+                        {
+                            @RenderSection("ReportCriminalCourtCheck1", required: false)
+                        }
+                        else if (Model.SubCheckRowID == 457)
+                        {
+                            @RenderSection("ReportCurrentCompany", required: false)
+                        }
+                        else if (Model.SubCheckRowID == 458)
+                        {
+                            @RenderSection("ReportCurrentCompany", required: false)
+                        }
+                        else if (Model.SubCheckRowID == 412)
+                        {
+                            @RenderSection("ReportCurrentEmploymentTier3", required: false)
+                            @RenderSection("ReportCurrentEmploymentTier3_1", required: false)
+                        }
+                        else if (Model.SubCheckRowID == 409)
+                        {
+                            @RenderSection("ReportCurrentEmploymentTier3", required: false)
+                            @RenderSection("ReportCurrentEmploymentTier3_1", required: false)
+                        }
+                        @RenderSection("St_Accenture_Employment", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+                    }
+                    else if (Model.ClientRowID == 860 && (Model.CaseType == "Non-Standard-Offline" || Model.CaseType.Trim() == ""))
+                    {
+                        if (Model.SubCheckRowID == 405 || Model.SubCheckRowID == 440)
+                        {
+                            @RenderSection("ReportCriminalCourtCheck", required: false)
+                            @RenderSection("ReportCriminalCourtCheck1", required: false)
+                            @RenderSection("St_Accenture_Employment", required: false)
+                        }
+                        else if (Model.SubCheckRowID == 417)
+                        {
+                            @RenderSection("ReportCriminalDatabaseCheckInfo", required: false)
+                            @RenderSection("St_Accenture_Employment", required: false)
+                            @RenderSection("ReportCriminalDatabaseCheckInfo1", required: false)
+                        }
+                        else if (Model.SubCheckRowID == 415)
+                        {
+                            @RenderSection("ReportCriminalDatabaseCheckInfo", required: false)
+                            @RenderSection("St_Accenture_Employment", required: false)
+                        }
+                        else if (Model.SubCheckRowID == 406)
+                        {
+                            @RenderSection("ReportCriminalDatabaseCheckInfo", required: false)
+                            @RenderSection("St_Accenture_Employment", required: false)
+                        }
+                        else
+                        {
+                            @RenderSection("St_Accenture_Employment", required: false)
+                        }
+                        @RenderSection("ReportDisclaimer", required: false)
+                    }
+                    else if (Model.ClientRowID == 860)
+                    {
+                        @RenderSection("St_Accenture_Employment", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+                    }
+
+                    else if (Model.ClientRowID == 3 && Model.Report_Type == "1")
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportChecksShortInfo", required: false)
+                        @RenderSection("ReportSpecialCheckInfo", required: false)
+                        @RenderSection("ReportSpecialKeyword", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+                        @RenderBody()
+                    }
+
+                    else if ((Model.ClientRowID == 317 || Model.ClientRowID == 327) && (Model.Report_Type == "CDN"))
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportChecksShortInfo", required: false)
+                        @RenderSection("ReportCriminalCheckInfo", required: false)
+
+                        @RenderSection("ReportNationalIdentityCheckInfo", required: false)
+                        @RenderSection("WiproSpecialCheckReport", required: false)
+
+                        @RenderSection("ReportDisclaimer", required: false)
+                        @RenderBody()
+                    }
+
+                    else if ((Model.ClientRowID == 317 || Model.ClientRowID == 327) && (Model.ReportStatus == "BGV1"))//Tech Mahindra Limited (446)
+                    {
+
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportChecksShortInfo", required: false)
+                        @RenderSection("ReportEducationCheckInfo", required: false)
+                        @RenderSection("ReportEmploymentCheckInfo", required: false)
+                        @*@RenderSection("ReportUANValidation", required: false)*@
+                        @RenderSection("ReportAddressCheckInfo", required: false)
+                        @RenderSection("ReportCriminalCheckInfo", required: false)
+                        @RenderSection("ReportNationalIdentityCheckInfo", required: false)
+
+
+
+
+
+
+                        @RenderSection("WiproProfessionalLicenseCheckReport", required: false)
+                        @RenderSection("WiproSpecialCheckReport", required: false)
+                        @RenderSection("WiproAdditionalProfessionalCertificationsReport", required: false)
+                        @RenderSection("EducationLicenceCheck", required: false)
+                        @RenderSection("WiproDrugTestVerificationReport", required: false)
+                        @RenderSection("WiproCreditCheckVerificationReport", required: false)
+                        @RenderSection("WiproFACISReport", required: false)
+                        @RenderSection("WiproRighttoWorkReport", required: false)
+                        @RenderSection("WiproReferenceReport", required: false)
+                        @RenderSection("WiproReportAvivaCheck", required: false)
+                        @RenderSection("WiproGapValidation", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+                        @RenderBody()
+
+                    }
+
+                    else if ((Model.ClientRowID == 1483 || Model.ClientRowID == 679 || Model.ClientRowID == 1606) && Model.ReportPart == "liveness")   //Tech Mahindra Limited(446)   INFOSYS	Infosys BPM Limited(944)
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportChecksShortInfo", required: false)
+                        @RenderSection("ReportNationalIdentityCheckInfo", required: false)
+                        @RenderSection("ReportSpecialCheckInfo", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+                        @RenderBody()
+                    }
+
+                    else if (Model.ClientRowID == 679)
+                    {
+
+                        if (Model.Report_Type == "UAN")
+                        {
+                            @RenderSection("ReportPersonalInfo", required: false)
+                            @RenderSection("ReportCheckShortInfo", required: false)
+                            @RenderSection("ReportSpecialCheckInfo", required: false)
+                            @RenderSection("ReportDisclaimer", required: false)
+
+                        }
+                        else
+                        {
+                            @RenderSection("ReportPersonalInfo", required: false)
+                            @RenderSection("ReportCheckShortInfo", required: false)
+                            @RenderSection("ReportAddressCheckInfo", required: false)
+                            @RenderSection("ReportCriminalCheckInfo", required: false)
+                            @RenderSection("ReportEducationCheckInfo", required: false)
+                            @RenderSection("ReportEmploymentCheckInfo", required: false)
+                            @RenderSection("ReportNationalIdentityCheckInfo", required: false)
+                            @RenderSection("ReportReferenceCheckInfo", required: false)
+
+                            @RenderSection("ReportSpecialCheckInfo", required: false)
+                            @RenderSection("ReportDisclaimer", required: false)
+                        }
+
+                    }
+
+                    else if ((Model.ClientRowID == 317 || Model.ClientRowID == 327) && (Model.ReportStatus == "Final"))//Tech Mahindra Limited (446)
+                    {
+
+
+
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportChecksShortInfo", required: false)
+
+                        if (Model.CheckFamilyRowID == 2)
+                        {
+                            @RenderSection("ReportAddressCheckInfo", required: false)
+                        }
+                        if (Model.CheckFamilyRowID == 5)
+                        {
+                            @RenderSection("ReportCriminalCheckInfo", required: false)
+                        }
+                        if (Model.CheckFamilyRowID == 11)
+                        {
+                            @RenderSection("ReportEducationCheckInfo", required: false)
+                            @RenderSection("WiproProfessionalLicenseCheckReport", required: false)
+                            @RenderSection("WiproAdditionalProfessionalCertificationsReport", required: false)
+                            @RenderSection("EducationLicenceCheck", required: false)
+                        }
+                        if (Model.CheckFamilyRowID == 12)
+                        {
+                            @RenderSection("ReportEmploymentCheckInfo", required: false)
+                        }
+                        if (Model.CheckFamilyRowID == 26)
+                        {
+                            @RenderSection("ReportNationalIdentityCheckInfo", required: false)
+                            @RenderSection("WiproRighttoWorkReport", required: false)
+                        }
+                        if (Model.CheckFamilyRowID == 40)
+                        {
+                            @RenderSection("WiproSpecialCheckReport", required: false)
+
+                            @RenderSection("WiproDrugTestVerificationReport", required: false)
+                            @RenderSection("WiproCreditCheckVerificationReport", required: false)
+
+                            @RenderSection("WiproDirectorshipCheckVerificationReport", required: false)
+                            @RenderSection("WiproFACISReport", required: false)
+                            @RenderSection("WiproGapValidation", required: false)
+                        }
+                        if (Model.CheckFamilyRowID == 30)
+                        {
+                            @RenderSection("WiproReferenceReport", required: false)
+                        }
+
+
+                        if (Model.ProcessName == "TD Bank India V5" || Model.ProcessName == "TD BANK India V6")
+                        {
+                            @RenderSection("ReportExternalDirectorshipCheckInfo", required: false)
+                        }
+
+                        if (Model.ProcessName == "THE BANK OF NEW YORK INDIA V2")
+                        {
+                            @RenderSection("ReportFamilyRelationshipCheckInfo", required: false)
+                        }
+
+
+                        if (Model.ClientRefID.ToUpper().Contains("AVIVA"))
+                        {
+                            @RenderSection("WiproReportAvivaCheck", required: false)
+
+                        }
+
+                        @RenderSection("ReportDisclaimer", required: false)
+                        @RenderBody()
+
+                    }
+
+                    else if (Model.ClientRowID == 890 && Model.ReportStatus == "Interim")
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportCheckShortInfo", required: false)
+
+
+                    }
+
+                    else if (Model.ClientRowID == 890 && Model.ReportStatus == "final")
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportCheckShortInfo", required: false)
+                        @RenderSection("ReportAddressCheckInfo", required: false)
+                        @RenderSection("ReportNationalIdentityCheckInfo", required: false)
+                        @RenderSection("ReportSpecialCheckInfo", required: false)
+                        @RenderSection("ReportCriminalCheckInfo", required: false)
+                        @RenderSection("ReportEducationCheckInfo", required: false)
+                        @RenderSection("ReportEmploymentCheckInfo", required: false)
+                        @RenderSection("ReportReferenceCheckInfo", required: false)
+
+                        @*@RenderSection("ReportSpecialKeyword", required: false)*@
+
+
+
+                        @RenderSection("ReportDisclaimer", required: false)
+
+
+                    }
+
+                    else if (Model.ClientRowID == 990 || Model.ClientRowID == 1750 || Model.ClientRowID == 1687 || Model.ClientRowID == 1644 || Model.ClientRowID == 1611 || Model.ClientRowID == 1539 || Model.ClientRowID == 950 || Model.ClientRowID == 885 || Model.ClientRowID == 392 || Model.ClientRowID == 1340 || Model.ClientRowID == 1557 || Model.ClientRowID == 1552 || Model.ClientRowID == 932 || Model.ClientRowID == 876 || Model.ClientRowID == 1362 || Model.ClientRowID == 1370)   //Tech Mahindra Limited(446)   INFOSYS	Infosys BPM Limited(944)
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportChecksShortInfo", required: false)
+                        @RenderSection("ReportEducationCheckInfo", required: false)
+                        @RenderSection("ReportEmploymentCheckInfo", required: false)
+                        @RenderSection("ReportReferenceCheckInfo", required: false)
+                        @RenderSection("ReportAddressCheckInfo", required: false)
+                        @RenderSection("ReportCriminalCheckInfo", required: false)
+                        @RenderSection("ReportNationalIdentityCheckInfo", required: false)
+                        @RenderSection("ReportGapCheckInfo", required: false)
+                        @RenderSection("ReportSpecialCheckInfoDrug", required: false)
+                        @RenderSection("ReportSpecialCheckInfo", required: false)
+                        if (Model.ClientRowID == 990)
+                        {
+                            @RenderSection("ReportSpecialCheckBankInfo", required: false)
+                        }
+                        @RenderSection("ReportSpecialDataBaseCheckInfo", required: false)
+
+
+                        @RenderSection("ReportBGVPage11", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+                        @RenderBody()
+                    }
+
+                    else if (Model.ClientRowID == 944 || Model.ClientRowID == 1128 || Model.ClientRowID == 1130 || Model.ClientRowID == 1211)  //Tech Mahindra Limited(446)   INFOSYS	Infosys BPM Limited(944)
+                    {
+
+
+                        @RenderSection("InfosysImage", required: false)
+                        @RenderSection("ReportChecksShortInfo", required: false)
+                        @RenderSection("ReportEducationCheckInfo", required: false)
+                        @RenderSection("ReportEmploymentCheckInfo", required: false)
+                        @RenderSection("ReportReferenceCheckInfo", required: false)
+                        @RenderSection("ReportAddressCheckInfo", required: false)
+                        @RenderSection("ReportCriminalCheckInfo", required: false)
+                        @RenderSection("ReportNationalIdentityCheckInfo", required: false)
+                        @RenderSection("ReportGapCheckInfo", required: false)
+                        @RenderSection("ReportSpecialCheckInfoDrug", required: false)
+                        @RenderSection("ReportSpecialCheckInfo", required: false)
+                        @RenderSection("ReportSpecialDataBaseCheckInfo", required: false)
+                        @RenderSection("ReportBGVPage11", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+                        @RenderBody()
+                    }
+                    else if (Model.ClientRowID == 1057) // CTSIL � UAN projects
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("UANCheck", required: false)
+
+                        @RenderSection("ReportDisclaimer", required: false)
+
+
+                    }
+                    else if (Model.ClientRowID == 787)   //  CapGemini
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportChecksShortInfo", required: false)
+                        @RenderSection("ReportEducationCheckInfo", required: false)
+                        @RenderSection("ReportEmploymentCheckInfo", required: false)
+                        @RenderSection("ReportEmployment1CheckInfo", required: false)
+                        @RenderSection("ReportCriminalCheckInfo", required: false)
+                        @RenderSection("ReportSpecialCheckInfoUAN", required: false)
+                        @RenderSection("ReportSpecialCheckInfo", required: false)
+                        @RenderSection("ReportSpecialCheckInfoToWork", required: false)
+                        @RenderSection("ReportSpecialCheckInfoCibil", required: false)
+                        @RenderSection("ReportSpecialCheckInfoGAP", required: false)
+                        @RenderSection("ReportBGVPage11", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+                    }
+                    else if (Model.ClientRowID == 607)
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @*@RenderSection("ReportChecksShortInfo", required: false)*@
+                        if (Model.ReportPart == "CDB")
+                        {
+                            @RenderSection("ReportSpecialCheckInfo", required: false)
+                            @RenderSection("ReportSpecialCheckInfoGlobalData11", required: false)
+                            @RenderSection("ReportSpecial11KeyWord", required: false)
+
+                            //_ReportSpecialCheckInfoGlobalData11
+                        }
+                        else
+                        {
+                            @RenderSection("ReportAddressCheckInfo", required: false)
+                            @RenderSection("ReportCriminalCheckInfo", required: false)
+                            @RenderSection("ReportEducationCheckInfo", required: false)
+                            @RenderSection("ReportEmploymentCheckInfo", required: false)
+                            @RenderSection("ReportReferenceCheckInfo", required: false)
+                            @RenderSection("ReportSpecialCheckInfo", required: false)
+                        }
+                        @RenderSection("ReportBGVPage11", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+                        @RenderBody()
+                    }
+
+                    else if (Model.ClientRowID == 722)
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportChecksShortInfo", required: false)
+                        @RenderSection("ReportEducationCheckInfo", required: false)
+
+                        @RenderSection("ReportEmploymentCheckInfo", required: false)
+                        @RenderSection("ReportReferenceCheckInfo", required: false)
+
+                        @RenderSection("ReportEmployment1CheckInfo", required: false)
+                        @RenderSection("ReportReference1CheckInfo", required: false)
+
+                        @RenderSection("ReportEmployment2CheckInfo", required: false)
+                        @RenderSection("ReportReference2CheckInfo", required: false)
+
+                        @RenderSection("ReportEmployment3CheckInfo", required: false)
+                        @RenderSection("ReportReference3CheckInfo", required: false)
+
+                        @RenderSection("ReportEmployment4CheckInfo", required: false)
+                        @RenderSection("ReportReference4CheckInfo", required: false)
+
+                        @RenderSection("ReportEmployment5CheckInfo", required: false)
+                        @RenderSection("ReportReference5CheckInfo", required: false)
+                        @RenderSection("ReportEmployment6CheckInfo", required: false)
+                        @RenderSection("ReportEmployment7CheckInfo", required: false)
+                        @RenderSection("ReportEmployment8CheckInfo", required: false)
+                        @RenderSection("ReportEmployment9CheckInfo", required: false)
+
+
+                        @RenderSection("ReportAddressCheckInfo", required: false)
+
+
+                        @RenderSection("ReportCriminalCheckInfo", required: false)
+                        @RenderSection("ReportCriminalCourtCheckInfo", required: false)
+
+
+
+
+                        @RenderSection("ReportGlobalDataBaseCheckInfo", required: false)
+                        @RenderSection("ReportSpecialCheckInfo", required: false)
+                        @RenderSection("ReportSpecialCheckInfoCibil", required: false)
+                        @RenderSection("GenpactDrugTestVerificationReportInfo", required: false)
+
+                        @* @RenderSection("ReportSpecialCheckInfoToWork", required false)*@
+
+                        @RenderSection("ReportNationalIdentityCheckInfo", required: false)
+                        @RenderSection("ReportSpecialCheckInfoToWork", required: false)
+                        @RenderSection("ReportSpecialCheckInfoGAP", required: false)
+                        @RenderSection("ReportSpecialCheckInfoUAN", required: false)
+                        @RenderSection("GenpactFacisCheck", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+                        @RenderBody()
+                    }
+
+                    else if (Model.ClientRowID == 75 || Model.ClientRowID == 1723)
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+
+                        @RenderSection("ReportEducationCheckInfo", required: false)
+                        @RenderSection("ReportEmploymentCheckInfo", required: false)
+                        @RenderSection("ReportCriminalCheckInfo", required: false)
+                        @RenderSection("ReportNationalIdentityCheckInfo", required: false)
+                        @RenderSection("ReportSpecialCVCheckInfo", required: false)
+                        @RenderSection("ReportSpecialUANCheckInfo", required: false)
+
+                        @RenderSection("ReportSpecialCheckDataBase", required: false)
+
+
+
+
+
+                        @RenderSection("ReportAddressDocCheckInfo", required: false)
+                        @RenderSection("ReportEducationDocCheckInfo", required: false)
+                        @RenderSection("ReportEmploymentDocCheckInfo", required: false)
+                        @RenderSection("ReportCriminalDocCheckInfo", required: false)
+                        @RenderSection("ReportNationalIdentityDocCheckInfo", required: false)
+                        @RenderSection("ReportDataBaseDocCheckInfo", required: false)
+                        @RenderSection("ReportUANDocCheckInfo", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+
+
+                    }
+
+                    else if (Model.ClientRowID == 1315)//   Synergy Power Pvt. Ltd
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportAddressInfo", required: false)
+                        @RenderSection("ReportEducationCheckInfo", required: false)
+                        @RenderSection("ReportEmploymentCheckInfo", required: false)
+                        @RenderSection("ReportCriminalCheckInfo", required: false)
+                        @RenderSection("ReportNationalIdentityCheckInfo", required: false)
+                        @RenderSection("ReportSpecialCVCheckInfo", required: false)
+                        @RenderSection("ReportSpecialCheckDataBase", required: false)
+
+                        @RenderSection("ReportAddressDocCheckInfo", required: false)
+                        @RenderSection("ReportEducationDocCheckInfo", required: false)
+                        @RenderSection("ReportEmploymentDocCheckInfo", required: false)
+                        @RenderSection("ReportCriminalDocCheckInfo", required: false)
+                        @RenderSection("ReportNationalIdentityDocCheckInfo", required: false)
+                        @RenderSection("ReportDataBaseDocCheckInfo", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+                    }
+
+                    else if (Model.ClientRowID == 1002 || Model.ClientRowID == 1158 || Model.ClientRowID == 1218)
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportEducationCheckInfo", required: false)
+                        @RenderSection("ReportEmploymentCheckInfo", required: false)
+                        @RenderSection("ReportGSASpecailVerificationReport", required: false)
+                        @RenderSection("ReportOIGSpecailVerificationReport", required: false)
+                        @RenderSection("ReportAddressDocCheckInfo", required: false)
+                        @RenderSection("ReportCriminalCheckInfo", required: false)
+                        @RenderSection("ReportReferenceReport", required: false)
+                        @RenderSection("ReportPassportVerificationReport", required: false)
+
+
+
+                        @RenderSection("ReportSocialMediaReport", required: false)
+                        @RenderSection("ReportGlobalDataBaseReport", required: false)
+                        @RenderSection("ReportDataBaseReport", required: false)
+                        @RenderSection("ReportOFACReport", required: false)
+                        @RenderSection("ReportFacisReport", required: false)
+                        @RenderSection("ReportDrugTestVerificationReport", required: false)
+                        @RenderSection("ReportGapVerificationReport", required: false)
+                        @RenderSection("ReportDisclaimerReport", required: false)
+
+
+
+
+
+
+
+                    }
+                    else if (Model.ClientRowID == 446)
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @*@RenderSection("ReportChecksShortInfo", required: false)*@
+                        @RenderSection("ReportEducationCheckInfo", required: false)
+                        @RenderSection("ReportEmploymentCheckInfo", required: false)
+                        @RenderSection("ReportGapCheckInfoTechM9", required: false)
+
+                        @RenderSection("ReportCriminalCheckInfo", required: false)
+
+                        @RenderSection("ReportSpecialTechMCreminalWatchList", required: false)
+
+                        @RenderSection("ReportReferenceCheckInfo", required: false)
+                        @RenderSection("ReportAddressCheckInfo", required: false)
+
+                        @RenderSection("ReportNationalIdentityCheckInfo", required: false)
+                        @RenderSection("TechCIBIL", required: false)
+
+
+                        @RenderSection("ReportSpecialCheckInfoDrug", required: false)
+                        @*@RenderSection("ReportSpecialCheckInfo", required: false)*@
+                        @RenderSection("ReportSpecialDataBaseCheckInfo", required: false)
+
+
+
+                        @RenderSection("ReportBGVPage11", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+                        @RenderBody()
+                    }
+                    @*else if (Model.ClientRowID == 268)
+        {
+            @RenderSection("ReportPersonalInfo", required: false)
+            @RenderSection("ReportAddressCheckInfo", required: false)
+            @RenderSection("ReportCriminalCheckInfo", required: false)
+            @RenderSection("ReportEducationCheckInfo", required: false)
+            @RenderSection("ReportEmploymentCheckInfo", required: false)
+
+            // @RenderSection("ReportDisclaimer", required: false)
+            @RenderBody()
+        }*@
+                    else if (Model.ClientRowID == 268 || Model.ClientRowID == 3 || Model.ClientRowID == 336 || Model.ClientRowID == 1487 || Model.ClientRowID == 871 ||
+                          Model.ClientRowID == 1202 || Model.ClientRowID == 1306 || Model.ClientRowID == 1381 || Model.ClientRowID == 1391 || Model.ClientRowID == 1396
+                          || Model.ClientRowID == 1459 || Model.ClientRowID == 1460 || Model.ClientRowID == 1480 || Model.ClientRowID == 1507 || Model.ClientRowID == 1509
+                          || Model.ClientRowID == 1565 || Model.ClientRowID == 1572 || Model.ClientRowID == 1619 || Model.ClientRowID == 1620 || Model.ClientRowID == 1609
+                          || Model.ClientRowID == 1613 || Model.ClientRowID == 1628)
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderBody()
+                    }
+
+                    else if (Model.ClientRowID == 1680 && (Model.ReportStatus == "Daimler" || Model.ReportStatus == "InterimRequstTM"))
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportCriminalCheckInfo", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+
+                        @RenderBody()
+                    }
+
+                    else if (Model.ClientRowID == 1708)
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportCheckShortInfo", required: false)
+                        @RenderSection("ReportSpecialCheckInfo", required: false)
+                        @RenderSection("ReportCriminalCheckInfo", required: false)
+                        @RenderSection("ReportReferenceCheckInfo", required: false)
+                        @RenderSection("ReportNationalIdentityCheckInfo", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+
+                        @RenderBody()
+                    }
+                    else if (Model.ClientRowID == 1071)
+                    {
+                        @RenderSection("ReportPersonalInfo", required: false)
+                        @RenderSection("ReportCheckShortInfo", required: false)
+                        @RenderSection("ReportGallahaerEducationCheckInfo", required: false)
+                        @RenderSection("ReportGallahaerEmploymentCheckInfo", required: false)
+                        @RenderSection("ReportGallagherAddressCheckInfo", required: false)
+                        @RenderSection("ReportGallagherCriminalCheckInfo", required: false)
+                        @RenderSection("ReportGallagherReferenceCheckInfo", required: false)
+                        @RenderSection("ReportGallagherNationalIdentityCheckInfo", required: false)
+                        @RenderSection("ReportGallagherSpecialCheckInfo", required: false)
+                        @RenderSection("ReportDisclaimer", required: false)
+
+                        @RenderBody()
+                    }
+
+                    @*else if (Model.ClientRowID == 50)
+        {
+            @RenderSection("ReportPersonalInfo", required: false)
+            @RenderSection("ReportCheckShortInfo", required: false)
+            @RenderSection("ReportCriminalCheckInfo", required: false)
+            @RenderSection("ReportSpecialCheckInfo", required: false)
+            @RenderSection("ReportDisclaimer", required: false)
+
+            @RenderBody()
+        }*@
+                    else
+                    {
+                        if (Model.ClientRowID == 50)
+                        {
+                            @RenderSection("ReportCyientPersonalInfo", required: false)
+                        }
+                        else
+                        {
+                            @RenderSection("ReportPersonalInfo", required: false)
+                        }
+
+                        @RenderSection("ReportCheckShortInfo", required: false)
+
+
+                        if (Model.ClientRowID == 1219 && Model.ReportPart == "Tiger-ADDC")
+                        {
+                            @RenderSection("ReportPersonalAddCheckInfo", required: false)
+                            @RenderSection("ReportCheckAddCheckShortInfo", required: false)
+
+
+
+
+                        }
+                        if (Model.ClientRowID == 1219)
+                        {
+
+                            @RenderSection("TigerGapValidation", required: false)
+                        }
+                        if (Model.ClientRowID == 1470)
+                        {
+                            @RenderSection("ReportEducationCheckInfo", required: false)
+                            @RenderSection("ReportEmploymentCheckInfo", required: false)
+                            @RenderSection("ReportAddressCheckInfo", required: false)
+                            @RenderSection("ReportCriminalCheckInfo", required: false)
+                        }
+                        else
+                        {
+                            if (Model.ClientRowID == 1481 || Model.ClientRowID == 1618)
+                            {
+                                @RenderSection("ReportBGVPage11", required: false)
+                            }
+                            if (Model.ClientRowID == 1674)
+                            {
+                                @RenderSection("ReportEducationCheckInfo", required: false)
+                                @RenderSection("ReportEmploymentCheckInfo", required: false)
+                            }
+                            else
+                            {
+                                @RenderSection("ReportAddressCheckInfo", required: false)
+                                @RenderSection("ReportCriminalCheckInfo", required: false)
+                                @RenderSection("ReportEducationCheckInfo", required: false)
+                                @RenderSection("ReportEmploymentCheckInfo", required: false)
+                            }
+
+                        }
+
+                        @RenderSection("ReportNationalIdentityCheckInfo", required: false)
+                        @RenderSection("ReportReferenceCheckInfo", required: false)
+                        if (Model.ClientRowID == 1674)
+                        {
+                            @RenderSection("ReportAddressCheckInfo", required: false)
+                            @RenderSection("ReportCriminalCheckInfo", required: false)
+                        }
+                        @RenderSection("ReportSpecialCheckInfo", required: false)
+                        @*@RenderSection("ReportSpecialKeyword", required: false)*@
+                        if (Model.ClientRowID == 559)
+                        {
+                            @RenderSection("ReportBGVPage11", required: false)
+                        }
+
+
+                        @RenderSection("ReportDisclaimer", required: false)
+                        @*@RenderSection("ReportChecksShortInfo", required: false)
+            @RenderSection("ReportCriminalCheckInfo", required: false)
+            @RenderSection("ReportEducationCheckInfo", required: false)
+            @RenderSection("ReportEmploymentCheckInfo", required: false)
+            @RenderSection("ReportNationalIdentityCheckInfo", required: false)
+            @RenderSection("ReportReferenceCheckInfo", required: false)
+            @RenderSection("ReportSpecialCheckInfo", required: false)
+
+            @RenderSection("ReportDisclaimer", required: false)*@
+                        @RenderBody()
+                    }
+
+
+
+                </td>
+            </tr>
+        </table>
+    </div>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
+<script src='@Url.Content("~/Scripts/modernizr-2.8.3.js")'></script>
+<script src='@Url.Content("~/Scripts/jquery-3.7.1.min.js")'></script>
+<script src="~/assets/NewScript/jquery.colorbox-min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".iframeCompanyRefNo").colorbox({ iframe: true, width: "90%", height: "72%" });
+    });
+</script>
+
+<script language="javascript">
+
+    function fileValidation(fileInput) {
+        var e = document.getElementById("ddlReportType");
+        var status = e.options[e.selectedIndex].value;
+
+        var m = document.getElementById("ddlColor");
+        var color = m.options[m.selectedIndex].value;
+        if (status == '--Select--') {
+            alert('Please select report type');
+            fileInput.value = '';
+            return false;
+        }
+        else if (color == '0') {
+            alert('Please select color Code');
+            fileInput.value = '';
+            return false;
+        }
+        else {
+            //var fileInput = document.getElementById('file');
+            var filePath = fileInput.value;
+
+            //var status = $("#ddlReportType").value;
+
+            var allowedExtensions = /(\.pdf|\.doc|\.docx)$/i;
+            if (!allowedExtensions.exec(filePath)) {
+                alert('Please upload file having extension .pdf only.');
+                fileInput.value = '';
+                $("#pdfupload").prop("disabled", true)
+                return false;
+            } else {
+                $("#pdfupload").prop("disabled", false);
+                return true;
+            }
+        }
+
+    }
+
+    function fileValidationDoc(fileInput) {
+        var e = document.getElementById("ddlReportType");
+        var status = e.options[e.selectedIndex].value;
+
+        var m = document.getElementById("ddlColor");
+        var color = m.options[m.selectedIndex].value;
+        if (status == '--Select--') {
+            alert('Please select report type');
+            fileInput.value = '';
+            return false;
+        }
+        else if (color == '0') {
+            alert('Please select color Code');
+            fileInput.value = '';
+            return false;
+        }
+        else {
+            //var fileInput = document.getElementById('file');
+            var filePath = fileInput.value;
+
+            //var status = $("#ddlReportType").value;
+
+            var allowedExtensions = /(\.docx|.doc)$/i;
+            if (!allowedExtensions.exec(filePath)) {
+                alert('Please upload file having extension .docx only.');
+                fileInput.value = '';
+                $("#docupload").prop("disabled", true)
+                return false;
+            } else {
+                $("#docupload").prop("disabled", false);
+                return true;
+            }
+        }
+
+    }
+
+    function fileValidation1(fileInput) {
+        //var fileInput = document.getElementById('file');
+        var filePath = fileInput.value;
+        var allowedExtensions = /(\.pdf)$/i;
+        if (!allowedExtensions.exec(filePath)) {
+            alert('Please upload file having extension .pdf only.');
+            fileInput.value = '';
+            $("#pdfConvertToWord").prop("disabled", true)
+            return false;
+        } else {
+            $("#pdfConvertToWord").prop("disabled", false);
+            return true;
+        }
+    }
+    function CallPrint(strid) {
+        var prtContent = document.getElementById(strid);
+        var WinPrint = window.open('', 'Report', 'left=0,top=0,width=800,height=600,toolbar=0,scrollbars=yes,status=0');
+        WinPrint.document.open();
+        WinPrint.document.write(
+            '<html>\n<head>' +
+            '<link href="/Images/report.css" rel="stylesheet" type="text/css" />' +
+            '\n</head>' +
+            '<body>' +
+            '<div> \n' + prtContent.innerHTML + ' \n</div> ' +
+            '</body>' +
+            '\n</html>'
+        );
+
+        WinPrint.document.close();
+        WinPrint.focus();
+        WinPrint.print();
+        //WinPrint.close();
+    }
+
+    function CallPrintNew(strid, filename) {
+        var prtContent = document.getElementById(strid);
+        var content =
+            '<html>\n<head>' +
+            '<link href="/Images/report.css" rel="stylesheet" type="text/css" />' +
+            '\n</head>' +
+            '<body>' +
+            '<div> \n' + prtContent.innerHTML + ' \n</div> ' +
+            '</body>' +
+            '\n</html>'
+
+
+        var blob = new Blob([content], { type: 'text/html' });
+
+        // Create a link element
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+
+        // Append the link, trigger click, and remove
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function CallWordDownload(strid) {
+        var prtContent = document.getElementById(strid);
+        var cssLink = '<link rel="stylesheet" href="/Images/report.css" type="text/css" />';
+
+        var html = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office'
+              xmlns:w='urn:schemas-microsoft-com:office:word'
+              xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+            <meta charset='utf-8'>
+            <title>Export to Word</title>
+            ${cssLink}
+        </head>
+        <body>
+            ${prtContent.innerHTML}
+        </body>
+        </html>`;
+
+        var blob = new Blob(['\ufeff', html], {
+            type: 'application/msword'
+        });
+
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = 'report.doc';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+    function ExportToWord(strid) {
+        var htmlContent = document.getElementById(strid).innerHTML;
+        var formData = new FormData();
+        formData.append("Html", htmlContent);
+
+        fetch('/Export/ToWord', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(msg => { throw new Error(msg); });
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const blobUrl = window.URL.createObjectURL(blob);
+
+                // Preview in a new tab
+                window.open(blobUrl, '_blank');
+
+                // Also trigger download
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = "Report.docx";
+                a.click();
+
+                setTimeout(() => window.URL.revokeObjectURL(blobUrl), 5000);
+            })
+            .catch(err => {
+                alert("Error: " + err.message);
+            });
+    }
+
+
+
+
+</script>
+<script>
+    //function GenerateWordReport(strid) {
+    //    var prtContent = document.getElementById(strid);
+
+    //    // Create preview window (like PDF print dialog)
+    //    var WinWord = window.open('', 'WordReport', 'left=0,top=0,width=800,height=600,toolbar=0,scrollbars=yes,status=0');
+    //    var  htmlContent = prtContent.innerHTML;
+
+    //    WinWord.document.open();
+    //    WinWord.document.write(`
+    //    <html>
+    //    <head>
+    //        <link href="/Images/report.css" rel="stylesheet" type="text/css" />
+    //        <title>Document Preview</title>
+    //        <style>
+    //            .download-container {
+    //                position: fixed;
+    //                bottom: 0;
+    //                left: 0;
+    //                width: 100%;
+    //                text-align: center;
+    //                padding: 10px 0;
+    //                background: #f5f5f5;
+    //                border-top: 1px solid #ddd;
+    //            }
+    //            .download-btn {
+    //                padding: 6px 12px;
+    //                background: #4CAF50;
+    //                color: white;
+    //                border: none;
+    //                cursor: pointer;
+    //                margin: 0 5px;
+    //            }
+    //            .close-btn {
+    //                padding: 6px 12px;
+    //                background: #f44336;
+    //                color: white;
+    //                border: none;
+    //                cursor: pointer;
+    //                margin: 0 5px;
+    //            }
+    //        </style>
+    //    </head>
+    //    <body>
+    //        <div style="padding-bottom: 50px;">${prtContent.innerHTML}</div>
+    //        <div class="download-container">
+    //            <button class="download-btn" onclick="downloadAsWord1()">Download as Word</button>
+    //            <button class="close-btn" onclick="window.close()">Close</button>
+    //        </div>
+    //        <script>
+    //            function downloadAsWord1() {
+    //                debugger;
+    //                var content ="";
+    //                 var contentToExport = \`${htmlContent.replace(/`/g, '\\`')}\`;
+    //                fetch('/ReportQC/GenerateWordFromHtml', {
+    //                    method: 'POST',
+    //                    headers: {
+    //                        'Content-Type': 'application/json',
+    //                    },
+    //                    body: JSON.stringify({ htmlContent: contentToExport })
+    //                })
+    //                .then(response => {
+    //                    if (!response.ok) throw new Error("Error generating document");
+    //                    return response.blob();
+    //                })
+    //                .then(blob => {
+    //                    var url = window.URL.createObjectURL(blob);
+    //                    var a = document.createElement('a');
+    //                    a.href = url;
+    //                    a.download = 'Report_${new Date().toISOString().slice(0, 10)}.docx';
+    //                    document.body.appendChild(a);
+    //                    a.click();
+    //                    setTimeout(() => {
+    //                        document.body.removeChild(a);
+    //                        window.URL.revokeObjectURL(url);
+    //                    }, 100);
+    //                })
+    //                .catch(error => {
+    //                    alert("Error: " + error.message);
+    //                });
+    //            }
+    //        <\/script>
+    //    </body>
+    //    </html>
+    //`);
+    //    WinWord.document.close();
+    //    WinWord.focus();
+    //}
+    function GenerateWordReport(strid) {
+        const prtContent = document.getElementById(strid);
+        const htmlContent = prtContent.innerHTML;
+
+        const WinWord = window.open('', 'WordReport', 'left=0,top=0,width=800,height=600,toolbar=0,scrollbars=yes,status=0');
+
+        // Escape backticks in content
+        const safeHtmlContent = htmlContent.replace(/`/g, '\\`');
+
+        WinWord.document.open();
+        WinWord.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Document Preview</title>
+        <link href="/Images/report.css" rel="stylesheet" type="text/css" />
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+          }
+
+          .download-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            background: #f5f5f5;
+            border-top: 1px solid #ddd;
+          }
+
+          .download-btn, .close-btn {
+            padding: 8px 16px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            margin: 0 5px;
+          }
+
+          .download-btn {
+            background: #4CAF50;
+            color: white;
+          }
+
+          .close-btn {
+            background: #f44336;
+            color: white;
+          }
+
+          .loader-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: white;
+            font-size: 18px;
+          }
+
+          .spinner {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #ffffff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+          }
+
+          @@keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        </style>
+      </head>
+      <body>
+        <div style="padding-bottom: 70px;" id="reportContent">${safeHtmlContent}</div>
+
+        <div class="download-container">
+          <button id="downloadBtn" class="download-btn">Download as Word</button>
+          <button class="close-btn" onclick="window.close()">Close</button>
+        </div>
+
+        <div class="loader-overlay" id="loaderOverlay">
+          <div class="spinner"></div>
+          Please wait...
+        </div>
+
+        <script>
+          document.getElementById("downloadBtn").addEventListener("click", function () {
+            const loader = document.getElementById("loaderOverlay");
+            loader.style.display = "flex";
+
+            const contentToExport = document.getElementById("reportContent").innerHTML;
+
+            fetch("/ReportQC/GenerateWordFromHtml", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ htmlContent: contentToExport })
+            })
+            .then(response => {
+              if (!response.ok) throw new Error("Error generating document");
+              return response.blob();
+            })
+            .then(blob => {
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "Report_" + new Date().toISOString().slice(0, 10) + ".docx";
+              document.body.appendChild(a);
+              a.click();
+              setTimeout(() => {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                loader.style.display = "none";
+              }, 100);
+            })
+            .catch(error => {
+              loader.style.display = "none";
+              alert("Error: " + error.message);
+            });
+          });
+        <\/script>
+      </body>
+      </html>
+    `);
+        WinWord.document.close();
+        WinWord.focus();
+    }
+
+</script>
+<script>
+
+    //var firstRun = false;
+    document.getElementById('processReportsBtn').addEventListener('click', function () {
+        debugger;
+        firstRun = true;
+        processAllIDs();
+    });
+    async function processAllIDs() {
+        debugger;
+        const personalRowIDs = [1578332, 1581195, 1581264, 1581427, 1582073]
+        localStorage.setItem('personalRowIDs', JSON.stringify(personalRowIDs));
+        localStorage.setItem('Index', 0);
+        firstRun = true;
+        for (const id of personalRowIDs) {
+            await processPersonalRowIDnew(id);
+            // Optional: add delay if needed
+            /*await delay(60000);*/
+        }
+        firstRun = false;
+    }
+    async function processPersonalRowIDnew(id) {
+        try {
+            debugger;
+            // Navigate to ReportMain page with the specific ID
+            // window.open(`http://localhost:54586/ReportQC/ReportMain?PersonalRowID=${id}&Report_Type=0&CaseStatus=Final&ClientRowId=787&ReportStatus=Final`, '_blank');
+            /*   window.location.href = `https://bgv.securitas-india.com/ReportQC/ReportMain?PersonalRowID=${id}&Report_Type=0&CaseStatus=Final&ClientRowId=787&ReportStatus=Final`;*/
+            window.location.href = `https://bgv.securitas-india.com/ReportQC/ReportMain?PersonalRowID=${id}&Report_Type=0&CaseStatus=Final&ClientRowId=327&ReportStatus=Final`;
+            console.log(id + " : " + firstRun);
+            // The rest of the processing will be handled on that page load
+
+        } catch (error) {
+            console.error('Error processing PersonalRowID', id, error);
+        }
+    }
+    // const storedArray = JSON.parse(localStorage.getItem('personalRowIDs'));
+    debugger;
+    //if (typeof firstRun !== 'undefined' && firstRun === true) {
+    //if (firstRun === true)
+    //{
+    const personalRowIDsss = JSON.parse(localStorage.getItem('personalRowIDs'));
+    if (personalRowIDsss !== null) {
+        document.addEventListener("DOMContentLoaded", function () {
+            debugger;
+            const urlParams = new URLSearchParams(window.location.search);
+            const personalRowID = urlParams.get('PersonalRowID');
+
+            if (personalRowID) {
+                // Extract the userhtml content from the page
+                const userHtmlContent = document.getElementById('repo').innerHTML; // or other selector as needed
+
+                // Now, perform your AJAX call or processing with this content
+                // For example:
+                $("input[name='userhtml']").val(userHtmlContent);
+
+                // Proceed with your existing logic, e.g., generate PDF, etc.
+                // Or, if the process is more complex, call a function here
+                // const personalRowIDsss = JSON.parse(localStorage.getItem('personalRowIDs'));
+                // if (personalRowIDsss !== null) {
+                // processPersonalRowID1(personalRowID);
+                processPersonalRowID1New1(personalRowID);
+                // }
+
+            }
+        });
+    }
+
+
+    // }
+
+
+    async function processPersonalRowID1(id, firstRun) {
+        try {
+            debugger;
+
+            //window.location.href = `http://localhost:54586/ReportQC/ReportMain?PersonalRowID=${id}&Report_Type=0`;
+            // Prepare form data for report generation
+            const form = document.getElementById('pdfForm');
+            $("input[name='userhtml']").val($("#repo").html());
+            var name = $("#Refno").val();
+            const formData = new FormData(form);
+            formData.append('PersonalRowID', id); // pass current ID if needed
+
+            // Generate and download the report PDF
+            const response = await fetch('/ReportQC/ConverdReportPDFFileToWord', {
+                method: 'POST',
+                body: formData
+            });
+
+            const disposition = response.headers.get('Content-Disposition');
+            let filename = name + ".pdf";
+            if (disposition && disposition.indexOf('filename=') !== -1) {
+                filename = disposition.split('filename=')[1].replace(/"/g, '');
+            }
+
+            const blob = await response.blob();
+
+            // Send file to backend for saving
+            // *** Download the PDF directly in the browser ***
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); // Create a temporary link
+            a.href = url;
+            a.download = filename; // Set the filename for download
+            document.body.appendChild(a); // Append the link to the body
+            a.click(); // Trigger the download
+            document.body.removeChild(a); // Remove the link after clicking
+            URL.revokeObjectURL(url); // Clean up the URL object
+
+            //// Call ReportMain with the current ID
+            const index = parseInt(localStorage.getItem('Index'), 10);
+            const personalRowIDsN = JSON.parse(localStorage.getItem('personalRowIDs'));
+            const value = personalRowIDsN[index];
+            if (index < 5) {
+                //window.open(`http://localhost:54586/ReportQC/ReportMain?PersonalRowID=${value}&Report_Type=0&CaseStatus=Final&ClientRowId=787&ReportStatus=Final`, '_blank');
+                /*  window.location.href = `https://bgv.securitas-india.com/ReportQC/ReportMain?PersonalRowID=${value}&Report_Type=0&CaseStatus=Final&ClientRowId=787&ReportStatus=Final`;*/
+                window.location.href = `https://bgv.securitas-india.com/ReportQC/ReportMain?PersonalRowID=${value}&Report_Type=0&CaseStatus=Final&ClientRowId=327&ReportStatus=Final`;
+            } else {
+                // Clears the array of personal row IDs
+                localStorage.removeItem('personalRowIDs');
+
+                // Clears the stored index
+                localStorage.removeItem('Index');
+            }
+
+
+            localStorage.setItem('Index', index + 1);
+        } catch (error) {
+            console.error('Error processing PersonalRowID', id, error);
+        }
+    }
+    async function processPersonalRowID1New(id, firstRun) {
+        try {
+            debugger;
+
+            //window.location.href = `http://localhost:54586/ReportQC/ReportMain?PersonalRowID=${id}&Report_Type=0`;
+            // Prepare form data for report generation
+            const form = document.getElementById('pdfForm');
+            $("input[name='userhtml']").val($("#repo").html());
+            var name = $("#Refno").val();
+            const formData = new FormData(form);
+            formData.append('PersonalRowID', id); // pass current ID if needed
+
+            // Generate and download the report PDF
+            const response = await fetch('/ReportQC/ConverdReportPDFFileToWordNew', {
+                method: 'POST',
+                body: formData
+            });
+
+            // Check if the request was successful
+            if (response.ok) {
+                console.log('PDF saved successfully on the server.');
+            } else {
+                console.error('Failed to save PDF on the server.');
+            }
+
+            //const disposition = response.headers.get('Content-Disposition');
+            //let filename = name + ".pdf";
+            //if (disposition && disposition.indexOf('filename=') !== -1) {
+            //    filename = disposition.split('filename=')[1].replace(/"/g, '');
+            //}
+
+            //const blob = await response.blob();
+
+            //// Send file to backend for saving
+            //// *** Download the PDF directly in the browser ***
+            //const url = URL.createObjectURL(blob);
+            //const a = document.createElement('a'); // Create a temporary link
+            //a.href = url;
+            //a.download = filename; // Set the filename for download
+            //document.body.appendChild(a); // Append the link to the body
+            //a.click(); // Trigger the download
+            //document.body.removeChild(a); // Remove the link after clicking
+            //URL.revokeObjectURL(url); // Clean up the URL object
+
+            //// Call ReportMain with the current ID
+            const index = parseInt(localStorage.getItem('Index'), 10);
+            const personalRowIDsN = JSON.parse(localStorage.getItem('personalRowIDs'));
+            const value = personalRowIDsN[index];
+            if (index < 5) {
+                //window.open(`http://localhost:54586/ReportQC/ReportMain?PersonalRowID=${value}&Report_Type=0&CaseStatus=Final&ClientRowId=787&ReportStatus=Final`, '_blank');
+                /*  window.location.href = `https://bgv.securitas-india.com/ReportQC/ReportMain?PersonalRowID=${value}&Report_Type=0&CaseStatus=Final&ClientRowId=787&ReportStatus=Final`;*/
+                window.location.href = `https://bgv.securitas-india.com/ReportQC/ReportMain?PersonalRowID=${value}&Report_Type=0&CaseStatus=Final&ClientRowId=327&ReportStatus=Final`;
+            } else {
+                // Clears the array of personal row IDs
+                localStorage.removeItem('personalRowIDs');
+
+                // Clears the stored index
+                localStorage.removeItem('Index');
+            }
+
+
+            localStorage.setItem('Index', index + 1);
+        } catch (error) {
+            console.error('Error processing PersonalRowID', id, error);
+        }
+    }
+    async function processPersonalRowID1New1(id, firstRun) {
+        try {
+            debugger;
+
+            //window.location.href = `http://localhost:54586/ReportQC/ReportMain?PersonalRowID=${id}&Report_Type=0`;
+            // Prepare form data for report generation
+            const form = document.getElementById('pdfForm');
+            $("input[name='userhtml']").val($("#repo").html());
+            var name = $("#Refno").val();
+            const formData = new FormData(form);
+            formData.append('PersonalRowID', id); // pass current ID if needed
+
+            // Generate and download the report PDF
+            const response = await fetch('/ReportQC/ConverdReportPDFFileToWordIron', {
+                method: 'POST',
+                body: formData
+            });
+
+            // Check if the request was successful
+            if (response.ok) {
+                console.log('PDF saved successfully on the server.');
+            } else {
+                console.error('Failed to save PDF on the server.');
+            }
+
+            //const disposition = response.headers.get('Content-Disposition');
+            //let filename = name + ".pdf";
+            //if (disposition && disposition.indexOf('filename=') !== -1) {
+            //    filename = disposition.split('filename=')[1].replace(/"/g, '');
+            //}
+
+            //const blob = await response.blob();
+
+            //// Send file to backend for saving
+            //// *** Download the PDF directly in the browser ***
+            //const url = URL.createObjectURL(blob);
+            //const a = document.createElement('a'); // Create a temporary link
+            //a.href = url;
+            //a.download = filename; // Set the filename for download
+            //document.body.appendChild(a); // Append the link to the body
+            //a.click(); // Trigger the download
+            //document.body.removeChild(a); // Remove the link after clicking
+            //URL.revokeObjectURL(url); // Clean up the URL object
+
+            //// Call ReportMain with the current ID
+            const index = parseInt(localStorage.getItem('Index'), 10);
+            const personalRowIDsN = JSON.parse(localStorage.getItem('personalRowIDs'));
+            const value = personalRowIDsN[index];
+            if (index < 5) {
+                //window.open(`http://localhost:54586/ReportQC/ReportMain?PersonalRowID=${value}&Report_Type=0&CaseStatus=Final&ClientRowId=787&ReportStatus=Final`, '_blank');
+                /*  window.location.href = `https://bgv.securitas-india.com/ReportQC/ReportMain?PersonalRowID=${value}&Report_Type=0&CaseStatus=Final&ClientRowId=787&ReportStatus=Final`;*/
+                window.location.href = `https://bgv.securitas-india.com/ReportQC/ReportMain?PersonalRowID=${value}&Report_Type=0&CaseStatus=Final&ClientRowId=327&ReportStatus=Final`;
+            } else {
+                // Clears the array of personal row IDs
+                localStorage.removeItem('personalRowIDs');
+
+                // Clears the stored index
+                localStorage.removeItem('Index');
+            }
+
+
+            localStorage.setItem('Index', index + 1);
+        } catch (error) {
+            console.error('Error processing PersonalRowID', id, error);
+        }
+    }
+    async function processPersonalRowID(id) {
+        var form = document.getElementById('pdfForm');
+        debugger;
+        // Prepare FormData
+        $("input[name='userhtml']").val($("#repo").html());
+        var formData = new FormData(form);
+
+        fetch('/ReportQC/ConverdReportPDFFileToWord', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                // Get filename from headers if needed
+                var filename = "Report.pdf";
+                var disposition = response.headers.get('Content-Disposition');
+                if (disposition && disposition.indexOf('filename=') !== -1) {
+                    filename = disposition.split('filename=')[1].replace(/"/g, '');
+                }
+                return response.blob().then(blob => ({ blob: blob, filename: filename }));
+            })
+            .then(({ blob, filename }) => {
+                // Create download link
+                var url = window.URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+
+                // After slight delay, redirect to report main with new PersonalRowID
+                setTimeout(function () {
+                    var newPersonalRowID = '1588976'; // Set dynamically as needed
+                    window.location.href = "http://localhost:54586/ReportQC/ReportMain?PersonalRowID=" + 1588976 + "&Report_Type=0";
+                }, 1000); // Adjust delay as needed
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    };
+</script>

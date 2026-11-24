@@ -1,0 +1,506 @@
+﻿
+@model dynamic
+@{
+    string Designation = "";
+
+
+    if (Session["Designation"] != null)
+    {
+        Designation = Session["Designation"].ToString();
+    }
+
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+    string CheckStatusid = "";
+    string ReportComment = "";
+
+
+    PersonalRowid = ViewBag.PersonalRowid;
+    SubCheckId = ViewBag.SubCheckId;
+    clientRowId = ViewBag.clientRowId;
+    CheckStatusid = ViewBag.CheckStatusid;
+    ReportComment = ViewBag.ReportComment;
+
+    string DesignationName = Convert.ToString(Session["Designation"]);
+    string hyperLink = string.Empty;
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    
+        hyperLink = Html.ActionLink("linkTitle", "ManageSpocReviewDashboardInfo", "ClientServicing", new { PersonalRowID = PersonalRowid, dispFor = "" }, new { @class = "headerbacklink" }).ToString();
+
+        ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+   
+
+    int SeverityRowID = 0;
+    string ColorCode = "";
+    string SeverityGrid = "";
+
+    SeverityRowID = ViewBag.SeverityRowID;
+    ColorCode = ViewBag.ColorCode;
+    SeverityGrid = ViewBag.SeverityGrid;
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftDataEntryProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <table class="main-tableframe personal-details-frame" border="0">
+        <tr>
+            <td>@Html.Partial("_PersonalDetails")</td>
+        </tr>
+        <tr>
+            <td>@Html.Partial("_CaseDocumentList")</td>
+        </tr>
+        <tr>
+            <td>@Html.Partial("_DocumentList")</td>
+        </tr>
+
+    </table>
+   @if(ViewBag.SpocActionRemark !=null )
+            {
+                <div class="row">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12"> Spoc Remark</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                @if (ViewBag.SpocActionRemark.PriorityType = "High")
+                                {
+                                    <p style="color:red;font-family:bold;"> @ViewBag.SpocActionRemark.SpocRemark </p>
+                                }
+                                else
+                                {
+                                    <p style="color:green;"> @ViewBag.SpocActionRemark.SpocRemark </p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+    <div class="col-md-12">
+        @using (Html.BeginForm("UpdateCriminalVerInfoBySpoc", "ClientServicing", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+            @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+            <input id="SubCheckId" type="hidden" value=@SubCheckId>
+            @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+            <input id="clientRowId" type="hidden" value=@clientRowId>
+            @Html.Hidden("clientRowId", clientRowId.ToString())
+
+            <input id="CheckStatusid" type="hidden" value=@CheckStatusid>
+            @Html.Hidden("CheckStatusid", CheckStatusid.ToString())
+
+            <input id="hdnDispositionID" type="hidden" name="hdnDispositionID">
+            <input id="hdnSeverity" type="hidden" name="hdnSeverity">
+            <input id="ColorsName" type="hidden" name="ColorsName">
+
+
+            @Html.ValidationSummary()
+
+            foreach (var category in Model)
+            {
+                <div class="container">
+                    @{
+                        string[] nm = category.Key.Split('_');
+                        string[] temp = category.Value.Split('_');
+
+                        if (@nm[2] == "textbox")
+                        {
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-sm">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7>*</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </div>
+                                    <div class="col-sm">
+
+                                        <p> @temp[0]</p>
+                                    </div>
+
+                                    <div class="col-sm">
+
+                                        @if (temp.Count() > 1)
+                                        {
+                                            if (nm[0] == "51")
+                                            {
+                                                <textarea class="form-control" type="text" name="@nm[0]" id="@temp[0]" value="@temp[1]" style="text-align:left; height:50px">@temp[1]</textarea>
+                                            }
+                                            else
+                                            {
+                                                <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@temp[1]'>
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            if (nm[0] == "51")
+                                            {
+                                                <textarea class="form-control" type="text" name="@nm[0]" id="@temp[0]" value="@temp[0]" style="text-align:left; height:50px">@temp[0]</textarea>
+                                            }
+                                            else
+                                            {
+                                                <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@temp[0]' maxlength="@nm[5]">
+                                            }
+                                        }
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        }
+                        if (@nm[2] == "dropdown")
+                        {
+                            <div class="container">
+                                <div class="row">
+
+                                    <div class="col-sm">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7>*</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </div>
+                                    <div class="col-sm">
+                                        &nbsp;
+                                    </div>
+                                    <div class="col-sm">
+                                        @{
+                                            string[] nmOption = nm[7].Split(',');
+                                        }
+                                        <select name=@nm[0] id=@nm[0]>
+                                            @for (int i = 0; i < nmOption.Length; i++)
+                                            {
+                                                if (@nmOption[i].Trim() == @nm[6])
+                                                {
+                                                    <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                                }
+                                                if (@nmOption[i].Trim() != @nm[6])
+                                                {
+                                                    <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                                }
+                                            }
+                                        </select>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        }
+
+                        if (@nm[2] == "checkbox")
+                        {
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-sm">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7>*</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </div>
+                                    <div class="col-sm">
+
+                                        @{
+                                            if (@nm[5] == "TRUE")
+                                            {
+                                                <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value="checked" checked>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value=@nm[0]>
+                                            }
+                                        }
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        }
+                        if (@nm[2] == "fileUpload")
+                        {
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-sm">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7>*</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </div>
+                                    <div class="col-sm">
+                                        <input type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        }
+                    }
+
+                </div>
+
+            }
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <p>Severity</p>
+                    </div>
+                    <div class="col-sm-4">
+                        &nbsp;
+                    </div>
+                    <div class="col-sm-4">
+                        <input id="Severity" type="text" width="300" name="Severity" disabled="disabled" value=@SeverityGrid>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <p>Color</p>
+                    </div>
+                    <div class="col-sm-4">
+                        &nbsp;
+                    </div>
+                    <div class="col-sm-4">
+                        <input id="ColorName" type="text" name="ColorName" disabled="disabled" value=@ColorCode>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-sm-12 cytoscape-parent">
+                    <div class="w-400 h-400 d-inline-block" id="cytoscape-container"></div>
+                </div>
+            </div>
+            List<SelectListItem> RemarkPrioritytypeList = new List<SelectListItem>();
+            RemarkPrioritytypeList.Add(new SelectListItem { Text = "High", Value = "High" });
+            RemarkPrioritytypeList.Add(new SelectListItem { Text = "Low", Value = "Low" });
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <p>Remark Priority type :</p>
+                    </div>
+                    <div class="col-sm-4">
+                        &nbsp;
+                    </div>
+                    <div class="col-md-4">
+                        @if (RemarkPrioritytypeList != null)
+                        {
+                            @Html.DropDownList("Prioritytype", new SelectList(RemarkPrioritytypeList, "Text", "Value"), new { @class = "form-control" })
+                        }
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <p>Action Remarks :</p>
+                    </div>
+                    <div class="col-md-8">
+                        <textarea id="Remarks" class="form-control" type="text" name="Remarks" value="@ReportComment" style="text-align:left;"> @ReportComment </textarea>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class="container">
+                <div class="row">
+
+                    <div class="col-sm-3" style="text-align:right;">
+                        @Html.ActionLink("Back", "ManageSpocReviewDashboardInfo", "ClientServicing", new { CheckStatusId = CheckStatusid }, new { @class = "btn btn-default VerEmailDetails" })
+
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.ActionLink("Attachment", "UplodVerificationDocs", "ClientServicing", new { scid = SubCheckId, pe = PersonalRowid }, new { @class = "iframeUpdateVerDoc cboxElement callbacks btn btn-default", @id = "UplodVerificationDocs" })
+                    </div>
+                    <div class="col-sm-2">
+                        <input class="btn bun-bg btn-default" onclick="return validateFormApprove()" type="submit" value="Submit" name="action" />
+                    </div>
+
+                    @if (CheckStatusid == "103" && clientRowId == "990")
+                    {
+                        <div class="col-sm-2">
+                            <input class="btn bun-bg btn-default" onclick="return validateFormReject()" type="submit" value="Reject" name="action" />
+                        </div>
+                    }
+
+
+
+
+                </div>
+            </div>
+            <br />
+            <br />
+            <br />
+
+
+
+        }
+    </div>
+</div>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    <script src="~/Scripts/tinymceNew.min.js"></script>
+    <script src="~/Scripts/tinymce-jquery.min.js"></script>
+
+    <script>
+        $('textarea').tinymce({
+            height: 200,
+            plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+            ],
+            toolbar: 'undo redo | blocks | bold italic backcolor | ' +
+                'alignleft aligncenter alignright alignjustify | ' +
+                'bullist numlist outdent indent | removeformat | help'
+        });
+        // Prevent jQuery UI dialog from blocking focusin
+        $(document).on('focusin', function (e) {
+            if ($(e.target).closest(".tox-tinymce, .tox-tinymce-aux, .moxman-window, .tam-assetmanager-root").length) {
+                e.stopImmediatePropagation();
+            }
+        });
+    </script>
+    <style>
+        .tox-tinymce {
+            margin-top: 10px !important;
+        }
+
+        .tox-editor-header {
+            box-shadow: none !important;
+            z-index: 0 !important;
+            border-bottom: 0.5px solid #000 !important;
+        }
+
+        .tox-statusbar__branding {
+            display: none !important;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            $(".iframeUpdateVerDoc").colorbox({ iframe: true, width: "60%", height: "60%" });
+        });
+
+        function validateFormReject() {
+            if ($('#Remarks').val() == '') {
+                alert("Please mention the reason!");
+                $('#Remarks').focus();
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+
+}
+<style>
+    .mandatory-star {
+        color: red;
+    }
+
+    .btn {
+        padding: 10px 40px 10px 40px !important;
+    }
+
+    input[type=text], textarea {
+        width: 100%;
+        padding: 22px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    select {
+        width: 100%;
+        padding: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    label {
+        padding: 12px 12px 12px 0;
+        display: inline-block;
+    }
+
+    input[type=submit] {
+        background-color: #04AA6D;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        float: right;
+    }
+
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+
+    .container {
+        border-radius: 5px;
+        /*background-color: #f2f2f2;*/
+        padding: 8px;
+        font-size: 1.2rem !important;
+    }
+
+    .col-25 {
+        float: left;
+        width: 25%;
+        margin-top: 6px;
+    }
+
+    .col-75 {
+        float: left;
+        width: 40%;
+        margin-top: 6px;
+        margin-left: 90px;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+
+    /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+    @@media screen and (max-width: 600px) {
+        .col-25, .col-75, input[type=submit] {
+            width: 100%;
+            margin-top: 0;
+        }
+    }
+</style>

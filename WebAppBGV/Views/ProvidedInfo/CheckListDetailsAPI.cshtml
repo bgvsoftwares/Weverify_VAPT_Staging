@@ -1,0 +1,110 @@
+@model List<List<ViewModels.TempViewModel.CheckItem>>
+
+
+<div style="background-color: darkgray; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+    <h2 style="text-align: center; padding: 15px; margin: 0; font-size: 20px !important; color: white; font-weight: 600;">
+        <i class="fa fa-list-alt" style="margin-right: 8px;"></i>Check List Details
+    </h2>
+</div>
+<div class="background-check-container" style="padding: 10px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+
+    @if (Model != null && Model.Count > 0)
+    {
+        foreach (var innerList in Model)
+        {
+            foreach (var check in innerList)
+            {
+                <div class="card shadow-sm mb-4" style="border: 1px solid #e3e6f0; border-radius: 8px; background-color: #ffffff; box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1); margin-bottom: 25px;">
+
+                    <div class="card-header d-flex justify-content-between align-items-center" style="background-color: rgb(17, 201, 183); border-bottom: 1px solid #e3e6f0; padding: 15px 20px; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+                        <h4 style="margin: 0; color: white; font-weight: 600; font-size: 1.15rem;">
+                            <i class="fa fa-shield-alt" style="margin-right: 8px;"></i>@check.CHECKNAME
+                        </h4>
+                        @*<div style="
+                                 margin-top: 14px;">
+                                <span class="badge" style="background-color: #eaecf4; color: #3a3b45; font-weight: 500; padding: 6px 10px; border-radius: 4px; font-size: 0.85rem; margin-right: 5px;">
+                                    ID: @check.CHECKID
+                                </span>
+                                <span class="badge" style="background-color: #eaecf4; color: #3a3b45; font-weight: 500; padding: 6px 10px; border-radius: 4px; font-size: 0.85rem; ">
+                                    CheckStatus: @check.CHECKSTATUS
+                                </span>
+                            </div>*@
+                    </div>
+
+                    <div class="card-body" style="padding: 20px;">
+
+                        @if (check.entitydetails != null && check.entitydetails.Count > 0)
+                        {
+                            <h5 style="color: #5a5c69; font-size: 1rem; font-weight: 600; margin-bottom: 12px; border-left: 4px solid #36b9cc; padding-left: 8px;">
+                                Details
+                            </h5>
+                            <div class="table-responsive" style="margin-bottom: 20px;">
+                                <table class="table table-hover table-striped align-middle" style="width: 100%; border-collapse: collapse;">
+                                    <thead style="background-color: #f1f3f9; color: #36b9cc;">
+                                        <tr>
+                                            <th style="padding: 10px 12px; border: 1px solid #e3e6f0; width: 50%;">Attribute Description</th>
+                                            <th style="padding: 10px 12px; border: 1px solid #e3e6f0; width: 65%;">Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="text-align:center;">
+                                        @foreach (var detail in check.entitydetails)
+                                        {
+                                            <tr>
+                                                <td style="padding: 10px 12px; border: 1px solid #e3e6f0; color: #6e707e;">
+                                                    <strong>@detail.subentitydesc</strong>
+                                                </td>
+                                                <td style="padding: 10px 12px; border: 1px solid #e3e6f0; color: #2e384d;">
+                                                    @detail.subentityvalue
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+
+                        @if (check.entityDocList != null && check.entityDocList.Count > 0)
+                        {
+                            <h5 style="color: #5a5c69; font-size: 1rem; font-weight: 600; margin-bottom: 12px; border-left: 4px solid #36b9cc; padding-left: 8px;">
+                                Documents
+                            </h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle" style="width: 100%; border-collapse: collapse;">
+                                    <thead style="background-color: #f1f3f9; color: #36b9cc;">
+                                        <tr>
+                                            <th style="padding: 10px 12px; border: 1px solid #e3e6f0;">File Name</th>
+                                            <th style="padding: 10px 12px; border: 1px solid #e3e6f0;">File ID</th>
+                                            <th style="padding: 10px 12px; border: 1px solid #e3e6f0;">Uploaded Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="text-align:center;">
+                                        @foreach (var doc in check.entityDocList)
+                                        {
+                                            <tr>
+                                                <td style="padding: 10px 12px; border: 1px solid #e3e6f0; color: #2e384d;">
+                                                    <i class="fa fa-file-alt text-primary" style="margin-right: 6px;"></i> @doc.FILENAME
+                                                </td>
+                                                <td style="padding: 10px 12px; border: 1px solid #e3e6f0; color: #2e384d;">
+                                                    <code>@doc.FILEID</code>
+                                                </td>
+                                                <td style="padding: 10px 12px; border: 1px solid #e3e6f0; color: #2e384d;">
+                                                    @doc.UPLOADED_DATE
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    }
+    else
+    {
+        <div class="alert alert-info text-center" style="padding: 20px; background-color: #e8f4f8; border: 1px solid #bce8f1; border-radius: 6px; color: #31708f;">
+            <i class="fa fa-info-circle" style="margin-right: 5px;"></i> No check details!.
+        </div>
+    }
+</div>

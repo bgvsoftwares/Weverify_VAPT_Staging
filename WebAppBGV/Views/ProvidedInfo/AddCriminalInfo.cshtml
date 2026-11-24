@@ -1,0 +1,1244 @@
+﻿@model dynamic
+@{
+
+    ViewBag.Title = "Add Criminal Info (" + Convert.ToString(Session["CandidateName"]) + ")";
+    string Department = Convert.ToString(Session["Department"]);
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = string.Empty;
+    if (Request.QueryString["window"] == "TLDE")
+    {
+        hyperLink = Html.ActionLink("linkTitle", "ManageCandidateChecksForReportQCTM", "ProvidedInfo", new { PersonalRowID = @ViewBag.PersonalRowid, dispFor = "TeamMember" }, new { @class = "headerbacklink" }).ToString();
+        ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    }
+
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+    string CaseStatus2 = "";
+    string CheckStatusId = "";
+
+    CaseStatus2 = Session["CaseStatus"].ToString();
+
+    PersonalRowid = @ViewBag.PersonalRowid;
+    SubCheckId = @ViewBag.SubCheckId;
+    clientRowId = @ViewBag.clientRowId;
+    CheckStatusId = @ViewBag.checkstatusid;
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftDataEntryProvided") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+@*@if (ViewBag.ErrorMsg != null)
+    {
+        <div class="errormsg">@ViewBag.ErrorMsg.ToString()</div>
+    }*@
+<div class="container">
+    @using (Html.BeginForm("AddCriminalInfo", "ProvidedInfo", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+        @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+        <input id="SubCheckId" type="hidden" value=@SubCheckId>
+        @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+        <input id="clientRowId" type="hidden" value=@clientRowId>
+        @Html.Hidden("clientRowId", clientRowId.ToString())
+
+        @Html.ValidationSummary()
+        @Html.Partial("_PersonalDetails")
+        @Html.Partial("_UploadedDocumentList")
+        @Html.Partial("_CaseDocumentList")
+        @Html.Partial("_ClientSpecialInstructionsDE")
+
+        //
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-2 col-md-2 col-sm-12">
+                    <label>Copy Paste Text</label>
+                </div>
+                <div class="col-lg-7 col-md-7 col-sm-12">
+                    <textarea class="form-control" id="CopyPaste_Text"></textarea>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-12">
+                    <input type="button" class="btn" value="Paste" id="btnCopyPaste" onclick="CopyPasteText()" style="border:1px solid #11c9b7; color: #FFF; background: #11c9b7;" />
+                </div>
+            </div>
+        </div>
+        //
+        ///
+        //if (clientRowId != "1255")
+        //{
+            <div class="row row-sm p-2 mt-2 ms-5" id="NADiv" style="background:#11c9b7; margin:5px 20px 5px 20px;padding: 3px 0px;">
+                <div class="col-md-12 d-flex pr-0">
+                    @Html.CheckBox("Notraised", false, new { onchange = "NotRaised(this)", @class = "form-check-input", @style = "height: 20px;width:20px;margin: 0px 5px;" })<b style="color:white;padding-left:30px;font-size:1.3rem;">Not Applicable</b>
+                </div>
+            </div>
+      //  }
+
+        //
+        <div class="container" id="container">
+            <div class="container-fluid mb-2 p-0" id="top_div">
+                <div class="row row-sm mt-3">
+                    <div class="col-md-6 col-sm-6">Same as Address</div>
+                    <div class="col-md-6 col-sm-6">
+                        @if (ViewBag.AddressChecklist != null)
+                        {
+                            @Html.DropDownList("AddressCheck", new SelectList(ViewBag.AddressChecklist, "SubCheckRowID", "SubCheckName"), new { @class = "form-control" })
+                        }
+                    </div>
+                </div>
+                @foreach (var category in Model)
+                {
+                    <div class="row row-sm mt-3">
+                        @{
+                            string[] nm = category.Key.Split('_');
+
+
+                            if (@nm[2] == "textbox")
+                            {
+
+                                <div class="col-md-6 col-sm-6">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <span style="color:red!important; font-weight:bolder!important;"> @nm[4] </span>
+                                    @if (@Session["ClientRowID"].ToString() == "990" && @nm[0] == "60")
+                                    {
+                                        if (ViewBag.SubCheckId.ToString() == "2" || ViewBag.SubCheckId.ToString() == "4" || ViewBag.SubCheckId.ToString() == "5" || ViewBag.SubCheckId.ToString() == "6" || ViewBag.SubCheckId.ToString() == "7" || ViewBag.SubCheckId.ToString() == "13" || ViewBag.SubCheckId.ToString() == "23" || ViewBag.SubCheckId.ToString() == "24" || ViewBag.SubCheckId.ToString() == "25" || ViewBag.SubCheckId.ToString() == "26" || ViewBag.SubCheckId.ToString() == "27" || ViewBag.SubCheckId.ToString() == "30" || ViewBag.SubCheckId.ToString() == "315" || ViewBag.SubCheckId.ToString() == "373" || ViewBag.SubCheckId.ToString() == "374" || ViewBag.SubCheckId.ToString() == "399")
+                                        {
+                                            <p style="color:red">POS / Duration of Stay  Date format should be DD-MMM-YYYY ( Eg. 02-Jan-2002 To 21-Mar-2024 )</p>
+                                        }
+                                    }
+                                    <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                </div>
+                            }
+                            else if (@nm[2] == "dropdown")
+                            {
+                                <div class="col-md-6 col-sm-6">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <span> @nm[4] </span>
+                                    @{
+                                        string[] nmOption = nm[7].Split(',');
+                                    }
+                                    @if (@nm[0] == "592")
+                                    {
+                                        <input type="text" class="form-control" value="@category.Value" readonly />
+                                    }
+                                    else
+                                    {
+                                        <select name=@nm[0] id=@nm[0]>
+                                            @for (int i = 0; i < nmOption.Length; i++)
+                                            {
+                                                if (@nmOption[i].Trim() == @nm[6])
+                                                {
+                                                    <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                                }
+                                                if (@nmOption[i].Trim() != @nm[6])
+                                                {
+                                                    <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                                }
+                                            }
+                                        </select>
+                                    }
+                                </div>
+                            }
+                            if (@nm[2] == "checkbox")
+                            {
+                                <div class="col-md-6 col-sm-6">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <span> @nm[4] </span>
+                                    @{
+                                        if (@nm[6] == "TRUE")
+                                        {
+                                            <input type="checkbox" id=@nm[0] name=@nm[0] value="checked" checked>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id=@nm[0] name=@nm[0] value=@nm[0]>
+                                        }
+                                    }
+                                </div>
+                            }
+                            if (@nm[2] == "fileUpload")
+                            {
+                                <div class="col-md-6 col-sm-6">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <span> @nm[4] </span>
+                                    <input type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                                </div>
+                            }
+                        }
+
+                    </div>
+                }
+
+                <div class="row row-sm mt-3">
+                    <div class="col-md-6 col-sm-6">
+                        @Html.Label("Check Status", htmlAttributes: new { @class = " control-label text-right" })
+                    </div>
+                    @if (@ViewBag.clientRowId == "990")
+                    {
+                        <div class="col-md-6 col-sm-6">
+                            @Html.DropDownList("CheckStatus", new List<SelectListItem>
+                   { new SelectListItem{Text="Completed", Value="Completed"},
+                     new SelectListItem{Text="Insufficent", Value="Insufficent"},
+                     new SelectListItem{Text="Rejected", Value="Rejected"},
+                     new SelectListItem{Text="Review Requested", Value="Review Requested"},
+                     new SelectListItem { Text = "WIP-Pending", Value = "WIP-Pending" } },
+                       new { @class = "checkStatus", @id = "CheckStatus" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-6 col-sm-6">
+                            @Html.DropDownList("CheckStatus", new List<SelectListItem>
+               { new SelectListItem{Text="Completed", Value="Completed"},
+                 new SelectListItem{Text="Insufficent", Value="Insufficent"},
+                 new SelectListItem{Text="Rejected", Value="Rejected"},
+                 new SelectListItem{Text="Review Requested", Value="Review Requested"},
+                 new SelectListItem { Text = "WIP-Pending", Value = "WIP-Pending" },
+                 new SelectListItem { Text = "Not Applicable", Value = "Not Applicable" }},
+                                                           new { @class = "checkStatus", @id = "CheckStatus" })
+                        </div>
+                    }
+                </div>
+
+                <div class="row row-sm mt-3">
+                    <div class="col-md-6 col-sm-6">Check Remarks</div>
+                    <div class="col-md-6 col-sm-6">
+                        <select name="CheckRemarks" id="datalist"></select>
+                    </div>
+                </div>
+
+                <div class="row row-sm mt-3">
+                    <div class="col-md-6 col-sm-6">
+                        @Html.Label("INFRemarks", htmlAttributes: new { @class = "control-label" })
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                        @Html.TextArea("INFRemarks", new { @class = "form-control", @rows = "2", @disabled = "disabled" })
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-12" style="text-align:center; justify-content:center;display:flex; margin-top:10px;">
+                        @if (CaseStatus2 != "Closed" && CheckStatusId != "1")
+                        {
+                            <input id="WithQcval" name="WithQcval" value="" hidden />
+                            <input class="btn" type="submit" value="Submit" style="width:15rem!important; border-radius:.90rem; font-size:1.6rem!important;" onclick="validateForm()" />
+                            <div class="w-100 d-flex justify-content-end">
+                                <input class="btn" type="submit" id="SubmitWithQC" style="width: 19rem !important; margin-left: 15PX; border-radius: .90rem; font-size: 1.6rem !important" value="SubmitWithQC" onclick="validateFormWithQc()" disabled />
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid mt-2 p-0" id="bottom_div">
+                <div class="row h-100">
+                    <div class="col-md-12">
+                        <img id="bigpic" src="" style="display:none;height:100%; width:100%;" />
+                        <iframe id="bigpdf" src="" style="display: none; height: 100%; width: 100%;"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            if ('@TempData["MessageRejection"]' != '') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Rejection Reason',
+                    html: '<div class="errormsg" style="text-align:center;">@TempData["MessageRejection"].ToString()</div>'
+                });
+            }
+        });
+        function showPicture(url) {
+            var sourceOfPicture = url + '?embedded = true';
+            var exe = getExtension(url);
+            //var url1 = Url.Content(url);
+            if (exe = 'pdf') {
+                var img = document.getElementById('bigpdf');
+                img.src = sourceOfPicture.replace('90x90', '225x225');
+                img.style.display = "block";
+            }
+            else {
+                var img = document.getElementById('bigpic')
+                img.src = sourceOfPicture.replace('90x90', '225x225');
+                img.style.display = "block";
+            }
+
+        }
+        function getExtension(path) {
+            var basename = path.split(/[\\/]/).pop(),  // extract file name from full path ...
+                // (supports `\\` and `/` separators)
+                pos = basename.lastIndexOf(".");       // get last position of `.`
+
+            if (basename === "" || pos < 1)            // if file name is empty or ...
+                return "";                             //  `.` not found (-1) or comes first (0)
+
+            return basename.slice(pos + 1);            // extract extension ignoring `.`
+        }
+
+
+    </script>
+    <script>
+        $('#AddressCheck').change(function () {
+            if ($("#AddressCheck").val() != 0) {
+                var CheckId = $("#AddressCheck").val();
+                var PersonalId = $("#PersonalRowid").val();
+                $.ajax({
+                    data: { PId: PersonalId, CId:CheckId },
+                    url: '@Url.Action("GetCheckAddress", "ProvidedInfo")',
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#52').val(data.Address);
+                        $('#60').val(data.DurationOfStay);
+                        $('#58').val(data.Country);
+                    }
+                });
+            }
+        });
+
+    </script>
+    <script>
+        $('#CheckStatus').change(function () {
+            debugger
+            $("#datalist").empty();
+            var Curlist = $("#CheckStatus").val();
+
+            if (Curlist == "Insufficent") {
+                $('#vs').css('display', 'flex');
+                var url = "/ProvidedInfo/GetCandidatesRemarks/"
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    //dataType: 'json',
+                    success: function (data) {
+                        //$('#vs').css('display', 'flex');
+                        var items = '<option>--Select Remarks--</option>';
+                        $.each(data, function (Remarks, val) {
+                            items += "<option value='" + val.Remarks + "'>" + val.Remarks + "</option>";
+                        });
+                        items += '<option>Other</option>';
+                        $("#datalist").append(items);
+                    }
+                });
+
+            }
+            else {
+                $('#vs').css('display', 'none');
+            }
+        });
+    </script>
+    <script>
+        $('#datalist').change(function () {
+            if ($('#datalist').val() == 'Other') {
+                $('#INFRemarks').val('')
+                document.getElementById("INFRemarks").placeholder = "Write Other Remarks...";
+            }
+            else { $('#INFRemarks').val($('#datalist').val()); }
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+            if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected" || $("#CheckStatus").val() == "Review Requested") {
+                $("#INFRemarks").prop("disabled", false);
+            }
+            else {
+                $("#INFRemarks").prop("disabled", true);
+            }
+
+
+            if ($("#CheckStatus").val() == "Completed") {
+                $("#SubmitWithQC").prop("disabled", false);
+
+            } else {
+                $("#SubmitWithQC").prop("disabled", true);
+            }
+        });
+
+        $(function () {
+
+
+
+            $("#CheckStatus").change(function () {
+                if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected" || $("#CheckStatus").val() == "Review Requested") {
+                    $("#INFRemarks").prop("disabled", false);
+                    $('#INFRemarks').focus();
+                }
+                else {
+                    $("#INFRemarks").prop("disabled", true);
+                }
+
+
+                if ($("#CheckStatus").val() == "Completed") {
+                    $("#SubmitWithQC").prop("disabled", false);
+
+                } else {
+                    $("#SubmitWithQC").prop("disabled", true);
+                }
+            });
+        });
+
+        function validateForm() {
+            if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected" || $("#CheckStatus").val() == "Review Requested") {
+                if ($("#INFRemarks").val().trim() == '') {
+                    alert("Please mention the reason!");
+                    $('#INFRemarks').focus();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function validateFormWithQc() {
+            $('#WithQcval').val('SubmitWithQCApprove')
+            return true;
+        }
+    </script>
+
+    <script>        
+        function NotRaised(element) {
+            if ($('#Notraised').is(':checked')) {
+                $("#382").attr('checked', true);
+                $("#61").val('Not Applicable');
+                $("#59").val('Not Applicable');
+                $("#52").val('Not Applicable');
+                $("#56").val('Not Applicable');
+                $("#CheckStatus").val('Not Applicable');
+            }
+            else {
+                $("#382").attr('checked', false);
+                $("#61").val('');
+                $("#59").val('');
+                $("#52").val('');
+                $("#56").val('');
+                $("#CheckStatus").val('');
+
+            }
+
+        }
+    </script>
+    <script>
+        $(".docShow").click(function () {
+            $("#top_div").addClass("topdiv");
+            $("#bottom_div").addClass("bottomdiv");
+        });
+    </script>
+
+    @*//////////////////////////////////////*@
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected" || $("#CheckStatus").val() == "Review Requested") {
+                $("#INFRemarks").prop("disabled", false);
+            }
+            else {
+                $("#INFRemarks").prop("disabled", true);
+            }
+             var CountryName = '@(ViewBag.CountryName)';
+            var StateName = '@(ViewBag.StateName)';
+            var CityName = '@(ViewBag.CityName)';
+
+            var Countryid = '@(ViewBag.countryid)';
+            var Stateid = '@(ViewBag.StateId)';
+            var Cityid = '@(ViewBag.CityId)';
+
+            if ($('#34').val() != null) {
+
+                $.getJSON('/Master/BindCountry/', function (data) {
+                    var items = '<option value="">-- Select Country --</option>';
+                    $.each(data, function (i, countries) {
+                        items += "<option value='" + countries.Value + "'>" + countries.Text + "</option>";
+                    });
+                    $('#34').html(items);
+                    $("#34 option").filter(function () {
+                        return this.text == CountryName;
+                    }).attr('selected', true);
+                    //$('#34').val($('#hdnAV_State').val());
+                    //$('#AV_District').val('');
+                    //$('#AV_City').val('');
+                    //$('#AV_Pincode').val('');
+
+                });
+            }
+
+            if (StateName != null) {
+                $.getJSON('/Master/BindState/' + Countryid, function (data) {
+                    var items = '<option value="">-- Select State --</option>';
+                    $.each(data, function (i, States) {
+                        items += "<option value='" + States.Value + "'>" + States.Text + "</option>";
+                    });
+                    $('#44').html(items);
+                    //$('#44').val($('#HfStateId').val());
+                    $("#44 option").filter(function () {
+                        return this.text == StateName;
+                    }).attr('selected', true);
+                    //$('#AV_District').val('');
+                    //$('#AV_City').val('');
+                    //$('#AV_Pincode').val('');
+                });
+            }
+
+            if (CityName != null) {
+                $.getJSON('/Master/BindDistrict/' + Stateid, function (data) {
+                    var items = '<option value="">-- Select District --</option>';
+                    $.each(data, function (i, Districts) {
+                        items += "<option value='" + Districts.Value + "'>" + Districts.Text + "</option>";
+                    });
+                    $('#32').html(items);
+                    //$('#32').val($('#HfCityId').val());
+                    $("#32 option").filter(function () {
+                        return this.text == CityName;
+                    }).attr('selected', true);
+                    //$('#AV_District').val('');
+                    //$('#AV_City').val('');
+                    //$('#AV_Pincode').val('');
+                });
+            }
+
+
+            if ($('#hdnAV_Country').val() != null) {
+                $.getJSON('/Master/BindState/' + $('#hdnAV_Country').val(), function (data) {
+                    var items = '<option value="">-- Select State --</option>';
+                    $.each(data, function (i, States) {
+                        items += "<option value='" + States.Value + "'>" + States.Text + "</option>";
+                    });
+                    $('#AV_State').html(items);
+                    $('#AV_State').val($('#hdnAV_State').val());
+                    //$('#AV_District').val('');
+                    //$('#AV_City').val('');
+                    //$('#AV_Pincode').val('');
+                });
+            }
+
+            //Bind District base on StateRowID
+            if ($('#hdnAV_State').val() != null) {
+                $.getJSON('/Master/BindDistrict/' + $('#hdnAV_State').val(), function (data) {
+                    var items = '<option value="">-- Select District --</option>';
+                    $.each(data, function (i, Districts) {
+                        items += "<option value='" + Districts.Value + "'>" + Districts.Text + "</option>";
+                    });
+                    $('#AV_District').html(items);
+                    $('#AV_District').val($('#hdnAV_District').val());
+                });
+            }
+
+            //Bind Location base on DistrictRowID
+            if ($('#hdnAV_District').val() != null) {
+                $.getJSON('/Master/BindLocation/' + $('#hdnAV_District').val(), function (data) {
+                    var items = '<option value="">-- Select City --</option>';
+                    $.each(data, function (i, Cities) {
+                        items += "<option value='" + Cities.Value + "'>" + Cities.Text + "</option>";
+                    });
+                    $('#AV_City').html(items);
+                    $('#AV_City').val($('#hdnAV_City').val());
+                    //$('#AV_Pincode').val('');
+                });
+            }
+
+            //PinCode Bind
+            if ($("#hdnAV_City").val() == null) {
+                var url = "/Master/GetPinCodeByLocationId/" + $("#hdnAV_City").val();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+                    success: function (pinCode) {
+                        $('#AV_Pincode').val(pinCode);
+                        //$('#AV_Pincode').val($('#hdnAV_Pincode').val());
+                    }
+                });
+            }
+
+            if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected" || $("#CheckStatus").val() == "Review Requested") {
+                $("#INFRemarks").prop("disabled", false);
+            }
+            else {
+                $("#INFRemarks").prop("disabled", true);
+            }
+        });
+
+        $(function () {
+
+            //Bind State base on CountryRowID
+            $('#34').change(function () {
+                $.getJSON('/Master/BindState/' + $('#34').val(), function (data) {
+                    var items = '<option value="">-- Select State --</option>';
+                    $.each(data, function (i, States) {
+                        items += "<option value='" + States.Value + "'>" + States.Text + "</option>";
+                    });
+                    $('#44').html(items);
+                    $('#HfCountryName').val($('#34 option:selected').html());
+
+                    //$('#AV_District').val('');
+                    //$('#AV_City').val('');
+                    //$('#AV_Pincode').val('');
+                });
+            });
+
+            //Bind District base on StateRowID
+            $('#44').change(function () {
+                $.getJSON('/Master/BindDistrict/' + $('#44').val(), function (data) {
+                    var items = '<option value="">-- Select District --</option>';
+                    $.each(data, function (i, Districts) {
+                        items += "<option value='" + Districts.Value + "'>" + Districts.Text + "</option>";
+                    });
+                    $('#32').html(items);
+                    $('#HfStateName').val($('#44 option:selected').html());
+
+
+                });
+            });
+
+            $('#32').change(function () {
+
+                $('#HfCityName').val($('#32 option:selected').html());
+
+            });
+
+
+
+
+            $("#CheckStatus").change(function () {
+                if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected" || $("#CheckStatus").val() == "Review Requested") {
+                    $("#INFRemarks").prop("disabled", false);
+                    $('#INFRemarks').focus();
+                }
+                else {
+                    $("#INFRemarks").prop("disabled", true);
+                }
+            });
+        });
+
+        function validateForm() {
+            if ($("#CheckStatus").val() == "Insufficent" || $("#CheckStatus").val() == "Rejected") {
+                if ($("#INFRemarks").val().trim() == '') {
+                    alert("Please mention the reason!");
+                    $('#INFRemarks').focus();
+                    event.preventDefault();
+                    return false;
+                }
+                else {
+                    const infRemarks = $("#INFRemarks").val().trim();
+                    if (infRemarks.length < 15) {
+                        alert("Please provide a reason that is at least 15 characters long!");
+                        $('#INFRemarks').focus();
+                        event.preventDefault();
+                        return false;
+                    }
+                    return true;
+                }
+            }
+
+
+            function normalizeDate(dateStr) {
+                if (!dateStr) return '';
+
+                if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+                    var parts = dateStr.split('-');
+                    return parts[2] + '-' + parts[1] + '-' + parts[0];
+                }
+
+                return dateStr;
+            }
+
+            var dob = normalizeDate($('#100').val());
+            var doj = new Date().toISOString().split('T')[0];
+
+            if (dob != '') {
+                debugger
+                var dateOfBirth = new Date(dob);
+                var dateOfJoin = new Date(doj);
+
+                var age = dateOfJoin.getFullYear() - dateOfBirth.getFullYear();
+                var monthDiff = dateOfJoin.getMonth() - dateOfBirth.getMonth();
+
+                if (monthDiff < 0 || (monthDiff === 0 &&  .getDate() < dateOfBirth.getDate())) {
+                    age--;
+                }
+
+                if (age < 18) {
+                    alert("Age should be more than 18 years. from date of joining!");
+                    event.preventDefault();
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+    </script>
+
+
+    <script>
+        $(document).ready(function () {
+            function checkConditions() {
+                var Pincode = $('#42').val();
+                if (Pincode.length == 6) {
+                    var url = "/ProvidedInfo/GetLocationByPincode?Pincode=" + Pincode.trim();
+                    $.ajax({
+                        type: 'GET',
+                        url: url,
+                        async: false,
+                        dataType: 'json',
+                        success: function (data) {
+                            debugger
+                            // Clear the select tag before appending new options
+                            if (data.DistrictName != null || data.StateName != null || data.CountryName != null) {
+                                $('#32').empty();
+                                $('#44').empty();
+                                $('#34').empty();
+                                // Append options to the select tag
+                                $('#32').append("<option value='" + data.DistrictRowID + "'>" + data.DistrictName + "</option>");
+                                $('#44').append("<option value='" + data.StateRowID + "'>" + data.StateName + "</option>");
+                                $('#34').append("<option value='" + data.CountryRowID + "'>" + data.CountryName + "</option>");
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            //console.error(xhr, status, error);
+                        }
+                    });
+                }
+            }
+            // Check conditions on page load
+            checkConditions();
+            // Check conditions on input
+            $('#42').on('input', function () {
+                checkConditions();
+            });
+        });
+    </script>
+
+    <script>
+        function CopyPasteText() {
+            var CopyPaste_Text = $('#CopyPaste_Text').val().replace(/[\n\r]+/g, "•");;
+            if (CopyPaste_Text != '') {
+                var url = "/ProvidedInfo/GetCopyPasteText?Copytext=" + CopyPaste_Text + "&CheckId=Criminal";
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    async: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        //if (data.DistrictName != null) {
+                        //    $('#32').empty();
+                        //    $('#32').append("<option value='" + data.DistrictRowID + "'>" + data.DistrictName + "</option>");
+                        //}
+                        //if (data.StateName != null) {
+                        //    $('#44').empty();
+                        //    $('#44').append("<option value='" + data.StateRowID + "'>" + data.StateName + "</option>");
+                        //}
+                        if (data.CountryName != null) {
+                            $('#58').empty();
+                            $('#58').append("<option value='" + data.CountryRowID + "'>" + data.CountryName + "</option>");
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '58',
+                                    Value: data.CountryName,
+                                    CheckFamilyRowid: 5
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+
+                        }
+                        if (data.AddressLine1 != "") {
+                            $('#52').val(data.AddressLine1);
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '52',
+                                    Value: data.AddressLine1,
+                                    CheckFamilyRowid: 5
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+
+                        }
+                        if (data.FromDate != "") {
+                            $('#60').val(data.FromDate + " To " + data.ToDate);
+
+
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '60',
+                                    Value: data.FromDate + " To " + data.ToDate,
+                                    CheckFamilyRowid: 5
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+
+
+                        }
+                        if (data.IsPermanentAddresssameasCurrentAddress != null) {
+                            $('#377').empty();
+                            $('#377').append("<option value='" + data.IsPermanentAddresssameasCurrentAddress + "'>" + data.IsPermanentAddresssameasCurrentAddress + "</option>");
+
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '377',
+                                    Value: data.IsPermanentAddresssameasCurrentAddress,
+                                    CheckFamilyRowid: 5
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+
+
+                        }
+                        //if (data.PincodeZipCode != null) {
+                        //    $('#42').val(data.PincodeZipCode);
+                        //}
+
+
+                    },
+                    error: function (xhr, status, error) {
+                        //console.error(xhr, status, error);
+                    }
+                });
+            }
+        }
+    </script>
+    @*//////////////////////////////////////*@
+    <script>
+        function CopyPasteText() {
+            var CopyPaste_Text = $('#CopyPaste_Text').val().replace(/[\n\r]+/g, "•");;
+            if (CopyPaste_Text != '') {
+                var url = "/ProvidedInfo/GetCopyPasteText?Copytext=" + CopyPaste_Text + "&CheckId=Criminal";
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    async: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        //if (data.DistrictName != null) {
+                        //    $('#32').empty();
+                        //    $('#32').append("<option value='" + data.DistrictRowID + "'>" + data.DistrictName + "</option>");
+                        //}
+                        //if (data.StateName != null) {
+                        //    $('#44').empty();
+                        //    $('#44').append("<option value='" + data.StateRowID + "'>" + data.StateName + "</option>");
+                        //}
+                        if (data.CountryName != null) {
+                            $('#58').empty();
+                            $('#58').append("<option value='" + data.CountryRowID + "'>" + data.CountryName + "</option>");
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '58',
+                                    Value: data.CountryName,
+                                    CheckFamilyRowid: 5
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+
+
+
+                        }
+                        if (data.AddressLine1 != "") {
+                            $('#52').val(data.AddressLine1);
+
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '52',
+                                    Value: data.AddressLine1,
+                                    CheckFamilyRowid: 5
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+
+                        }
+                        if (data.FromDate != "") {
+                            $('#60').val(data.FromDate + " To " + data.ToDate);
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '60',
+                                    Value: data.FromDate + " To " + data.ToDate,
+                                    CheckFamilyRowid: 5
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+
+                        }
+                        if (data.IsPermanentAddresssameasCurrentAddress != null) {
+                            $('#377').empty();
+                            $('#377').append("<option value='" + data.IsPermanentAddresssameasCurrentAddress + "'>" + data.IsPermanentAddresssameasCurrentAddress + "</option>");
+
+
+                            //=========================================================================
+                            var Pid = $('#PersonalRowid').val();
+                            var Sid = $('#SubCheckId').val();
+                            var clid = $('#clientRowId').val();
+                            debugger;
+                            $.ajax({
+                                type: 'POST',
+                                url: '/ProvidedInfo/SaveIVerifyData',
+                                data: JSON.stringify({
+                                    PersonalRowId: Pid,
+                                    SubCheckRowId: Sid,
+                                    ClientRowId: clid,
+                                    AntecedentRowid: '377',
+                                    Value: data.IsPermanentAddresssameasCurrentAddress,
+                                    CheckFamilyRowid: 5
+                                }),
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (res) {
+
+                                },
+                                error: function (err) {
+                                    console.error('Something Went Wrong', err);
+                                }
+                            });
+                            //=========================================================================
+
+
+                        }
+                        //if (data.PincodeZipCode != null) {
+                        //    $('#42').val(data.PincodeZipCode);
+                        //}
+
+
+                    },
+                    error: function (xhr, status, error) {
+                        //console.error(xhr, status, error);
+                    }
+                });
+            }
+        }
+
+        $(document).ready(function () {
+            // add calender for valuemomentum
+            var id = $("#clientRowId").val();
+            if (id == 1680) {
+                $("#645").attr("placeholder", "DD-MM-YYYY");
+                $("#645").datepicker({
+                    dateFormat: 'MM-yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: 'c-100:c+100',
+                    startDate: new Date(),
+                    maxDate: 0,
+                    autoclose: true,
+                    onSelect: function () {
+                        updateDurationStay();
+                    }
+                });
+                $("#646").attr("placeholder", "DD-MM-YYYY");
+                $("#646").datepicker({
+                    dateFormat: 'MM-yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: 'c-100:c+100',
+                    startDate: new Date(),
+                    maxDate: 0,
+                    autoclose: true,
+                    onSelect: function () {
+                        updateDurationStay();
+                    }
+                });
+
+                function updateDurationStay() {
+                    var fromVal = $("#645").val();
+                    var toVal = $("#646").val();
+
+                    if (fromVal && toVal) {
+                        $("#60").val(fromVal + " to " + toVal);
+                    }
+                }
+            }
+
+            if (id == 446) {
+                $("#60").attr("placeholder", "DD-MM-YYYY");
+                $("#60").datepicker({
+                    dateFormat: 'dd-MM-yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: 'c-100:c+100',
+                    startDate: new Date(),
+                    maxDate: 0,
+                    autoclose: true
+                });
+            }
+
+        });
+
+
+    </script>
+
+
+}
+<style>
+
+    .btn {
+        padding: 10px 40px 10px 40px !important;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 22px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    input[type=text], textarea {
+        width: 100%;
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 0px;
+        resize: vertical;
+    }
+
+    select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 0px;
+        resize: vertical;
+    }
+
+    label {
+        padding: 12px 12px 12px 0;
+        display: inline-block;
+    }
+
+    input[type=submit] {
+        background-color: #04AA6D;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        float: right;
+    }
+
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+
+    .container {
+        border-radius: 5px;
+        /*background-color: #f2f2f2;*/
+        padding: 8px;
+        font-size: 1.2rem !important;
+    }
+
+    .col-25 {
+        float: left;
+        width: 25%;
+        margin-top: 6px;
+    }
+
+    .col-75 {
+        float: left;
+        width: 40%;
+        margin-top: 6px;
+        margin-left: 90px;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+
+    /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+    @@media screen and (max-width: 600px) {
+        .col-25, .col-75, input[type=submit] {
+            width: 100%;
+            margin-top: 0;
+        }
+    }
+
+    .ui-menu {
+        height: 200px;
+        overflow: scroll;
+        z-index: 999;
+        width: 470px;
+    }
+
+    /*///////////////////////////*/
+
+    .topdiv {
+        height: 300px;
+        overflow-y: scroll;
+        border-bottom: 2px solid #11c9b7;
+    }
+
+    .bottomdiv {
+        height: 300px;
+    }
+</style>

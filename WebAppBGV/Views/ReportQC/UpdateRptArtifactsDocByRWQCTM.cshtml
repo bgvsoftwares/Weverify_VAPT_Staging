@@ -1,0 +1,174 @@
+﻿
+@{
+    ViewBag.Title = "Manage Uploaded Document Artifacts For (" + Convert.ToString(Session["CandidateName"]) + ")";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                @if (Model != null && Model.UploadedDocForRQQCTM != null)
+                {
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    @{
+                                        WebGrid grid = new WebGrid(rowsPerPage: 10, ajaxUpdateContainerId: "grid");
+                                        grid.Bind(Model.UploadedDocForRQQCTM, autoSortAndPage: false, rowCount: Model.UploadedDocForRQQCTM.Count);
+                                    }
+                                    @grid.GetHtml(
+                            htmlAttributes: new { id = "grid", @class = "table" },
+                            headerStyle: "thead-inverse",
+                            rowStyle: "ordertxt",
+                            footerStyle: "custpaging",
+                            mode: WebGridPagerModes.All,
+                            columns: new[]
+                            {
+                            grid.Column(header: "No.", style:"col-md-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                            grid.Column(columnName: "SubCheckName", header: "Check Name", canSort: false, style:"col-md-3"),
+                            grid.Column(columnName: "DocumentType", header: "Document Type", canSort: false, style:"col-md-1"),
+                            grid.Column("FileName", canSort: false, format: (item)=> {
+                                        string FldPathDoc = System.Configuration.ConfigurationManager.AppSettings["provideddocuments"].ToString();
+                                        string DownloadLink = string.Format("<a href=\"{0}\" target=\"_blank\">"+item.FileName +"</a>",Url.Content(FldPathDoc + item.FileName));
+                                    return new HtmlString(DownloadLink);
+                                }, style:"delete col-md-2"),
+
+                            grid.Column(columnName: "Remarks", header: "Description", canSort: false, style:"col-md-2"),
+                                   grid.Column(header: "Map Artifacts", canSort: false, format: (item) => {
+                                    string strActive=string.Format("<a href=\"#\" id=\"Delete_{0}\" class=\"adchange\" >{1}</a>",item.VerifiedUploadRowID,"");
+                                    if (item.RptArtiFacts == 1)
+                                    {
+                                        strActive += "<input name="+ item.VerifiedUploadRowID +" id="+ item.VerifiedUploadRowID +" checked='true' type='checkbox' onchange='adchange(this)' />";
+                                    }
+                                     else
+                                    {
+                                        strActive += "<input name="+ item.VerifiedUploadRowID +" id="+ item.VerifiedUploadRowID +" type='checkbox' onchange='adchange(this)' />";
+                                    }
+                                    return new HtmlString(strActive);
+                                    },style:"delete col-md-1"),
+
+
+
+                            }
+                        )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            @using (Html.BeginForm("UpdateRptArtifactsDocByRWQCTM", "ReportQC", FormMethod.Get))
+                            {
+                                <div class="form-group branch">  </div>
+                                <div class="all-button-bg">
+                                    @Html.ActionLink("Back", "ManageCandidateChecksForReportQCTM", "ReportQC", new { PersonalRowID = Request.QueryString["Pid"], dispFor = "TeamMember" }, new { @class = "btn bun-bg btn-default" })
+                                </div>
+                            }
+                        </div>
+                    </div>
+                                        }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+
+    <script type="text/javascript">
+         $(document).ready(function () {
+             callBack();
+             $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+        });
+
+        function callBack() {
+            $('.edit-mode').hide();
+            $('.edit-Product, .cancel-Product').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            tr.find('.edit-mode, .display-mode').toggle();
+        });
+        $('.save-Product').on('click', function () {
+            var tr = $(this).parents('tr:first');
+            var DefaultRate = tr.find("#PurchaseRate").val();
+            var ID = tr.find(".save-Product").val();
+            tr.find("#lblPurchaseRate").text(DefaultRate);
+            tr.find('.edit-mode, .display-mode').toggle();
+
+            if (DefaultRate != '' && DefaultRate > 0) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("EditPurchaseRateById", "InstitutionCMD")',
+                    data: { "id": ID, "MRP": DefaultRate },
+                    dataType: "json",
+                    success: function (result) {
+                        if (result == true) {
+                            alert("Record Updated Successfully!!");
+                            setTimeout(function () { window.location.reload(); }, 300);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+            else {
+                alert("All *fields are mandatory!");
+            }
+        });
+        }
+        
+         function adchange(ChkData) {
+           var id = ChkData.id;
+            var checkeds = ChkData.checked;
+            var flag = "";
+            if (ChkData.checked == true) {
+                flag = confirm('Are you sure to Map this File ?');
+            }
+            if (ChkData.checked == false) {
+                flag = confirm('Are you sure to UnMapp this File ?');
+            }
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("UpdateArtifactsById", "ReportQC")',
+                    data: { "id": id, checkeds: checkeds },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Record Update Successfully!!");
+                            setTimeout(function () { window.location; }, 300);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+            else {
+                if (ChkData.checked == false) {
+                    ChkData.checked = true;
+                }
+                else {
+                    ChkData.checked = false;
+                }
+            }
+        }
+
+    </script>
+
+}
+

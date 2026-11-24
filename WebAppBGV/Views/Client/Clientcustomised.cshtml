@@ -1,0 +1,216 @@
+﻿@model ViewModels.ClientViewModel.AddClientCustomizedSubGroupViewModel
+
+@{
+    ViewBag.Title = "Add Client Customized";
+}
+@{
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "Clientcustomised", "Client", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@*@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }*@
+
+<div class="row">
+    <div class="col-md-12">
+
+        @using (Html.BeginForm("Clientcustomised", "Client", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            HtmlHelper.UnobtrusiveJavaScriptEnabled = false;
+            <div class="form-horizontal">
+                <div class="form-group branch row">
+                    <div class="col-md-12">
+                        @Html.HiddenFor(model => model.ClientCheckRowID)
+                    </div>
+                </div>
+                <div class="form-group branch row">
+                    @Html.LabelFor(model => model.ClientName, htmlAttributes: new { @class = "col-md-3 control-label" })
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(model => model.ClientAbbRowID,
+                            new SelectList(ViewBag.ClientSubGroup, "ClientAbbRowID", "ClientName"),
+                            "-- Select Client -- ",
+                            new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.SubCheckRowID, "", new { @class = "text-danger" })
+                    </div>
+                    @*<div class="col-md-1">
+                            <input class="btn bun-bg btn-default" type="submit" name="btnSubmit" value="Search" style="padding: 6.8% 5%;width:55px" />
+                        </div>*@
+                </div>
+                <div class="form-group branch row">
+                    @Html.LabelFor(model => model.CheckFamilyName, htmlAttributes: new { @class = "col-md-3 control-label " })
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(model => model.CheckFamilyRowID,
+                                 new SelectList(ViewBag.CheckFamilyList, "CheckFamilyRowID", "CheckFamilyName"),
+                                 "-- Select CheckFamily --",
+                                 new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.SubCheckRowID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group branch row">
+                    @Html.LabelFor(model => model.SubCheckFamilyName, htmlAttributes: new { @class = "col-md-3 control-label " })
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(model => model.SubCheckRowID,
+                            new SelectList(ViewBag.SubCheckList, "SubCheckFamilyRowID", "SubCheckFamilyName"),
+                            "-- Select SubCheckFamily --",
+                            new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.SubCheckRowID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group branch row">
+                    @Html.LabelFor(model => model.CustomizedName, htmlAttributes: new { @class = "col-md-3 control-label" })
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.CustomizedName, new { htmlAttributes = new { @class = "form-control valid-textbox CopyPaste" }, @autocomplete = "off" })
+                        @Html.ValidationMessageFor(model => model.CustomizedName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="all-button-bg">
+                    @*@Html.ActionLink("Back", "Clientcustomised", "Client", null, new { @class = "btn bun-bg btn-default" })*@
+                    <input class="btn bun-bg btn-default" type="submit" value="Submit" name="btnSubmit" />
+                    <input class="btn bun-bg btn-default" type="submit" value="Search" name="btnSubmit" />
+                </div>
+            </div>
+        }
+
+
+        @if (Model != null && Model.lstClientCustomizedViewModels != null)
+        {
+            <div id="table-responsive">
+
+                @{
+                    WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                    grid.Bind(Model.lstClientCustomizedViewModels, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                }
+                @grid.GetHtml(
+                        htmlAttributes: new { id = "grid", @class = "table table-bordered Grid" },
+                        headerStyle: "thead-inverse",
+                        rowStyle: "ordertxt",
+                        footerStyle: "custpaging",
+                        mode: WebGridPagerModes.All,
+                        columns: new[]
+                        {
+
+                        grid.Column(header: "No.", style:"td-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                        grid.Column(columnName: "ClientName", header: "Client Name", canSort: false, style:"td-1"),
+                        grid.Column(columnName: "CheckFamilyName", header: "CheckFamily Name", canSort: false, style:"td-1"),
+                        grid.Column(columnName: "SubCheckFamilyName", header: "SubCheckFamily Name", canSort: false, style:"td-1"),
+                        grid.Column(columnName: "CustomizedName", header: "Customized Name", canSort: false, style:"td-1"),
+                        grid.Column(header : "Action", format :(item) => {
+                        var link = Html.ActionLink("Edit", "Clientcustomised", "Client", new { ClientCheckRowID=item.ClientCheckRowID, ClientAbbRowID= item.ClientAbbRowID,CheckFamilyRowID=item.CheckFamilyRowID,SubCheckRowID=item.SubCheckRowID, CustomizedName=item.CustomizedName },null);
+                    return link;
+                }, style: "edit td-1"),
+                })
+                <div class="total-record">Total Records: @Model.TotalRecords</div>
+                <br />
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+
+
+    <script type="text/jscript">
+        $(function () {
+            $('#CheckFamilyRowID').change(function () {
+                $.getJSON('/Client/BindSubCheckList/' + $('#CheckFamilyRowID').val(), function (data) {
+                    var items = '<option value="">-- Select CheckFamily --</option>';
+                    $.each(data, function (i, SubCheckList) {
+                        items += "<option value='" + SubCheckList.Value + "'>" + SubCheckList.Text + "</option>";
+                    });
+                    $('#SubCheckRowID').html(items);
+                });
+            });
+        });
+
+    </script>
+    <script type="text/javascript">
+        $("body").on("click", "#grid td", function () {
+            $("#grid").find("td").removeClass("selected");
+            $(this).closest("tr").find("td").addClass("selected");
+
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#grid').DataTable({
+                responsive: true,
+            });
+            new $.fn.dataTable.FixedHeader(table);
+        });
+    </script>
+
+    <style>
+        #select_all {
+            width: 30px !important;
+        }
+
+        .personalId {
+            width: 30px !important;
+        }
+
+
+        @@media screen and (max-width: 1450px) and (min-width: 600px) {
+            #grid {
+                font-size: .90rem;
+                width: 100%;
+            }
+
+            .table td, .table th {
+                padding: .60rem !important;
+            }
+
+            .thead-inverse {
+                font-size: .90rem !important;
+            }
+
+            .table, td, .edit {
+                font-size: .95rem !important;
+            }
+        }
+
+        body {
+            font-family: Arial;
+            font-size: 10pt;
+        }
+
+        .Grid {
+            border: 1px solid #ccc;
+            border-collapse: collapse;
+        }
+
+            .Grid th {
+                font-weight: bold;
+            }
+
+            .Grid th, .Grid td {
+                padding: 5px;
+                border: 1px solid #ccc;
+            }
+
+            .Grid, .Grid table td {
+                border: 0px solid #ccc;
+            }
+
+            .Grid th a, .Grid th a:visited {
+                color: #333;
+            }
+
+            .Grid td {
+                cursor: pointer;
+            }
+
+          .Grid .selected {
+              background-color: pink;
+          }
+    </style>
+
+}

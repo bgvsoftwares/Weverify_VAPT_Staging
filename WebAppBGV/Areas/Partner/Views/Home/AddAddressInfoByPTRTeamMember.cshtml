@@ -1,0 +1,501 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "Update AddressInfo By PTR Manager";
+}
+
+@{
+
+
+    //string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    //string hyperLink = Html.ActionLink("linkTitle", "ManageDataEntryJob", "ProvidedInfo", new { id = Model.PersonalRowID, CheckstatusId = Model.CheckstatusId }, new { @class = "headerbacklink" }).ToString();
+    //ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+    string PersonalRowid = "";
+    string SubCheckId = "";
+    string clientRowId = "";
+
+
+    PersonalRowid = @ViewBag.PersonalRowid;
+    SubCheckId = @ViewBag.SubCheckId;
+    clientRowId = @ViewBag.clientRowId;
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<script src='@Url.Content("~/Scripts/jquery-3.7.1.min.js")'></script>
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("AddAddressInfoByPTRTeamMember", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <input id="PersonalRowid" type="hidden" value=@PersonalRowid>
+            @Html.Hidden("PersonalRowid", PersonalRowid.ToString())
+
+            <input id="SubCheckId" type="hidden" value=@SubCheckId>
+            @Html.Hidden("SubCheckId", SubCheckId.ToString())
+
+            <input id="clientRowId" type="hidden" value=@clientRowId>
+            @Html.Hidden("clientRowId", clientRowId.ToString())
+
+            @Html.ValidationSummary()
+            <div class="col-md-12">
+                <div class="col-md-6">Address</div>
+                @*<div class="col-md-6">
+                        <input type="text" value="@ViewBag.Address" style="width:700px" />
+                    </div>*@
+            </div>
+
+
+
+            foreach (var category in Model)
+            {
+                <div class="container">
+                    @{
+                        string[] nm = category.Key.Split('_');
+
+                        if (@nm[2] == "textbox")
+                        {
+                            <div class="row" style="margin-bottom:.10rem!important; width:70rem;">
+
+                                <div class="col-sm-4" style="padding-top:10px!important;">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-sm-4">
+
+                                    @*<input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value'>*@
+                                    @*<p> @category.Value</p>*@
+                                </div>
+
+                                <div class="col-sm-4">
+                                    <p>@nm[4]</p>
+                                    <input type="text" value="@category.Value" class="form-control" style="width:600px" name=@nm[0] id='@nm[0]' maxlength="@nm[5]" autocomplete="off">
+                                </div>
+
+
+                            </div>
+                        }
+                        if (@nm[2] == "dropdown")
+                        {
+                            <div class="container">
+                                <div class="row">
+
+                                    <div class="col-sm-4">
+                                        @{
+                                            if (@nm[3] == "mandatory")
+                                            {
+                                                <h7>*</h7>
+                                            }
+                                        }
+                                        @nm[1]
+                                    </div>
+                                    <div class="col-sm-4">
+                                        &nbsp;
+                                    </div>
+                                    <div class="col-sm">
+                                        <span> @nm[4] </span>
+                                        @{
+                                            int lastindex = nm.Length;
+                                            string[] nmOption = nm[lastindex - 1].Split(',');
+                                            string Fvalue = nm[lastindex - 2].ToString();
+                                        }
+                                        <select name=@nm[0] id='@nm[0]' autocomplete="off">
+                                            @for (int i = 0; i < nmOption.Length; i++)
+                                            {
+
+
+
+                                                if (@nmOption[i].Trim() == Fvalue)
+                                                {
+                                                    <option selected>@nmOption[i]</option>
+
+                                                }
+                                                else
+                                                {
+
+                                                    <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                                }
+
+                                            }
+                                        </select>
+
+
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                        }
+                        if (@nm[2] == "checkbox")
+                        {
+                            <div class="row">
+                                <div class="col-sm-4" style="padding-top:10px!important;">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-sm-2" style="padding-top:10px!important; text-align:left;">
+
+                                    @{
+                                        if (@nm[6] == "TRUE")
+                                        {
+                                            <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value="checked" checked>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" style="width:2rem!important;" id=@nm[0] name=@nm[0] value=@nm[0]>
+                                        }
+                                    }
+
+                                </div>
+                                <div class="col-sm-4">
+                                    @nm[4]
+                                </div>
+                            </div>
+                        }
+                        if (@nm[2] == "fileUpload")
+                        {
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7>*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-sm-4">
+                                    <input type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                                </div>
+                                <div class="col-sm-4">
+                                    @nm[4]
+                                </div>
+                            </div>
+
+                        }
+                    }
+
+                </div>
+
+            }
+            <div class="row">
+                <div class="col-sm-12 cytoscape-parent">
+                    <div class="w-400 h-400 d-inline-block" id="cytoscape-container"></div>
+                </div>
+            </div>
+            @*<div class="col-md-12">
+                    <div class="form-group branch row ">
+
+                        @Html.Label("Check Status", htmlAttributes: new { @class = "col-md-4 control-label text-right" })
+                        <div class="col-md-3">
+                            @Html.DropDownList("CheckStatus", new List<SelectListItem>
+                                   { new SelectListItem{Text="Completed", Value="Completed"},
+                                     new SelectListItem{Text="Insufficent", Value="Insufficent"},
+                                     new SelectListItem{Text="Rejected", Value="Rejected"},
+                                     new SelectListItem{Text="Review Requested", Value="Review Requested"},
+                                     new SelectListItem { Text = "WIP-Pending", Value = "WIP-Pending" },
+                                     new SelectListItem { Text = "Not Applicable", Value = "Not Applicable" }},
+                                     new { @class = "form-control",@id= "CheckStatus" })
+
+                        </div>
+                    </div>
+                </div>*@
+
+            <div class="row">
+
+                <div class="col-sm-6" style="margin-left:15%;">
+
+                    @*<input class="btn bun-bg btn-default" onclick="return validateForm()" type="submit" value="Submit" />*@
+
+                    @*@Html.ActionLink("Attachment", "UplodEmploymentVerDocs", "Verification", new { scid = Model.SubCheckRowID, pe = Model.PersonalRowID, cstatus = Model.CheckStatus }, new { @class = "iframeUpdateVerDoc cboxElement callbacks btn btn-default", @id = "UplodVerificationDocs" })
+                        @Html.ActionLink("Capture Action", "CaptureActionHistoryByVerTM", "Verification", new { id = Model.EmploymentRowID, cid = Model.ClientRowID, scid = Model.SubCheckRowID, pe = Model.PersonalRowID }, new { @class = "iframeUpdateStatus cboxElement callbacks btn btn-default", @id = "VerificationActionHistostry" })*@
+
+                    @*@Html.ActionLink("Closer Details", "EmploymentVerCloserDetails", "Verification", new { id = Model.EmploymentVerRowID, Aging = Aging }, new { @class = "btn btn-default VerEmailDetails", @id = "VerificationCloserDetails", @disabled = "disabled" })*@
+
+                </div>
+            </div>
+            <div class="form-group branch row ">
+
+
+                @Html.Label("CheckStatus", htmlAttributes: new { @class = "col-md-2 control-label" })
+                <div class="col-md-3">
+                    @Html.DropDownList("CheckStatus", new List<SelectListItem>
+               { new SelectListItem{Text="Completed", Value="Completed"},
+                 new SelectListItem{Text="Re-Visit", Value="Re-Visit"},
+                  new SelectListItem{Text="Not-Doable", Value="Not-Doable"}
+},
+                                              "-- Select --", new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="form-horizontal">
+                <div class="form-group branch row "></div>
+                <div class="all-button-bg">
+                    @Html.ActionLink("Back", "ManagePartnerAllocatedChecks", "Home", null, new { @class = "btn bun-bg btn-default" })
+                    <input class="btn bun-bg btn-default" type="submit" onclick="return validateForm()" value="Submit" />
+                    @Html.ActionLink("Attachment", "UplodAddressCheckDocsAndComplete", "Home", new { scid = SubCheckId, pe = PersonalRowid, cstatus = "", cid = clientRowId }, new { @class = "iframeUpdateAddressDoc cboxElement callbacks btn btn-default" })
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
+
+
+
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeUpdateAddressDoc").colorbox({ iframe: true, width: "80%", height: "80%" });
+            if ($('#clientRowid').val() == 374) {
+                $('#divIbull1').style.visibility = 'visible';
+                $('#divIbull').style.visibility = 'visible';
+
+            }
+            else {
+
+                $('#divIbull1').hide();
+                $('#divIbull').hide();
+            }
+
+            if ($('#clientRowid').val() == 268) {
+                $('#DIVTCSIT').show();
+                $('#DIVTCSIT1').show();
+                $('#DIVTCSIT2').show();
+                $('#DIVTCSIT3').show();
+
+            }
+            else {
+
+                $('#DIVTCSIT').hide();
+                $('#DIVTCSIT1').hide();
+                $('#DIVTCSIT2').hide();
+                $('#DIVTCSIT3').hide();
+            }
+
+            // DIVTCSIT
+            $(".callbacks").colorbox({
+                onClosed: function () {
+                    window.location.reload(true);
+                }
+            });
+            $('#DateOfVerification').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+
+
+            if ($('#hdnAV_Country').val() != null) {
+                $.getJSON('/Master/BindState/' + $('#hdnAV_Country').val(), function (data) {
+                    var items = '<option value="">-- Select State --</option>';
+                    $.each(data, function (i, States) {
+                        items += "<option value='" + States.Value + "'>" + States.Text + "</option>";
+                    });
+                    $('#AV_State').html(items);
+                    $('#AV_State').val($('#hdnAV_State').val());
+                    //$('#AV_District').val('');
+                    //$('#AV_City').val('');
+                    //$('#AV_Pincode').val('');
+                });
+            }
+
+            //Bind District base on StateRowID
+            if ($('#hdnAV_State').val() != null) {
+                $.getJSON('/Master/BindDistrict/' + $('#hdnAV_State').val(), function (data) {
+                    var items = '<option value="">-- Select District --</option>';
+                    $.each(data, function (i, Districts) {
+                        items += "<option value='" + Districts.Value + "'>" + Districts.Text + "</option>";
+                    });
+                    $('#AV_District').html(items);
+                    $('#AV_District').val($('#hdnAV_District').val());
+                    //$('#AV_City').val('');
+                    //$('#AV_Pincode').val('');
+                });
+            }
+
+            //Bind Location base on DistrictRowID
+            if ($('#hdnAV_District').val() != null) {
+
+                $.getJSON('/Master/BindLocation/' + $('#hdnAV_District').val(), function (data) {
+                    var items = '<option value="">-- Select City --</option>';
+                    $.each(data, function (i, Cities) {
+                        items += "<option value='" + Cities.Value + "'>" + Cities.Text + "</option>";
+                    });
+                    $('#AV_City').html(items);
+                    $('#AV_City').val($('#hdnAV_City').val());
+                    //$('#AV_Pincode').val('');
+                });
+            }
+
+            //PinCode Bind
+            if ($("#hdnAV_City").val() == null) {
+                var url = "/Master/GetPinCodeByLocationId/" + $("#hdnAV_City").val();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+                    success: function (pinCode) {
+                        $('#AV_Pincode').val(pinCode);
+
+                    }
+                });
+            }
+            // Button Enable
+            var AddressVerVal = $('#AddressVerRowID').val()
+            if (AddressVerVal > 0) {
+                $('#UplodVerificationDocs').removeAttr("disabled", "disabled");
+                $('#VerificationCloserDetails').removeAttr("disabled", "disabled");
+
+            }
+            else {
+                $('#UplodVerificationDocs,#VerificationCloserDetails').click(function (e) {
+                    return false;
+                });
+            }
+        });
+        $(function () {
+            //Bind State base on CountryRowID
+            $('#AV_Country').change(function () {
+                $.getJSON('/Master/BindState/' + $('#AV_Country').val(), function (data) {
+                    var items = '<option value="">-- Select State --</option>';
+                    $.each(data, function (i, States) {
+                        items += "<option value='" + States.Value + "'>" + States.Text + "</option>";
+                    });
+                    $('#AV_State').html(items);
+                    $('#AV_District').val('');
+                    $('#AV_City').val('');
+                    $('#AV_Pincode').val('');
+                });
+            });
+
+            //Bind District base on StateRowID
+            $('#AV_State').change(function () {
+                $.getJSON('/Master/BindDistrict/' + $('#AV_State').val(), function (data) {
+                    var items = '<option value="">-- Select District --</option>';
+                    $.each(data, function (i, Districts) {
+                        items += "<option value='" + Districts.Value + "'>" + Districts.Text + "</option>";
+                    });
+                    $('#AV_District').html(items);
+                    $('#AV_City').val('');
+                    $('#AV_Pincode').val('');
+                });
+            });
+
+            //Bind Location base on DistrictRowID
+            $('#AV_District').change(function () {
+                $.getJSON('/Master/BindLocation/' + $('#AV_District').val(), function (data) {
+                    var items = '<option value="">-- Select City --</option>';
+                    $.each(data, function (i, Cities) {
+                        items += "<option value='" + Cities.Value + "'>" + Cities.Text + "</option>";
+                    });
+                    $('#AV_City').html(items);
+                    $('#AV_Pincode').val('');
+                });
+            });
+
+            //PinCode Bind
+            $('#AV_City').change(function () {
+                var url = "/Master/GetPinCodeByLocationId/" + $("#AV_City").val();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+                    success: function (pinCode) {
+                        $('#AV_Pincode').val(pinCode);
+                    }
+                });
+            });
+
+
+        });
+        function validateForm() {
+            //ExtraExpenses
+            if ($('#clientRowid').val() == 374) {
+                var AV_OtherDetails15 = $('#AgencyExecutive_Name').val();
+
+                if ($('#AgencyExecutive_Name').val() == '') {
+                    alert("Please fill name verifier agency");
+                    $('#AgencyExecutive_Name').focus();
+                    return false;
+                }
+
+                if ($('#Landmark').val() == '') {
+                    alert("Please fill landmark");
+                    $('#Landmark').focus();
+                    return false;
+                }
+
+                if ($('#AccomodationType').val() == '') {
+                    alert("Please fill Accomodation Type");
+                    $('#AccomodationType').focus();
+                    return false;
+                }
+                var ClientRowID = $('#ClientRowID').val();
+
+                if (ClientRowID == 310 || ClientRowID == 532 || ClientRowID == 539 || ClientRowID == 568) {
+
+                    if ($('#DateOfVerification').val() == '') {
+                        alert("Please fill Date of Verification");
+                        $('#DateOfVerification').focus();
+                        return false;
+                    }
+                }
+
+            }
+
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#170').datepicker({
+                dateFormat: "dd-M-yy",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                yearRange: "-66:+0",
+            });
+            var dNow = new Date();
+            var localdate = (dNow.getFullYear() + '-' + (dNow.getMonth() + 1) + '-' + dNow.getDate());
+            $('#OrderDate').val(localdate);
+            $('#goBack').click(function () {
+                parent.history.back();
+                return false;
+            });
+        });
+        //$('#172').bind('copy paste cut', function (e) {
+        //    e.preventDefault();
+        //    alert('cut,copy & paste options are disabled !!');
+        //});
+        $("#170").keypress(function (e) {
+            return false;
+        });
+        $("#170").keydown(function (e) {
+            return false;
+        });
+    </script>
+
+}

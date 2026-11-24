@@ -1,0 +1,86 @@
+﻿@using WebAppBGV.CommonMethods;
+@model ViewModels.ClientViewModel.ManageSubAdminViewModels
+@{
+    ViewBag.Title = "Manage Subadmin";
+}
+
+<h2>Manage Subadmin</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group branch row ">
+
+                <div class="col-md-3">
+
+                    @Html.LabelFor(model => model.SuperAdmin, htmlAttributes: new { @class = "control-label required" })
+                    @Html.DropDownListFor(model => model.SuperClientRowID,
+                   new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                   "-- Select Super-Admin -- ",
+                   new { @class = "form-control" })
+
+                    <input type="hidden" id="ClientName" name="ClientName" value="">
+                </div>
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.ReportToSuperAdmin, htmlAttributes: new { @class = "control-label required" })
+                    @Html.DropDownListFor(model => model.ReportToSuperAdmin,
+        new SelectList(string.Empty, "Value", "Text"),
+        "-- Select admin  --",
+        new { @class = "form-control", @id = "TMID" })
+                    @Html.ValidationMessageFor(model => model.ReportToSuperAdmin, "", new { @class = "text-danger" })
+                </div>
+
+
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="form-group branch row ">
+                <input class="btn bun-bg btn-default" id="btn" type="submit" value="Submit" name="MoveCheck" />
+            </div>
+        </div>
+    </div>
+
+
+    
+
+}
+
+
+
+
+<script type="text/javascript">
+    $(
+        function () {
+            $('#SuperClientRowID').change(function () {
+                var CurOrg = $("#SuperClientRowID").val();
+                debugger;
+                var CurOrgName = $("#SuperClientRowID option:selected").text();
+
+                $("#ClientName").val(CurOrgName);
+
+                $.getJSON('/Client/BindAdmin/' + $('#SuperClientRowID').val(),
+
+                    function (data) {
+                        $('#TMID').empty();
+                        var items = '<option>--Select admin--</option>';
+
+                        $.each(data, function (nm, val) {
+                            items += "<option value='" + val.Value + "'>" + val.Text + "</option>";
+
+                        });
+                        $('#TMID').append(items);
+                        //console.log(items);
+                    });
+            });
+            $("#btn").on("click", function () {
+                alert('Created Successfully');
+            });
+        });
+</script>
+
+
+
+

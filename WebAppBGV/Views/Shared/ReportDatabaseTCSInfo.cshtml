@@ -1,0 +1,584 @@
+
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    var databasecheck = Model.SpecialInfoModel.Where(T => T.SubcheckRowID == 888).GroupBy(x => x.SubcheckRowID)
+          .Select(g => g.First())
+          .ToList();
+
+    var databasecheckdoclist = Model.CandidateDocList.Where(T => T.SubCheckRowID == 888).ToList().Take(1);
+
+    int pageNumber = (int)(HttpContext.Current.Items["PageNumber"] ?? 1);
+
+}
+
+
+
+@if (Model.ClientRowID == 268 || Model.ClientRowID == 3)
+{
+    if (databasecheck.Count > 0)
+    {
+        foreach (var a in databasecheck)
+        {
+            var ReportComment = a.ReportComment;
+            <page id="PrintSrc" size="A4">
+                <div style="page-break-after:always ;"></div>
+                <table cellspacing="0" cellpadding="0" align="center" style="height:72rem!important; width:100%;">
+                    <tr>
+                        <td valign="top">
+                            <table border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                                <tr>
+                                    <td valign="top">
+                                        <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                            <tr>
+                                                <td>
+                                                    <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+
+                                                        <tr>
+                                                            <td valign="top" style="width:100%; text-align:end;"><img src='@Url.Content("~/Images/Walsons_logo.jpg")' style="width:150px; margin-top:10px; margin-right:10px;"></td>
+                                                        </tr>
+
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align: center; font-weight: bolder;font-size: 14px;padding: 5px; text-decoration-line: underline;"> INTERNATIONAL DATABASE CHECK</td>
+                                            </tr>
+                                            <tr>
+                                                <td sstyle="width:100%;">&nbsp;</td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top" align="center">
+                                                    <table style="width:100%; margin: auto; border:2px solid #000; border-collapse: collapse; margin-top: 10px;">
+                                                        <tr>
+
+                                                            <td style="text-align: left; font-weight: bolder; -webkit-print-color-adjust: exact; background: #c0c0c0; border: 2px solid #000; font-size: 14px; padding: 5px;">TCS APPLICANT ID</td>
+                                                            <td style="padding:5px; font-size: 14px; font-weight: bolder;border: 2px solid #000;">@Model.EmploymentId</td>
+                                                            <td rowspan="2" style="text-align: left; font-weight: bolder; -webkit-print-color-adjust: exact; background: #c0c0c0; border: 2px solid #000; font-size: 14px; padding: 5px;">BGC COMPANY REF ID</td>
+                                                            <td rowspan="2" style="padding:5px; font-size: 14px; font-weight: bolder;border: 2px solid #000;">@Model.CompanyRefNo</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="text-align: left; font-weight: bolder; -webkit-print-color-adjust: exact; background: #c0c0c0; border: 2px solid #000; font-size: 14px; padding: 5px;">RECRUITMENT <br />BRANCH</td>
+                                                            <td style="padding:5px; font-size: 14px; font-weight: bolder;border: 2px solid #000;">@Model.Location</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td rowspan="2" style="text-align: left; font-weight: bolder; -webkit-print-color-adjust: exact; background: #c0c0c0; border: 2px solid #000; font-size: 14px; padding: 5px;">NAME OF <br />CANDIDATE</td>
+                                                            <td rowspan="2" style="padding:5px; font-size: 14px; font-weight: bolder;border: 2px solid #000;">
+                                                                @Model.PersonalName
+                                                            </td>
+
+
+                                                            <td style="text-align: left; font-weight: bolder; -webkit-print-color-adjust: exact; background: #c0c0c0; border: 2px solid #000; font-size: 14px; padding: 5px;">FINAL BGC STATUS <br />(RED/GREEN)</td>
+                                                            @if (a.CheckColorName == "NOT APPLICABLE")
+                                                            {
+                                                                <td style="padding: 5px; font-size: 14px; text-align: center; font-weight: bolder; border: 2px solid #000;">NA</td>
+                                                            }
+                                                            else if (a.CheckColorName.ToUpper() == "NO COLOR-STOP")
+                                                            {
+                                                                <td style="padding: 5px; font-size: 14px; text-align: center; font-weight: bolder; border: 2px solid #000;">STOP</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="padding: 5px; font-size: 14px; text-align: center; font-weight: bolder; border: 2px solid #000;  color: @a.CheckColorCode;">@a.CheckColorName.ToUpper()</td>
+                                                            }
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="2" rowspan="2" style="text-align: left; font-weight: bolder;border: 2px solid #000; font-size: 14px;padding: 5px;">
+                                                                <div style="width: 100%; display: flex;">
+                                                                    <div style="background: red; -webkit-print-color-adjust: exact; width: 10px; height: 10px; border: 1px solid #000; margin-right: 5px;"></div>
+                                                                    <span style="font-size: 14px; -webkit-print-color-adjust: exact;">RED (DISCREPENCY)</span>
+                                                                    <div style="background: green; -webkit-print-color-adjust: exact; width: 10px; height: 10px; border: 1px solid #000; margin-right: 5px; margin-left: 5px;"></div><span style="font-size:14px;">GREEN (POSITIVE)</span>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style="text-align: left; font-weight: bolder; -webkit-print-color-adjust: exact; background: #c0c0c0; border: 2px solid #000; font-size: 14px; padding: 5px;">CATEGORY <br />(CAMPUS/DT/EP/EP <br />From CAMPUS)</td>
+                                                            <td style="padding:5px; font-size: 14px; font-weight: bolder;border: 2px solid #000;">@Model.EmploymentType</td>
+                                                        </tr>
+                                                    </table>
+                                                    <table style="width:100%; border:1px solid #000; border-collapse: collapse; margin-top: 10px;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="text-align: center; -webkit-print-color-adjust: exact; background: #c0c0c0; font-weight: bolder; border: 1px solid #000; font-size: 14px;padding: 5px;">Sl.No</th>
+                                                                <th style="text-align: center; -webkit-print-color-adjust: exact; background: #c0c0c0; font-weight: bolder; border: 1px solid #000; font-size: 14px;padding: 5px;">DETAILS</th>
+                                                                <th style="text-align: center; -webkit-print-color-adjust: exact; background: #c0c0c0; font-weight: bolder; border: 1px solid #000; font-size: 14px;padding: 5px; width:60%;">Global Sanction Screening</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td style="text-align: left; font-weight: bolder;border: 1px solid #000; font-size: 14px;padding: 5px; font-weight: bolder;">1</td>
+                                                                <td style="text-align: left; border: 1px solid #000; font-size: 14px;padding: 5px;font-weight: bolder;">DATABASE CHECK</td>
+                                                                @if (Model.FinalColor.ToLower() == "green")
+                                                                {
+                                                                    <td style="text-align: left; border: 1px solid #000; font-size: 14px;padding: 5px;">This database details companies and individuals who have been censored by regulatory or compliance authorities for regulatory breaches and sanction screening.</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="text-align: left; border: 1px solid #000; font-size: 14px;padding: 5px;">@Html.Raw(ReportComment)</td>
+                                                                }
+
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" height="100">
+                            <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+
+                                <tr>
+                                    <td style="width: 47%; vertical-align: top;">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td style="font-size: 14px; font-weight: bold; text-align: left;">
+                                                    STAMP / SEAL OF BGC AGENCY
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align: left;">
+                                                    <img style="width: 30%;" src="~/Images/Stamp.png" alt="BGC Agency Stamp">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 14px; font-weight: bold; text-align: left;">
+                                                    Date: @DateTime.Now.ToString("dd MMMM yyyy")
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+
+                                    <td style="width: 53%; vertical-align: top;">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td style="font-size: 14px; font-weight: bold; padding-left: 120px">
+                                                    NAME & SIGNATURE OF BRANCH MANAGER / <br />TEAM LEAD: Subhash Priyadarshi
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:left;">
+                                                    <img style="width: 30%; padding-left:197px;" src="~/Images/UpdatedSignature.png" alt="Branch Manager Signature">
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    @if (Model.ClientRowID == 268 || Model.ClientRowID == 3)
+                                    {
+                                        <td style="text-align: left; font-style: italic; font-size: 14px; padding: 5px;">TCS Confidential</td>
+                                    }
+                                    <td style="text-align: right; font-style: italic; font-size: 14px; padding: 5px;">Page No. @pageNumber -</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                @{ pageNumber++;
+                    HttpContext.Current.Items["PageNumber"] = pageNumber; }
+            </page>
+
+            if (databasecheckdoclist != null)
+            {
+                foreach (var Doc in databasecheckdoclist)
+                {
+                    FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+                    if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+                    {
+                        <page id="PrintSrc" size="A4">
+                            <div style="page-break-after:always ;"></div>
+                            <table border="0" cellspacing="0" cellpadding="0" align="center" style="width:100%;">
+                                <tbody>
+                                    <tr>
+                                        <td valign="top">
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td style="text-align: end;padding: 5px;"><img src="~/Images/Walsons_logo.png" style="width: 150px;"></td>
+                                                </tr>
+                                            </table>
+                                            <h3 class="center" style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none;">@a.SubCheckName (@Doc.DocumentType)</h3>
+                                            <table width="793" cellspacing="0" height="700" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center">
+                                                <tr style="text-align:center">
+                                                    <td valign="top">
+                                                        @{
+                                                            FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                            System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+
+                                                            <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" width="770" height="730" />
+
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table style="width: 100%; margin-top: 80px; border-collapse: collapse;">
+                                <tr>
+                                    <td style="width: 47%; vertical-align: top;">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td style="font-size: 14px; font-weight: bold; text-align: left;">
+                                                    STAMP / SEAL OF BGC AGENCY
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align: left;">
+                                                    <img style="width: 30%;" src="~/Images/Stamp.png" alt="BGC Agency Stamp">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 14px; font-weight: bold; text-align: left;">
+                                                    Date: @DateTime.Now.ToString("dd MMMM yyyy")
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+
+                                    <td style="width: 53%; vertical-align: top;">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td style="font-size: 14px; font-weight: bold; padding-left: 120px">
+                                                    NAME & SIGNATURE OF BRANCH MANAGER / <br />TEAM LEAD: Subhash Priyadarshi
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:left;">
+                                                    <img style="width: 30%; padding-left:197px;" src="~/Images/UpdatedSignature.png" alt="Branch Manager Signature">
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="text-align: left; font-style: italic; font-size: 14px; font-weight: bold; padding: 5px;">TCS Confidential</td>
+                                    <td style="text-align: right; font-style: italic; font-size: 14px; font-weight: bold; padding: 5px;">Page No. @pageNumber -</td>
+                                </tr>
+                            </table>
+                            @{ pageNumber++;
+                                HttpContext.Current.Items["PageNumber"] = pageNumber; }
+                        </page>
+                    }
+                }
+            }
+
+            <page id="PrintSrc" size="A4">
+                <div style="page-break-after:always ;"></div>
+                <table cellspacing="0" cellpadding="0" align="center" style="height:72rem!important; width:100%;">
+                    <tr>
+                        <td valign="top">
+                            <table border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                                <tr>
+                                    <td valign="top">
+                                        <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                            <tr>
+                                                <td>
+                                                    <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+
+                                                        <tr>
+                                                            <td valign="top" style="width:100%; text-align:end;"><img src='@Url.Content("~/Images/Walsons_logo.jpg")' style="width:150px; margin-top:10px; margin-right:10px;"></td>
+                                                        </tr>
+
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td sstyle="width:100%;">&nbsp;</td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top" align="center">
+                                                    <table border="1" cellspacing="5" cellpadding="2" style="width:98%; margin-top:10px;">
+                                                        <tr style="background-color: #eee;">
+                                                            <th colspan="2" style="padding: 10px 0px ;">GLOBAL LEVEL SANCATIONS DATABASE SEARCH</th>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <th style="font-weight: 600; text-align: start; width: 50%; padding: 2px; border: 1px solid ;">Type of Search</th>
+                                                            <th style="font-weight: 600; text-align: start; width: 50%; padding: 2px; border: 1px solid;">Record Found/No Record Found </th>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">United Nations Security Council</td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">
+                                                                Office of Foreign Assets Control (OFAC)- US
+                                                            </td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">
+                                                                European Union Sanctions List
+                                                            </td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">United Kingdom Sanctions List</td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">Cananda Consolidated Canadian Autonomous Sanctions List</td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">
+                                                                Other Regional or National Lists
+                                                            </td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">Swiss seco Sanctions List</td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">Japan Ministry of Foreign Affairs Sanctions</td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">
+                                                                Interpol - Sanctions Related Lists
+                                                            </td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">World Bank & IMF Debarred Entities</td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">Private and Aggregator List</td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">
+                                                                Organization of American States
+                                                            </td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">Financial Action Task Force</td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">
+                                                                External Action service - Arms Embargo List
+                                                            </td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">
+                                                                Customs Blacklist
+                                                            </td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">US Department of State - Sanctions</td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">World Customs Organization - Watch list</td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">National Police/ Security List</td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">
+                                                                United Nations Human Rights Council Blacklist
+                                                            </td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">Interpol Stolen and List Travel Documents - Data Base</td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">OECD Anti Bribery Blacklist</td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">FIFA/IOC International Sports Ban</td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">
+                                                                Civil Aviation Watch List
+                                                            </td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid;">
+                                                                International Maritime Organization - Watch List
+                                                            </td>
+                                                            <td style=" text-align: start; width: 50%; padding: 2px; border: 1px solid ;">No Record Found </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td colspan="2" style="border: none;">
+                                                    <table style="margin-top:3rem;">
+                                                        <tr>
+                                                            <td style="font-size: small; text-align: start; width: 100%; margin-top: 2rem;">
+                                                                *** The information retrieved from this database search is indicative in nature and not limited to the above furnished content only.
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td align="left" valign="top">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" height="100">
+                            <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+
+                                <tr>
+                                    <td style="width: 47%; vertical-align: top;">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td style="font-size: 14px; font-weight: bold; text-align: left;">
+                                                    STAMP / SEAL OF BGC AGENCY
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align: left;">
+                                                    <img style="width: 30%;" src="~/Images/Stamp.png" alt="BGC Agency Stamp">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 14px; font-weight: bold; text-align: left;">
+                                                    Date: @DateTime.Now.ToString("dd MMMM yyyy")
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+
+                                    <td style="width: 53%; vertical-align: top;">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td style="font-size: 14px; font-weight: bold; padding-left: 120px">
+                                                    NAME & SIGNATURE OF BRANCH MANAGER / <br />TEAM LEAD: Subhash Priyadarshi
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:left;">
+                                                    <img style="width: 30%; padding-left:197px;" src="~/Images/UpdatedSignature.png" alt="Branch Manager Signature">
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    @if (Model.ClientRowID == 268 || Model.ClientRowID == 3)
+                                    {
+                                        <td style="text-align: left; font-style: italic; font-size: 14px; padding: 5px;">TCS Confidential</td>
+                                    }
+                                    <td style="text-align: right; font-style: italic; font-size: 14px; padding: 5px;">Page No. @pageNumber -</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                @{ pageNumber++;
+                    HttpContext.Current.Items["PageNumber"] = pageNumber; }
+            </page>
+        }
+    }
+}
+
+<style>
+    .noprint {
+        font-size: 1rem;
+        margin-left: 10px;
+    }
+
+    @@media print {
+        .noprint {
+            visibility: hidden;
+        }
+    }
+
+    table {
+        border-collapse: collapse;
+        /*margin-bottom: 20px;*/
+    }
+
+
+    .header {
+        font-size: 12px;
+        font-family: Calibri;
+        text-align: center;
+        padding: 5px;
+        background-color: #c0c0c0;
+        font-weight: bold;
+        -webkit-print-color-adjust: exact;
+    }
+
+    #square {
+        width: 15px;
+        height: 15px;
+        background: red;
+    }
+
+    #greensquare {
+        width: 15px;
+        height: 15px;
+        background: green;
+    }
+
+    #tblDemo2 {
+        margin-top: 0;
+    }
+
+    .center {
+        text-align: center;
+        color: blue;
+    }
+
+    .center1 {
+        text-align: center;
+    }
+</style>

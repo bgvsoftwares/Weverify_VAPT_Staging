@@ -1,0 +1,48 @@
+﻿
+@{
+    ViewBag.Title = "Suspected Universities";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+}
+@{
+
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel' ></i> Export Excel");
+    string hyperLinkExportExcel = "";
+    hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportSuspectedDatabase", "Home", new { type = "University" }, new { @class = "export_btn" }).ToString();
+
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+}
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="container-fluid ps-0 bg_gradient_CaseWise mt-2">
+    <div class="row row-sm">
+        @section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+    </div>
+    <div class="row row-sm ms-2">
+        <div class="col-xl-12 mb-5">
+            <span>@ViewBag.NavigationBtnExportExcel</span>
+            @if (Model != null && Model.FakeUniversity != null)
+            {
+                <table class="mb-0 text-md-nowrap fl-table table-responsive table-scroll js-serial items table" id="example1" style="border:none; cursor:grab;">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Location</th>
+                            <th>CurrentStatus</th>
+                        </tr>
+                    </thead>
+                    <tbody class="tx-10 text-start">
+                         @foreach (var a in Model.FakeUniversity)
+                        {
+                            <tr>
+                                <td>@a.Name</td>
+                                <td>@a.Location</td>
+                                <td>@a.CurrentStatus</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+

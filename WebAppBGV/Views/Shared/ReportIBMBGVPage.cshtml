@@ -1,0 +1,61 @@
+﻿
+@if (Model != null)
+{
+
+    if (Model.CandidateCaseDocList != null)
+    {
+        foreach (var Doc in Model.CandidateCaseDocList)
+        {
+            FileInfo fin = new FileInfo(Server.MapPath(Model.DocPath + Doc.DocFile));
+            if (fin.Exists && (fin.Extension.ToLower().Contains(".jpg") || fin.Extension.ToLower().Contains(".jpeg") || fin.Extension.ToLower().Contains(".png")))
+            {
+                <page id="PrintSrc" size="A4">
+                    <table cellspacing="0" cellpadding="0" align="center" style="border:3px solid #999999; align-content:center;width:100%; height:70rem; page-break-after:always!important;">
+                        <tr>
+                            <td valign="top" colspan="2" align="center">
+                                <table border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                                    <tr>
+                                        <td valign="top">
+                                            <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                                <tr>
+                                                    <td>
+                                                        <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+                                                            <tr>
+                                                                <td valign="top" style="width:100%; text-align:start;"><img src='~/Content/Securitas_AB_logo.svg.png' style="width:11%;padding-right: 15px; padding:10px;"></td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="width:100%;"><p style="font-size:16px;  color:#000000; text-align:center; font-weight:bold; text-decoration:underline; text-transform:none; margin:0px;">@Doc.DocumentType</p></td>
+                                                </tr>
+                                                <tr style="text-align:center">
+                                                    <td valign="top">
+                                                        @{
+                                                            FileStream fs = new FileStream(Server.MapPath(Model.DocPath + Doc.DocFile), FileMode.Open, FileAccess.Read);
+                                                            System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+
+                                                            if (image.Height > 850)
+                                                            {
+                                                                <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" style="width: 100%!important; height:60rem!important;" />
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="@Url.Content(Model.DocPath + Doc.DocFile)" alt="@Doc.DocumentType" style="width: 100%!important; height:60rem!important;" />
+                                                            }
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </page>
+            }
+        }
+    }
+
+}

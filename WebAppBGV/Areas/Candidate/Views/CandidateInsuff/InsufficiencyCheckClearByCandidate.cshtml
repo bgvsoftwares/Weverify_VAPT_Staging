@@ -1,0 +1,112 @@
+﻿@model ViewModels.ProvidedInfoViewModel.InsuffCheckClearViewModel
+@{
+    ViewBag.Title = "Insufficiency Check Clear";
+    Layout = "~/Areas/Candidate/Views/Shared/_Layout.cshtml";
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftCandidateInsuff") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="col-md-12">
+
+        @using (Html.BeginForm("InsufficiencyCheckClearByCandidate", "CandidateInsuff", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.ClientRowID)
+            @Html.HiddenFor(model => model.ChFamilRowId)
+            @Html.HiddenFor(model => model.SubCheckRowID)
+            @Html.HiddenFor(model => model.PersonalRowID)
+            @Html.HiddenFor(model => model.SecuritasID)
+            @Html.HiddenFor(model => model.CheckRowID)
+            @Html.HiddenFor(model => model.SubCheckName)
+            @Html.HiddenFor(model => model.INFReason)
+
+            <div class="form-horizontal">
+                <div class="form-group branch">
+                    @Html.LabelFor(model => model.SubCheckName, htmlAttributes: new { @class = "col-md-2 control-label" })
+                   <div class="col-md-6"> @Model.SubCheckName </div>                 
+                </div>
+                <div class="form-group branch">
+                    @Html.LabelFor(model => model.INFReason, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-6"> @Model.INFReason </div>     
+                </div>
+                <div class="form-group branch">
+                    <div id="dvUplodDoc" class="">
+                    </div>
+                </div>
+                @Html.Hidden("UploadHid", null)
+                <div class="form-group branch">
+                    @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "col-md-2 control-label" })
+                    <div class="col-md-8">
+                        @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @rows = "2" })
+                    </div>
+                </div>
+
+                <div class="all-button-bg">
+                        @Html.ActionLink("Back", "Index", "CandidateInsuff", new { @class = "btn bun-bg btn-default" })
+                    <input class="btn bun-bg btn-default" type="submit" value="Submit" />
+                </div>
+
+            </div>
+
+        }
+
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script>
+        $(document).ready(function () {
+            var url1 = "/ProvidedInfo/GetDocumentTypeListBySubCheckID/" + $("#SubCheckRowID").val();
+            $.ajax({
+                url: url1,
+                type: 'GET',
+                async: false,
+                dataType: 'json',
+                success: function (allData) {
+                    if (allData != null && allData != "") {
+                        $('#dvChksPcks').show();
+                        var items = '';
+                        jQuery.each(allData, function (index, allData) {
+
+                            items += "<div  class='col-md-8'><label class='col-md-3 branchname control-label'>" + allData.Text + " :</label><input type='checkbox' name='chkDoc'  value=" + allData.Value + " class='col-md-1'/><div class='col-md-2'><input data-val='true' name='UploadDoc' disabled='true' type='file' value=" + allData.Value + "  id=" + allData.Value + "> </div></div>";
+                        });
+                        $('#dvUplodDoc').html(items);
+                    }
+                    else {
+                        $('#dvChksPcks').hide();
+                        alert("No Doc Selected");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("some error");
+                }
+            });
+        });
+
+        $(document).on('change', 'input[name="chkDoc"]', function (e) {// on change of state
+            var chkDocs = '';
+            $('input[name="chkDoc"]').each(function (index, value) {
+                if (this.checked) {
+                    chkDocs += this.value + ',';
+                    $("#" + this.value + "").removeAttr("disabled");
+                }
+                else {
+                    $("#" + this.value + "").attr("disabled", "disabled");
+                }
+            });
+
+            if (chkDocs.length > 0) {
+                chkDocs = chkDocs.substring(0, chkDocs.length - 1);
+            } else { chkDocs = ''; }
+            $('#UploadHid').val(chkDocs.trim());
+        });
+
+    </script>
+}

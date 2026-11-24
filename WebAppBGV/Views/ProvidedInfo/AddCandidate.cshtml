@@ -1,0 +1,752 @@
+﻿@using WebAppBGV.CommonMethods;
+@model dynamic
+@{
+    ViewBag.Title = "Add Candidate";
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "GetDETeamLeaderDashBoardInfo", "ProvidedInfo", new { CS = clsCommonMethods.PEncrypt(Session["CaseStatus"].ToString()), ver = clsCommonMethods.PEncrypt(Session["version"].ToString()) }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+    string msg = "";
+    if (Request.QueryString["ErrorMsg"] != null)
+    {
+        //hyperLink = Html.ActionLink("linkTitle", "AllocatedDataEntryJob", "ProvidedInfo", new { CaseStatus = Request.QueryString["Casestatus"].ToString() }, new { @class = "headerbacklink" }).ToString();
+        msg = Request.QueryString["ErrorMsg"].ToString();
+    }
+    @section LeftNavigation{ @Html.Partial("_NavLeftProvidedInfo") }
+    @section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+    @section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+    @section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+    string clientRowId = "";
+    clientRowId = @ViewBag.clientRowId;
+}
+
+<div class="submit-progress hidden">
+    <i class="fa fa-2x fa-spinner fa-spin"></i>
+    @*<label>Please wait...</label>*@
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        @if (msg != "")
+        {
+            <div class="errormsglogin" style="font-size: 22px;">@msg.ToString()</div>
+        }
+
+        @using (Html.BeginForm("AddCandidate", "ProvidedInfo", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {//AddCandidate
+            @Html.AntiForgeryToken()
+            <div class="row" style="margin-top:20px!important;">
+                <div class=" col-md-3 form-group branch row search-frame" style="margin-left:1.8rem!important;">
+                    <label class="control-label">Client Name :</label>
+                </div>
+                <div class="col-md-8">
+                    @Html.DropDownList("ClientRowID",
+                       new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                       "-- Select Client -- ",
+                       new { @class = "form-controls" })
+                </div>
+
+            </div>
+            @Html.ValidationSummary()
+
+            foreach (var category in Model)
+            {
+                <div class="container">
+                    @{
+                        string[] nm = category.Key.Split('_');
+
+                        if (@nm[2] == "textbox")
+                        {
+                            <div class="row" style="margin-bottom:2rem;">
+
+                                <div class="col-sm-4">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7 style="color:red;">*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-sm-4">
+
+                                    @if (Convert.ToInt32(nm[0]) == 8)
+                                    {
+                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]" onChange='Validate()'>
+                                    }
+                                    else
+                                    {
+                                        <input type="text" class="form-control" name=@nm[0] id=@nm[0] value='@category.Value' maxlength="@nm[5]">
+                                    }
+
+                                </div>
+                                <div class="col-sm-4">
+                                    @nm[4]
+                                </div>
+                            </div>
+
+                        }
+                        if (@nm[2] == "dropdown")
+                        {
+                            <div class="row" style="margin-bottom:1.5rem!important;">
+
+                                <div class="col-sm-4">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7 style="color:red;">*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-sm-4">
+                                    @{
+                                        string[] nmOption = nm[7].Split(',');
+                                    }
+                                    <select name=@nm[0] id=@nm[0]>
+                                        @for (int i = 0; i < nmOption.Length; i++)
+                                        {
+                                            if (@nmOption[i].Trim() == @nm[6])
+                                            {
+                                                <option value="@nmOption[i].ToString()" selected>@nmOption[i]</option>
+                                            }
+                                            if (@nmOption[i].Trim() != @nm[6])
+                                            {
+                                                <option value="@nmOption[i].ToString()">@nmOption[i]</option>
+                                            }
+                                        }
+                                    </select>
+                                    <input id="HfClientRowId" type="hidden" value=@clientRowId>
+                                    @Html.Hidden("HfClientRowId")
+
+                                </div>
+                                <div class="col-sm-4">
+                                    @nm[4]
+                                </div>
+                            </div>
+
+                        }
+                        if (@nm[2] == "checkbox")
+                        {
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7 style="color:red;">*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-sm-4">
+
+                                    @{
+                                        if (@nm[6] == "TRUE")
+                                        {
+                                            <input type="checkbox" id=@nm[0] name=@nm[0] value="checked" checked>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id=@nm[0] name=@nm[0] value=@nm[0]>
+                                        }
+                                    }
+
+                                </div>
+                                <div class="col-sm-4">
+                                    @nm[4]
+                                </div>
+                            </div>
+                        }
+                        if (@nm[2] == "fileUpload")
+                        {
+                            <div class="row" style="margin-bottom:1.5rem;">
+                                <div class="col-sm-4">
+                                    @{
+                                        if (@nm[3] == "mandatory")
+                                        {
+                                            <h7 style="color:red;">*</h7>
+                                        }
+                                    }
+                                    @nm[1]
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="file" id=@nm[0] name=@nm[0] accept=".png, .jpg, .jpeg, .pdf, .doc, .zip, .msg">
+                                </div>
+                                <div class="col-sm-4">
+                                    @nm[4]
+                                </div>
+                            </div>
+
+                        }
+                    }
+
+                </div>
+
+            }
+
+            <div class="row">
+                <div class="col-md-4" style="margin-left:1.2rem;">
+                    <label class="control-label text-right"><span style="color:red;">*</span> Pricing Type : </label>
+                </div>
+                <div class="col-md-3">
+                    @Html.DropDownList("PricingType", new List<SelectListItem>
+        { new SelectListItem { Text = "Pricing Type", Value = "0" },
+        new SelectListItem { Text = "Package", Value = "1" },
+        new SelectListItem { Text = "Check", Value = "2" }},
+        new { @class = "form-controls" })
+                </div>
+            </div>
+
+            <div id="dvChksPcks" class="col-md-12">
+                <fieldset class="scheduler-border">
+                    <legend class="scheduler-border"> Selected Checks And Package <em>*</em></legend>
+                    <div class="form-group branch">
+                        <div class="form-group branch">
+                            <div id="dvChecksPackages" class="scroll down">
+
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            @Html.Hidden("CandidateCheckOrPackage")
+            <div class="row">
+                <div class="col-sm-12 cytoscape-parent">
+                    <div class="w-400 h-400 d-inline-block" id="cytoscape-container"></div>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-sm-2" style="margin:auto; margin-bottom:3rem;">
+                    <input type="submit" value="Submit" onclick="return validateloader(this,'Saving...')" style="width:15rem!important; padding:2% 0 2% 0; border-radius:.90rem; font-size:1.6rem!important;" />
+                </div>
+
+            </div>
+
+        }
+    </div>
+</div>
+
+<div class="col-md-10">
+    <table class="table table-striped" style="margin-left:20px; margin-bottom:30px;">
+        <thead class="thead-inverse">
+            <tr>
+                <th class="top-head">Name</th>
+                <th class="top-head">Mobile</th>
+                <th class="top-head">Email ID</th>
+                <th class="top-head">Creation Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in ViewBag.LastFiveCases)
+
+            {
+                <tr>
+                    <td class="name">@item.Name</td>
+                    @*<td class="name">@item.MiddleName</td>
+                        <td class="name">@item.Lastname</td>*@
+                    <td class="name">@item.MobileNo</td>
+                    <td class="name">@item.EmailID</td>
+                    <td class="name">@item.CreationDate</td>
+                </tr>
+            }
+            <tr>
+                <td height="12" colspan="5"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+@section Scripts{
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <link href="~/assets/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
+    <script type="text/javascript">
+
+
+        function Validate() {
+            var email = document.getElementById('8');
+           var filter = /(?:[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@@(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-zA-Z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+            if (!filter.test(email.value)) {
+                alert('Please provide a valid email address');
+           }
+        }
+
+
+        $("#8").EmailString();
+
+
+        $(document).ready(function () {
+            $('#dvChksPcks').hide();
+            $('#dvSProjectName').hide();
+            $('#dvNagarrowEntity').hide();
+            $('#dvGenpact').hide();
+
+        });
+
+        $(document).on('change', 'input[class="chkPkgChks"]', function (e) {
+            var selectedIds = '';
+            $('input[class="chkPkgChks"]').each(function (index, value) {
+                if (this.checked) { selectedIds += this.value + ','; }
+            });
+            if (selectedIds.length > 0) {
+                selectedIds = selectedIds.substring(0, selectedIds.length - 1);
+            } else { selectedIds = ''; }
+
+            $('#CandidateCheckOrPackage').val(selectedIds.trim());
+        });
+
+        $(function () {
+            //Bind Candidate code
+            $('#ClientRowID').change(function () {
+
+                var url = "/ProvidedInfo/AddCandidate/" + $("#ClientRowID").val();
+                $('#HfClientRowId').val(this.value);
+                window.location.href = '@Url.Action("AddCandidate", "ProvidedInfo")' + '?id=' + this.value;
+
+                //var ClientRowId = $("#ClientRowID").val();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+
+                });
+                $('#PricingType').val(0);
+                $('#dvChksPcks').hide();
+                $("#CaseType").val('');
+                $("#ClientRefID").val('');
+                var ClientRowID = $("#ClientRowID").val();
+                if (ClientRowID == 249 || ClientRowID == 277 || ClientRowID == 607 || ClientRowID == 722) {
+                    $('#dvSProjectName').show();
+                    if (ClientRowID == 607) {
+                        $('#ProjectIds').text("Process Name");
+                        $("#ProjectNames").text("Business Name");
+                    }
+                   else if (ClientRowID == 722) {
+                        $('#ProjectIds').text("Process ID :");
+                        $("#ProjectNames").text("COE/SDO :");
+                    }
+                    else {
+                        $('#ProjectIds').text("Project Id");
+                        $("#ProjectNames").text("Project Name");
+                    }
+                }
+                else
+                {
+                    $('#dvSProjectName').hide();
+                }
+
+                if (ClientRowID == 576 )
+                {
+                    $('#dvNagarrowEntity').show();
+                }
+                else {
+                    $('#dvNagarrowEntity').hide();
+                }
+
+                if (ClientRowID == 722) {
+                    $('#dvGenpact').show();
+                    $("label[for='ClientRefID']").text('OHR ID/ Taleo ID :');
+
+                }
+                else {
+                    $('#dvGenpact').hide();
+                    $("label[for='ClientRefID']").text('Client Ref ID :');
+                }
+
+                var url = "/ProvidedInfo/GetCandidateCode/" + $("#ClientRowID").val();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+                    success: function (CandidateCode) {
+                        if (CandidateCode != null && CandidateCode != "") {
+                            $('#CandidateCode').val(CandidateCode);
+                            $('#CandidateCode').prop("readonly", true);
+                        }
+                        else {
+                            $('#CandidateCode').val("");
+                            $('#CandidateCode').prop("readonly", false);
+                        }
+                    }
+                });
+
+                if (ClientRowID == 249) {
+                    $("#ClientRefID").attr('maxlength', '9');
+
+                    //$("#ClientRefID").keypress(function (event) {
+                    //    // Allow only backspace and delete
+                    //    if (event.keyCode == 46 || event.keyCode == 8) {
+                    //        // let it happen, don't do anything
+                    //    }
+                    //    else {
+                    //        // Ensure that it is a number and stop the keypress
+                    //        if (event.keyCode < 48 || event.keyCode > 57) {
+                    //            event.preventDefault();
+                    //        }
+                    //    }
+                    //});
+
+                }
+                else
+                {
+                    $("#ClientRefID").attr('maxlength', '100');
+                    //$('#ClientRefID').unbind("keypress");
+                }
+
+
+            });
+
+            $('#PricingType').change(function () {
+                if ($('#ClientRowID').val() > 0) {
+                    var url1 = "/ProvidedInfo/GetChecksAndPackageByClientId?cid=" + $("#ClientRowID").val() + "&pt=" + $("#PricingType").val();
+                    $.ajax({
+                        url: url1,
+                        type: 'GET',
+                        async: false,
+                        dataType: 'json',
+                        success: function (allData) {
+                            if (allData != null && allData != "") {
+                                $('#dvChksPcks').show();
+                                var items = '';
+                                jQuery.each(allData, function (index, allData) {
+                                    if (allData.CheckFamilyRowID != 0) {
+                                        items += "<div  class='col-md-6'><input type='checkbox' class='chkPkgChks' value='Check-" + allData.ClientCheckRowID + "' /> " + allData.CheckOrPackageName + "</div>";
+                                    }
+                                    else {
+                                        items += "<div  class='col-md-6'><input type='checkbox' class='chkPkgChks' name='checkbox1' onClick='ckChange(this)' value='Package-" + allData.CheckOrPackageName + "' /> " + allData.CheckOrPackageName + "</div>";
+                                    }
+                                });
+                                $('#dvChecksPackages').html(items);
+                            }
+                            else {
+                                $('#dvChksPcks').hide();
+                                alert("No Checks And Packages Selected");
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            alert("some error");
+                        }
+                    });
+                }
+                else {
+                    alert("Select a client first!");
+                }
+            });
+
+            $('#CaseType').change(function () {
+                var cid = 0;
+                cid = $("#ClientRowID").val();
+                if (cid > 0) {
+                    if ($("#CaseType").val() == "Normal") {
+                        GetClientTAT();
+                        var tat = $('#hdnTAT').val();
+                        $('#TAT').val(tat);
+                        if (tat != 0) { $('#TAT').attr("readonly", true); } else { $('#TAT').attr("readonly", false); }
+                    }
+                    if ($("#CaseType").val() == "Priority") {
+                        $('#TAT').val(0);
+                        $('#TAT').attr("readonly", false);
+                    }
+                }
+                else {
+                    alert("Please select a client first!");
+                }
+            });
+
+            $('#IsBackdate').change(function () {
+                if (this.checked) {
+                    $('#HowManyBackDays').attr("disabled", false);
+                    $('#HowManyBackDays').val(1);
+                    $('#HowManyBackDays').focus();
+                }
+                else {
+                    $('#HowManyBackDays').attr("disabled", true);
+                }
+            });
+        });
+
+        function GetClientTAT() {
+            var url = "/ProvidedInfo/GetClientTATByCandidateId/" + $("#ClientRowID").val();
+            $.ajax({
+                url: url,
+                type: 'GET',
+                async: false,
+                dataType: 'json',
+                success: function (tat) {
+                    $('#hdnTAT').val(tat);
+                }
+            });
+        }
+
+        function validateForm() {
+            var dob = $('#DOB').val();
+            var doj = '@DateTime.Now.Date.ToString("yyyy-MM-dd")';
+
+            if (dob != '') {
+                var str = dob.split('-');
+                var dojday1 = str[2];
+                var dojmonth1 = str[1];
+                var dojyear1 = str[0];
+
+                var dateOfBorth = new Date(dojyear1, dojmonth1 - 1, dojday1);
+
+                var str1 = doj.split('-');
+                var day = str1[2];
+                var month = str1[1];
+                var year = str1[0];
+
+                var DateOfJoin = new Date(year, month - 1, day)
+
+                var timeDiff = DateOfJoin - dateOfBorth;
+
+                var diffDays = timeDiff / (1000 * 3600 * 24 * 365);
+                var age = parseInt(diffDays);
+
+                if (age < 18) {
+                    alert("Age should be more than 18 years. from date of joining!");
+                    return false;
+                }
+            }
+
+            if ($('#PricingType').val() == 0)
+            {
+                alert("Please Select Pricing Type");
+                $('#PricingType').focus();
+                return false;
+            }
+
+            var count = 0;
+            if ($("#AadhaarCardNo").val() != '') {
+                count += 1;
+            }
+            if ($("#DrivingLicenseNo").val() != '') {
+                count += 1;
+            }
+            if ($("#PassportNo").val() != '') {
+                count += 1;
+            }
+            if ($("#PanCardNo").val() != '') {
+                count += 1;
+            }
+            if ($("#VoterIDCardNo").val() != '') {
+                count += 1;
+            }
+            if (count == 0) {
+                alert("Please enter atleast one document no details!");
+                return false;
+            }
+
+            var chkCount = 0;
+            $('input.chkPkgChks:checkbox').each(function (index, value) {
+                if (this.checked) {
+                    chkCount += 1;
+                }
+            });
+            if (chkCount == 0) {
+                alert("Please select atleast one Check or Package.");
+                return false;
+            }
+
+            if (chkCount == 2 && $('#PricingType').val() == 1) {
+                alert("Please select  one  Package.");
+                return false;
+            }
+
+            if ($("#CaseType").val() == "Priority") {
+                GetClientTAT();
+                var tat = $("#TAT").val();
+                var hdtat = $("#hdnTAT").val();
+                if (parseInt(tat) == 0 || parseInt(tat) >= parseInt(hdtat)) {
+                    alert("Please enter valid TAT!");
+                    return false;
+                }
+            }
+
+            if ($('#IsBackdate').is(":checked") == true) {
+                if ($('#HowManyBackDays').val() == '' || $('#HowManyBackDays').val() == '0') {
+                    alert("Please enter the how many back days refrence generate!");
+                    return false;
+                }
+            }
+
+            return true;
+    }
+
+
+
+    function ckChange(el) {
+        var ckName = document.getElementsByName(el.name);
+        for (var i = 0, c; c = ckName[i]; i++) {
+            c.disabled = !(!el.checked || c === el);
+        }
+    }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var start = new Date();
+            start.setFullYear(start.getFullYear() - 60);
+            var end = new Date();
+            end.setFullYear(end.getFullYear() - 18);
+
+            $('input[type=datetime]').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                minDate: start,
+                maxDate: end,
+                //yearRange: "-66:-10",
+                yearRange: start.getFullYear() + ':' + end.getFullYear(),
+                //onClose: function (dateText, inst) {
+                //    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
+                //}
+            });
+        });
+    </script>
+    <script>
+        function validateloader(ctl, msg) {
+
+            event.preventDefault();
+            $(ctl).prop("disabled", true).val(msg);
+            $("body").addClass("submit-progress-bg");
+            $(".submit-progress").removeClass("hidden");
+            setTimeout(function () {
+                $("form").submit();
+            }, 1);
+
+            return true;
+        }
+    </script>
+    <style>
+        .submit-progress-bg {
+            background-color: lightgray;
+            opacity: .5;
+        }
+
+        .submit-progress {
+            position: fixed;
+            top: 45%;
+            left: 60%;
+            height: 5em;
+            padding-top: 2.3em;
+            z-index: 1;
+            /* The following properties are the ones most likely to change */
+            width: 20em;
+            /* Set 'margin-left' to a negative number that is 1/2 of 'width' */
+            margin-left: -10em;
+            padding-left: 1.1em;
+            color: white;
+            -webkit-border-radius: 0.4em;
+            -moz-border-radius: 0.4em;
+            border-radius: 0.4em;
+        }
+
+        /* Changing style for spinner */
+        .submit-progress {
+            padding-top: 0em;
+            width: 19em;
+            margin-left: -11.5em; /* Set to a negative number that is 1/2 of the width */
+        }
+
+            .submit-progress i {
+                margin-right: 0.5em;
+                color: black
+            }
+
+        .hidden {
+            display: none;
+        }
+
+        .fa-2x {
+            font-size: 4em;
+        }
+    </style>
+
+}
+<style>
+    .mandatory-star {
+        color: red;
+    }
+
+    .btn {
+        padding: 10px 40px 10px 40px !important;
+    }
+
+    input[type=text], textarea {
+        width: 100%;
+        padding: 22px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    select {
+        width: 100%;
+        padding: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    label {
+        padding: 12px 12px 12px 0;
+        display: inline-block;
+    }
+
+    input[type=submit] {
+        background-color: #04AA6D;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        float: right;
+    }
+
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+
+    .container {
+        border-radius: 5px;
+        /*background-color: #f2f2f2;*/
+        padding: 8px;
+        font-size: 1.2rem !important;
+    }
+
+    .col-25 {
+        float: left;
+        width: 25%;
+        margin-top: 6px;
+    }
+
+    .col-75 {
+        float: left;
+        width: 40%;
+        margin-top: 6px;
+        margin-left: 90px;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+
+    /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+    @@media screen and (max-width: 600px) {
+        .col-25, .col-75, input[type=submit] {
+            width: 100%;
+            margin-top: 0;
+        }
+    }
+</style>

@@ -1,0 +1,85 @@
+﻿
+@{
+    ViewBag.Title = "Manage Client Bulk Uploads";
+}
+
+@{
+   
+    string faIconAddNew = string.Format("<i class='fa fa-plus-circle' aria-hidden='true'></i> Add New Document");
+    string hyperLinkAddNew = Html.ActionLink("linkTitle", "AddCasesByBulkUpload", "ClientCompany",null, new { @class = "AddNewDocument mt-2 ms-2" }).ToString();
+    ViewBag.NavigationBtnAddNew = new HtmlString(hyperLinkAddNew.ToString().Replace("linkTitle", faIconAddNew));
+}
+<style>
+    .AddNewDocument {
+        background: #8D5FFF !important;
+        color: #FFF;
+        font-family: 'Securitas Pro';
+        font-size: .90rem !important;
+        border-radius: 0px;
+        display: inline-block;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: center;
+        text-decoration: none;
+        vertical-align: middle;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+        background-color: transparent;
+        border: 1px solid transparent;
+        padding: .35rem 1rem .35rem 1rem;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+        .AddNewDocument:hover {
+            color: #031F30 !important;
+            border-color: #8D5FFF !important;
+            border: 1px solid #8D5FFF;
+            background:#fff!important;
+        }
+</style>
+
+@*@section LeftNavigation{ @Html.Partial("_NavLeftClientCompany") }*@
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="container-fluid ps-0 bg_gradient_CaseWise mt-2">
+    <div class="row row-sm">
+        @section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+    </div>
+    <div class="row row-sm ms-2">
+        <div class="col-xl-12 mb-5 ps-0 table-responsive client-table-responsive"> 
+            @if (Model != null && Model.PQClientCompany != null)
+            {
+                <table class="mb-0 client--table-responsive js-serial table-scroll items table" style="border:none; cursor:grab;">
+                    <thead class="tx-10 text-start">
+                        <tr>
+                            <th>Excel File Name</th>
+                            <th>Attach Document Name</th>
+                            <th>Uploaded BY</th>
+                            <th>Uploaded Date</th>
+                        </tr>
+                    </thead>
+                    <tbody class="tx-10 text-start">
+                        @foreach (var a in Model.PQClientCompany)
+                        {
+                        <tr>
+                            <td>
+                                @Html.ActionLink((string)a.ExcelFileName, "AttachDoc", "ClientCompany", new { AttachDocName = a.ExcelFileName }, new { @target="_blank", @class="edit" })   
+                            </td>
+                            <td>
+                                @Html.ActionLink((string)a.AttachDocName,"AttachDoc", "ClientCompany", new { AttachDocName = a.AttachDocName }, new { @target="_blank", @class="edit" })
+                            </td>
+                            <td>@a.UploadedBy</td>
+                            <td>@a.UploadedDate.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                        }
+                        </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+

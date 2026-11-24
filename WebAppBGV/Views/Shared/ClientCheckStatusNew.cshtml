@@ -1,0 +1,129 @@
+@*@model ViewModels.ClientViewModel.ClientServiceListViewModel*@
+@*@{Layout = null; }*@
+
+@using WebAppBGV.CommonMethods;
+@model  ViewModels.ClientViewModel.ClientServiceListViewModel
+@{
+    ViewBag.Title = "Candidate Check Details Info";
+    Layout = null;
+}
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/modernizr-2.8.3.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+</head>
+<body>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                    </div>
+                    @if (Model != null && Model.ClientServiceChecks != null)
+                    {
+                        <div class="row">
+                            <div class="col-md-12 table">
+                                @{
+
+                                    WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                    grid.Bind(Model.ClientServiceChecks, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                                }
+                                @grid.GetHtml(
+                                                  htmlAttributes: new { id = "grid", @class = "table" },
+                                                  headerStyle: "thead-inverse",
+                                                  rowStyle: "ordertxt",
+                                                  footerStyle: "custpaging",
+                                                  mode: WebGridPagerModes.All,
+                                                  columns: new[]
+                                                  {
+                                                                grid.Column(header: "No.", style:"td-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                                                grid.Column(columnName: "SecuritasID", header: "Company Ref No", canSort: false, style:"td-3"),
+                                                                grid.Column(columnName: "CheckName", header: "Check Name", canSort: false, style:"td-2"),
+                                                                grid.Column(columnName: "CheckStatus", header: "Check Status", canSort: false, style:"td-2"),
+                                                                //grid.Column(columnName: "orderDate", header: "Order Date", canSort: false, style:"td-2"),
+                                                                //grid.Column(columnName: "outDate", header: "Out Date", canSort: false, style:"td-2"),
+
+                                                                grid.Column(columnName: "ColorName", header: "ColorName", canSort: false, style:"td-2"),
+                                                                    grid.Column(header : "Action", format : (item) => {
+        var link = Html.ActionLink("History", "CheckActionHistory", "Verification", new { scid = item.SubCheckRowID, pe = item.PersonalRowID }, new { @class = "iframeActionHistories cboxElement" });
+        return link;
+    }, style:"edit col-md-1"),
+                                                                                                                                grid.Column(columnName: "ColorName", header: "ColorName", canSort: false, style:"td-2"),
+                                                                grid.Column(header : "Action", format : (item) => {
+    var link = Html.ActionLink("Check Documents","UploadCandidateDocNew", "ClientServicing", new {  CompanyRefNo = clsCommonMethods.PEncrypt(item.SecuritasID.ToString()),SubCheckRowID=item.SubCheckRowID,personalrowid=clsCommonMethods.PEncrypt(item.PersonalRowID.ToString())} , new { @class = "iframeActiondocs cboxElement" });
+    return link;
+}, style:"edit col-md-1"),
+                                                                  
+
+                                }
+                                           )
+                                <div class="total-record">Total Records: @Model.TotalRecords</div>
+                                @*<div style="margin-left:20px; font-size:20px; font-weight:bold;">@Html.ActionLink("Back", "ReVerificationWipro", "ClientServicing") </div>*@
+                                <br />
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+<script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+<script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+<script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+<link href="~/Content/colorbox.css" rel="stylesheet" />
+<script src="~/Scripts/jquery.colorbox-min.js"></script>
+<script>
+    //function ValidateForm() {
+    //    if ($("#CheckStatus").val() == "Funds Pending") {
+    //        var flag = false;
+    //        if ($("#ClientRowID").val() > 0) {
+    //            var url = "/Verification/GetClientExtraExpensesAllowed/" + $("#ClientRowID").val();
+    //            $.ajax({
+    //                url: url,
+    //                type: 'GET',
+    //                async: false,
+    //                dataType: 'json',
+    //                success: function (allowed) {
+    //                    if (allowed.ExtraExpenses == 1) {
+    //                        alert("Extra Expenses Already Accepted By Client. Please Select Another Option!");
+    //                        flag = false;
+    //                    }
+    //                    else {
+    //                        flag = true;
+    //                    }
+    //                }
+    //            });
+    //        }
+    //        else {
+    //            alert("ClientId is missing please close the popup!");
+    //            return false;
+    //        }
+    //        return flag;
+    //    }
+    //}
+    $(document).ready(function () {
+
+        $(".iframeActionHistories").colorbox({ iframe: true, width: "100%", height: "100%" });
+
+        $(".iframeActiondocs").colorbox({ iframe: true, width: "100%", height: "100%" });
+    });
+</script>
+
+

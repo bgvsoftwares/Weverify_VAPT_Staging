@@ -1,0 +1,162 @@
+@model List<ViewModels.TempViewModel.CaseRemarksAPIModel>
+
+
+
+@{
+    string personalRowID = "";
+    if (Request.QueryString["PersonalRowID"] != null)
+    {
+        personalRowID = Request.QueryString["PersonalRowID"].ToString();
+    }
+
+}
+
+<div id="repo">
+    @*<input type="hidden" id="hdCheckName" value="@ViewBag.checkDetail" />
+    <input type="hidden" id="hdPUniqueReferenceID" value="@ViewBag.PUniqueReferenceID" />*@
+    <div class="panel-heading" style="background-color: #2e6da4;">
+        <h2 style="text-align: center;padding: 1%;font-size: 20px!important;color: #fff;">Client Remarks</h2>
+    </div>
+    <table class="table table-bordered border border-dark">
+        <thead style="background-color: gainsboro;">
+            <tr>
+                <th class="border border-dark">Check Name</th>
+                <th class="border border-dark">Client Remarks</th>
+                <th class="border border-dark">Check ID</th>
+                <th class="border border-dark">Status Change Date</th>
+                <th class="border border-dark">BGV Type</th>
+                <th class="border border-dark">Changes By</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="border border-dark">@item.CHECKDESC</td>
+                    <td class="border border-dark">@item.COMMENTS</td>
+                    <td class="border border-dark">@item.CHECKID</td>
+                    <td class="border border-dark">@item.STATUSCHANGEDDATE</td>
+                    <td class="border border-dark">@item.BGVTYPE</td>
+                    <td class="border border-dark">@item.CHANGEDBY</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="panel-footer mt-2s" style="float:right;">
+        <input type="button" class="btn bun-bg btn-default" style="padding: 5px 10px 5px 10px;font-weight: bold;" value="Print" onclick="CallPrint('repo')" />
+        <br />
+        <input type="button" class="btn bun-bg btn-default mt-2" style="padding: 5px 10px 5px 10px;font-weight: bold;" value="Download/Upload PDF" onclick="fnUploadDocumentCheckWise()" />
+
+    </div>
+</div>
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/colorbox.css" rel="stylesheet" />
+<link href="~/Content/Site.css" rel="stylesheet" />
+<script src="~/Scripts/multiemail.js"></script>
+<script src="~/Scripts/jquery-3.7.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/modernizr-2.8.3.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+    .table-bordered th {
+        border: 1px solid black !important;
+    }
+</style>
+
+
+<script>
+    function CallPrint(strid) {
+        var prtContent = document.getElementById(strid);
+        var WinPrint = window.open('', 'Report', 'left=0,top=0,width=800,height=600,toolbar=0,scrollbars=yes,status=0');
+        WinPrint.document.open();
+        WinPrint.document.write(
+            '<html>\n<head>' +
+            '<link href="/Images/report.css" rel="stylesheet" type="text/css" />' +
+            '\n</head>' +
+            '<body>' +
+            '<div> \n' + prtContent.innerHTML + ' \n</div> ' +
+            '</body>' +
+            '\n</html>'
+        );
+
+        WinPrint.document.close();
+        WinPrint.focus();
+        WinPrint.print();
+        //WinPrint.close();
+    }
+</script>
+
+<script>
+      async function fnUploadDocumentCheckWise() {
+
+          // div content
+          const content = document.getElementById("repo");
+          const checkName = document.getElementById("hdCheckName").value;
+          const PUniqueId = document.getElementById("hdPUniqueReferenceID").value;
+          // PDF File Name
+          const strFileName = `${PUniqueId}_${checkName}.pdf`;
+
+          try
+          {
+              // render HTML to the canvas
+              const canvas = await html2canvas(content, { scale: 1.2, useCORS: true });
+              const imgData = canvas.toDataURL("image/jpeg", 0.65);
+
+              // Create PDF
+              const pdf = new jspdf.jsPDF("p", "mm", "a4");
+              const pdfWidth = pdf.internal.pageSize.getWidth();
+              const pdfHeight = pdf.internal.pageSize.getHeight();
+
+              const imgWidth = pdfWidth;
+              const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+              let heightLeft = imgHeight;
+              let position = 0;
+
+              pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
+              heightLeft -= pdfHeight;
+
+              // Add Multiple Page
+              while (heightLeft > 0) {
+                  position = heightLeft - imgHeight;
+                  pdf.addPage();
+                  pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+                  heightLeft -= pdfHeight;
+              }
+
+              // Create Blob
+              const pdfBlob = pdf.output("blob");
+
+              // Trigger file download
+              pdf.save(strFileName);
+
+              // Prepare form data for upload
+              const formData = new FormData();
+              formData.append("PersonalRowID", '@personalRowID');
+              formData.append("DocumentType", checkName);
+              formData.append("uploadDoc", pdfBlob, strFileName);
+
+              // Send to Server
+              const response = await fetch("/ProvidedInfo/fnUploadAPIDocumentCheckWise", {
+                  method: "POST",
+                  body: formData
+              });
+
+              if (response.ok) {
+                  alert("Document uploaded successfully!");
+              } else {
+                  alert("Upload failed.");
+              }
+
+          } catch (error) {
+              alert("Error while uploading PDF.");
+          }
+      }
+</script>

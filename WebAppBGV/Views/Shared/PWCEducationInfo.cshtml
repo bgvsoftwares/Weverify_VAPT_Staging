@@ -1,0 +1,275 @@
+﻿@using System.Globalization;
+@model ViewModels.ReportQCViewModel.ReportViewModel
+@{
+    var list = Model.EducationInfoModel.Where(T => T.Status == 1).GroupBy(x => x.SubcheckRowID)
+                              .Select(g => g.First())
+                              .ToList();
+}
+
+
+@if (Model != null && Model.EducationInfoModel != null && Model.EducationInfoModel.Count > 0)
+{
+    if (Model.EducationInfoModel != null)
+    {
+        int i = 0;
+        int j = 0;
+        int annuxureno = Convert.ToInt32(Session["AnnexureNo"]);
+        int k = Convert.ToInt32(annuxureno);
+        var D1 = "";
+        foreach (var a in list)
+        {
+            var Anticident = Model.EducationInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+
+            //var Cert = Model.EducationInfoModel.FirstOrDefault(P => P.SubcheckRowID == a.SubcheckRowID && P.AntecedentRowID == "457");
+            var Cert = Model.EducationInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID && T.AntecedentRowID == "457").ToList();
+
+            if (Cert.Count>0)
+            {
+                D1 = Cert[0].DataEntryValue;
+            }
+
+            var ReportComment = a.ReportComment;
+            var doc = Model.CandidateDocList.Where(w => w.SubCheckRowID == a.SubcheckRowID).ToList();
+            if (j == 0 && a.CheckStatusId=="37" && doc.Count() > 0)
+            {
+                annuxureno = k + 1;
+            }
+            else
+            {
+                if ( a.CheckStatusId == "37"   && doc.Count() > 0)
+                {
+                    annuxureno = annuxureno + 1;
+                }
+            }
+            if (list.Count>1)
+            {
+                j = 2;
+            }
+
+
+
+            if (doc.Count() > 0)
+            {
+                Session["AnnexureNo"] = annuxureno.ToString();
+            }
+
+            //foreach (var a in list)
+            //{
+            //    var Anticident = Model.EducationInfoModel.Where(T => T.SubcheckRowID == a.SubcheckRowID);
+
+            //    var ReportComment = list[i].ReportComment;
+
+            <div style="page-break-after:always;"></div>
+            <table style="border:3px solid #000; margin:auto; width:793px;">
+                <tr>
+                    <td>
+                        <table style="width: 97%;">
+                            <tr>
+                                <td colspan="2" style="width: 40pt;" valign="top"></td>
+                                <td colspan="2" style="width: 40pt; text-align: right;" valign="top">
+                                    @*<img src="http://localhost:54586/Images/logo.jpg" alt="" width="60" height="40" />*@
+                                    <img src="https://bgv.securitas-india.com/Images/logo.jpg" alt="" width="60" height="40" />
+                                </td>
+                            </tr>
+                        </table>
+
+                        @*<h3 class="table-heading "><a name="@a.SubcheckRowID" style="color: black!important; text-decoration: underline!important"></a></h3>*@
+                        @if(D1.ToLower()=="true")
+                        {
+                        <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;margin-bottom:8.0pt;text-align:center;line-height:107%;'><strong><span style='font-size:15px;line-height:107%;font-family:"Arial",sans-serif;'><a name="@a.SubcheckRowID"> Professional certification </a> </span></strong></p>
+
+                        }
+                        else
+                        {
+                        <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;margin-bottom:8.0pt;text-align:center;line-height:107%;'><strong><span style='font-size:15px;line-height:107%;font-family:"Arial",sans-serif;'><a name="@a.SubcheckRowID"> Educational Degree / Diploma </a> </span></strong></p>
+
+                        }
+                        <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;'></p>
+
+                        <table style="border:1px solid #000;  border-collapse: collapse; width: 90%; margin: auto;">
+                            <tbody>
+                                <tr>
+                                    <td colspan="2" style="border:1px solid #000; text-align: center; background-color: rgb(204, 204, 204); font-size: 13px; font-weight: bold; font-family: 'Arial',sans-serif"> Details as per Subject’s Application Form</td>
+                                    <td style="border:1px solid #000; text-align: center; background-color: rgb(204, 204, 204); font-size: 13px; font-weight: bold; font-family: 'Arial',sans-serif">Verification Remarks</td>
+                                </tr>
+
+                                @foreach (var item in Anticident)
+                                {
+
+
+
+
+
+
+                                    if (item.AntecedentRowID != "457" && item.AntecedentRowID != "458" && item.AntecedentRowID != "459" && item.AntecedentRowID != "460" && item.AntecedentRowID != "461" && item.AntecedentRowID != "462")
+                                    {
+                                        if (item.AntecedentRowID == "172" || item.AntecedentRowID == "316" || item.AntecedentRowID == "281" || item.AntecedentRowID == "315" || item.AntecedentRowID == "280" || item.AntecedentRowID == "66")
+                                        {
+
+                                            if (item.AntecedentRowID == "66")
+                                            {
+                                                <tr>
+                                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">@item.DisplayNameRep</td>
+                                                    <td colspan="2" style="border:1px solid #000;  text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">
+                                                        @Html.Raw(ReportComment)
+                                                        <br />
+                                                        @if (doc.Count() > 0)
+                                                        {
+                                                            <a href="#@annuxureno"> See Attachment @annuxureno</a>
+                                                        }
+                                                    </td>
+                                                    @*<td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">Verified</td>*@
+                                                </tr>
+                                            }
+                                            else if (item.AntecedentRowID == "316")
+                                            {
+                                                <tr>
+                                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">@item.DisplayNameRep</td>
+                                                    <td colspan="2" style="border:1px solid #000;  text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">-</td>
+                                                    @*<td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">Verified</td>*@
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">@item.DisplayNameRep</td>
+                                                    @if (!string.IsNullOrEmpty(item.OpsValue))
+                                                    {
+                                                        <td colspan="2" style="border:1px solid #000;  text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">
+                                                            @Html.Raw(CultureInfo.CurrentCulture.TextInfo.ToTitleCase(item.OpsValue.ToLower()))
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td colspan="2" style="border:1px solid #000;  text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">-</td>
+                                                    }
+
+                                                    @*<td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">Verified</td>*@
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif"> @item.DisplayNameRep </td>
+
+                                                <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> @item.DataEntryValue </td>
+                                                @if (item.OpsValue != "" && (a.CheckStatusId == "24" || a.CheckStatusId == "36" || a.CheckStatusId == "37"))
+                                                {
+                                                    if (item.OpsValue.ToUpper() == item.DataEntryValue.ToUpper())
+                                                    {
+                                                        <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> Verified </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> @Html.Raw(item.OpsValue) </td>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> - </td>
+                                                }
+
+
+                                            </tr>
+                                        }
+                                    }
+
+                                    if (D1.ToLower() == "true")
+                                    {
+                                        if (item.AntecedentRowID == "458" && item.AntecedentRowID == "459" && item.AntecedentRowID == "460" && item.AntecedentRowID == "461" && item.AntecedentRowID == "462")
+                                        {
+                                            <tr>
+                                                <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif"> @item.DisplayNameRep </td>
+
+                                                <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> @item.DataEntryValue </td>
+                                                @if (item.OpsValue != "" && (a.CheckStatusId == "24" || a.CheckStatusId == "36" || a.CheckStatusId == "37"))
+                                                {
+                                                    if (item.OpsValue.ToUpper() == item.DataEntryValue.ToUpper())
+                                                    {
+                                                        <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> Verified </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> @Html.Raw(item.OpsValue) </td>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <td style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> - </td>
+                                                }
+
+
+                                            </tr>
+                                        }
+                                    }
+
+
+                                }
+
+                                @*<tr>
+            <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">&nbsp;Additional comments</td>
+            <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">See Attachment 1</td>
+        </tr>
+        <tr>
+            <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">&nbsp;Verifier name</td>
+            <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> - </td>
+        </tr>
+        <tr>
+            <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">&nbsp;Verifier designation</td>
+            <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> - </td>
+        </tr>
+        <tr>
+            <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">&nbsp;Department name</td>
+            <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> - </td>
+        </tr>
+        <tr>
+            <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">&nbsp;Verified date</td>
+            <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> - </td>
+        </tr>
+        <tr>
+            <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">&nbsp;Verified time</td>
+            <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif"> - </td>
+        </tr>*@
+                                @*<tr>
+            <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">&nbsp;Remarks</td>
+            <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">
+                @ReportComment
+            </td>
+        </tr>*@
+
+                                @*<tr>
+            <td style="padding: 5px; width: 11.4rem; border:1px solid #000; text-align: left; background-color: rgb(204, 204, 204); font-size: 13px; font-family: 'Arial',sans-serif">&nbsp;Additional comments</td>
+            <td colspan="2" style="border:1px solid #000; text-align: center; font-size: 13px; font-family: 'Arial',sans-serif">
+
+            </td>
+        </tr>*@
+
+
+                            </tbody>
+                        </table>
+                        <p><br></p>
+                        <table style="width:97%; margin:auto; border-top:2px solid #000;">
+                            <tr>
+                                <td colspan="2" style="width: 40pt;" valign="bottom">
+
+                                    <img src="https://bgv.securitas-india.com/Images/footer-logo.jpg" alt="" width="120" height="50" />
+                                </td>
+                                <td colspan="2" style="width: 488.35pt; padding: 0cm;">
+                                    <p><br></p>
+                                    <p style='margin-top:.5pt;margin-bottom:.0001pt; font-size:15px;font-family:"Calibri",sans-serif;text-align:center;line-height:83%;'><span style="font-size:15px;line-height:83%;color:blue; font-weight: bold;">SECURITAS INDIA<span style='font-size:10px;line-height:83%;font-family:"Arial MT",sans-serif;color:blue;'></span></p>
+                                    <p style='margin-top:.5pt;margin-bottom:.0001pt; font-size:12px;font-family:"Calibri",sans-serif;text-align:center;'><span style="font-size:13px;color:#010202;">496, Udyog Vihar, Phase-3, Gurgaon-122016 Tel: +91 1244718888<br></span><a href="http://www.securitas.in/"><span style='font-size:10px;font-family:"Arial MT",sans-serif;color:blue;'>www.securitas.in</span></a><span style="font-size:15px;color:blue; margin-left: 60px;">&nbsp;</span><a href="http://www.walsons.com/"><span style='font-size:10px;font-family:"Arial MT",sans-serif;color:blue;'>www.walsons.com</span></a></p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+
+
+        }
+        i++;
+    }
+}
+

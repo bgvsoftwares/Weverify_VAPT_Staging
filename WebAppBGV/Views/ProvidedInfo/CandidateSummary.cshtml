@@ -1,0 +1,129 @@
+﻿
+@{
+    ViewBag.Title = "Duplicate Search";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "DashboardClient", "Home", new { area = "ClientArea" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    string msg = "";
+    if (Request.QueryString["msg"] != null)
+    {
+        //hyperLink = Html.ActionLink("linkTitle", "AllocatedDataEntryJob", "ProvidedInfo", new { CaseStatus = Request.QueryString["Casestatus"].ToString() }, new { @class = "headerbacklink" }).ToString();
+        msg = Request.QueryString["msg"].ToString();
+    }
+    string Designation = Convert.ToString(Session["Designation"]);
+}
+<div class="row">
+    <div class="col-md-12">
+        @if (msg != "")
+        {
+            <div class="errormsglogin" style="font-size: 22px;">@msg.ToString()</div>
+        }
+        <div class="row">
+            <div class="col-md-12">
+
+                @using (Html.BeginForm("CandidateSummary", "ProvidedInfo", FormMethod.Get))
+                {
+                    <div class="form-horizontal">
+                        <div class="form-group branch row search-frame">
+                            @*<label class="col-md-2 control-label">Keyword :</label>*@
+                            <div class="col-md-8">
+                                @Html.TextBox("SearchType", null, new { @class = "form-control", placeholder = "Ex. Enter Candidate name, Reference Id ..." })
+                            </div>
+                            <div class="col-md-2">
+                                @Html.DropDownList("ClientRowID",new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                                new { @class = "form-control" })
+                            </div>
+                            <div style="text-align:left;" class="col-md-2">
+                                <input class="btn btn-default" type="submit" value="Search" />
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (Model != null && Model.APICandidateSummary != null)
+                {
+                    <div class="row" style="margin-top:10px">
+                        <div class="col-md-12">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.APICandidateSummary, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+
+                                htmlAttributes: new { id = "grid", @class = "table table-striped" },
+                                headerStyle: "thead-inverse",
+                                rowStyle: "ordertxt",
+                                footerStyle: "custpaging",
+                                mode: WebGridPagerModes.All,
+                                columns: new[]
+                                {
+
+                                            grid.Column(header: "No.", style:"td-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+
+
+
+                                            grid.Column(header : "UniqueReferenceID", format : (item) => {
+                                    string CompanyRefNo=item.UniqueReferenceID;
+                                            var link = Html.ActionLink(CompanyRefNo, "CandidateSummaryDetail", "ProvidedInfo", new { UniqueReferenceID = item.UniqueReferenceID, PersonalRowID = item.PersonalRowID   }, new { @class="edit-1" });
+                                         return link;
+                                }, style:"td-2"),
+
+
+                                            grid.Column(columnName: "CompanyRefNo", header: "CompanyRefNo", canSort: false, style:"td-2"),
+                                            grid.Column(columnName: "ClientName", header: "ClientName", canSort: false, style:"td-2"),
+
+                                            grid.Column(columnName: "CreationDate", header: "CreationDate", canSort: false, style:"td-2"),
+                                            grid.Column(columnName: "Status", header: "Status", canSort: false, style:"td-2"),
+                                             grid.Column(header: "Complete", format: (item) =>
+                                                {
+                                                    if (item.UniqueReferenceID != "" && Convert.ToString(Session["TeamMemberRowID"])!="1045" && Convert.ToString(Session["TeamMemberRowID"])!="949"  && Convert.ToString(Session["TeamMemberRowID"])!="1077" && Convert.ToString(Session["TeamMemberRowID"])!="1092") // Assuming 'ClientID' is a property of 'item'
+                                                    {
+                                                        if (Designation == "Team Leader-DE")
+                                                        {
+                                                            var link = Html.ActionLink("Initiated", "CaseAPICompleteStatus", "ProvidedInfo",
+                                                                new { UniqueReferenceID = item.UniqueReferenceID, status = "Initiated" },
+                                                                new { @class = "edit-1" });
+                                                            return link;
+                                                        }
+                                                        else
+                                                        {
+                                                            var link = Html.ActionLink("Complete", "CaseAPICompleteStatus", "ProvidedInfo",
+                                                                new { UniqueReferenceID = item.UniqueReferenceID, status = "Completed" },
+                                                                new { @class = "edit" });
+                                                            return link;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        return Html.Raw(""); // Return empty if clientid != 2
+                                                    }
+                                                }, style: "td-2")
+
+
+
+                                })
+
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                            <br />
+                            <br />
+                            <br />
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .edit-1:hover {
+        color: #00ffe4;
+    }
+
+    .edit:hover {
+        color: #00ffe4;
+    }
+</style>
+

@@ -1,0 +1,412 @@
+﻿@{
+    ViewBag.Title = "Allocated Candidate List To Data Entry";
+    Layout = "~/Views/Shared/_LayoutWoutNav.cshtml";
+}
+@{
+    string tatHours1 = "";
+    string CaseStatus1 = "";
+    string AllocatedToTL1 = "";
+    string version = "";
+    string CaseStatus2 = "";
+    if (Request.QueryString["AllocatedToTL"] != null)
+    {
+        AllocatedToTL1 = Request.QueryString["AllocatedToTL"].ToString();
+    }
+    CaseStatus1 = ViewBag.CaseStatus;
+    CaseStatus2 = Session["CaseStatus"].ToString();
+    tatHours1 = ViewBag.tatHours;
+    version = ViewBag.version;
+    string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' aria-hidden='true'></i> Export Excel");
+    string hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExcelExportDE", "ProvidedInfo", new { CaseStatus = CaseStatus1, tatHours = tatHours1 }, new { @class = "btn bun-bg btn-default" }).ToString();
+    ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+
+}
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
+
+
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("AllocatedDataEntryJob", "ProvidedInfo", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="container  pt-3">
+                                <div class="row">
+                                    <div class="col-md-2" style="font-size:1.5rem;">
+                                        Client Name:
+                                    </div>
+                                    <div class="col-md-8">
+                                        @Html.DropDownList("ClientRowID",
+                                            new SelectList(ViewBag.ClientList, "ClientRowID", "ClientName"),
+                                            "-- Select Client -- ",
+                                            new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container  pt-3">
+                                <div class="row">
+                                    <div class="col-md-2" style="font-size:1.5rem;">
+                                        Keyword:
+                                    </div>
+                                    <div class="col-md-8">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", @style = "width:100%!important;", placeholder = "Ex. Enter Candidate name, Ref No...", @autocomplete = "off", @maxLength = "100" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container  pt-3">
+                                <div class="row">
+                                    <div class="col-md-2" style="font-size:1.5rem;">
+                                        Recieving From Date :
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("RecievingfromDate", null, new { @class = "form-control", @style = "width:100%!important;", @id = "RecievingToDate", @placeholder = "yyyy-mm-dd", @autocomplete = "off", @maxLength = "11" })
+                                    </div>
+                                    <div class="col-md-2" style="font-size:1.5rem;">
+                                        Recieving To Date :
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("RecievingToDate", null, new { @class = "form-control", @style = "width:100%!important;", @id = "RecievingFromDate", @placeholder = "yyyy-mm-dd", @autocomplete = "off", @maxLength = "11" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container  pt-3 pb-3">
+                                <div class="row">
+                                    <div class="col-md-2" style="font-size:1.5rem;">
+                                        Completed From Date :
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("CompletedFromDate", null, new { @class = "form-control", @style = "width:100%!important;", @id = "CompletedToDate", @placeholder = "yyyy-mm-dd", @autocomplete = "off", @maxLength = "11" })
+                                    </div>
+                                    <div class="col-md-2" style="font-size:1.5rem;">
+                                        Completed To Date :
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.TextBox("CompletedToDate", null, new { @class = "form-control", @style = "width:100%!important;", @id = "CompletedFromDate", @placeholder = "yyyy-mm-dd", @autocomplete = "off", @maxLength = "11" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container pt-3">
+                                <div class="row">
+                                    <div class="col-md-2" style="font-size:1.5rem;">
+                                        Fetch Senior Profile:
+                                    </div>
+
+                                    <div class="col-md-8">
+                                        @*@Html.Hidden("fetchDataCheckbox", "false")
+                        <input type="checkbox" name="fetchDataCheckbox" value="true" id="fetchDataCheckbox" />*@
+                                        <input type="checkbox" id="fetchDataCheckbox" />
+                                        <input type="hidden" name="fetchDataCheckbox" id="fetchDataCheckboxHidden" value="false" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container  pt-3 pb-3">
+                                <div class="row">
+                                    <div class="col-md-12 text-center" style="font-size:1.5rem;">
+                                        <input class="btn bun-bg btn-default" type="submit" value="Search" id="btnSearch" style="font-size:1.5rem!important;" />
+                                    </div>
+                                </div>
+                            </div>
+                            if (ViewBag.CaseStatus != null)
+                            {
+                                @Html.Hidden("CaseStatus", CaseStatus1.ToString())
+                            }
+
+                            if (ViewBag.tatHours != null)
+                            {
+                                @Html.Hidden("tatHours", tatHours1)
+                            }
+                            if (ViewBag.version != null)
+                            {
+                                @Html.Hidden("version", version)
+                            }
+                        }
+                    </div>
+</div>
+@if (Model != null && Model.PQPersonalInfo != null)
+{
+    <div class="row">
+        <div class="col-md-12 table-responsive">
+            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.PQPersonalInfo, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                      htmlAttributes: new { id = "grid", @class = "table table-striped table-bordered nowrap" },
+                      headerStyle: "thead-inverse",
+                      rowStyle: "ordertxt",
+                      footerStyle: "custpaging",
+                      mode: WebGridPagerModes.All,
+                      columns: new[]
+                      {
+                                    grid.Column(header: "No.", style:"", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                    grid.Column(columnName: "ClientName", header: "Client Name", canSort: false),
+                                       grid.Column(columnName: "IsSeniorCase", header: "IsSeniorCase", canSort: false, style:"td-3"),
+                                    grid.Column(columnName: "CompanyRefNo", header: "Securitas ID", canSort: false),
+                                    grid.Column(columnName: "Name", header: "Candidate Name", canSort: false),
+                                    grid.Column("AllocatedToDEDate", "Allocated-On", format: (item) => item.AllocatedToDEDate != null ? item.AllocatedToDEDate.ToString(): "", canSort: false),
+
+                    grid.Column(columnName: "CaseStatus", header: "Status", canSort: false),
+                    grid.Column("Remarks", canSort: false, format: (item)=> {
+                                                    if (( item.CheckStatusId=="45") && !string.IsNullOrEmpty(item.CheckStatusId))
+                                                    {
+
+
+                                                        var link=@Html.ActionLink("Remarks", "InsuffRemarks", "ProvidedInfo", new { PersonalRowID = item.PersonalRowID ,SubCheckRowID = item.SubCheckRowID,processName="L1-Insuff-TM" }, new { @class = "iframeUpdateStatus cboxElement callbacks ", @id = "VerificationActionHistostry" });
+                                                        return link;
+                                                    }
+                                                    return null;
+                                                }),
+                    grid.Column(header : "", format : (item) => {
+
+                             if(item.checkstatusid!="68" && item.checkstatusid!="42"&& item.checkstatusid!="0")
+                            {
+                                    if (CaseStatus1 != null)
+                                {
+                                    return Html.ActionLink("Input Data", "ManageDataEntryJob", "ProvidedInfo", new { id = item.PersonalRowID, Casestatus=CaseStatus1.ToString(),CheckstatusId=item.CheckStatusId,ClientRowid=item.ClientRowID ,CandidateName=item.Name}, null);
+                                }
+                                else if (Request.QueryString["tatHours"] != null)
+                                {
+                                    return Html.ActionLink("Input Data", "ManageDataEntryJob", "ProvidedInfo", new { id = item.PersonalRowID, tatHours=Request.QueryString["tatHours"].ToString() }, null);
+                                }
+                                else
+                                {
+                                    return Html.ActionLink("Input Data", "ManageDataEntryJob", "ProvidedInfo", new { id = item.PersonalRowID }, null);
+                                }
+                            }
+                            if (CaseStatus2 == "Closed")
+                                {
+                                    return Html.ActionLink("Input Data", "ManageDataEntryJob", "ProvidedInfo", new { id = item.PersonalRowID, Casestatus=CaseStatus1.ToString(),CheckstatusId=item.CheckStatusId,ClientRowid=item.ClientRowID ,CandidateName=item.Name}, null);
+                                }
+                            else
+                            {
+                                return "";
+                            }
+
+
+                    }),
+
+                    grid.Column("Data Entry-Job", canSort: false, format: (item)=> {
+                         if(item.checkstatusid!="68" && item.checkstatusid!="42" && item.checkstatusid!="0")
+                            {
+                        if(item.DECaseStatus == "WIP" && item.DECaseStatus!="Completed-DE")
+                        {
+                            string DeleteLink = string.Format("<a href=\"#\" id=\"Complete_{0}\" class=\"Complete\" >{1}</a>", item.PersonalRowID, "Complete");
+                            return new HtmlString(DeleteLink);
+                        }
+                        else
+                        {
+                                    return "";
+                        }
+                        }
+                        else
+                        {
+                            return "";
+                        }
+                    }),
+                    grid.Column("Comperative Sheet", canSort: false, format: (item) =>
+                    {
+                        if ((item.ClientRowID==1219))
+                         {
+                            var link=@Html.ActionLink("Comperative", "Comperative_Tiger", "Verification", new {PersonalRowID=item.PersonalRowID,subCheckId=item.SubCheckRowID }, new {@class = "Remindermail  callbacks"});
+                             return link;
+                              }
+                           return null;
+                           }, style:"td-1" ),
+                    }),
+            }
+            )
+            <div class="total-record">Total Records: @Model.TotalRecords</div>
+            <br />
+            <br />
+        </div>
+    </div>
+}
+
+
+
+
+
+
+@section Scripts{
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script>
+        document.getElementById("fetchDataCheckbox").addEventListener("change", function () {
+            document.getElementById("fetchDataCheckboxHidden").value = this.checked;
+        });
+    </script>
+    <script type="text/javascript">
+         $(document).ready(function () {
+            $('#Search').val('@Model.ItemSearch.Search');
+            $('#ClientRowID').val('@Model.ItemSearch.ClientRowId');
+            $('#RecievingFromDate').val('@Model.ItemSearch.RecievingToDate');
+            $('#CompletedFromDate ').val('@Model.ItemSearch.CompletedToDate' );
+            $('#RecievingToDate').val('@Model.ItemSearch.RecievingFromDate');
+            $('#CompletedToDate').val('@Model.ItemSearch.CompletedFromDate');
+        });
+
+
+
+    $(".Complete").on("click", function () {
+        var str = $(this).attr("id").split("_");
+        id = str[1];
+
+        var flag = confirm('Are you sure to complete this case?');
+        if (id != "" && flag) {
+            $.ajax({
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("CompletedDataEntryJobs", "ProvidedInfo")',
+                    data: { "id": id },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("This case has been completed successfully!!");
+                            setTimeout(function () { window.location.replace("AllocatedDataEntryJob"); }, 500);
+                            @* //if (QueryString["CaseStatus"] != null) {
+                               // setTimeout(function () { window.location.replace("AllocatedDataEntryJob?CaseStatus="+ @Request.QueryString["CaseStatus"].ToString());}, 500);
+                            }
+                            else if (QueryString["tatdays"] != null) {
+                                setTimeout(function () { window.location.replace("AllocatedDataEntryJob?tatdays="+ @Request.QueryString["tatdays"] );}, 500);
+                            }
+                            else {
+                                 setTimeout(function () { window.location.replace("AllocatedDataEntryJob");}, 500);
+                            }*@
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeUpdateStatus").colorbox({ iframe: true, width: "60%", height: "60%" });
+            $(".Remindermail").colorbox({ iframe: true, width: "80%", height: "100%" });
+            $('#RecievingToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#RecievingFromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedToDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+            $('#CompletedFromDate').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-66:+0",
+            });
+        });
+    </script>
+}
+<script>
+    $(document).ready(function () {
+        var table = $('#grid').DataTable({
+            responsive: true,
+        });
+        new $.fn.dataTable.FixedHeader(table);
+    });
+</script>
+
+<script>
+    $("#btnSearch").click(function () {
+        var obj = $('form input[type="text"]').NormalizedString();
+        if (obj == false) {
+            return false;
+        }
+    });
+    $("#Search").SearchString();
+</script>
+
+<script>
+    $("#grid > thead > tr").each(function () {
+        $(this).find('th').each(function (index) {
+            // Check if the header text is "checkFackEdu"
+            if ($(this).text().trim() === "IsSeniorCase") {
+                // Hide the corresponding column header
+                $(this).css("display", "none");
+
+                // Now hide the corresponding cells (td) in the body for that column
+                $("#grid > tbody > tr").each(function () {
+                    $(this).find('td').eq(index).css("display", "none");
+                });
+            }
+        });
+    });
+</script>
+<script>
+    $('#grid > tbody > tr').each(function () {
+        var sixthTdValue = $(this).find('td:nth-child(3)').text();
+        if (sixthTdValue == "1") {
+            $(this).css('background-color', '#ffbf80');
+        }
+        else {
+            //$(this).css('background-color', '#f2f2f2');
+        }
+    });
+</script>
+
+
+<style>
+    .total-record {
+        margin-bottom: 30px;
+        font-size: 1.4rem;
+    }
+
+    #select_all {
+        width: 30px !important;
+    }
+
+    .personalId {
+        width: 30px !important;
+    }
+
+    .grid_previous {
+        z-index: 0;
+    }
+
+    @@media screen and (max-width: 1450px) and (min-width: 600px) {
+        #grid {
+            font-size: .90rem;
+            width: 100%;
+        }
+
+        .table td, .table th {
+            padding: .60rem !important;
+        }
+
+        .thead-inverse {
+            font-size: .90rem !important;
+        }
+
+        .table, td, .edit {
+            font-size: .95rem !important;
+        }
+    }
+</style>

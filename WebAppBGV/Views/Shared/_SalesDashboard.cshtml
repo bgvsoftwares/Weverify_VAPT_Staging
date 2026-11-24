@@ -1,0 +1,305 @@
+﻿@using WebAppBGV.CommonMethods;
+
+@{
+    string TeamMemberRowID1 = Convert.ToString(Session["TeamMemberRowID"]);
+}
+
+<div class="col-md-12 padremove">
+    @{
+        if (ViewBag.ManagerDashboard != null)
+        {
+            ViewModels.ClientViewModel.DashboardManagerClientServicingViewModel item = ViewBag.ManagerDashboard;
+            <div class="row"><div class="col-md-12">&nbsp;</div></div>
+            <div class="row"><div class="col-md-12">&nbsp;</div></div>
+            <div class="row">
+                <div class="col-md-12 padremove">
+                    @{
+
+                        <div class="right_col" role="main">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="x_panel" style="color:#283747;margin-top:-6%;">
+                                        <div class="x_content">
+                                                                <div class="dashboard-container">
+                                                                    <h3 class="dashboard-title">📊 Case Wise | Status</h3>
+
+                                                                    <div class="row">
+                                                                        <div class="col-lg-3 col-md-6">
+                                                                            <a class="dashboard-card completed" href='@Url.Action("ClientServicingDashboardInfo", "Sales", new { CaseStatus="Completed", cr=clsCommonMethods.PEncrypt(item.ClientRowID.ToString()), tmr=Session["Teammemberrowid"].ToString() })'>
+                                                                                <div class="icon"><i class="fa fa-check-circle"></i></div>
+                                                                                <div class="count">@item.totExprted</div>
+                                                                                <p>Completed</p>
+                                                                            </a>
+                                                                        </div>
+
+                                                                        <!-- WIP -->
+                                                                        <div class="col-lg-3 col-md-6">
+                                                                            <a class="dashboard-card wip" href='@Url.Action("ClientServicingDashboardInfo", "Sales", new { CaseStatus="WIP", cr=clsCommonMethods.PEncrypt(item.ClientRowID.ToString()), tmr=Session["Teammemberrowid"].ToString() })'>
+                                                                                <div class="icon"><i class="fa fa-tasks"></i></div>
+                                                                                <div class="count">@item.totWIP</div>
+                                                                                <p>Work In Progress</p>
+                                                                            </a>
+                                                                        </div>
+
+                                                                        <!-- HR Pending -->
+                                                                        <div class="col-lg-3 col-md-6">
+                                                                            <a class="dashboard-card pending" href='@Url.Action("ClientServicingDashboardInfo", "Sales", new { CaseStatus="HRPending", cr=clsCommonMethods.PEncrypt(item.ClientRowID.ToString()), tmr=Session["Teammemberrowid"].ToString() })'>
+                                                                                <div class="icon"><i class="fa fa-user-check"></i></div>
+                                                                                <div class="count">@item.totPendingwithHR</div>
+                                                                                <p>HR Approval Pending</p>
+                                                                            </a>
+                                                                        </div>
+
+                                                                        <!-- Candidate Pending -->
+                                                                        <div class="col-lg-3 col-md-6">
+                                                                            <a class="dashboard-card candidate" href='@Url.Action("ClientServicingDashboardInfo", "Sales", new { CaseStatus="Pendingcandidate", cr=clsCommonMethods.PEncrypt(item.ClientRowID.ToString()), tmr=Session["Teammemberrowid"].ToString() })'>
+                                                                                <div class="icon"><i class="fa fa-users"></i></div>
+                                                                                <div class="count">@item.totPendingwithcandidate</div>
+                                                                                <p>Pending with Candidate</p>
+                                                                            </a>
+                                                                        </div>
+
+                                                                        <!-- Insufficiency -->
+                                                                        <div class="col-lg-3 col-md-6">
+                                                                            <a class="dashboard-card insufficiency" href='@Url.Action("ClientServicingDashboardInfo", "Sales", new { CaseStatus="Insufficient", cr=clsCommonMethods.PEncrypt(item.ClientRowID.ToString()), tmr=Session["Teammemberrowid"].ToString() })'>
+                                                                                <div class="icon"><i class="fa fa-exclamation-triangle"></i></div>
+                                                                                <div class="count">@item.totInsufficiency</div>
+                                                                                <p>Insufficiency</p>
+                                                                            </a>
+                                                                        </div>
+
+                                                                        <!-- Funds Approval -->
+                                                                        <div class="col-lg-3 col-md-6">
+                                                                            <a class="dashboard-card funds" href='@Url.Action("ManageFundApprovelforSpoc", "Sales", new { CaseStatus="Funds Pending", cr=clsCommonMethods.PEncrypt(item.ClientRowID.ToString()), tmr=Session["Teammemberrowid"].ToString() })'>
+                                                                                <div class="icon"><i class="fa fa-credit-card"></i></div>
+                                                                                <div class="count">@item.totFundApproval</div>
+                                                                                <p>Funds Approval</p>
+                                                                            </a>
+                                                                        </div>
+
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                    </div>
+
+                                
+                                </div>
+                            </div>
+
+                        </div>
+                       
+
+
+                    }
+                    @*}*@
+                </div>
+            </div>
+
+
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-md-12" style="text-align:center;">
+                    <span class="delete"> No selected Client, Please Select A Client.</span>
+                </div>
+            </div>
+            <div class="row"><div class="col-md-12">&nbsp;</div></div>
+        }
+
+    }
+</div>
+<p>&nbsp;</p>
+<br />
+<style>
+    body {
+        font-size: 14px !important;
+    }
+
+    .counter {
+        font-size: 20px !important;
+    }
+
+    .tile-stats, .count {
+        top: 5px !important;
+        font-size: 30px !important;
+    }
+
+    .count_top {
+        text-align: center;
+        padding: 5px;
+        font-size: 12px !important;
+    }
+
+    .tile-stats1 {
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        transition: 0.3s;
+        height: 75px;
+        border-radius: 5px;
+        background: #eaeaea;
+        color: #000;
+        font-size: 12px !important;
+        width: 150px !important;
+    }
+
+        .tile-stats1:hover {
+            box-shadow: 20px 25px 24px 15px rgba(0,0,0,0.2);
+        }
+
+    .x_title {
+        text-align: center;
+        box-shadow: 0px 1px 9px #ccc;
+        background: #808184;
+        color: #fff;
+    }
+
+    .tile-stats {
+        position: relative;
+        display: block;
+        margin-bottom: 11%;
+        margin-top: -1px;
+        overflow: hidden;
+        padding-bottom: 9%;
+        -webkit-background-clip: padding-box;
+        -moz-border-radius: 0px;
+        -moz-background-clip: padding;
+        border-radius: 0;
+        background: #eaeaea;
+        transition: all .3s ease-in-out;
+        z-index: 0;
+        border-radius: 10px !important;
+        box-shadow: 30px 30px 30px #1b1c1b, !important;
+        transition: 0.3s;
+        box-shadow: 0 8px 12px 0 rgba(0,0,0,0.2);
+        cursor: pointer;
+        width: 260px !important;
+    }
+
+        .tile-stats > h4 {
+            color: #000;
+        }
+
+        .tile-stats .icon {
+            color: #11c9b7;
+        }
+
+    .tile_count {
+        background: none !important;
+        padding: 0px !important;
+        border-radius: 5px;
+    }
+
+    .count {
+        color: #000 !important;
+        text-align: center;
+        margin: 0px !important;
+    }
+
+    .tile-stats:hover {
+        box-shadow: 20px 25px 24px 15px rgba(0,0,0,0.2);
+    }
+
+
+    .tile-stats .icon {
+        width: 20px !important;
+        height: 20px !important;
+        color: #0375b3b0 !important;
+        position: absolute !important;
+        left: 12px !important;
+        top: 10px !important;
+        z-index: 1 !important;
+    }
+
+    .tile-stats > h4 {
+        margin: 10px 0 0 3% !important;
+        font-weight: 500 !important;
+    }
+
+    .tile_stats_count {
+        margin-right: 70px;
+    }
+
+    @@media only screen and (max-width: 760px) {
+        .tile-stats {
+            width: 25rem;
+        }
+    }
+
+    @@media only screen and (max-width: 573px) {
+        .tile-stats {
+            width: 40rem !important;
+        }
+    }
+
+    .dashboard-container {
+        padding: 20px;
+        background: #f8f9fa;
+    }
+
+    .dashboard-title {
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 30px;
+        color: #283747;
+    }
+
+    .dashboard-card {
+        display: block;
+        text-align: center;
+        background: #fff;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        color: #333;
+    }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+        }
+
+        .dashboard-card .icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-card .count {
+            font-size: 28px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .dashboard-card p {
+            margin: 0;
+            font-size: 16px;
+            color: #555;
+        }
+
+    /* Status-specific colors */
+    .completed {
+        border-top: 5px solid #28a745;
+    }
+
+    .wip {
+        border-top: 5px solid #007bff;
+    }
+
+    .pending {
+        border-top: 5px solid #fd7e14;
+    }
+
+    .candidate {
+        border-top: 5px solid #6f42c1;
+    }
+
+    .insufficiency {
+        border-top: 5px solid #dc3545;
+    }
+
+    .funds {
+        border-top: 5px solid #20c997;
+    }
+</style>

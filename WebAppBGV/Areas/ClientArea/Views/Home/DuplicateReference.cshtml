@@ -1,0 +1,87 @@
+﻿
+@{
+    ViewBag.Title = "Duplicate Search";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "DashboardClient", "Home", new { area = "ClientArea" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="container-fluid form_container ps-0" style="height:100vh;">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 ps-5">
+            @using (Html.BeginForm("DuplicateReference", "Home", new { area = "ClientArea" }, FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-horizontal mt-3">
+                    <div class="row row-xs align-items-center mg-b-20">
+                        <div class="col-md-2">
+                            @Html.Hidden("hdnTicketNo")
+                            @Html.Label("Select Ticket", htmlAttributes: new { @class = "form-label mg-b-0 fw-bolder" })
+                        </div>
+                        <div class="col-md-8">
+                            @Html.DropDownList("TicketNo", new SelectList(ViewBag.TicketNos, "TicketNo", "TicketNo"), "-- Select Ticket -- ", new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="row row-xs align-items-center mt-4 justify-content-center">
+                        <div class="col-lg-2 col-md-12">
+                            <input type="submit" id="btnduplicate" value="Search" name="submitButton" class="submit-btn mt-2 w-100" />
+                        </div>
+                        <div class="col-lg-2 col-md-12">
+                                <input type="submit" id="btnExport" value="Export to Excel" name="submitButton" class="submit-btn mt-2 w-100" />
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    @if (Model != null && Model.CandidateDuplicateReferenceDetails != null)
+    {
+        <div class="row row-sm ms-2 mt-5">
+            <div class="col-xl-12 mb-5">
+                @if (ViewBag.TicketId != null && ViewBag.TicketId != "")
+                {
+                    <div class="col-md-12 main-content-label mg-b-5 pt-3" style="text-align:center;color:red;font-weight:bold;position:absolute!important;">please find the summary detail of Ticket: <span style="color:#8D5FFF!important;"> @ViewBag.TicketId </span></div>
+                }
+                <table class="mb-0 text-md-nowrap fl-table table-responsive table-scroll js-serial items table" id="example1" style="border:none; cursor:grab;">
+                    <thead>
+                        <tr>
+                            <th>TicketId</th>
+                            <th>Name</th>
+                            <th>Middle Name</th>
+                            <th>Last Name</th>
+                            <th>Father Name</th>
+                            <th>Mobile No</th>
+                            <th>Father Name</th>
+                            <th>EmailId</th>
+                            <th>DuplicateStatus</th>
+                        </tr>
+                    </thead>
+                    <tbody class="tx-10 text-start">
+                        @foreach (var a in Model.CandidateDuplicateReferenceDetails)
+                        {
+                            <tr>
+                                <td>@a.TicketId</td>
+                                <td>@a.Name</td>
+                                <td>@a.MiddleName</td>
+                                <td>@a.LastName</td>
+                                <td>@a.FatherName</td>
+                                <td>@a.MobileNo</td>
+                                <td>@a.FatherName</td>
+                                <td>@a.EmailId</td>
+                                <td>@a.DuplicateStatus</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+@section Scripts{
+
+  
+}

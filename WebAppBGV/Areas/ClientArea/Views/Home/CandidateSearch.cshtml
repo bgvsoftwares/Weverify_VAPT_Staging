@@ -1,0 +1,393 @@
+﻿@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Candidate Search";
+
+    if (Convert.ToString(Request.QueryString["UType"]) == "2")
+    {
+        Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+    }
+    else if (Convert.ToString(Session["UType"]) == "2")
+    {
+        Layout = null;
+    }
+    else
+    {
+        Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+    }
+    var clid = "";
+    clid = Session["ClientRowID"].ToString();
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "DashboardClient", "Home", new { area = "ClientArea" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+}
+
+@*@{
+        string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' ></i> Export Excel");
+        string hyperLinkExportExcel = "";
+        hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportCandidateSearch", "Home", "ClientArea", new { @class = "export-btn_Candidatesearch" }).ToString();
+        ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+    }*@
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+
+<div class="row">
+    <div class="col-md-2 m-3">
+        <a href='@Url.Action("ExportCandidateSearch","Home","ClientArea")' , class="export-btn_CandidatePending">Export Excel</a>
+    </div>
+</div>
+
+<div class="container-fluid ps-0 bg_gradient_CaseWise mt-2">
+    <div class="row row-sm">
+        @section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+    </div>
+    <div class="row row-sm ms-5 client-edit-form">
+        <div class="col-xl-12 mb-2">
+            @using (Html.BeginForm("CandidateSearch", "Home", new { area = "ClientArea" }, FormMethod.Post))
+            {
+                @Html.AntiForgeryToken();
+                <div class="row row-xs align-items-center">
+                    <div class="col-md-2 mg-t-5 mg-md-t-0">
+                        <label class="form-label mg-b-0 fw-bolder">
+                            Search Type :
+                        </label>
+                    </div>
+                    @if (clid == "576")
+                    {
+                        <div class="col-md-3 mg-t-5 mg-md-t-0">
+                            @Html.DropDownList("SearchType", new List<SelectListItem>
+        { new SelectListItem{Text="Candidate Name", Value="Candidate Name"},
+        new SelectListItem{Text="Father Name", Value="Father Name"},
+        new SelectListItem{Text="Package", Value="Package" },
+        new SelectListItem{Text="ActiveStatus", Value="ActiveStatus" },
+        new SelectListItem{Text="Mobile No", Value="MobNo" },
+        new SelectListItem{Text="Staff Id", Value="StaffId" },
+        new SelectListItem{Text="Securitas ID", Value="Securitas ID"},
+        new SelectListItem{Text="Email ID", Value="Email ID"}
+
+        },
+         new { @class = "form-control", style = "height:33px;" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-3 mg-t-5 mg-md-t-0">
+                            @Html.DropDownList("SearchType", new List<SelectListItem>
+        { new SelectListItem{Text="Candidate Name", Value="Candidate Name"},
+        new SelectListItem{Text="Father Name", Value="Father Name"},
+        new SelectListItem{Text="Package", Value="Package" },
+        new SelectListItem{Text="ActiveStatus", Value="ActiveStatus" },
+        new SelectListItem{Text="Mobile No", Value="MobNo" },
+        new SelectListItem{Text="EmployeeID", Value="EmployeeID" },
+        new SelectListItem{Text="Securitas ID", Value="Securitas ID"},
+        new SelectListItem{Text="ClientRefID", Value="ClientRefID"}
+
+        },
+        new { @class = "form-control", style = "height:33px;" })
+                        </div>
+                    }
+                    <div class="col-md-4 mg-t-5 mg-md-t-0">
+                        @Html.TextBox("SearchValue", null, new { @class = "form-control", placeholder = "Search...", @autocomplete = "off", @maxlength = "100", style = "height: 33px!important;" })
+                    </div>
+                    <div class="col-md-3 mg-t-5 mg-md-t-0">
+                        <input class="search_btn btn bun-bg btn-default" type="submit" value="Search" id="btnSearch" style="width: 100px;" />
+                        <i class="fa fa-search" style="position: relative;
+                    top: 4px;
+                    left: -24px;
+                    font-size: .80rem !important;
+                    color: #fff;"></i>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    @if (Model != null && Model.ClientCandidateSearch != null)
+    {
+        <div class="row row-sm ms-2">
+            <div class="col-xl-12 mb-5">
+                <table class="mb-0 table-responsive table-scroll js-serial items table" id="example1" style="border:none; cursor:grab;">
+                    <thead>
+                        <tr>
+                            @if (Convert.ToString(Session["UType"]) == "2")
+                            {
+                                <th>Candidate Name</th>
+                                <th>Securitas ID</th>
+                                <th>Client Ref ID</th>
+                                <th>Candidate Details</th>
+                                <th>Candidate Document</th>
+                                <th>EmailID</th>
+                                <th>Mobile No</th>
+
+                            }
+                            @if (Convert.ToString(Session["UType"]) == "6")
+
+                            {
+                                <th>Candidate Name</th>
+                                <th>Securitas ID</th>
+                                <th>Client Ref ID</th>
+                                <th>EmailID</th>
+                                <th>Mobile No</th>
+
+                            }
+
+                            else
+                            {
+                                <th>Candidate Name</th>
+                                <th>Securitas ID</th>
+                                <th>Father Name</th>
+                                <th>DOB</th>
+                                <th>Candidate Details</th>
+                                if ((Convert.ToInt16(Session["ClientRowID"]) == 974) || (Convert.ToInt16(Session["ClientRowID"]) == 679))
+                                {
+                                    <th>Candidate Document</th>
+                                }
+                                if (Convert.ToInt16(Session["ClientRowID"]) == 576)
+                                {
+                                    <th>Candidate Digital LOA</th>
+                                }
+                                <th>Client Ref ID</th>
+                                <th>Client Package Name </th>
+                                <th>Case Status</th>
+                                <th>EmailID</th>
+                                <th>Mobile No</th>
+                                <th>Employee ID</th>
+                                <th>SLA Start Date</th>
+                                <th>Interim</th>
+                                <th>Final Report</th>
+                                <th>Case Details</th>
+
+                            }
+
+                        </tr>
+                    </thead>
+                    <tbody class="tx-10 text-start">
+                        @foreach (var a in Model.ClientCandidateSearch)
+                        {
+                            <tr>
+                                @if (Convert.ToString(Session["UType"]) == "2")
+                                {
+                                    <td>@a.CandidateName</td>
+                                    <td>
+                                        <a class="btn_refno iframeCaseCompanyRefNo" id="clip_@a.PersonalRowID">@a.CompanyRefNo</a><i class="las la-clipboard clipboard-icon" data-clipboard-target="#clip_@a.PersonalRowID" style="position:relative; top:5px!important; right:0px!important; padding:10px!important; border:none!important; line-height:0px!important; font-size:25px;"></i>
+                                    </td>
+                                    <td>@a.ClientRefID</td>
+                                    <td>
+                                        <a href='@Url.Action("PersonalInformation", "Home", new {area="ClientArea",  PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString())})' class="btn btn-outline-primary btn-block table_btn">Download</a>
+                                    </td>
+                                    <td>
+                                        @if (a.tempPersonalRowId != "")
+                                        {
+                                            <a href='@Url.Action("ClientZip", "Home", new { area = "ClientArea", PersonalRowIDs = clsCommonMethods.PEncrypt(a.tempPersonalRowId.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Download Zips</a>
+
+                                        }
+                                    </td>
+                                    <td>@a.Emailid</td>
+                                    <td>@a.MobileNo</td>
+                                }
+
+
+                                @if (Convert.ToString(Session["UType"]) == "6")
+
+                                {
+                                    <td>@a.CandidateName</td>
+                                    <td>
+                                        @*<a class="btn_refno iframeCaseCompanyRefNo" id="clip_@a.PersonalRowID">@a.CompanyRefNo</a><i class="las la-clipboard clipboard-icon" data-clipboard-target="#clip_@a.PersonalRowID" style="position:relative; top:5px!important; right:0px!important; padding:10px!important; border:none!important; line-height:0px!important; font-size:25px;"></i>*@
+                                        <a href='@Url.Action("CheckListForClientByPersonalID", "Home", new { PersonalId = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn_refno iframeCaseCompanyRefNo" id="clip_@a.PersonalRowID">@a.CompanyRefNo</a><i class="las la-clipboard clipboard-icon" data-clipboard-target="#clip_@a.PersonalRowID" style="position:relative; top:5px!important; right:0px!important; padding:10px!important; border:none!important; line-height:0px!important; font-size:25px;"></i>
+                                    </td>
+                                    <td>@a.ClientRefID</td>
+
+                                    <td>@a.Emailid</td>
+                                    <td>@a.MobileNo</td>
+
+                                }
+
+                                else
+                                {
+                                    <td>@a.CandidateName</td>
+                                    <td>
+                                        <a href='@Url.Action("CheckListForClientByPersonalID", "Home", new { PersonalId = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn_refno iframeCaseCompanyRefNo" id="clip_@a.PersonalRowID">@a.CompanyRefNo</a><i class="las la-clipboard clipboard-icon" data-clipboard-target="#clip_@a.PersonalRowID" style="position:relative; top:5px!important; right:0px!important; padding:10px!important; border:none!important; line-height:0px!important; font-size:25px;"></i>
+                                    </td>
+                                    <td>@a.fatherName</td>
+                                    <td>@a.dob</td>
+                                    <td>
+                                        <a href='@Url.Action("PersonalInformation", "Home", new {area="ClientArea",  PersonalRowID = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString())})' class="btn btn-outline-primary btn-block table_btn">Download</a>
+                                    </td>
+
+                                    if (Convert.ToInt16(Session["ClientRowID"]) == 974 || Convert.ToInt16(Session["ClientRowID"]) == 679)
+                                    {
+                                        if (a.tempPersonalRowId != "")
+                                        {
+                                            <td><a href='@Url.Action("ClientZip", "Home", new { area = "ClientArea", PersonalRowIDs = clsCommonMethods.PEncrypt(a.tempPersonalRowId.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Download Zips</a></td>
+                                        }
+                                    }
+                                    if (Convert.ToInt16(Session["ClientRowID"]) == 576)
+                                    {
+                                        if (a.tempPersonalRowId != "")
+                                        {
+                                            <td><a href='@Url.Action("DownloadLOA", "Home", new { area = "ClientArea", PersonalRowIDs = clsCommonMethods.PEncrypt(a.tempPersonalRowId.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Candidate Digital LOA</a></td>
+                                            //  <td><a title="Blank" id="LOA" target="_blank" href='@Url.Content("~/Documents/CandidateDocuments/provideddocuments/" + "Letter_Of_Authorization" + a.tempPersonalRowId + ".pdf")'>Candidate Digital LOA</a></td>
+                                        }
+                                    }
+
+                                    if (Convert.ToInt16(Session["ClientRowID"]) == 1731)
+                                    {
+                                        <td>
+                                            <a href='@Url.Action("UpdateClientRefNo", "Home", new { PersonalRowId = clsCommonMethods.PEncrypt(a.PersonalRowID.ToString()) })' class="btn_refno iframeUpdateClientRefNo" id="clip_@a.PersonalRowID">@a.ClientRefID</a><i class="las la-clipboard clipboard-icon" data-clipboard-target="#clip_@a.PersonalRowID" style="position:relative; top:5px!important; right:0px!important; padding:10px!important; border:none!important; line-height:0px!important; font-size:25px;"></i>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>@a.ClientRefID</td>
+                                    }
+
+                                    <td>@a.ClientPackageName</td>
+                                    <td>@a.CaseStatus</td>
+                                    <td>@a.Emailid</td>
+                                    <td>@a.MobileNo</td>
+                                    <td>@a.EmployeeID</td>
+                                    <td>@a.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        @if (a.IntrimReportStatus == true)
+                                        {
+                                            //<a href='@Url.Action("Download", "GetReportInterim", new { ImageName = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()) })' class="btn btn-outline-primary btn-block table_btn"></a>
+                                            <a href='@Url.Action("GetReportInterim", new { ImageName = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Interim</a>
+                                        }
+                                        else
+                                        {
+                                            <a href=""></a>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (a.ReportVisibality == true)
+                                        {
+                                            if (a.CaseStatus == "Completed")
+                                            {
+                                                <a href='@Url.Action("GetReport", new { ImageName = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),ReportType = clsCommonMethods.PEncrypt(a.FinalStatus.ToString())})' class="btn btn-outline-primary btn-block table_btn">Final Report</a>
+                                            }
+                                            else
+                                            {
+                                                //Add Code Here for Old Report
+                                                if ((a.IsReVerification == true) && (Convert.ToInt16(Session["ClientRowID"]) == 684))
+                                                {
+                                                    <a href='@Url.Action("GetReport", new { ImageName = clsCommonMethods.PEncrypt(a.CompanyRefNo.ToString()),ReportType = clsCommonMethods.PEncrypt(a.FinalStatus.ToString())})' class="btn btn-outline-primary btn-block table_btn">Old Final Report</a>
+                                                }
+                                                else
+                                                {
+                                                    <a href="#"></a>
+                                                }
+                                            }
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (a.tempPersonalRowId != "")
+                                        {
+                                            <a href='@Url.Action("CandidateInformation", "Home", new { area = "ClientArea", PersonalRowID = clsCommonMethods.PEncrypt(a.tempPersonalRowId.ToString()) })' class="btn btn-outline-primary btn-block table_btn">Download</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="#"></a>
+                                        }
+                                        @*<a href='@Url.Action("CandidateDetailsPdf", "Home", new { PID =clsCommonMethods.PEncrypt(a.PersonalRowID.ToString())})' class="btn btn-outline-primary btn-block table_btn">Download</a>*@
+
+                                    </td>
+
+                                }
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .export-btn_Candidatesearch {
+        background: #8D5FFF !important;
+        color: #FFF;
+        font-family: 'Securitas Pro';
+        font-size: .90rem !important;
+        border-radius: 0px;
+        display: inline-block;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: center;
+        text-decoration: none;
+        vertical-align: middle;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+        background-color: transparent;
+        border: 1px solid transparent;
+        padding: .35rem 1rem .35rem 1rem;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        position: absolute;
+        left: 366px;
+        top: 226px;
+        z-index: 100;
+    }
+
+        .export-btn_Candidatesearch:hover {
+            color: #000 !important;
+            color: #000 !important;
+            background: #FFF !important;
+            border: 1px solid #8D5FFF !important;
+        }
+</style>
+@section Scripts{
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#SearchValue').val('@Model.ItemSearch.Search');
+            $('#SearchType').val('@Session["SearchType"]');
+
+        });
+        $("#btnSearch").click(function () {
+            var obj = $('form input[type="text"]').NormalizedString();
+            if (obj == false) {
+                return false;
+            }
+        });
+
+        $("#SearchValue").SearchString();
+    </script>
+
+    <script type="text/javascript">
+        $(".Stop").on("click", function () {
+            var str = $(this).attr("id").split("_");
+            var id = str[1];
+
+            var flag = confirm('Are you sure want to stop this case?');
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("ClientCaseStopById", "Home", new { area = "ClientArea" })',
+                    data: { "id": id },
+                    dataType: "json",
+                    //beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Stop Successfully!!");
+
+                            setTimeout(function () { window.location.replace("ManagePendingWithCandidateCases"); }, 300);
+                        }
+                        else {
+                            alert('There is some error');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".iframeCaseCompanyRefNo").colorbox({ iframe: true, width: "68%", height: "65%" });
+            $(".iframeUpdateClientRefNo").colorbox({ iframe: true, width: "60%", height: "60%" });
+        });
+    </script>
+}
+

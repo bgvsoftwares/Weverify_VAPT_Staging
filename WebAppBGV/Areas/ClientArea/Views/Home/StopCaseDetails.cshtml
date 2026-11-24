@@ -1,0 +1,78 @@
+﻿@using WebAppBGV.CommonMethods;
+@{
+    ViewBag.Title = "Stop Case Details";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "DashboardClient", "Home", new { area = "ClientArea" }, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+    var clid = "";
+    clid = Session["ClientRowID"].ToString();
+}
+@{
+    //string faIconExportExcel = string.Format("<i class='fa fa-file-excel-o' ></i> Export Excel");
+    //string hyperLinkExportExcel = "";
+    //hyperLinkExportExcel = Html.ActionLink("linkTitle", "ExportStopCase", "Home",new { area = "ClientArea" }, new { @class = "btn bun-bg btn-default" }).ToString();
+    //ViewBag.NavigationBtnExportExcel = new HtmlString(hyperLinkExportExcel.ToString().Replace("linkTitle", faIconExportExcel));
+}
+
+@section NavigationButton{ @Html.Partial("_NavigationButton") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="container-fluid ps-0 bg_gradient_CaseWise mt-2">
+    <div class="row row-sm">
+
+    </div>
+    <div class="row row-sm ms-2">
+        <div class="col-xl-12 mb-5 ps-0">
+            <div class="">
+                @using (Html.BeginForm("StopCaseDetails", "Home", new { area = "ClientArea" }, FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="">
+                        <input class="export_btn" type="submit" value="Export Excel" id="btnExportExcel" name="action" />
+                    </div>
+                }
+            </div>
+            @if (Model != null && Model.StopCaseDetailsList != null)
+            {
+                <table class="table mb-0 text-md-nowrap fl-table js-serial table-scroll items table-responsive" id="example1" style="border:none; cursor:grab;">
+                    <thead class="text-start tx-10">
+                        <tr>
+                            <th>Candidate Name</th>
+                            <th>ClientRefID</th>
+                            <th>Mail ID</th>
+                            <th>Mobile NO</th>
+                            <th>Created Date</th>
+                            <th>Final Submission Date</th>
+                            <th>Case Stop By</th>
+                            <th>Case Stop Date</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-start tx-10">
+
+                        @foreach (var a in Model.StopCaseDetailsList)
+                        {
+                            <tr>
+                                <td>@a.CandidateName</td>
+                                <td>@a.ClientRefId</td>
+                                <td>@a.EmailId</td>
+                                <td>@a.MobileNo</td>
+                                <td>@a.CreatedDate</td>
+                                <td>@a.FinalSubmissionDate</td>
+                                <td>@a.CaseStopBy</td>
+                                <td>@a.CaseStopDate</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/Scripts/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/normalizePlugin.js"></script>
+}

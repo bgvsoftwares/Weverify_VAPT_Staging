@@ -1,0 +1,88 @@
+@using WebAppBGV.CommonMethods;
+@model ViewModels.ProvidedInfoViewModel.BulkUploadCandidateDocsViewModel
+@{
+    ViewBag.Title = "Bulk Upload Candidate Documents";
+}
+
+<div class="container">
+    <h2>Bulk Upload Documents</h2>
+
+    <!-- Show selected cases -->
+    <div class="alert alert-info">
+        <strong>Selected Cases:</strong> @string.Join(", ", Model.CaseIds)
+    </div>
+
+    @using (Html.BeginForm("UploadCandidateCaseDocumentBulk", "ProvidedInfo", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <!-- Hidden inputs for case IDs -->
+        for (int i = 0; i < Model.CaseIds.Count; i++)
+        {
+            <input type="hidden" name="CaseIds[@i]" value="@Model.CaseIds[i]" />
+        }
+
+        <hr />
+
+        <!-- LOA Document -->
+        <div class="form-group">
+            @Html.CheckBoxFor(m => m.LOABool)
+            @Html.Label("Letter of Authorization")
+            @Html.TextBoxFor(m => m.LOADoc, new { type = "file", @accept = ".png,.jpg,.jpeg,.pdf,.doc,.docx,.zip,.msg", @class = "form-control" })
+        </div>
+
+        <!-- Candidate Photo -->
+        <div class="form-group">
+            @Html.CheckBoxFor(m => m.CandidatePhotoBool)
+            @Html.Label("Candidate Photo")
+            @Html.TextBoxFor(m => m.CandidatePhotoDoc, new { type = "file", @accept = ".png,.jpg,.jpeg", @class = "form-control" })
+        </div>
+
+        <!-- BGV Page -->
+        <div class="form-group">
+            @Html.CheckBoxFor(m => m.BGVPageBool)
+            @Html.Label("BGV Page")
+            @Html.TextBoxFor(m => m.BGVPageDoc, new { type = "file", @accept = ".png,.jpg,.jpeg,.pdf,.doc,.docx,.zip,.msg", @class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            @Html.CheckBoxFor(m => m.BGVResumeBool)
+            @Html.Label("BGV Resume")
+            @Html.TextBoxFor(m => m.BGVResumeDoc, new { type = "file", @accept = ".png,.jpg,.jpeg,.pdf,.doc,.docx,.zip,.msg", @class = "form-control" })
+        </div>
+
+        <!-- Other Document -->
+        <div class="form-group">
+            @Html.CheckBoxFor(m => m.OtherBool)
+            @Html.Label("Other Document")
+            @Html.TextBoxFor(m => m.OtherDoc, new { type = "file", @accept = ".png,.jpg,.jpeg,.pdf,.doc,.docx,.zip,.msg", @class = "form-control" })
+        </div>
+
+        <!-- Tech Document (Client-specific) -->
+        if (Model.ClientID == 446 || Model.ClientRowId == 446)
+        {
+            <div class="form-group">
+                @Html.CheckBoxFor(m => m.TechBool)
+                @Html.Label("Tech Document")
+                @Html.TextBoxFor(m => m.Tech, new { type = "file", @accept = ".png,.jpg,.jpeg,.pdf,.doc,.docx,.zip,.msg", @class = "form-control" })
+            </div>
+        }
+
+        <!-- Remarks -->
+        <div class="form-group">
+            @Html.LabelFor(m => m.Remarks)
+            @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", rows = 4 })
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-group">
+            <input type="submit" value="Upload Documents" class="btn btn-primary" />
+            @Html.ActionLink("Back", "AllocatedDEScannerBulkJob", "ProvidedInfo", new { CaseStatus = clsCommonMethods.PEncrypt("Pending"), version = clsCommonMethods.PEncrypt("New") },
+            new
+            {
+                @class = "btn btn-outline-secondary ms-2",
+                role = "button"
+            })
+        </div>
+    }
+</div>

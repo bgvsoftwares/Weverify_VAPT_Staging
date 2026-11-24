@@ -1,0 +1,213 @@
+﻿
+@{
+    ViewBag.Title = "Delete Case";
+}
+
+
+
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("DeleteCase", "ClientServicing", FormMethod.Post))
+                        {
+                            <div class="form-horizontal">
+                                <div class="form-group branch row  search-frame">
+                                    <label class="col-md-2 control-label">CompanyRefNo :</label>
+                                    <div class="col-md-2">
+                                        @Html.TextBox("Search", null, new { @class = "form-control", placeholder = "Ex Enter CompanyRefNo..." })
+
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <input class="btn bun-bg btn-default" type="submit" value="Search" name="SaveWork" />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input class="btn bun-bg btn-default" type="submit" value="DeleteCase" name="SaveWork" onclick="myFunction()" />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input class="btn bun-bg btn-default" type="submit" value="StopCase" name="SaveWork" onclick="myFunction()" />
+                                    </div>
+                                </div>
+                                <div class="form-group branch row  search-frame">
+                                    <label class="col-md-2 control-label">Check Details :</label>
+                                    <div class="col-md-2">
+
+
+                                        @if (ViewBag.chek != null)
+        {
+
+                                @Html.DropDownList("ddlColor",
+new SelectList(ViewBag.chek, "SubCheckRowID", "SubCheckName"),
+
+new { @class = "form-control" })
+
+
+}
+                                    </div>
+                                    <div class="col-md-2">
+
+
+                                        @if (ViewBag.CheckId != null)
+        {
+
+                                @Html.DropDownList("ddlCheckStatus",
+new SelectList(ViewBag.CheckId, "CheckStatusID", "CheckStatus"),
+
+new { @class = "form-control" })
+
+
+}
+                                    </div>
+
+
+                                </div>
+                                    <div class="form-group branch row  search-frame">
+
+                                        <label class="col-md-2 control-label">Action Remarks :</label>
+                                        <div class="col-md-5">
+                                            @Html.TextBox("Remarks", null, new { TextBoxMode = "MultiLine", @class = "form-control", placeholder = "Ex Enter Remarks..." })
+
+                                        </div>
+                                    </div>
+                                    <div class="all-button-bg">
+
+
+                                        @*<input class="btn bun-bg btn-default" type="submit" value="CheckDelete" name="CheckDel" onclick="DeleteCheck()" />*@
+                                        @*<input class="btn bun-bg btn-default" type="submit" value="CheckMove" name="MoveCheck" onclick="DeleteCheck()" />*@
+                                        <input class="btn bun-bg btn-default" type="submit" value="Check Action" name="MoveCheck" />
+                                        @*<button type="button" class="btn bun-bg btn-default" onclick="location.href='@Url.Action("DeleteCheck", "ClientServicing")'">DeleteCheck</button>*@
+
+
+
+
+
+                                    </div>
+
+                                </div>
+                        }
+                    </div>
+
+
+                </div>
+                @if (Model != null && Model.ClientServiceChecks != null)
+
+                {
+                    <div class="row">
+                        <div class="col-md-12">
+                            @{
+
+                                WebGrid grid = new WebGrid(rowsPerPage: Model.PageSize, ajaxUpdateContainerId: "grid");
+                                grid.Bind(Model.ClientServiceChecks, autoSortAndPage: false, rowCount: Model.TotalRecords);
+                            }
+                            @grid.GetHtml(
+                                                                             htmlAttributes: new { id = "grid", @class = "table" },
+                                                                             //headerStyle: "thead-inverse",
+                                                                             //rowStyle: "ordertxt",
+                                                                             footerStyle: "custpaging",
+                                                                             mode: WebGridPagerModes.All,
+                                                                             columns: new[]
+                                                                            {
+                                                                                                                                                    grid.Column(header: "No.", style:"col-md-1", format: item => item.WebGrid.Rows.IndexOf(item) + 1 + Math.Round(Convert.ToDouble(grid.TotalRowCount / grid.PageCount) / grid.RowsPerPage) * grid.RowsPerPage * grid.PageIndex),
+                                                                                                                                                    grid.Column(columnName: "SecuritasID", header: "Company Ref No", canSort: false, style:"col-md-3"),
+                                                                                                                                                    grid.Column(columnName: "CheckName", header: "Check Name", canSort: false, style:"col-md-2"),
+                                                                                                                                                    grid.Column(columnName: "CheckStatus", header: "Check Status", canSort: false, style:"col-md-2"),
+
+                                                                                                                                                    grid.Column(columnName: "ColorName", header: "ColorName", canSort: false, style:"col-md-2"),
+                                    //                                                                                                                 grid.Column("Delete", canSort: false, format: (item)=> {
+                                    //    string DeleteLink = string.Format("<a href=\"#\" id=\"Delete_{0}\" class=\"delete\" >{1}</a>", item.PersonalRowID,"<a href=\"#\" Sub=\"Delete_{1}\" class=\"delete\" >{2}</a>",item.PersonalRowID,"Reject");
+                                    //    return new HtmlString(DeleteLink);
+                                    //}, style:"delete col-md-1")
+                                    //grid.Column("Delete", canSort: false, format: (item)=> {
+
+
+                                                                                 //grid.Column("orderDate", "order Date", format: (item) => item.orderDate != DateTime.MinValue ? item.orderDate.ToString("dd/MM/yyyy") : "", canSort: false,style:"col-md-2"),
+                                                                                 // grid.Column(columnName: "CaseStatus", header: "Status", canSort: false, style:"col-md-1"),
+                                                                                 //grid.Column("Remarks", canSort: false, format: (item)=> {
+
+
+                                                                             }
+                                                                      )
+                            <div class="total-record">Total Records: @Model.TotalRecords</div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/EventValidations.js")'></script>
+
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.14.1.min.js"></script>
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.colorbox-min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".iframeActionHistories").colorbox({ iframe: true, width: "80%", height: "65%" });
+        });
+    </script>
+    <script>
+        function myFunction()
+        {
+            confirm("Do you want to delete!");
+        }
+        function myFunction1()
+        {
+            var txt;
+            var r = confirm("Press a button!");
+            if (r == true)
+            {
+                txt = "You pressed OK!";
+            } else
+            {
+                
+            }
+            document.getElementById("demo").innerHTML = txt;
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(".delete").on("click", function () {
+            var str = $(this).attr("id").split("_");
+            id = str[1];
+            //Sub = str[2];
+
+            var flag = confirm('Do you want to Reject the Record ?');
+            if (id != "" && flag) {
+                $.ajax({
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("RejectCase", "ClientServicing")',
+                    data: { "id": id },
+                    dataType: "json",
+                    beforeSend: function () { },
+                    success: function (data) {
+                        if (data.result == true) {
+                            alert("Record Reject Successfully!!");
+                            setTimeout(function () { window.location.replace("ManageAbbreviation"); }, 500);
+                        }
+                        else {
+                            //alert('There is some error');
+                            setTimeout(function () { window.location.replace("ManageAbbreviation"); }, 500);
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}
+
+
+

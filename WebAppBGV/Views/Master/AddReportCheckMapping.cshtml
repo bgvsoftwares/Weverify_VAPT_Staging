@@ -1,0 +1,139 @@
+﻿@model ViewModels.AddReportCheckMappingViewModel
+
+@{
+    ViewBag.Title = "Add Report Check Mapping";
+
+    string faIcon = string.Format("<i class='fa fa-reply' aria-hidden='true'></i> Back");
+    string hyperLink = Html.ActionLink("linkTitle", "ManageReportCheckMapping", "Master", null, new { @class = "headerbacklink" }).ToString();
+    ViewBag.TitleBackBtn = new HtmlString(hyperLink.ToString().Replace("linkTitle", faIcon));
+
+}
+
+@section LeftNavigation{ @Html.Partial("_NavLeftMaster") }
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+<div class="row">
+    <div class="col-md-12">
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <div class="form-group branch row">
+                @Html.LabelFor(model => model.ClientRowID, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.ClientRowID,
+                        new SelectList(ViewBag.Client, "ClientRowID", "ClientName"),
+                        "-- Select Client -- ",
+                        new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ClientRowID, "", new { @class = "text-danger" })
+                </div>
+                @Html.LabelFor(model => model.ReportType, htmlAttributes: new { @class = "col-md-2 control-label required" })
+                <div class="col-md-3">
+                    @Html.DropDownListFor(model => model.ReportType, new List<SelectListItem> {
+                        new SelectListItem { Text = "-- Select ReportType -- ", Value = "" },
+                        new SelectListItem { Text = "IR", Value = "IR" },
+                        new SelectListItem { Text = "FR",Value="FR"},
+                    }, new { @id = "ReportTypeDDL", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ReportType, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-md-12"></div>
+            <div class="col-md-12">
+                <fieldset class="scheduler-border">
+                    <legend class="scheduler-border">Assign Check Name</legend>
+                    <div class="form-group col-md-12">
+                        <div class="form-group row ">
+                            @Html.LabelFor(model => model.AddressChk, htmlAttributes: new { @class = "col-md-3 control-label" })
+                            <div class="col-md-3">
+                                @Html.RadioButtonFor(model => model.AddressChk, 1, new { @class = "rdoAddressChk", @id = "rdoAddressChkYes" }) Yes
+                                <span class="client_radiobtncr">
+                                    @Html.RadioButtonFor(model => model.AddressChk, 0, new { @class = "rdoAddressChk", @id = "rdoAddressChkNo", @checked = "checked" }) No
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group row ">
+                            @Html.LabelFor(model => model.CriminalChk, htmlAttributes: new { @class = "col-md-3 control-label" })
+                            <div class="col-md-3">
+                                @Html.RadioButtonFor(model => model.CriminalChk, 1, new { @class = "rdoCriminalChk", @id = "rdoCriminalChkYes" }) Yes
+                                <span class="client_radiobtncr">
+                                    @Html.RadioButtonFor(model => model.CriminalChk, 0, new { @class = "rdoCriminalChk", @id = "rdoCriminalChkNo", @checked = "checked" }) No
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group row ">
+                            @Html.LabelFor(model => model.EducationChk, htmlAttributes: new { @class = "col-md-3 control-label" })
+                            <div class="col-md-3">
+                                @Html.RadioButtonFor(model => model.EducationChk, 1, new { @class = "rdoEducationChk", @id = "rdoEducationChkYes" }) Yes
+                                <span class="client_radiobtncr">
+                                    @Html.RadioButtonFor(model => model.EducationChk, 0, new { @class = "rdoEducationChk", @id = "rdoEducationChkNo", @checked = "checked" }) No
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group row ">
+                            @Html.LabelFor(model => model.EmploymentChk, htmlAttributes: new { @class = "col-md-3 control-label" })
+                            <div class="col-md-3">
+                                @Html.RadioButtonFor(model => model.EmploymentChk, 1, new { @class = "rdoEmploymentChk", @id = "rdoEmploymentChkYes" }) Yes
+                                <span class="client_radiobtncr">
+                                    @Html.RadioButtonFor(model => model.EmploymentChk, 0, new { @class = "rdoEmploymentChk", @id = "rdoEmploymentChkNo", @checked = "checked" }) No
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group row ">
+                            @Html.LabelFor(model => model.IdentityChk, htmlAttributes: new { @class = "col-md-3 control-label" })
+                            <div class="col-md-3">
+                                @Html.RadioButtonFor(model => model.IdentityChk, 1, new { @class = "rdoIdentityChk", @id = "rdoIdentityChkYes" }) Yes
+                                <span class="client_radiobtncr">
+                                    @Html.RadioButtonFor(model => model.IdentityChk, 0, new { @class = "rdoIdentityChk", @id = "rdoIdentityChkNo", @checked = "checked" }) No
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group row ">
+                            @Html.LabelFor(model => model.ReferenceChk, htmlAttributes: new { @class = "col-md-3 control-label" })
+                            <div class="col-md-3">
+                                @Html.RadioButtonFor(model => model.ReferenceChk, 1, new { @class = "rdoReferenceChk", @id = "rdoReferenceChkYes" }) Yes
+                                <span class="client_radiobtncr">
+                                    @Html.RadioButtonFor(model => model.ReferenceChk, 0, new { @class = "rdoReferenceChk", @id = "rdoReferenceChkNo", @checked = "checked" }) No
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group row ">
+                            @Html.LabelFor(model => model.SpecialChk, htmlAttributes: new { @class = "col-md-3 control-label" })
+                            <div class="col-md-3">
+                                 @Html.RadioButtonFor(model => model.SpecialChk, 1, new { @class = "rdoSpecialChk", @id = "rdoSpecialChkYes" }) Yes
+                                <span class="client_radiobtncr">
+                                    @Html.RadioButtonFor(model => model.SpecialChk, 0, new { @class = "rdoSpecialChk", @id = "rdoSpecialChkNo", @checked = "checked" }) No
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="all-button-bg">
+                @Html.ActionLink("Back", "ManageReportCheckMapping", "Master", null, new { @class = "btn bun-bg btn-default" })
+                <input class="btn bun-bg btn-default" type="submit" value="Submit" />
+            </div>
+        </div>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div id="ManageSction" class="product-frame1"></div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script src='@Url.Content("~/Scripts/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")'></script>
+    <script type="text/javascript">
+        
+
+    </script>
+
+}

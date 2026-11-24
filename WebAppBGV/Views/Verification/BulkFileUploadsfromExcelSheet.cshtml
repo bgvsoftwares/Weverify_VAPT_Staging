@@ -1,0 +1,90 @@
+﻿@model List<ViewModels.ProvidedInfoViewModel.IsfileUploadsViewModel>
+@{
+    ViewBag.Title = "Bulk File Upload";
+}
+
+@section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+@section DisplayMandatory{ @Html.Partial("_DisplayMandatory") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm("BulkFileUploadsfromExcelSheet", "Verification", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="container">
+                <div class="row" style="margin-top:20px">
+
+                    <div class="col-sm-4">
+                        Download Sheet
+                    </div>
+                    <div class="col-sm-4">
+                        <a class="ManageClientCompany" target="_blank" href='@Url.Action("DigitalVerificationTemplateDownload", "Verification",new {templateName="BulkCheckUploadExcelFile" })' style="padding: 0.35rem 0.8rem 0.35rem 0.8rem!important;"><i class="fa fa-file-excel me-2"></i>Excel Template</a>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px">
+                    <div class="col-sm-4">
+                        Upload Documents
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="file" id="docFile" name="docFile" multiple accept=".jpeg,.png">
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px">
+                    <div class="col-sm-4">
+                        Update Execl Sheet
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="file" id="xlsFile" name="xlsFile" accept=".xlsx,.xls">
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;margin-left:35%; text-align:center">
+                    <input class="btn bun-bg btn-default" type="submit" name="action" value="Get Face Match" />
+                </div>
+            </div>
+
+            <div class="container" style="background: #fffdfd; margin-top:30px">
+                <table border="1" style="border-collapse: collapse; width: 100%;">
+                    <thead style=" padding: 10px; font-weight: bolder;background: #031F30;color:white;">
+                        <tr>
+                            <th>Company Ref No</th>
+                            <th>File Name</th>
+                            <th>Status</th>
+                            <th>Download</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null)
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.CheckUniqueId</td>
+                                    <td>@item.FileName</td>
+                                    <td>@item.Status</td>
+                                    <td class="filename"><a href="@Url.Action("UANBulkDownload", "Verification", new { SearchValue = item.FileName })" id="UANVerification" class="UANVerification">Download</a></td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+
+
+            </div>
+        }
+    </div>
+</div>
+<style>
+
+
+    select {
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+    }
+
+        select:focus {
+            outline: none;
+        }
+</style>
+
+

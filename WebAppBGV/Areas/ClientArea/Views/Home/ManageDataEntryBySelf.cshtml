@@ -1,0 +1,64 @@
+﻿
+@{
+    ViewBag.Title = "Manage DataEntry By Self";
+    Layout = "~/Areas/ClientArea/Views/Shared/_Layout.cshtml";
+
+}
+@section LeftNavigation{ @Html.Partial("_NavLeftSelfInfo") }
+@section DisplayErrorMessage{ @Html.Partial("_DisplayErrorMessage") }
+
+@if (Model != null && Model.PQPersonalInfo != null)
+{
+    <div class="container-fluid ps-0 bg_gradient_CaseWise mt-2">
+        <div class="row row-sm">
+            @section DisplayTitle{ @Html.Partial("_DisplayTitle") }
+        </div>
+        <div class="row row-sm ms-2">
+            <div class="col-xl-12 mb-5">
+                <span>@ViewBag.NavigationBtnExportExcel</span>
+                @using (Html.BeginForm("ManageDataEntryBySelf", "Home", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <table class="table mb-0 text-md-nowrap fl-table table-scroll js-serial items" id="example1" style="border:none; cursor:all-scroll;">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Candidate Code</th>
+                                <th>Securitas ID</th>
+                                <th>Created Date</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-start tx-10">
+                            @foreach (var a in Model.PQPersonalInfo)
+                            {
+                            <tr>
+                                <td>@a.Name</td>
+                                <td>@a.CandidateCode</td>
+                                <td>@a.CompanyRefNo</td>
+                                <td>@a.CreatedDate.ToString("dd/MM/yyyy")</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+}
+    
+
+    @section Scripts{
+        <script src="~/Scripts/sweetalert2.all.min.js"></script>
+        <script src="~/Scripts/normalizePlugin.js"></script>
+        <script>
+
+            $("#btnSearch").click(function () {
+                var obj = $('form input[type="text"]').NormalizedString();
+                if (obj == false) {
+                    return false;
+                }
+            });
+
+            $("#Search").SearchString();
+        </script>
+    }
